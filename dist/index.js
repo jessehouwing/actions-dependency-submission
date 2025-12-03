@@ -1,12 +1,14 @@
 import require$$0 from 'os';
 import require$$0$1 from 'crypto';
-import require$$1 from 'fs';
-import require$$1$4 from 'path';
-import require$$2 from 'http';
-import require$$3 from 'https';
+import * as fs from 'fs';
+import fs__default from 'fs';
+import * as require$$1 from 'path';
+import require$$1__default from 'path';
+import require$$2$1 from 'http';
+import require$$3$1 from 'https';
 import require$$0$4 from 'net';
 import require$$1$1 from 'tls';
-import require$$4 from 'events';
+import require$$4$1 from 'events';
 import require$$0$3 from 'assert';
 import require$$0$2 from 'util';
 import require$$0$5 from 'stream';
@@ -15,34 +17,67 @@ import require$$8 from 'querystring';
 import require$$14 from 'stream/web';
 import { createRequire } from 'node:module';
 import require$$0$6 from 'worker_threads';
-import require$$2$1 from 'perf_hooks';
+import require$$2$2 from 'perf_hooks';
 import require$$5 from 'util/types';
-import require$$4$1 from 'async_hooks';
+import require$$4$2 from 'async_hooks';
 import require$$1$2 from 'console';
 import require$$1$3 from 'url';
-import require$$3$1 from 'zlib';
+import require$$3$2 from 'zlib';
 import require$$6 from 'string_decoder';
 import require$$0$7 from 'diagnostics_channel';
-import require$$2$2 from 'child_process';
+import require$$2$3 from 'child_process';
 import require$$6$1 from 'timers';
 
 var commonjsGlobal = typeof globalThis !== 'undefined' ? globalThis : typeof window !== 'undefined' ? window : typeof global !== 'undefined' ? global : typeof self !== 'undefined' ? self : {};
+
+function getDefaultExportFromCjs (x) {
+	return x && x.__esModule && Object.prototype.hasOwnProperty.call(x, 'default') ? x['default'] : x;
+}
+
+function getAugmentedNamespace(n) {
+  if (Object.prototype.hasOwnProperty.call(n, '__esModule')) return n;
+  var f = n.default;
+	if (typeof f == "function") {
+		var a = function a () {
+			var isInstance = false;
+      try {
+        isInstance = this instanceof a;
+      } catch {}
+			if (isInstance) {
+        return Reflect.construct(f, arguments, this.constructor);
+			}
+			return f.apply(this, arguments);
+		};
+		a.prototype = f.prototype;
+  } else a = {};
+  Object.defineProperty(a, '__esModule', {value: true});
+	Object.keys(n).forEach(function (k) {
+		var d = Object.getOwnPropertyDescriptor(n, k);
+		Object.defineProperty(a, k, d.get ? d : {
+			enumerable: true,
+			get: function () {
+				return n[k];
+			}
+		});
+	});
+	return a;
+}
 
 var core = {};
 
 var command = {};
 
-var utils$1 = {};
+var utils$3 = {};
 
-var hasRequiredUtils$1;
+var hasRequiredUtils$3;
 
-function requireUtils$1 () {
-	if (hasRequiredUtils$1) return utils$1;
-	hasRequiredUtils$1 = 1;
+function requireUtils$3 () {
+	if (hasRequiredUtils$3) return utils$3;
+	hasRequiredUtils$3 = 1;
 	// We use any as a valid input type
 	/* eslint-disable @typescript-eslint/no-explicit-any */
-	Object.defineProperty(utils$1, "__esModule", { value: true });
-	utils$1.toCommandProperties = utils$1.toCommandValue = void 0;
+	Object.defineProperty(utils$3, "__esModule", { value: true });
+	utils$3.toCommandProperties = utils$3.toCommandValue = void 0;
 	/**
 	 * Sanitizes an input into a string so it can be passed into issueCommand safely
 	 * @param input input to sanitize into a string
@@ -56,7 +91,7 @@ function requireUtils$1 () {
 	    }
 	    return JSON.stringify(input);
 	}
-	utils$1.toCommandValue = toCommandValue;
+	utils$3.toCommandValue = toCommandValue;
 	/**
 	 *
 	 * @param annotationProperties
@@ -76,9 +111,9 @@ function requireUtils$1 () {
 	        endColumn: annotationProperties.endColumn
 	    };
 	}
-	utils$1.toCommandProperties = toCommandProperties;
+	utils$3.toCommandProperties = toCommandProperties;
 	
-	return utils$1;
+	return utils$3;
 }
 
 var hasRequiredCommand;
@@ -112,7 +147,7 @@ function requireCommand () {
 	Object.defineProperty(command, "__esModule", { value: true });
 	command.issue = command.issueCommand = void 0;
 	const os = __importStar(require$$0);
-	const utils_1 = requireUtils$1();
+	const utils_1 = requireUtils$3();
 	/**
 	 * Commands
 	 *
@@ -220,9 +255,9 @@ function requireFileCommand () {
 	// We use any as a valid input type
 	/* eslint-disable @typescript-eslint/no-explicit-any */
 	const crypto = __importStar(require$$0$1);
-	const fs = __importStar(require$$1);
+	const fs = __importStar(fs__default);
 	const os = __importStar(require$$0);
-	const utils_1 = requireUtils$1();
+	const utils_1 = requireUtils$3();
 	function issueFileCommand(command, message) {
 	    const filePath = process.env[`GITHUB_${command}`];
 	    if (!filePath) {
@@ -371,9 +406,9 @@ function requireTunnel$1 () {
 	if (hasRequiredTunnel$1) return tunnel$1;
 	hasRequiredTunnel$1 = 1;
 	var tls = require$$1$1;
-	var http = require$$2;
-	var https = require$$3;
-	var events = require$$4;
+	var http = require$$2$1;
+	var https = require$$3$1;
+	var events = require$$4$1;
 	var util = require$$0$2;
 
 
@@ -955,12 +990,12 @@ function requireErrors () {
 	return errors;
 }
 
-var constants$4;
-var hasRequiredConstants$4;
+var constants$6;
+var hasRequiredConstants$6;
 
-function requireConstants$4 () {
-	if (hasRequiredConstants$4) return constants$4;
-	hasRequiredConstants$4 = 1;
+function requireConstants$6 () {
+	if (hasRequiredConstants$6) return constants$6;
+	hasRequiredConstants$6 = 1;
 
 	/** @type {Record<string, string | undefined>} */
 	const headerNameLowerCasedRecord = {};
@@ -1074,11 +1109,11 @@ function requireConstants$4 () {
 	// Note: object prototypes should not be able to be referenced. e.g. `Object#hasOwnProperty`.
 	Object.setPrototypeOf(headerNameLowerCasedRecord, null);
 
-	constants$4 = {
+	constants$6 = {
 	  wellknownHeaderNames,
 	  headerNameLowerCasedRecord
 	};
-	return constants$4;
+	return constants$6;
 }
 
 var util$6;
@@ -1090,14 +1125,14 @@ function requireUtil$6 () {
 
 	const assert = require$$0$3;
 	const { kDestroyed, kBodyUsed } = requireSymbols$4();
-	const { IncomingMessage } = require$$2;
+	const { IncomingMessage } = require$$2$1;
 	const stream = require$$0$5;
 	const net = require$$0$4;
 	const { InvalidArgumentError } = requireErrors();
 	const { Blob } = require$$7;
 	const nodeUtil = require$$0$2;
 	const { stringify } = require$$8;
-	const { headerNameLowerCasedRecord } = requireConstants$4();
+	const { headerNameLowerCasedRecord } = requireConstants$6();
 
 	const [nodeMajor, nodeMinor] = process.versions.node.split('.').map(v => Number(v));
 
@@ -3352,12 +3387,12 @@ function requireMain () {
 	return main.exports;
 }
 
-var constants$3;
-var hasRequiredConstants$3;
+var constants$5;
+var hasRequiredConstants$5;
 
-function requireConstants$3 () {
-	if (hasRequiredConstants$3) return constants$3;
-	hasRequiredConstants$3 = 1;
+function requireConstants$5 () {
+	if (hasRequiredConstants$5) return constants$5;
+	hasRequiredConstants$5 = 1;
 
 	const { MessageChannel, receiveMessageOnPort } = require$$0$6;
 
@@ -3483,7 +3518,7 @@ function requireConstants$3 () {
 	    return receiveMessageOnPort(channel.port2).message
 	  };
 
-	constants$3 = {
+	constants$5 = {
 	  DOMException,
 	  structuredClone,
 	  subresource,
@@ -3508,7 +3543,7 @@ function requireConstants$3 () {
 	  forbiddenMethodsSet,
 	  referrerPolicySet
 	};
-	return constants$3;
+	return constants$5;
 }
 
 var global$2;
@@ -3566,9 +3601,9 @@ function requireUtil$5 () {
 	if (hasRequiredUtil$5) return util$5;
 	hasRequiredUtil$5 = 1;
 
-	const { redirectStatusSet, referrerPolicySet: referrerPolicyTokens, badPortsSet } = requireConstants$3();
+	const { redirectStatusSet, referrerPolicySet: referrerPolicyTokens, badPortsSet } = requireConstants$5();
 	const { getGlobalOrigin } = requireGlobal$1();
-	const { performance } = require$$2$1;
+	const { performance } = require$$2$2;
 	const { isBlobLike, toUSVString, ReadableStreamFrom } = requireUtil$6();
 	const assert = require$$0$3;
 	const { isUint8Array } = require$$5;
@@ -6663,7 +6698,7 @@ function requireBody () {
 	const { FormData } = requireFormdata();
 	const { kState } = requireSymbols$3();
 	const { webidl } = requireWebidl();
-	const { DOMException, structuredClone } = requireConstants$3();
+	const { DOMException, structuredClone } = requireConstants$5();
 	const { Blob, File: NativeFile } = require$$7;
 	const { kBodyUsed } = requireSymbols$4();
 	const assert = require$$0$3;
@@ -7264,11 +7299,11 @@ function requireBody () {
 	return body;
 }
 
-var request$1;
+var request$2;
 var hasRequiredRequest$1;
 
 function requireRequest$1 () {
-	if (hasRequiredRequest$1) return request$1;
+	if (hasRequiredRequest$1) return request$2;
 	hasRequiredRequest$1 = 1;
 
 	const {
@@ -7767,8 +7802,8 @@ function requireRequest$1 () {
 	  }
 	}
 
-	request$1 = Request;
-	return request$1;
+	request$2 = Request;
+	return request$2;
 }
 
 var dispatcher;
@@ -7778,7 +7813,7 @@ function requireDispatcher () {
 	if (hasRequiredDispatcher) return dispatcher;
 	hasRequiredDispatcher = 1;
 
-	const EventEmitter = require$$4;
+	const EventEmitter = require$$4$1;
 
 	class Dispatcher extends EventEmitter {
 	  dispatch () {
@@ -8195,17 +8230,17 @@ function requireConnect () {
 	return connect;
 }
 
-var constants$2 = {};
+var constants$4 = {};
 
-var utils = {};
+var utils$2 = {};
 
-var hasRequiredUtils;
+var hasRequiredUtils$2;
 
-function requireUtils () {
-	if (hasRequiredUtils) return utils;
-	hasRequiredUtils = 1;
-	Object.defineProperty(utils, "__esModule", { value: true });
-	utils.enumToMap = void 0;
+function requireUtils$2 () {
+	if (hasRequiredUtils$2) return utils$2;
+	hasRequiredUtils$2 = 1;
+	Object.defineProperty(utils$2, "__esModule", { value: true });
+	utils$2.enumToMap = void 0;
 	function enumToMap(obj) {
 	    const res = {};
 	    Object.keys(obj).forEach((key) => {
@@ -8216,20 +8251,20 @@ function requireUtils () {
 	    });
 	    return res;
 	}
-	utils.enumToMap = enumToMap;
+	utils$2.enumToMap = enumToMap;
 	
-	return utils;
+	return utils$2;
 }
 
-var hasRequiredConstants$2;
+var hasRequiredConstants$4;
 
-function requireConstants$2 () {
-	if (hasRequiredConstants$2) return constants$2;
-	hasRequiredConstants$2 = 1;
+function requireConstants$4 () {
+	if (hasRequiredConstants$4) return constants$4;
+	hasRequiredConstants$4 = 1;
 	(function (exports) {
 		Object.defineProperty(exports, "__esModule", { value: true });
 		exports.SPECIAL_HEADERS = exports.HEADER_STATE = exports.MINOR = exports.MAJOR = exports.CONNECTION_TOKEN_CHARS = exports.HEADER_CHARS = exports.TOKEN = exports.STRICT_TOKEN = exports.HEX = exports.URL_CHAR = exports.STRICT_URL_CHAR = exports.USERINFO_CHARS = exports.MARK = exports.ALPHANUM = exports.NUM = exports.HEX_MAP = exports.NUM_MAP = exports.ALPHA = exports.FINISH = exports.H_METHOD_MAP = exports.METHOD_MAP = exports.METHODS_RTSP = exports.METHODS_ICE = exports.METHODS_HTTP = exports.METHODS = exports.LENIENT_FLAGS = exports.FLAGS = exports.TYPE = exports.ERROR = void 0;
-		const utils_1 = requireUtils();
+		const utils_1 = requireUtils$2();
 		(function (ERROR) {
 		    ERROR[ERROR["OK"] = 0] = "OK";
 		    ERROR[ERROR["INTERNAL"] = 1] = "INTERNAL";
@@ -8498,8 +8533,8 @@ function requireConstants$2 () {
 		    'upgrade': HEADER_STATE.UPGRADE,
 		};
 		
-	} (constants$2));
-	return constants$2;
+	} (constants$4));
+	return constants$4;
 }
 
 var RedirectHandler_1;
@@ -8513,7 +8548,7 @@ function requireRedirectHandler () {
 	const { kBodyUsed } = requireSymbols$4();
 	const assert = require$$0$3;
 	const { InvalidArgumentError } = requireErrors();
-	const EE = require$$4;
+	const EE = require$$4$1;
 
 	const redirectableStatusCodes = [300, 301, 302, 303, 307, 308];
 
@@ -8773,7 +8808,7 @@ function requireClient () {
 
 	const assert = require$$0$3;
 	const net = require$$0$4;
-	const http = require$$2;
+	const http = require$$2$1;
 	const { pipeline } = require$$0$5;
 	const util = requireUtil$6();
 	const timers = requireTimers();
@@ -9249,7 +9284,7 @@ function requireClient () {
 	  resume(client);
 	}
 
-	const constants = requireConstants$2();
+	const constants = requireConstants$4();
 	const createRedirectInterceptor = requireRedirectInterceptor();
 	const EMPTY_BUF = Buffer.alloc(0);
 
@@ -12408,7 +12443,7 @@ function requireApiRequest () {
 	} = requireErrors();
 	const util = requireUtil$6();
 	const { getResolveErrorBodyCallback } = requireUtil$4();
-	const { AsyncResource } = require$$4$1;
+	const { AsyncResource } = require$$4$2;
 	const { addSignal, removeSignal } = requireAbortSignal();
 
 	class RequestHandler extends AsyncResource {
@@ -12597,7 +12632,7 @@ function requireApiStream () {
 	} = requireErrors();
 	const util = requireUtil$6();
 	const { getResolveErrorBodyCallback } = requireUtil$4();
-	const { AsyncResource } = require$$4$1;
+	const { AsyncResource } = require$$4$2;
 	const { addSignal, removeSignal } = requireAbortSignal();
 
 	class StreamHandler extends AsyncResource {
@@ -12828,7 +12863,7 @@ function requireApiPipeline () {
 	  RequestAbortedError
 	} = requireErrors();
 	const util = requireUtil$6();
-	const { AsyncResource } = require$$4$1;
+	const { AsyncResource } = require$$4$2;
 	const { addSignal, removeSignal } = requireAbortSignal();
 	const assert = require$$0$3;
 
@@ -13075,7 +13110,7 @@ function requireApiUpgrade () {
 	hasRequiredApiUpgrade = 1;
 
 	const { InvalidArgumentError, RequestAbortedError, SocketError } = requireErrors();
-	const { AsyncResource } = require$$4$1;
+	const { AsyncResource } = require$$4$2;
 	const util = requireUtil$6();
 	const { addSignal, removeSignal } = requireAbortSignal();
 	const assert = require$$0$3;
@@ -13187,7 +13222,7 @@ function requireApiConnect () {
 	if (hasRequiredApiConnect) return apiConnect;
 	hasRequiredApiConnect = 1;
 
-	const { AsyncResource } = require$$4$1;
+	const { AsyncResource } = require$$4$2;
 	const { InvalidArgumentError, RequestAbortedError, SocketError } = requireErrors();
 	const util = requireUtil$6();
 	const { addSignal, removeSignal } = requireAbortSignal();
@@ -13378,7 +13413,7 @@ function requireMockUtils () {
 	  kGetNetConnect
 	} = requireMockSymbols();
 	const { buildURL, nop } = requireUtil$6();
-	const { STATUS_CODES } = require$$2;
+	const { STATUS_CODES } = require$$2$1;
 	const {
 	  types: {
 	    isPromise
@@ -15575,7 +15610,7 @@ function requireResponse () {
 	  redirectStatusSet,
 	  nullBodyStatus,
 	  DOMException
-	} = requireConstants$3();
+	} = requireConstants$5();
 	const { kState, kHeaders, kGuard, kRealm } = requireSymbols$3();
 	const { webidl } = requireWebidl();
 	const { FormData } = requireFormdata();
@@ -16132,11 +16167,11 @@ function requireResponse () {
 
 /* globals AbortController */
 
-var request;
+var request$1;
 var hasRequiredRequest;
 
 function requireRequest () {
-	if (hasRequiredRequest) return request;
+	if (hasRequiredRequest) return request$1;
 	hasRequiredRequest = 1;
 
 	const { extractBody, mixinBody, cloneBody } = requireBody();
@@ -16159,7 +16194,7 @@ function requireRequest () {
 	  requestCredentials,
 	  requestCache,
 	  requestDuplex
-	} = requireConstants$3();
+	} = requireConstants$5();
 	const { kEnumerableProperty } = util;
 	const { kHeaders, kSignal, kState, kGuard, kRealm } = requireSymbols$3();
 	const { webidl } = requireWebidl();
@@ -16167,7 +16202,7 @@ function requireRequest () {
 	const { URLSerializer } = requireDataURL();
 	const { kHeadersList, kConstruct } = requireSymbols$4();
 	const assert = require$$0$3;
-	const { getMaxListeners, setMaxListeners, getEventListeners, defaultMaxListeners } = require$$4;
+	const { getMaxListeners, setMaxListeners, getEventListeners, defaultMaxListeners } = require$$4$1;
 
 	let TransformStream = globalThis.TransformStream;
 
@@ -17080,8 +17115,8 @@ function requireRequest () {
 	  }
 	]);
 
-	request = { Request, makeRequest };
-	return request;
+	request$1 = { Request, makeRequest };
+	return request$1;
 }
 
 var fetch_1;
@@ -17100,7 +17135,7 @@ function requireFetch () {
 	} = requireResponse();
 	const { Headers } = requireHeaders();
 	const { Request, makeRequest } = requireRequest();
-	const zlib = require$$3$1;
+	const zlib = require$$3$2;
 	const {
 	  bytesMatch,
 	  makePolicyContainer,
@@ -17141,16 +17176,16 @@ function requireFetch () {
 	  requestBodyHeader,
 	  subresourceSet,
 	  DOMException
-	} = requireConstants$3();
+	} = requireConstants$5();
 	const { kHeadersList } = requireSymbols$4();
-	const EE = require$$4;
+	const EE = require$$4$1;
 	const { Readable, pipeline } = require$$0$5;
 	const { addAbortListener, isErrored, isReadable, nodeMajor, nodeMinor } = requireUtil$6();
 	const { dataURLProcessor, serializeAMimeType } = requireDataURL();
 	const { TransformStream } = require$$14;
 	const { getGlobalDispatcher } = requireGlobal();
 	const { webidl } = requireWebidl();
-	const { STATUS_CODES } = require$$2;
+	const { STATUS_CODES } = require$$2$1;
 	const GET_OR_HEAD = ['GET', 'HEAD'];
 
 	/** @type {import('buffer').resolveObjectURL} */
@@ -19582,7 +19617,7 @@ function requireUtil$3 () {
 	} = requireSymbols$2();
 	const { ProgressEvent } = requireProgressevent();
 	const { getEncoding } = requireEncoding();
-	const { DOMException } = requireConstants$3();
+	const { DOMException } = requireConstants$5();
 	const { serializeAMimeType, parseMIMEType } = requireDataURL();
 	const { types } = require$$0$2;
 	const { StringDecoder } = require$$6;
@@ -21386,12 +21421,12 @@ function requireCachestorage () {
 	return cachestorage;
 }
 
-var constants$1;
-var hasRequiredConstants$1;
+var constants$3;
+var hasRequiredConstants$3;
 
-function requireConstants$1 () {
-	if (hasRequiredConstants$1) return constants$1;
-	hasRequiredConstants$1 = 1;
+function requireConstants$3 () {
+	if (hasRequiredConstants$3) return constants$3;
+	hasRequiredConstants$3 = 1;
 
 	// https://wicg.github.io/cookie-store/#cookie-maximum-attribute-value-size
 	const maxAttributeValueSize = 1024;
@@ -21399,11 +21434,11 @@ function requireConstants$1 () {
 	// https://wicg.github.io/cookie-store/#cookie-maximum-name-value-pair-size
 	const maxNameValuePairSize = 4096;
 
-	constants$1 = {
+	constants$3 = {
 	  maxAttributeValueSize,
 	  maxNameValuePairSize
 	};
-	return constants$1;
+	return constants$3;
 }
 
 var util$1;
@@ -21688,14 +21723,14 @@ function requireUtil$1 () {
 	return util$1;
 }
 
-var parse;
-var hasRequiredParse;
+var parse$2;
+var hasRequiredParse$1;
 
-function requireParse () {
-	if (hasRequiredParse) return parse;
-	hasRequiredParse = 1;
+function requireParse$1 () {
+	if (hasRequiredParse$1) return parse$2;
+	hasRequiredParse$1 = 1;
 
-	const { maxNameValuePairSize, maxAttributeValueSize } = requireConstants$1();
+	const { maxNameValuePairSize, maxAttributeValueSize } = requireConstants$3();
 	const { isCTLExcludingHtab } = requireUtil$1();
 	const { collectASequenceOfCodePointsFast } = requireDataURL();
 	const assert = require$$0$3;
@@ -22006,11 +22041,11 @@ function requireParse () {
 	  return parseUnparsedAttributes(unparsedAttributes, cookieAttributeList)
 	}
 
-	parse = {
+	parse$2 = {
 	  parseSetCookie,
 	  parseUnparsedAttributes
 	};
-	return parse;
+	return parse$2;
 }
 
 var cookies;
@@ -22020,7 +22055,7 @@ function requireCookies () {
 	if (hasRequiredCookies) return cookies;
 	hasRequiredCookies = 1;
 
-	const { parseSetCookie } = requireParse();
+	const { parseSetCookie } = requireParse$1();
 	const { stringify } = requireUtil$1();
 	const { webidl } = requireWebidl();
 	const { Headers } = requireHeaders();
@@ -22204,12 +22239,12 @@ function requireCookies () {
 	return cookies;
 }
 
-var constants;
-var hasRequiredConstants;
+var constants$2;
+var hasRequiredConstants$2;
 
-function requireConstants () {
-	if (hasRequiredConstants) return constants;
-	hasRequiredConstants = 1;
+function requireConstants$2 () {
+	if (hasRequiredConstants$2) return constants$2;
+	hasRequiredConstants$2 = 1;
 
 	// This is a Globally Unique Identifier unique used
 	// to validate that the endpoint accepts websocket
@@ -22251,7 +22286,7 @@ function requireConstants () {
 
 	const emptyBuffer = Buffer.allocUnsafe(0);
 
-	constants = {
+	constants$2 = {
 	  uid,
 	  staticPropertyDescriptors,
 	  states,
@@ -22260,7 +22295,7 @@ function requireConstants () {
 	  parserStates,
 	  emptyBuffer
 	};
-	return constants;
+	return constants$2;
 }
 
 var symbols;
@@ -22602,7 +22637,7 @@ function requireUtil () {
 	hasRequiredUtil = 1;
 
 	const { kReadyState, kController, kResponse, kBinaryType, kWebSocketURL } = requireSymbols();
-	const { states, opcodes } = requireConstants();
+	const { states, opcodes } = requireConstants$2();
 	const { MessageEvent, ErrorEvent } = requireEvents();
 
 	/* globals Blob */
@@ -22810,7 +22845,7 @@ function requireConnection () {
 	hasRequiredConnection = 1;
 
 	const diagnosticsChannel = require$$0$7;
-	const { uid, states } = requireConstants();
+	const { uid, states } = requireConstants$2();
 	const {
 	  kReadyState,
 	  kSentClose,
@@ -23108,7 +23143,7 @@ function requireFrame () {
 	if (hasRequiredFrame) return frame;
 	hasRequiredFrame = 1;
 
-	const { maxUnsigned16Bit } = requireConstants();
+	const { maxUnsigned16Bit } = requireConstants$2();
 
 	/** @type {import('crypto')} */
 	let crypto;
@@ -23191,7 +23226,7 @@ function requireReceiver () {
 
 	const { Writable } = require$$0$5;
 	const diagnosticsChannel = require$$0$7;
-	const { parserStates, opcodes, states, emptyBuffer } = requireConstants();
+	const { parserStates, opcodes, states, emptyBuffer } = requireConstants$2();
 	const { kReadyState, kSentClose, kResponse, kReceivedClose } = requireSymbols();
 	const { isValidStatusCode, failWebsocketConnection, websocketMessageReceived } = requireUtil();
 	const { WebsocketFrameSend } = requireFrame();
@@ -23542,10 +23577,10 @@ function requireWebsocket () {
 	hasRequiredWebsocket = 1;
 
 	const { webidl } = requireWebidl();
-	const { DOMException } = requireConstants$3();
+	const { DOMException } = requireConstants$5();
 	const { URLSerializer } = requireDataURL();
 	const { getGlobalOrigin } = requireGlobal$1();
-	const { staticPropertyDescriptors, states, opcodes, emptyBuffer } = requireConstants();
+	const { staticPropertyDescriptors, states, opcodes, emptyBuffer } = requireConstants$2();
 	const {
 	  kWebSocketURL,
 	  kReadyState,
@@ -24394,8 +24429,8 @@ function requireLib () {
 	};
 	Object.defineProperty(lib, "__esModule", { value: true });
 	lib.HttpClient = lib.isHttps = lib.HttpClientResponse = lib.HttpClientError = lib.getProxyUrl = lib.MediaTypes = lib.Headers = lib.HttpCodes = void 0;
-	const http = __importStar(require$$2);
-	const https = __importStar(require$$3);
+	const http = __importStar(require$$2$1);
+	const https = __importStar(require$$3$1);
 	const pm = __importStar(requireProxy());
 	const tunnel = __importStar(requireTunnel());
 	const undici_1 = requireUndici();
@@ -25013,14 +25048,14 @@ function requireLib () {
 	return lib;
 }
 
-var auth = {};
+var auth$1 = {};
 
 var hasRequiredAuth;
 
 function requireAuth () {
-	if (hasRequiredAuth) return auth;
+	if (hasRequiredAuth) return auth$1;
 	hasRequiredAuth = 1;
-	var __awaiter = (auth && auth.__awaiter) || function (thisArg, _arguments, P, generator) {
+	var __awaiter = (auth$1 && auth$1.__awaiter) || function (thisArg, _arguments, P, generator) {
 	    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
 	    return new (P || (P = Promise))(function (resolve, reject) {
 	        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
@@ -25029,8 +25064,8 @@ function requireAuth () {
 	        step((generator = generator.apply(thisArg, _arguments || [])).next());
 	    });
 	};
-	Object.defineProperty(auth, "__esModule", { value: true });
-	auth.PersonalAccessTokenCredentialHandler = auth.BearerCredentialHandler = auth.BasicCredentialHandler = void 0;
+	Object.defineProperty(auth$1, "__esModule", { value: true });
+	auth$1.PersonalAccessTokenCredentialHandler = auth$1.BearerCredentialHandler = auth$1.BasicCredentialHandler = void 0;
 	class BasicCredentialHandler {
 	    constructor(username, password) {
 	        this.username = username;
@@ -25052,7 +25087,7 @@ function requireAuth () {
 	        });
 	    }
 	}
-	auth.BasicCredentialHandler = BasicCredentialHandler;
+	auth$1.BasicCredentialHandler = BasicCredentialHandler;
 	class BearerCredentialHandler {
 	    constructor(token) {
 	        this.token = token;
@@ -25075,7 +25110,7 @@ function requireAuth () {
 	        });
 	    }
 	}
-	auth.BearerCredentialHandler = BearerCredentialHandler;
+	auth$1.BearerCredentialHandler = BearerCredentialHandler;
 	class PersonalAccessTokenCredentialHandler {
 	    constructor(token) {
 	        this.token = token;
@@ -25098,9 +25133,9 @@ function requireAuth () {
 	        });
 	    }
 	}
-	auth.PersonalAccessTokenCredentialHandler = PersonalAccessTokenCredentialHandler;
+	auth$1.PersonalAccessTokenCredentialHandler = PersonalAccessTokenCredentialHandler;
 	
-	return auth;
+	return auth$1;
 }
 
 var hasRequiredOidcUtils;
@@ -25207,7 +25242,7 @@ function requireSummary () {
 		Object.defineProperty(exports, "__esModule", { value: true });
 		exports.summary = exports.markdownSummary = exports.SUMMARY_DOCS_URL = exports.SUMMARY_ENV_VAR = void 0;
 		const os_1 = require$$0;
-		const fs_1 = require$$1;
+		const fs_1 = fs__default;
 		const { access, appendFile, writeFile } = fs_1.promises;
 		exports.SUMMARY_ENV_VAR = 'GITHUB_STEP_SUMMARY';
 		exports.SUMMARY_DOCS_URL = 'https://docs.github.com/actions/using-workflows/workflow-commands-for-github-actions#adding-a-job-summary';
@@ -25513,7 +25548,7 @@ function requirePathUtils () {
 	};
 	Object.defineProperty(pathUtils, "__esModule", { value: true });
 	pathUtils.toPlatformPath = pathUtils.toWin32Path = pathUtils.toPosixPath = void 0;
-	const path = __importStar(require$$1$4);
+	const path = __importStar(require$$1__default);
 	/**
 	 * toPosixPath converts the given path to the posix form. On Windows, \\ will be
 	 * replaced with /.
@@ -25599,8 +25634,8 @@ function requireIoUtil () {
 		var _a;
 		Object.defineProperty(exports, "__esModule", { value: true });
 		exports.getCmdPath = exports.tryGetExecutablePath = exports.isRooted = exports.isDirectory = exports.exists = exports.READONLY = exports.UV_FS_O_EXLOCK = exports.IS_WINDOWS = exports.unlink = exports.symlink = exports.stat = exports.rmdir = exports.rm = exports.rename = exports.readlink = exports.readdir = exports.open = exports.mkdir = exports.lstat = exports.copyFile = exports.chmod = void 0;
-		const fs = __importStar(require$$1);
-		const path = __importStar(require$$1$4);
+		const fs = __importStar(fs__default);
+		const path = __importStar(require$$1__default);
 		_a = fs.promises
 		// export const {open} = 'fs'
 		, exports.chmod = _a.chmod, exports.copyFile = _a.copyFile, exports.lstat = _a.lstat, exports.mkdir = _a.mkdir, exports.open = _a.open, exports.readdir = _a.readdir, exports.readlink = _a.readlink, exports.rename = _a.rename, exports.rm = _a.rm, exports.rmdir = _a.rmdir, exports.stat = _a.stat, exports.symlink = _a.symlink, exports.unlink = _a.unlink;
@@ -25790,7 +25825,7 @@ function requireIo () {
 	Object.defineProperty(io, "__esModule", { value: true });
 	io.findInPath = io.which = io.mkdirP = io.rmRF = io.mv = io.cp = void 0;
 	const assert_1 = require$$0$3;
-	const path = __importStar(require$$1$4);
+	const path = __importStar(require$$1__default);
 	const ioUtil = __importStar(requireIoUtil());
 	/**
 	 * Copies a file or folder.
@@ -26096,9 +26131,9 @@ function requireToolrunner () {
 	Object.defineProperty(toolrunner, "__esModule", { value: true });
 	toolrunner.argStringToArray = toolrunner.ToolRunner = void 0;
 	const os = __importStar(require$$0);
-	const events = __importStar(require$$4);
-	const child = __importStar(require$$2$2);
-	const path = __importStar(require$$1$4);
+	const events = __importStar(require$$4$1);
+	const child = __importStar(require$$2$3);
+	const path = __importStar(require$$1__default);
 	const io = __importStar(requireIo());
 	const ioUtil = __importStar(requireIoUtil());
 	const timers_1 = require$$6$1;
@@ -26940,9 +26975,9 @@ function requireCore () {
 		exports.platform = exports.toPlatformPath = exports.toWin32Path = exports.toPosixPath = exports.markdownSummary = exports.summary = exports.getIDToken = exports.getState = exports.saveState = exports.group = exports.endGroup = exports.startGroup = exports.info = exports.notice = exports.warning = exports.error = exports.debug = exports.isDebug = exports.setFailed = exports.setCommandEcho = exports.setOutput = exports.getBooleanInput = exports.getMultilineInput = exports.getInput = exports.addPath = exports.setSecret = exports.exportVariable = exports.ExitCode = void 0;
 		const command_1 = requireCommand();
 		const file_command_1 = requireFileCommand();
-		const utils_1 = requireUtils$1();
+		const utils_1 = requireUtils$3();
 		const os = __importStar(require$$0);
-		const path = __importStar(require$$1$4);
+		const path = __importStar(require$$1__default);
 		const oidc_utils_1 = requireOidcUtils();
 		/**
 		 * The code to exit an action
@@ -27253,18 +27288,15639 @@ function requireCore () {
 
 var coreExports = requireCore();
 
-/**
- * Waits for a number of milliseconds.
- *
- * @param milliseconds The number of milliseconds to wait.
- * @returns Resolves with 'done!' after the wait is over.
- */
-async function wait(milliseconds) {
-    return new Promise((resolve) => {
-        if (isNaN(milliseconds))
-            throw new Error('milliseconds is not a number');
-        setTimeout(() => resolve('done!'), milliseconds);
+var github = {};
+
+var context = {};
+
+var hasRequiredContext;
+
+function requireContext () {
+	if (hasRequiredContext) return context;
+	hasRequiredContext = 1;
+	Object.defineProperty(context, "__esModule", { value: true });
+	context.Context = void 0;
+	const fs_1 = fs__default;
+	const os_1 = require$$0;
+	class Context {
+	    /**
+	     * Hydrate the context from the environment
+	     */
+	    constructor() {
+	        var _a, _b, _c;
+	        this.payload = {};
+	        if (process.env.GITHUB_EVENT_PATH) {
+	            if ((0, fs_1.existsSync)(process.env.GITHUB_EVENT_PATH)) {
+	                this.payload = JSON.parse((0, fs_1.readFileSync)(process.env.GITHUB_EVENT_PATH, { encoding: 'utf8' }));
+	            }
+	            else {
+	                const path = process.env.GITHUB_EVENT_PATH;
+	                process.stdout.write(`GITHUB_EVENT_PATH ${path} does not exist${os_1.EOL}`);
+	            }
+	        }
+	        this.eventName = process.env.GITHUB_EVENT_NAME;
+	        this.sha = process.env.GITHUB_SHA;
+	        this.ref = process.env.GITHUB_REF;
+	        this.workflow = process.env.GITHUB_WORKFLOW;
+	        this.action = process.env.GITHUB_ACTION;
+	        this.actor = process.env.GITHUB_ACTOR;
+	        this.job = process.env.GITHUB_JOB;
+	        this.runAttempt = parseInt(process.env.GITHUB_RUN_ATTEMPT, 10);
+	        this.runNumber = parseInt(process.env.GITHUB_RUN_NUMBER, 10);
+	        this.runId = parseInt(process.env.GITHUB_RUN_ID, 10);
+	        this.apiUrl = (_a = process.env.GITHUB_API_URL) !== null && _a !== void 0 ? _a : `https://api.github.com`;
+	        this.serverUrl = (_b = process.env.GITHUB_SERVER_URL) !== null && _b !== void 0 ? _b : `https://github.com`;
+	        this.graphqlUrl =
+	            (_c = process.env.GITHUB_GRAPHQL_URL) !== null && _c !== void 0 ? _c : `https://api.github.com/graphql`;
+	    }
+	    get issue() {
+	        const payload = this.payload;
+	        return Object.assign(Object.assign({}, this.repo), { number: (payload.issue || payload.pull_request || payload).number });
+	    }
+	    get repo() {
+	        if (process.env.GITHUB_REPOSITORY) {
+	            const [owner, repo] = process.env.GITHUB_REPOSITORY.split('/');
+	            return { owner, repo };
+	        }
+	        if (this.payload.repository) {
+	            return {
+	                owner: this.payload.repository.owner.login,
+	                repo: this.payload.repository.name
+	            };
+	        }
+	        throw new Error("context.repo requires a GITHUB_REPOSITORY environment variable like 'owner/repo'");
+	    }
+	}
+	context.Context = Context;
+	
+	return context;
+}
+
+var utils$1 = {};
+
+var utils = {};
+
+var hasRequiredUtils$1;
+
+function requireUtils$1 () {
+	if (hasRequiredUtils$1) return utils;
+	hasRequiredUtils$1 = 1;
+	var __createBinding = (utils && utils.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+	    if (k2 === undefined) k2 = k;
+	    var desc = Object.getOwnPropertyDescriptor(m, k);
+	    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
+	      desc = { enumerable: true, get: function() { return m[k]; } };
+	    }
+	    Object.defineProperty(o, k2, desc);
+	}) : (function(o, m, k, k2) {
+	    if (k2 === undefined) k2 = k;
+	    o[k2] = m[k];
+	}));
+	var __setModuleDefault = (utils && utils.__setModuleDefault) || (Object.create ? (function(o, v) {
+	    Object.defineProperty(o, "default", { enumerable: true, value: v });
+	}) : function(o, v) {
+	    o["default"] = v;
+	});
+	var __importStar = (utils && utils.__importStar) || function (mod) {
+	    if (mod && mod.__esModule) return mod;
+	    var result = {};
+	    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
+	    __setModuleDefault(result, mod);
+	    return result;
+	};
+	var __awaiter = (utils && utils.__awaiter) || function (thisArg, _arguments, P, generator) {
+	    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+	    return new (P || (P = Promise))(function (resolve, reject) {
+	        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+	        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+	        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+	        step((generator = generator.apply(thisArg, _arguments || [])).next());
+	    });
+	};
+	Object.defineProperty(utils, "__esModule", { value: true });
+	utils.getApiBaseUrl = utils.getProxyFetch = utils.getProxyAgentDispatcher = utils.getProxyAgent = utils.getAuthString = void 0;
+	const httpClient = __importStar(requireLib());
+	const undici_1 = requireUndici();
+	function getAuthString(token, options) {
+	    if (!token && !options.auth) {
+	        throw new Error('Parameter token or opts.auth is required');
+	    }
+	    else if (token && options.auth) {
+	        throw new Error('Parameters token and opts.auth may not both be specified');
+	    }
+	    return typeof options.auth === 'string' ? options.auth : `token ${token}`;
+	}
+	utils.getAuthString = getAuthString;
+	function getProxyAgent(destinationUrl) {
+	    const hc = new httpClient.HttpClient();
+	    return hc.getAgent(destinationUrl);
+	}
+	utils.getProxyAgent = getProxyAgent;
+	function getProxyAgentDispatcher(destinationUrl) {
+	    const hc = new httpClient.HttpClient();
+	    return hc.getAgentDispatcher(destinationUrl);
+	}
+	utils.getProxyAgentDispatcher = getProxyAgentDispatcher;
+	function getProxyFetch(destinationUrl) {
+	    const httpDispatcher = getProxyAgentDispatcher(destinationUrl);
+	    const proxyFetch = (url, opts) => __awaiter(this, void 0, void 0, function* () {
+	        return (0, undici_1.fetch)(url, Object.assign(Object.assign({}, opts), { dispatcher: httpDispatcher }));
+	    });
+	    return proxyFetch;
+	}
+	utils.getProxyFetch = getProxyFetch;
+	function getApiBaseUrl() {
+	    return process.env['GITHUB_API_URL'] || 'https://api.github.com';
+	}
+	utils.getApiBaseUrl = getApiBaseUrl;
+	
+	return utils;
+}
+
+function getUserAgent() {
+    if (typeof navigator === "object" && "userAgent" in navigator) {
+        return navigator.userAgent;
+    }
+    if (typeof process === "object" && process.version !== undefined) {
+        return `Node.js/${process.version.substr(1)} (${process.platform}; ${process.arch})`;
+    }
+    return "<environment undetectable>";
+}
+
+var beforeAfterHook = {exports: {}};
+
+var register_1;
+var hasRequiredRegister;
+
+function requireRegister () {
+	if (hasRequiredRegister) return register_1;
+	hasRequiredRegister = 1;
+	register_1 = register;
+
+	function register(state, name, method, options) {
+	  if (typeof method !== "function") {
+	    throw new Error("method for before hook must be a function");
+	  }
+
+	  if (!options) {
+	    options = {};
+	  }
+
+	  if (Array.isArray(name)) {
+	    return name.reverse().reduce(function (callback, name) {
+	      return register.bind(null, state, name, callback, options);
+	    }, method)();
+	  }
+
+	  return Promise.resolve().then(function () {
+	    if (!state.registry[name]) {
+	      return method(options);
+	    }
+
+	    return state.registry[name].reduce(function (method, registered) {
+	      return registered.hook.bind(null, method, options);
+	    }, method)();
+	  });
+	}
+	return register_1;
+}
+
+var add;
+var hasRequiredAdd;
+
+function requireAdd () {
+	if (hasRequiredAdd) return add;
+	hasRequiredAdd = 1;
+	add = addHook;
+
+	function addHook(state, kind, name, hook) {
+	  var orig = hook;
+	  if (!state.registry[name]) {
+	    state.registry[name] = [];
+	  }
+
+	  if (kind === "before") {
+	    hook = function (method, options) {
+	      return Promise.resolve()
+	        .then(orig.bind(null, options))
+	        .then(method.bind(null, options));
+	    };
+	  }
+
+	  if (kind === "after") {
+	    hook = function (method, options) {
+	      var result;
+	      return Promise.resolve()
+	        .then(method.bind(null, options))
+	        .then(function (result_) {
+	          result = result_;
+	          return orig(result, options);
+	        })
+	        .then(function () {
+	          return result;
+	        });
+	    };
+	  }
+
+	  if (kind === "error") {
+	    hook = function (method, options) {
+	      return Promise.resolve()
+	        .then(method.bind(null, options))
+	        .catch(function (error) {
+	          return orig(error, options);
+	        });
+	    };
+	  }
+
+	  state.registry[name].push({
+	    hook: hook,
+	    orig: orig,
+	  });
+	}
+	return add;
+}
+
+var remove;
+var hasRequiredRemove;
+
+function requireRemove () {
+	if (hasRequiredRemove) return remove;
+	hasRequiredRemove = 1;
+	remove = removeHook;
+
+	function removeHook(state, name, method) {
+	  if (!state.registry[name]) {
+	    return;
+	  }
+
+	  var index = state.registry[name]
+	    .map(function (registered) {
+	      return registered.orig;
+	    })
+	    .indexOf(method);
+
+	  if (index === -1) {
+	    return;
+	  }
+
+	  state.registry[name].splice(index, 1);
+	}
+	return remove;
+}
+
+var hasRequiredBeforeAfterHook;
+
+function requireBeforeAfterHook () {
+	if (hasRequiredBeforeAfterHook) return beforeAfterHook.exports;
+	hasRequiredBeforeAfterHook = 1;
+	var register = requireRegister();
+	var addHook = requireAdd();
+	var removeHook = requireRemove();
+
+	// bind with array of arguments: https://stackoverflow.com/a/21792913
+	var bind = Function.bind;
+	var bindable = bind.bind(bind);
+
+	function bindApi(hook, state, name) {
+	  var removeHookRef = bindable(removeHook, null).apply(
+	    null,
+	    name ? [state, name] : [state]
+	  );
+	  hook.api = { remove: removeHookRef };
+	  hook.remove = removeHookRef;
+	  ["before", "error", "after", "wrap"].forEach(function (kind) {
+	    var args = name ? [state, kind, name] : [state, kind];
+	    hook[kind] = hook.api[kind] = bindable(addHook, null).apply(null, args);
+	  });
+	}
+
+	function HookSingular() {
+	  var singularHookName = "h";
+	  var singularHookState = {
+	    registry: {},
+	  };
+	  var singularHook = register.bind(null, singularHookState, singularHookName);
+	  bindApi(singularHook, singularHookState, singularHookName);
+	  return singularHook;
+	}
+
+	function HookCollection() {
+	  var state = {
+	    registry: {},
+	  };
+
+	  var hook = register.bind(null, state);
+	  bindApi(hook, state);
+
+	  return hook;
+	}
+
+	var collectionHookDeprecationMessageDisplayed = false;
+	function Hook() {
+	  if (!collectionHookDeprecationMessageDisplayed) {
+	    console.warn(
+	      '[before-after-hook]: "Hook()" repurposing warning, use "Hook.Collection()". Read more: https://git.io/upgrade-before-after-hook-to-1.4'
+	    );
+	    collectionHookDeprecationMessageDisplayed = true;
+	  }
+	  return HookCollection();
+	}
+
+	Hook.Singular = HookSingular.bind();
+	Hook.Collection = HookCollection.bind();
+
+	beforeAfterHook.exports = Hook;
+	// expose constructors as a named property for TypeScript
+	beforeAfterHook.exports.Hook = Hook;
+	beforeAfterHook.exports.Singular = Hook.Singular;
+	beforeAfterHook.exports.Collection = Hook.Collection;
+	return beforeAfterHook.exports;
+}
+
+var beforeAfterHookExports = requireBeforeAfterHook();
+
+const VERSION$5 = "9.0.6";
+
+const userAgent = `octokit-endpoint.js/${VERSION$5} ${getUserAgent()}`;
+const DEFAULTS = {
+  method: "GET",
+  baseUrl: "https://api.github.com",
+  headers: {
+    accept: "application/vnd.github.v3+json",
+    "user-agent": userAgent
+  },
+  mediaType: {
+    format: ""
+  }
+};
+
+function lowercaseKeys(object) {
+  if (!object) {
+    return {};
+  }
+  return Object.keys(object).reduce((newObj, key) => {
+    newObj[key.toLowerCase()] = object[key];
+    return newObj;
+  }, {});
+}
+
+function isPlainObject$1(value) {
+  if (typeof value !== "object" || value === null)
+    return false;
+  if (Object.prototype.toString.call(value) !== "[object Object]")
+    return false;
+  const proto = Object.getPrototypeOf(value);
+  if (proto === null)
+    return true;
+  const Ctor = Object.prototype.hasOwnProperty.call(proto, "constructor") && proto.constructor;
+  return typeof Ctor === "function" && Ctor instanceof Ctor && Function.prototype.call(Ctor) === Function.prototype.call(value);
+}
+
+function mergeDeep(defaults, options) {
+  const result = Object.assign({}, defaults);
+  Object.keys(options).forEach((key) => {
+    if (isPlainObject$1(options[key])) {
+      if (!(key in defaults))
+        Object.assign(result, { [key]: options[key] });
+      else
+        result[key] = mergeDeep(defaults[key], options[key]);
+    } else {
+      Object.assign(result, { [key]: options[key] });
+    }
+  });
+  return result;
+}
+
+function removeUndefinedProperties(obj) {
+  for (const key in obj) {
+    if (obj[key] === void 0) {
+      delete obj[key];
+    }
+  }
+  return obj;
+}
+
+function merge$1(defaults, route, options) {
+  if (typeof route === "string") {
+    let [method, url] = route.split(" ");
+    options = Object.assign(url ? { method, url } : { url: method }, options);
+  } else {
+    options = Object.assign({}, route);
+  }
+  options.headers = lowercaseKeys(options.headers);
+  removeUndefinedProperties(options);
+  removeUndefinedProperties(options.headers);
+  const mergedOptions = mergeDeep(defaults || {}, options);
+  if (options.url === "/graphql") {
+    if (defaults && defaults.mediaType.previews?.length) {
+      mergedOptions.mediaType.previews = defaults.mediaType.previews.filter(
+        (preview) => !mergedOptions.mediaType.previews.includes(preview)
+      ).concat(mergedOptions.mediaType.previews);
+    }
+    mergedOptions.mediaType.previews = (mergedOptions.mediaType.previews || []).map((preview) => preview.replace(/-preview/, ""));
+  }
+  return mergedOptions;
+}
+
+function addQueryParameters(url, parameters) {
+  const separator = /\?/.test(url) ? "&" : "?";
+  const names = Object.keys(parameters);
+  if (names.length === 0) {
+    return url;
+  }
+  return url + separator + names.map((name) => {
+    if (name === "q") {
+      return "q=" + parameters.q.split("+").map(encodeURIComponent).join("+");
+    }
+    return `${name}=${encodeURIComponent(parameters[name])}`;
+  }).join("&");
+}
+
+const urlVariableRegex = /\{[^{}}]+\}/g;
+function removeNonChars(variableName) {
+  return variableName.replace(/(?:^\W+)|(?:(?<!\W)\W+$)/g, "").split(/,/);
+}
+function extractUrlVariableNames(url) {
+  const matches = url.match(urlVariableRegex);
+  if (!matches) {
+    return [];
+  }
+  return matches.map(removeNonChars).reduce((a, b) => a.concat(b), []);
+}
+
+function omit(object, keysToOmit) {
+  const result = { __proto__: null };
+  for (const key of Object.keys(object)) {
+    if (keysToOmit.indexOf(key) === -1) {
+      result[key] = object[key];
+    }
+  }
+  return result;
+}
+
+function encodeReserved(str) {
+  return str.split(/(%[0-9A-Fa-f]{2})/g).map(function(part) {
+    if (!/%[0-9A-Fa-f]/.test(part)) {
+      part = encodeURI(part).replace(/%5B/g, "[").replace(/%5D/g, "]");
+    }
+    return part;
+  }).join("");
+}
+function encodeUnreserved(str) {
+  return encodeURIComponent(str).replace(/[!'()*]/g, function(c) {
+    return "%" + c.charCodeAt(0).toString(16).toUpperCase();
+  });
+}
+function encodeValue(operator, value, key) {
+  value = operator === "+" || operator === "#" ? encodeReserved(value) : encodeUnreserved(value);
+  if (key) {
+    return encodeUnreserved(key) + "=" + value;
+  } else {
+    return value;
+  }
+}
+function isDefined(value) {
+  return value !== void 0 && value !== null;
+}
+function isKeyOperator(operator) {
+  return operator === ";" || operator === "&" || operator === "?";
+}
+function getValues(context, operator, key, modifier) {
+  var value = context[key], result = [];
+  if (isDefined(value) && value !== "") {
+    if (typeof value === "string" || typeof value === "number" || typeof value === "boolean") {
+      value = value.toString();
+      if (modifier && modifier !== "*") {
+        value = value.substring(0, parseInt(modifier, 10));
+      }
+      result.push(
+        encodeValue(operator, value, isKeyOperator(operator) ? key : "")
+      );
+    } else {
+      if (modifier === "*") {
+        if (Array.isArray(value)) {
+          value.filter(isDefined).forEach(function(value2) {
+            result.push(
+              encodeValue(operator, value2, isKeyOperator(operator) ? key : "")
+            );
+          });
+        } else {
+          Object.keys(value).forEach(function(k) {
+            if (isDefined(value[k])) {
+              result.push(encodeValue(operator, value[k], k));
+            }
+          });
+        }
+      } else {
+        const tmp = [];
+        if (Array.isArray(value)) {
+          value.filter(isDefined).forEach(function(value2) {
+            tmp.push(encodeValue(operator, value2));
+          });
+        } else {
+          Object.keys(value).forEach(function(k) {
+            if (isDefined(value[k])) {
+              tmp.push(encodeUnreserved(k));
+              tmp.push(encodeValue(operator, value[k].toString()));
+            }
+          });
+        }
+        if (isKeyOperator(operator)) {
+          result.push(encodeUnreserved(key) + "=" + tmp.join(","));
+        } else if (tmp.length !== 0) {
+          result.push(tmp.join(","));
+        }
+      }
+    }
+  } else {
+    if (operator === ";") {
+      if (isDefined(value)) {
+        result.push(encodeUnreserved(key));
+      }
+    } else if (value === "" && (operator === "&" || operator === "?")) {
+      result.push(encodeUnreserved(key) + "=");
+    } else if (value === "") {
+      result.push("");
+    }
+  }
+  return result;
+}
+function parseUrl(template) {
+  return {
+    expand: expand.bind(null, template)
+  };
+}
+function expand(template, context) {
+  var operators = ["+", "#", ".", "/", ";", "?", "&"];
+  template = template.replace(
+    /\{([^\{\}]+)\}|([^\{\}]+)/g,
+    function(_, expression, literal) {
+      if (expression) {
+        let operator = "";
+        const values = [];
+        if (operators.indexOf(expression.charAt(0)) !== -1) {
+          operator = expression.charAt(0);
+          expression = expression.substr(1);
+        }
+        expression.split(/,/g).forEach(function(variable) {
+          var tmp = /([^:\*]*)(?::(\d+)|(\*))?/.exec(variable);
+          values.push(getValues(context, operator, tmp[1], tmp[2] || tmp[3]));
+        });
+        if (operator && operator !== "+") {
+          var separator = ",";
+          if (operator === "?") {
+            separator = "&";
+          } else if (operator !== "#") {
+            separator = operator;
+          }
+          return (values.length !== 0 ? operator : "") + values.join(separator);
+        } else {
+          return values.join(",");
+        }
+      } else {
+        return encodeReserved(literal);
+      }
+    }
+  );
+  if (template === "/") {
+    return template;
+  } else {
+    return template.replace(/\/$/, "");
+  }
+}
+
+function parse$1(options) {
+  let method = options.method.toUpperCase();
+  let url = (options.url || "/").replace(/:([a-z]\w+)/g, "{$1}");
+  let headers = Object.assign({}, options.headers);
+  let body;
+  let parameters = omit(options, [
+    "method",
+    "baseUrl",
+    "url",
+    "headers",
+    "request",
+    "mediaType"
+  ]);
+  const urlVariableNames = extractUrlVariableNames(url);
+  url = parseUrl(url).expand(parameters);
+  if (!/^http/.test(url)) {
+    url = options.baseUrl + url;
+  }
+  const omittedParameters = Object.keys(options).filter((option) => urlVariableNames.includes(option)).concat("baseUrl");
+  const remainingParameters = omit(parameters, omittedParameters);
+  const isBinaryRequest = /application\/octet-stream/i.test(headers.accept);
+  if (!isBinaryRequest) {
+    if (options.mediaType.format) {
+      headers.accept = headers.accept.split(/,/).map(
+        (format) => format.replace(
+          /application\/vnd(\.\w+)(\.v3)?(\.\w+)?(\+json)?$/,
+          `application/vnd$1$2.${options.mediaType.format}`
+        )
+      ).join(",");
+    }
+    if (url.endsWith("/graphql")) {
+      if (options.mediaType.previews?.length) {
+        const previewsFromAcceptHeader = headers.accept.match(/(?<![\w-])[\w-]+(?=-preview)/g) || [];
+        headers.accept = previewsFromAcceptHeader.concat(options.mediaType.previews).map((preview) => {
+          const format = options.mediaType.format ? `.${options.mediaType.format}` : "+json";
+          return `application/vnd.github.${preview}-preview${format}`;
+        }).join(",");
+      }
+    }
+  }
+  if (["GET", "HEAD"].includes(method)) {
+    url = addQueryParameters(url, remainingParameters);
+  } else {
+    if ("data" in remainingParameters) {
+      body = remainingParameters.data;
+    } else {
+      if (Object.keys(remainingParameters).length) {
+        body = remainingParameters;
+      }
+    }
+  }
+  if (!headers["content-type"] && typeof body !== "undefined") {
+    headers["content-type"] = "application/json; charset=utf-8";
+  }
+  if (["PATCH", "PUT"].includes(method) && typeof body === "undefined") {
+    body = "";
+  }
+  return Object.assign(
+    { method, url, headers },
+    typeof body !== "undefined" ? { body } : null,
+    options.request ? { request: options.request } : null
+  );
+}
+
+function endpointWithDefaults(defaults, route, options) {
+  return parse$1(merge$1(defaults, route, options));
+}
+
+function withDefaults$2(oldDefaults, newDefaults) {
+  const DEFAULTS = merge$1(oldDefaults, newDefaults);
+  const endpoint = endpointWithDefaults.bind(null, DEFAULTS);
+  return Object.assign(endpoint, {
+    DEFAULTS,
+    defaults: withDefaults$2.bind(null, DEFAULTS),
+    merge: merge$1.bind(null, DEFAULTS),
+    parse: parse$1
+  });
+}
+
+const endpoint = withDefaults$2(null, DEFAULTS);
+
+const VERSION$4 = "8.4.1";
+
+function isPlainObject(value) {
+  if (typeof value !== "object" || value === null)
+    return false;
+  if (Object.prototype.toString.call(value) !== "[object Object]")
+    return false;
+  const proto = Object.getPrototypeOf(value);
+  if (proto === null)
+    return true;
+  const Ctor = Object.prototype.hasOwnProperty.call(proto, "constructor") && proto.constructor;
+  return typeof Ctor === "function" && Ctor instanceof Ctor && Function.prototype.call(Ctor) === Function.prototype.call(value);
+}
+
+class Deprecation extends Error {
+  constructor(message) {
+    super(message); // Maintains proper stack trace (only available on V8)
+
+    /* istanbul ignore next */
+
+    if (Error.captureStackTrace) {
+      Error.captureStackTrace(this, this.constructor);
+    }
+
+    this.name = 'Deprecation';
+  }
+
+}
+
+var once$1 = {exports: {}};
+
+var wrappy_1;
+var hasRequiredWrappy;
+
+function requireWrappy () {
+	if (hasRequiredWrappy) return wrappy_1;
+	hasRequiredWrappy = 1;
+	// Returns a wrapper function that returns a wrapped callback
+	// The wrapper function should do some stuff, and return a
+	// presumably different callback function.
+	// This makes sure that own properties are retained, so that
+	// decorations and such are not lost along the way.
+	wrappy_1 = wrappy;
+	function wrappy (fn, cb) {
+	  if (fn && cb) return wrappy(fn)(cb)
+
+	  if (typeof fn !== 'function')
+	    throw new TypeError('need wrapper function')
+
+	  Object.keys(fn).forEach(function (k) {
+	    wrapper[k] = fn[k];
+	  });
+
+	  return wrapper
+
+	  function wrapper() {
+	    var args = new Array(arguments.length);
+	    for (var i = 0; i < args.length; i++) {
+	      args[i] = arguments[i];
+	    }
+	    var ret = fn.apply(this, args);
+	    var cb = args[args.length-1];
+	    if (typeof ret === 'function' && ret !== cb) {
+	      Object.keys(cb).forEach(function (k) {
+	        ret[k] = cb[k];
+	      });
+	    }
+	    return ret
+	  }
+	}
+	return wrappy_1;
+}
+
+var hasRequiredOnce;
+
+function requireOnce () {
+	if (hasRequiredOnce) return once$1.exports;
+	hasRequiredOnce = 1;
+	var wrappy = requireWrappy();
+	once$1.exports = wrappy(once);
+	once$1.exports.strict = wrappy(onceStrict);
+
+	once.proto = once(function () {
+	  Object.defineProperty(Function.prototype, 'once', {
+	    value: function () {
+	      return once(this)
+	    },
+	    configurable: true
+	  });
+
+	  Object.defineProperty(Function.prototype, 'onceStrict', {
+	    value: function () {
+	      return onceStrict(this)
+	    },
+	    configurable: true
+	  });
+	});
+
+	function once (fn) {
+	  var f = function () {
+	    if (f.called) return f.value
+	    f.called = true;
+	    return f.value = fn.apply(this, arguments)
+	  };
+	  f.called = false;
+	  return f
+	}
+
+	function onceStrict (fn) {
+	  var f = function () {
+	    if (f.called)
+	      throw new Error(f.onceError)
+	    f.called = true;
+	    return f.value = fn.apply(this, arguments)
+	  };
+	  var name = fn.name || 'Function wrapped with `once`';
+	  f.onceError = name + " shouldn't be called more than once";
+	  f.called = false;
+	  return f
+	}
+	return once$1.exports;
+}
+
+var onceExports = requireOnce();
+var once = /*@__PURE__*/getDefaultExportFromCjs(onceExports);
+
+const logOnceCode = once((deprecation) => console.warn(deprecation));
+const logOnceHeaders = once((deprecation) => console.warn(deprecation));
+let RequestError$1 = class RequestError extends Error {
+  constructor(message, statusCode, options) {
+    super(message);
+    if (Error.captureStackTrace) {
+      Error.captureStackTrace(this, this.constructor);
+    }
+    this.name = "HttpError";
+    this.status = statusCode;
+    let headers;
+    if ("headers" in options && typeof options.headers !== "undefined") {
+      headers = options.headers;
+    }
+    if ("response" in options) {
+      this.response = options.response;
+      headers = options.response.headers;
+    }
+    const requestCopy = Object.assign({}, options.request);
+    if (options.request.headers.authorization) {
+      requestCopy.headers = Object.assign({}, options.request.headers, {
+        authorization: options.request.headers.authorization.replace(
+          /(?<! ) .*$/,
+          " [REDACTED]"
+        )
+      });
+    }
+    requestCopy.url = requestCopy.url.replace(/\bclient_secret=\w+/g, "client_secret=[REDACTED]").replace(/\baccess_token=\w+/g, "access_token=[REDACTED]");
+    this.request = requestCopy;
+    Object.defineProperty(this, "code", {
+      get() {
+        logOnceCode(
+          new Deprecation(
+            "[@octokit/request-error] `error.code` is deprecated, use `error.status`."
+          )
+        );
+        return statusCode;
+      }
     });
+    Object.defineProperty(this, "headers", {
+      get() {
+        logOnceHeaders(
+          new Deprecation(
+            "[@octokit/request-error] `error.headers` is deprecated, use `error.response.headers`."
+          )
+        );
+        return headers || {};
+      }
+    });
+  }
+};
+
+function getBufferResponse(response) {
+  return response.arrayBuffer();
+}
+
+function fetchWrapper(requestOptions) {
+  const log = requestOptions.request && requestOptions.request.log ? requestOptions.request.log : console;
+  const parseSuccessResponseBody = requestOptions.request?.parseSuccessResponseBody !== false;
+  if (isPlainObject(requestOptions.body) || Array.isArray(requestOptions.body)) {
+    requestOptions.body = JSON.stringify(requestOptions.body);
+  }
+  let headers = {};
+  let status;
+  let url;
+  let { fetch } = globalThis;
+  if (requestOptions.request?.fetch) {
+    fetch = requestOptions.request.fetch;
+  }
+  if (!fetch) {
+    throw new Error(
+      "fetch is not set. Please pass a fetch implementation as new Octokit({ request: { fetch }}). Learn more at https://github.com/octokit/octokit.js/#fetch-missing"
+    );
+  }
+  return fetch(requestOptions.url, {
+    method: requestOptions.method,
+    body: requestOptions.body,
+    redirect: requestOptions.request?.redirect,
+    headers: requestOptions.headers,
+    signal: requestOptions.request?.signal,
+    // duplex must be set if request.body is ReadableStream or Async Iterables.
+    // See https://fetch.spec.whatwg.org/#dom-requestinit-duplex.
+    ...requestOptions.body && { duplex: "half" }
+  }).then(async (response) => {
+    url = response.url;
+    status = response.status;
+    for (const keyAndValue of response.headers) {
+      headers[keyAndValue[0]] = keyAndValue[1];
+    }
+    if ("deprecation" in headers) {
+      const matches = headers.link && headers.link.match(/<([^<>]+)>; rel="deprecation"/);
+      const deprecationLink = matches && matches.pop();
+      log.warn(
+        `[@octokit/request] "${requestOptions.method} ${requestOptions.url}" is deprecated. It is scheduled to be removed on ${headers.sunset}${deprecationLink ? `. See ${deprecationLink}` : ""}`
+      );
+    }
+    if (status === 204 || status === 205) {
+      return;
+    }
+    if (requestOptions.method === "HEAD") {
+      if (status < 400) {
+        return;
+      }
+      throw new RequestError$1(response.statusText, status, {
+        response: {
+          url,
+          status,
+          headers,
+          data: void 0
+        },
+        request: requestOptions
+      });
+    }
+    if (status === 304) {
+      throw new RequestError$1("Not modified", status, {
+        response: {
+          url,
+          status,
+          headers,
+          data: await getResponseData(response)
+        },
+        request: requestOptions
+      });
+    }
+    if (status >= 400) {
+      const data = await getResponseData(response);
+      const error = new RequestError$1(toErrorMessage(data), status, {
+        response: {
+          url,
+          status,
+          headers,
+          data
+        },
+        request: requestOptions
+      });
+      throw error;
+    }
+    return parseSuccessResponseBody ? await getResponseData(response) : response.body;
+  }).then((data) => {
+    return {
+      status,
+      url,
+      headers,
+      data
+    };
+  }).catch((error) => {
+    if (error instanceof RequestError$1)
+      throw error;
+    else if (error.name === "AbortError")
+      throw error;
+    let message = error.message;
+    if (error.name === "TypeError" && "cause" in error) {
+      if (error.cause instanceof Error) {
+        message = error.cause.message;
+      } else if (typeof error.cause === "string") {
+        message = error.cause;
+      }
+    }
+    throw new RequestError$1(message, 500, {
+      request: requestOptions
+    });
+  });
+}
+async function getResponseData(response) {
+  const contentType = response.headers.get("content-type");
+  if (/application\/json/.test(contentType)) {
+    return response.json().catch(() => response.text()).catch(() => "");
+  }
+  if (!contentType || /^text\/|charset=utf-8$/.test(contentType)) {
+    return response.text();
+  }
+  return getBufferResponse(response);
+}
+function toErrorMessage(data) {
+  if (typeof data === "string")
+    return data;
+  let suffix;
+  if ("documentation_url" in data) {
+    suffix = ` - ${data.documentation_url}`;
+  } else {
+    suffix = "";
+  }
+  if ("message" in data) {
+    if (Array.isArray(data.errors)) {
+      return `${data.message}: ${data.errors.map(JSON.stringify).join(", ")}${suffix}`;
+    }
+    return `${data.message}${suffix}`;
+  }
+  return `Unknown error: ${JSON.stringify(data)}`;
+}
+
+function withDefaults$1(oldEndpoint, newDefaults) {
+  const endpoint = oldEndpoint.defaults(newDefaults);
+  const newApi = function(route, parameters) {
+    const endpointOptions = endpoint.merge(route, parameters);
+    if (!endpointOptions.request || !endpointOptions.request.hook) {
+      return fetchWrapper(endpoint.parse(endpointOptions));
+    }
+    const request = (route2, parameters2) => {
+      return fetchWrapper(
+        endpoint.parse(endpoint.merge(route2, parameters2))
+      );
+    };
+    Object.assign(request, {
+      endpoint,
+      defaults: withDefaults$1.bind(null, endpoint)
+    });
+    return endpointOptions.request.hook(request, endpointOptions);
+  };
+  return Object.assign(newApi, {
+    endpoint,
+    defaults: withDefaults$1.bind(null, endpoint)
+  });
+}
+
+const request = withDefaults$1(endpoint, {
+  headers: {
+    "user-agent": `octokit-request.js/${VERSION$4} ${getUserAgent()}`
+  }
+});
+
+// pkg/dist-src/index.js
+
+// pkg/dist-src/version.js
+var VERSION$3 = "7.1.1";
+
+// pkg/dist-src/error.js
+function _buildMessageForResponseErrors(data) {
+  return `Request failed due to following response errors:
+` + data.errors.map((e) => ` - ${e.message}`).join("\n");
+}
+var GraphqlResponseError = class extends Error {
+  constructor(request2, headers, response) {
+    super(_buildMessageForResponseErrors(response));
+    this.request = request2;
+    this.headers = headers;
+    this.response = response;
+    this.name = "GraphqlResponseError";
+    this.errors = response.errors;
+    this.data = response.data;
+    if (Error.captureStackTrace) {
+      Error.captureStackTrace(this, this.constructor);
+    }
+  }
+};
+
+// pkg/dist-src/graphql.js
+var NON_VARIABLE_OPTIONS = [
+  "method",
+  "baseUrl",
+  "url",
+  "headers",
+  "request",
+  "query",
+  "mediaType"
+];
+var FORBIDDEN_VARIABLE_OPTIONS = ["query", "method", "url"];
+var GHES_V3_SUFFIX_REGEX = /\/api\/v3\/?$/;
+function graphql(request2, query, options) {
+  if (options) {
+    if (typeof query === "string" && "query" in options) {
+      return Promise.reject(
+        new Error(`[@octokit/graphql] "query" cannot be used as variable name`)
+      );
+    }
+    for (const key in options) {
+      if (!FORBIDDEN_VARIABLE_OPTIONS.includes(key)) continue;
+      return Promise.reject(
+        new Error(
+          `[@octokit/graphql] "${key}" cannot be used as variable name`
+        )
+      );
+    }
+  }
+  const parsedOptions = typeof query === "string" ? Object.assign({ query }, options) : query;
+  const requestOptions = Object.keys(
+    parsedOptions
+  ).reduce((result, key) => {
+    if (NON_VARIABLE_OPTIONS.includes(key)) {
+      result[key] = parsedOptions[key];
+      return result;
+    }
+    if (!result.variables) {
+      result.variables = {};
+    }
+    result.variables[key] = parsedOptions[key];
+    return result;
+  }, {});
+  const baseUrl = parsedOptions.baseUrl || request2.endpoint.DEFAULTS.baseUrl;
+  if (GHES_V3_SUFFIX_REGEX.test(baseUrl)) {
+    requestOptions.url = baseUrl.replace(GHES_V3_SUFFIX_REGEX, "/api/graphql");
+  }
+  return request2(requestOptions).then((response) => {
+    if (response.data.errors) {
+      const headers = {};
+      for (const key of Object.keys(response.headers)) {
+        headers[key] = response.headers[key];
+      }
+      throw new GraphqlResponseError(
+        requestOptions,
+        headers,
+        response.data
+      );
+    }
+    return response.data.data;
+  });
+}
+
+// pkg/dist-src/with-defaults.js
+function withDefaults(request2, newDefaults) {
+  const newRequest = request2.defaults(newDefaults);
+  const newApi = (query, options) => {
+    return graphql(newRequest, query, options);
+  };
+  return Object.assign(newApi, {
+    defaults: withDefaults.bind(null, newRequest),
+    endpoint: newRequest.endpoint
+  });
+}
+
+// pkg/dist-src/index.js
+withDefaults(request, {
+  headers: {
+    "user-agent": `octokit-graphql.js/${VERSION$3} ${getUserAgent()}`
+  },
+  method: "POST",
+  url: "/graphql"
+});
+function withCustomRequest(customRequest) {
+  return withDefaults(customRequest, {
+    method: "POST",
+    url: "/graphql"
+  });
+}
+
+const REGEX_IS_INSTALLATION_LEGACY = /^v1\./;
+const REGEX_IS_INSTALLATION = /^ghs_/;
+const REGEX_IS_USER_TO_SERVER = /^ghu_/;
+async function auth(token) {
+  const isApp = token.split(/\./).length === 3;
+  const isInstallation = REGEX_IS_INSTALLATION_LEGACY.test(token) || REGEX_IS_INSTALLATION.test(token);
+  const isUserToServer = REGEX_IS_USER_TO_SERVER.test(token);
+  const tokenType = isApp ? "app" : isInstallation ? "installation" : isUserToServer ? "user-to-server" : "oauth";
+  return {
+    type: "token",
+    token,
+    tokenType
+  };
+}
+
+function withAuthorizationPrefix(token) {
+  if (token.split(/\./).length === 3) {
+    return `bearer ${token}`;
+  }
+  return `token ${token}`;
+}
+
+async function hook(token, request, route, parameters) {
+  const endpoint = request.endpoint.merge(
+    route,
+    parameters
+  );
+  endpoint.headers.authorization = withAuthorizationPrefix(token);
+  return request(endpoint);
+}
+
+const createTokenAuth = function createTokenAuth2(token) {
+  if (!token) {
+    throw new Error("[@octokit/auth-token] No token passed to createTokenAuth");
+  }
+  if (typeof token !== "string") {
+    throw new Error(
+      "[@octokit/auth-token] Token passed to createTokenAuth is not a string"
+    );
+  }
+  token = token.replace(/^(token|bearer) +/i, "");
+  return Object.assign(auth.bind(null, token), {
+    hook: hook.bind(null, token)
+  });
+};
+
+// pkg/dist-src/index.js
+
+// pkg/dist-src/version.js
+var VERSION$2 = "5.2.2";
+
+// pkg/dist-src/index.js
+var noop = () => {
+};
+var consoleWarn = console.warn.bind(console);
+var consoleError = console.error.bind(console);
+function createLogger(logger = {}) {
+  if (typeof logger.debug !== "function") {
+    logger.debug = noop;
+  }
+  if (typeof logger.info !== "function") {
+    logger.info = noop;
+  }
+  if (typeof logger.warn !== "function") {
+    logger.warn = consoleWarn;
+  }
+  if (typeof logger.error !== "function") {
+    logger.error = consoleError;
+  }
+  return logger;
+}
+var userAgentTrail = `octokit-core.js/${VERSION$2} ${getUserAgent()}`;
+var Octokit = class {
+  static {
+    this.VERSION = VERSION$2;
+  }
+  static defaults(defaults) {
+    const OctokitWithDefaults = class extends this {
+      constructor(...args) {
+        const options = args[0] || {};
+        if (typeof defaults === "function") {
+          super(defaults(options));
+          return;
+        }
+        super(
+          Object.assign(
+            {},
+            defaults,
+            options,
+            options.userAgent && defaults.userAgent ? {
+              userAgent: `${options.userAgent} ${defaults.userAgent}`
+            } : null
+          )
+        );
+      }
+    };
+    return OctokitWithDefaults;
+  }
+  static {
+    this.plugins = [];
+  }
+  /**
+   * Attach a plugin (or many) to your Octokit instance.
+   *
+   * @example
+   * const API = Octokit.plugin(plugin1, plugin2, plugin3, ...)
+   */
+  static plugin(...newPlugins) {
+    const currentPlugins = this.plugins;
+    const NewOctokit = class extends this {
+      static {
+        this.plugins = currentPlugins.concat(
+          newPlugins.filter((plugin) => !currentPlugins.includes(plugin))
+        );
+      }
+    };
+    return NewOctokit;
+  }
+  constructor(options = {}) {
+    const hook = new beforeAfterHookExports.Collection();
+    const requestDefaults = {
+      baseUrl: request.endpoint.DEFAULTS.baseUrl,
+      headers: {},
+      request: Object.assign({}, options.request, {
+        // @ts-ignore internal usage only, no need to type
+        hook: hook.bind(null, "request")
+      }),
+      mediaType: {
+        previews: [],
+        format: ""
+      }
+    };
+    requestDefaults.headers["user-agent"] = options.userAgent ? `${options.userAgent} ${userAgentTrail}` : userAgentTrail;
+    if (options.baseUrl) {
+      requestDefaults.baseUrl = options.baseUrl;
+    }
+    if (options.previews) {
+      requestDefaults.mediaType.previews = options.previews;
+    }
+    if (options.timeZone) {
+      requestDefaults.headers["time-zone"] = options.timeZone;
+    }
+    this.request = request.defaults(requestDefaults);
+    this.graphql = withCustomRequest(this.request).defaults(requestDefaults);
+    this.log = createLogger(options.log);
+    this.hook = hook;
+    if (!options.authStrategy) {
+      if (!options.auth) {
+        this.auth = async () => ({
+          type: "unauthenticated"
+        });
+      } else {
+        const auth = createTokenAuth(options.auth);
+        hook.wrap("request", auth.hook);
+        this.auth = auth;
+      }
+    } else {
+      const { authStrategy, ...otherOptions } = options;
+      const auth = authStrategy(
+        Object.assign(
+          {
+            request: this.request,
+            log: this.log,
+            // we pass the current octokit instance as well as its constructor options
+            // to allow for authentication strategies that return a new octokit instance
+            // that shares the same internal state as the current one. The original
+            // requirement for this was the "event-octokit" authentication strategy
+            // of https://github.com/probot/octokit-auth-probot.
+            octokit: this,
+            octokitOptions: otherOptions
+          },
+          options.auth
+        )
+      );
+      hook.wrap("request", auth.hook);
+      this.auth = auth;
+    }
+    const classConstructor = this.constructor;
+    for (let i = 0; i < classConstructor.plugins.length; ++i) {
+      Object.assign(this, classConstructor.plugins[i](this, options));
+    }
+  }
+};
+
+var distWeb$1 = /*#__PURE__*/Object.freeze({
+	__proto__: null,
+	Octokit: Octokit
+});
+
+var require$$2 = /*@__PURE__*/getAugmentedNamespace(distWeb$1);
+
+const VERSION$1 = "10.4.1";
+
+const Endpoints = {
+  actions: {
+    addCustomLabelsToSelfHostedRunnerForOrg: [
+      "POST /orgs/{org}/actions/runners/{runner_id}/labels"
+    ],
+    addCustomLabelsToSelfHostedRunnerForRepo: [
+      "POST /repos/{owner}/{repo}/actions/runners/{runner_id}/labels"
+    ],
+    addSelectedRepoToOrgSecret: [
+      "PUT /orgs/{org}/actions/secrets/{secret_name}/repositories/{repository_id}"
+    ],
+    addSelectedRepoToOrgVariable: [
+      "PUT /orgs/{org}/actions/variables/{name}/repositories/{repository_id}"
+    ],
+    approveWorkflowRun: [
+      "POST /repos/{owner}/{repo}/actions/runs/{run_id}/approve"
+    ],
+    cancelWorkflowRun: [
+      "POST /repos/{owner}/{repo}/actions/runs/{run_id}/cancel"
+    ],
+    createEnvironmentVariable: [
+      "POST /repositories/{repository_id}/environments/{environment_name}/variables"
+    ],
+    createOrUpdateEnvironmentSecret: [
+      "PUT /repositories/{repository_id}/environments/{environment_name}/secrets/{secret_name}"
+    ],
+    createOrUpdateOrgSecret: ["PUT /orgs/{org}/actions/secrets/{secret_name}"],
+    createOrUpdateRepoSecret: [
+      "PUT /repos/{owner}/{repo}/actions/secrets/{secret_name}"
+    ],
+    createOrgVariable: ["POST /orgs/{org}/actions/variables"],
+    createRegistrationTokenForOrg: [
+      "POST /orgs/{org}/actions/runners/registration-token"
+    ],
+    createRegistrationTokenForRepo: [
+      "POST /repos/{owner}/{repo}/actions/runners/registration-token"
+    ],
+    createRemoveTokenForOrg: ["POST /orgs/{org}/actions/runners/remove-token"],
+    createRemoveTokenForRepo: [
+      "POST /repos/{owner}/{repo}/actions/runners/remove-token"
+    ],
+    createRepoVariable: ["POST /repos/{owner}/{repo}/actions/variables"],
+    createWorkflowDispatch: [
+      "POST /repos/{owner}/{repo}/actions/workflows/{workflow_id}/dispatches"
+    ],
+    deleteActionsCacheById: [
+      "DELETE /repos/{owner}/{repo}/actions/caches/{cache_id}"
+    ],
+    deleteActionsCacheByKey: [
+      "DELETE /repos/{owner}/{repo}/actions/caches{?key,ref}"
+    ],
+    deleteArtifact: [
+      "DELETE /repos/{owner}/{repo}/actions/artifacts/{artifact_id}"
+    ],
+    deleteEnvironmentSecret: [
+      "DELETE /repositories/{repository_id}/environments/{environment_name}/secrets/{secret_name}"
+    ],
+    deleteEnvironmentVariable: [
+      "DELETE /repositories/{repository_id}/environments/{environment_name}/variables/{name}"
+    ],
+    deleteOrgSecret: ["DELETE /orgs/{org}/actions/secrets/{secret_name}"],
+    deleteOrgVariable: ["DELETE /orgs/{org}/actions/variables/{name}"],
+    deleteRepoSecret: [
+      "DELETE /repos/{owner}/{repo}/actions/secrets/{secret_name}"
+    ],
+    deleteRepoVariable: [
+      "DELETE /repos/{owner}/{repo}/actions/variables/{name}"
+    ],
+    deleteSelfHostedRunnerFromOrg: [
+      "DELETE /orgs/{org}/actions/runners/{runner_id}"
+    ],
+    deleteSelfHostedRunnerFromRepo: [
+      "DELETE /repos/{owner}/{repo}/actions/runners/{runner_id}"
+    ],
+    deleteWorkflowRun: ["DELETE /repos/{owner}/{repo}/actions/runs/{run_id}"],
+    deleteWorkflowRunLogs: [
+      "DELETE /repos/{owner}/{repo}/actions/runs/{run_id}/logs"
+    ],
+    disableSelectedRepositoryGithubActionsOrganization: [
+      "DELETE /orgs/{org}/actions/permissions/repositories/{repository_id}"
+    ],
+    disableWorkflow: [
+      "PUT /repos/{owner}/{repo}/actions/workflows/{workflow_id}/disable"
+    ],
+    downloadArtifact: [
+      "GET /repos/{owner}/{repo}/actions/artifacts/{artifact_id}/{archive_format}"
+    ],
+    downloadJobLogsForWorkflowRun: [
+      "GET /repos/{owner}/{repo}/actions/jobs/{job_id}/logs"
+    ],
+    downloadWorkflowRunAttemptLogs: [
+      "GET /repos/{owner}/{repo}/actions/runs/{run_id}/attempts/{attempt_number}/logs"
+    ],
+    downloadWorkflowRunLogs: [
+      "GET /repos/{owner}/{repo}/actions/runs/{run_id}/logs"
+    ],
+    enableSelectedRepositoryGithubActionsOrganization: [
+      "PUT /orgs/{org}/actions/permissions/repositories/{repository_id}"
+    ],
+    enableWorkflow: [
+      "PUT /repos/{owner}/{repo}/actions/workflows/{workflow_id}/enable"
+    ],
+    forceCancelWorkflowRun: [
+      "POST /repos/{owner}/{repo}/actions/runs/{run_id}/force-cancel"
+    ],
+    generateRunnerJitconfigForOrg: [
+      "POST /orgs/{org}/actions/runners/generate-jitconfig"
+    ],
+    generateRunnerJitconfigForRepo: [
+      "POST /repos/{owner}/{repo}/actions/runners/generate-jitconfig"
+    ],
+    getActionsCacheList: ["GET /repos/{owner}/{repo}/actions/caches"],
+    getActionsCacheUsage: ["GET /repos/{owner}/{repo}/actions/cache/usage"],
+    getActionsCacheUsageByRepoForOrg: [
+      "GET /orgs/{org}/actions/cache/usage-by-repository"
+    ],
+    getActionsCacheUsageForOrg: ["GET /orgs/{org}/actions/cache/usage"],
+    getAllowedActionsOrganization: [
+      "GET /orgs/{org}/actions/permissions/selected-actions"
+    ],
+    getAllowedActionsRepository: [
+      "GET /repos/{owner}/{repo}/actions/permissions/selected-actions"
+    ],
+    getArtifact: ["GET /repos/{owner}/{repo}/actions/artifacts/{artifact_id}"],
+    getCustomOidcSubClaimForRepo: [
+      "GET /repos/{owner}/{repo}/actions/oidc/customization/sub"
+    ],
+    getEnvironmentPublicKey: [
+      "GET /repositories/{repository_id}/environments/{environment_name}/secrets/public-key"
+    ],
+    getEnvironmentSecret: [
+      "GET /repositories/{repository_id}/environments/{environment_name}/secrets/{secret_name}"
+    ],
+    getEnvironmentVariable: [
+      "GET /repositories/{repository_id}/environments/{environment_name}/variables/{name}"
+    ],
+    getGithubActionsDefaultWorkflowPermissionsOrganization: [
+      "GET /orgs/{org}/actions/permissions/workflow"
+    ],
+    getGithubActionsDefaultWorkflowPermissionsRepository: [
+      "GET /repos/{owner}/{repo}/actions/permissions/workflow"
+    ],
+    getGithubActionsPermissionsOrganization: [
+      "GET /orgs/{org}/actions/permissions"
+    ],
+    getGithubActionsPermissionsRepository: [
+      "GET /repos/{owner}/{repo}/actions/permissions"
+    ],
+    getJobForWorkflowRun: ["GET /repos/{owner}/{repo}/actions/jobs/{job_id}"],
+    getOrgPublicKey: ["GET /orgs/{org}/actions/secrets/public-key"],
+    getOrgSecret: ["GET /orgs/{org}/actions/secrets/{secret_name}"],
+    getOrgVariable: ["GET /orgs/{org}/actions/variables/{name}"],
+    getPendingDeploymentsForRun: [
+      "GET /repos/{owner}/{repo}/actions/runs/{run_id}/pending_deployments"
+    ],
+    getRepoPermissions: [
+      "GET /repos/{owner}/{repo}/actions/permissions",
+      {},
+      { renamed: ["actions", "getGithubActionsPermissionsRepository"] }
+    ],
+    getRepoPublicKey: ["GET /repos/{owner}/{repo}/actions/secrets/public-key"],
+    getRepoSecret: ["GET /repos/{owner}/{repo}/actions/secrets/{secret_name}"],
+    getRepoVariable: ["GET /repos/{owner}/{repo}/actions/variables/{name}"],
+    getReviewsForRun: [
+      "GET /repos/{owner}/{repo}/actions/runs/{run_id}/approvals"
+    ],
+    getSelfHostedRunnerForOrg: ["GET /orgs/{org}/actions/runners/{runner_id}"],
+    getSelfHostedRunnerForRepo: [
+      "GET /repos/{owner}/{repo}/actions/runners/{runner_id}"
+    ],
+    getWorkflow: ["GET /repos/{owner}/{repo}/actions/workflows/{workflow_id}"],
+    getWorkflowAccessToRepository: [
+      "GET /repos/{owner}/{repo}/actions/permissions/access"
+    ],
+    getWorkflowRun: ["GET /repos/{owner}/{repo}/actions/runs/{run_id}"],
+    getWorkflowRunAttempt: [
+      "GET /repos/{owner}/{repo}/actions/runs/{run_id}/attempts/{attempt_number}"
+    ],
+    getWorkflowRunUsage: [
+      "GET /repos/{owner}/{repo}/actions/runs/{run_id}/timing"
+    ],
+    getWorkflowUsage: [
+      "GET /repos/{owner}/{repo}/actions/workflows/{workflow_id}/timing"
+    ],
+    listArtifactsForRepo: ["GET /repos/{owner}/{repo}/actions/artifacts"],
+    listEnvironmentSecrets: [
+      "GET /repositories/{repository_id}/environments/{environment_name}/secrets"
+    ],
+    listEnvironmentVariables: [
+      "GET /repositories/{repository_id}/environments/{environment_name}/variables"
+    ],
+    listJobsForWorkflowRun: [
+      "GET /repos/{owner}/{repo}/actions/runs/{run_id}/jobs"
+    ],
+    listJobsForWorkflowRunAttempt: [
+      "GET /repos/{owner}/{repo}/actions/runs/{run_id}/attempts/{attempt_number}/jobs"
+    ],
+    listLabelsForSelfHostedRunnerForOrg: [
+      "GET /orgs/{org}/actions/runners/{runner_id}/labels"
+    ],
+    listLabelsForSelfHostedRunnerForRepo: [
+      "GET /repos/{owner}/{repo}/actions/runners/{runner_id}/labels"
+    ],
+    listOrgSecrets: ["GET /orgs/{org}/actions/secrets"],
+    listOrgVariables: ["GET /orgs/{org}/actions/variables"],
+    listRepoOrganizationSecrets: [
+      "GET /repos/{owner}/{repo}/actions/organization-secrets"
+    ],
+    listRepoOrganizationVariables: [
+      "GET /repos/{owner}/{repo}/actions/organization-variables"
+    ],
+    listRepoSecrets: ["GET /repos/{owner}/{repo}/actions/secrets"],
+    listRepoVariables: ["GET /repos/{owner}/{repo}/actions/variables"],
+    listRepoWorkflows: ["GET /repos/{owner}/{repo}/actions/workflows"],
+    listRunnerApplicationsForOrg: ["GET /orgs/{org}/actions/runners/downloads"],
+    listRunnerApplicationsForRepo: [
+      "GET /repos/{owner}/{repo}/actions/runners/downloads"
+    ],
+    listSelectedReposForOrgSecret: [
+      "GET /orgs/{org}/actions/secrets/{secret_name}/repositories"
+    ],
+    listSelectedReposForOrgVariable: [
+      "GET /orgs/{org}/actions/variables/{name}/repositories"
+    ],
+    listSelectedRepositoriesEnabledGithubActionsOrganization: [
+      "GET /orgs/{org}/actions/permissions/repositories"
+    ],
+    listSelfHostedRunnersForOrg: ["GET /orgs/{org}/actions/runners"],
+    listSelfHostedRunnersForRepo: ["GET /repos/{owner}/{repo}/actions/runners"],
+    listWorkflowRunArtifacts: [
+      "GET /repos/{owner}/{repo}/actions/runs/{run_id}/artifacts"
+    ],
+    listWorkflowRuns: [
+      "GET /repos/{owner}/{repo}/actions/workflows/{workflow_id}/runs"
+    ],
+    listWorkflowRunsForRepo: ["GET /repos/{owner}/{repo}/actions/runs"],
+    reRunJobForWorkflowRun: [
+      "POST /repos/{owner}/{repo}/actions/jobs/{job_id}/rerun"
+    ],
+    reRunWorkflow: ["POST /repos/{owner}/{repo}/actions/runs/{run_id}/rerun"],
+    reRunWorkflowFailedJobs: [
+      "POST /repos/{owner}/{repo}/actions/runs/{run_id}/rerun-failed-jobs"
+    ],
+    removeAllCustomLabelsFromSelfHostedRunnerForOrg: [
+      "DELETE /orgs/{org}/actions/runners/{runner_id}/labels"
+    ],
+    removeAllCustomLabelsFromSelfHostedRunnerForRepo: [
+      "DELETE /repos/{owner}/{repo}/actions/runners/{runner_id}/labels"
+    ],
+    removeCustomLabelFromSelfHostedRunnerForOrg: [
+      "DELETE /orgs/{org}/actions/runners/{runner_id}/labels/{name}"
+    ],
+    removeCustomLabelFromSelfHostedRunnerForRepo: [
+      "DELETE /repos/{owner}/{repo}/actions/runners/{runner_id}/labels/{name}"
+    ],
+    removeSelectedRepoFromOrgSecret: [
+      "DELETE /orgs/{org}/actions/secrets/{secret_name}/repositories/{repository_id}"
+    ],
+    removeSelectedRepoFromOrgVariable: [
+      "DELETE /orgs/{org}/actions/variables/{name}/repositories/{repository_id}"
+    ],
+    reviewCustomGatesForRun: [
+      "POST /repos/{owner}/{repo}/actions/runs/{run_id}/deployment_protection_rule"
+    ],
+    reviewPendingDeploymentsForRun: [
+      "POST /repos/{owner}/{repo}/actions/runs/{run_id}/pending_deployments"
+    ],
+    setAllowedActionsOrganization: [
+      "PUT /orgs/{org}/actions/permissions/selected-actions"
+    ],
+    setAllowedActionsRepository: [
+      "PUT /repos/{owner}/{repo}/actions/permissions/selected-actions"
+    ],
+    setCustomLabelsForSelfHostedRunnerForOrg: [
+      "PUT /orgs/{org}/actions/runners/{runner_id}/labels"
+    ],
+    setCustomLabelsForSelfHostedRunnerForRepo: [
+      "PUT /repos/{owner}/{repo}/actions/runners/{runner_id}/labels"
+    ],
+    setCustomOidcSubClaimForRepo: [
+      "PUT /repos/{owner}/{repo}/actions/oidc/customization/sub"
+    ],
+    setGithubActionsDefaultWorkflowPermissionsOrganization: [
+      "PUT /orgs/{org}/actions/permissions/workflow"
+    ],
+    setGithubActionsDefaultWorkflowPermissionsRepository: [
+      "PUT /repos/{owner}/{repo}/actions/permissions/workflow"
+    ],
+    setGithubActionsPermissionsOrganization: [
+      "PUT /orgs/{org}/actions/permissions"
+    ],
+    setGithubActionsPermissionsRepository: [
+      "PUT /repos/{owner}/{repo}/actions/permissions"
+    ],
+    setSelectedReposForOrgSecret: [
+      "PUT /orgs/{org}/actions/secrets/{secret_name}/repositories"
+    ],
+    setSelectedReposForOrgVariable: [
+      "PUT /orgs/{org}/actions/variables/{name}/repositories"
+    ],
+    setSelectedRepositoriesEnabledGithubActionsOrganization: [
+      "PUT /orgs/{org}/actions/permissions/repositories"
+    ],
+    setWorkflowAccessToRepository: [
+      "PUT /repos/{owner}/{repo}/actions/permissions/access"
+    ],
+    updateEnvironmentVariable: [
+      "PATCH /repositories/{repository_id}/environments/{environment_name}/variables/{name}"
+    ],
+    updateOrgVariable: ["PATCH /orgs/{org}/actions/variables/{name}"],
+    updateRepoVariable: [
+      "PATCH /repos/{owner}/{repo}/actions/variables/{name}"
+    ]
+  },
+  activity: {
+    checkRepoIsStarredByAuthenticatedUser: ["GET /user/starred/{owner}/{repo}"],
+    deleteRepoSubscription: ["DELETE /repos/{owner}/{repo}/subscription"],
+    deleteThreadSubscription: [
+      "DELETE /notifications/threads/{thread_id}/subscription"
+    ],
+    getFeeds: ["GET /feeds"],
+    getRepoSubscription: ["GET /repos/{owner}/{repo}/subscription"],
+    getThread: ["GET /notifications/threads/{thread_id}"],
+    getThreadSubscriptionForAuthenticatedUser: [
+      "GET /notifications/threads/{thread_id}/subscription"
+    ],
+    listEventsForAuthenticatedUser: ["GET /users/{username}/events"],
+    listNotificationsForAuthenticatedUser: ["GET /notifications"],
+    listOrgEventsForAuthenticatedUser: [
+      "GET /users/{username}/events/orgs/{org}"
+    ],
+    listPublicEvents: ["GET /events"],
+    listPublicEventsForRepoNetwork: ["GET /networks/{owner}/{repo}/events"],
+    listPublicEventsForUser: ["GET /users/{username}/events/public"],
+    listPublicOrgEvents: ["GET /orgs/{org}/events"],
+    listReceivedEventsForUser: ["GET /users/{username}/received_events"],
+    listReceivedPublicEventsForUser: [
+      "GET /users/{username}/received_events/public"
+    ],
+    listRepoEvents: ["GET /repos/{owner}/{repo}/events"],
+    listRepoNotificationsForAuthenticatedUser: [
+      "GET /repos/{owner}/{repo}/notifications"
+    ],
+    listReposStarredByAuthenticatedUser: ["GET /user/starred"],
+    listReposStarredByUser: ["GET /users/{username}/starred"],
+    listReposWatchedByUser: ["GET /users/{username}/subscriptions"],
+    listStargazersForRepo: ["GET /repos/{owner}/{repo}/stargazers"],
+    listWatchedReposForAuthenticatedUser: ["GET /user/subscriptions"],
+    listWatchersForRepo: ["GET /repos/{owner}/{repo}/subscribers"],
+    markNotificationsAsRead: ["PUT /notifications"],
+    markRepoNotificationsAsRead: ["PUT /repos/{owner}/{repo}/notifications"],
+    markThreadAsDone: ["DELETE /notifications/threads/{thread_id}"],
+    markThreadAsRead: ["PATCH /notifications/threads/{thread_id}"],
+    setRepoSubscription: ["PUT /repos/{owner}/{repo}/subscription"],
+    setThreadSubscription: [
+      "PUT /notifications/threads/{thread_id}/subscription"
+    ],
+    starRepoForAuthenticatedUser: ["PUT /user/starred/{owner}/{repo}"],
+    unstarRepoForAuthenticatedUser: ["DELETE /user/starred/{owner}/{repo}"]
+  },
+  apps: {
+    addRepoToInstallation: [
+      "PUT /user/installations/{installation_id}/repositories/{repository_id}",
+      {},
+      { renamed: ["apps", "addRepoToInstallationForAuthenticatedUser"] }
+    ],
+    addRepoToInstallationForAuthenticatedUser: [
+      "PUT /user/installations/{installation_id}/repositories/{repository_id}"
+    ],
+    checkToken: ["POST /applications/{client_id}/token"],
+    createFromManifest: ["POST /app-manifests/{code}/conversions"],
+    createInstallationAccessToken: [
+      "POST /app/installations/{installation_id}/access_tokens"
+    ],
+    deleteAuthorization: ["DELETE /applications/{client_id}/grant"],
+    deleteInstallation: ["DELETE /app/installations/{installation_id}"],
+    deleteToken: ["DELETE /applications/{client_id}/token"],
+    getAuthenticated: ["GET /app"],
+    getBySlug: ["GET /apps/{app_slug}"],
+    getInstallation: ["GET /app/installations/{installation_id}"],
+    getOrgInstallation: ["GET /orgs/{org}/installation"],
+    getRepoInstallation: ["GET /repos/{owner}/{repo}/installation"],
+    getSubscriptionPlanForAccount: [
+      "GET /marketplace_listing/accounts/{account_id}"
+    ],
+    getSubscriptionPlanForAccountStubbed: [
+      "GET /marketplace_listing/stubbed/accounts/{account_id}"
+    ],
+    getUserInstallation: ["GET /users/{username}/installation"],
+    getWebhookConfigForApp: ["GET /app/hook/config"],
+    getWebhookDelivery: ["GET /app/hook/deliveries/{delivery_id}"],
+    listAccountsForPlan: ["GET /marketplace_listing/plans/{plan_id}/accounts"],
+    listAccountsForPlanStubbed: [
+      "GET /marketplace_listing/stubbed/plans/{plan_id}/accounts"
+    ],
+    listInstallationReposForAuthenticatedUser: [
+      "GET /user/installations/{installation_id}/repositories"
+    ],
+    listInstallationRequestsForAuthenticatedApp: [
+      "GET /app/installation-requests"
+    ],
+    listInstallations: ["GET /app/installations"],
+    listInstallationsForAuthenticatedUser: ["GET /user/installations"],
+    listPlans: ["GET /marketplace_listing/plans"],
+    listPlansStubbed: ["GET /marketplace_listing/stubbed/plans"],
+    listReposAccessibleToInstallation: ["GET /installation/repositories"],
+    listSubscriptionsForAuthenticatedUser: ["GET /user/marketplace_purchases"],
+    listSubscriptionsForAuthenticatedUserStubbed: [
+      "GET /user/marketplace_purchases/stubbed"
+    ],
+    listWebhookDeliveries: ["GET /app/hook/deliveries"],
+    redeliverWebhookDelivery: [
+      "POST /app/hook/deliveries/{delivery_id}/attempts"
+    ],
+    removeRepoFromInstallation: [
+      "DELETE /user/installations/{installation_id}/repositories/{repository_id}",
+      {},
+      { renamed: ["apps", "removeRepoFromInstallationForAuthenticatedUser"] }
+    ],
+    removeRepoFromInstallationForAuthenticatedUser: [
+      "DELETE /user/installations/{installation_id}/repositories/{repository_id}"
+    ],
+    resetToken: ["PATCH /applications/{client_id}/token"],
+    revokeInstallationAccessToken: ["DELETE /installation/token"],
+    scopeToken: ["POST /applications/{client_id}/token/scoped"],
+    suspendInstallation: ["PUT /app/installations/{installation_id}/suspended"],
+    unsuspendInstallation: [
+      "DELETE /app/installations/{installation_id}/suspended"
+    ],
+    updateWebhookConfigForApp: ["PATCH /app/hook/config"]
+  },
+  billing: {
+    getGithubActionsBillingOrg: ["GET /orgs/{org}/settings/billing/actions"],
+    getGithubActionsBillingUser: [
+      "GET /users/{username}/settings/billing/actions"
+    ],
+    getGithubPackagesBillingOrg: ["GET /orgs/{org}/settings/billing/packages"],
+    getGithubPackagesBillingUser: [
+      "GET /users/{username}/settings/billing/packages"
+    ],
+    getSharedStorageBillingOrg: [
+      "GET /orgs/{org}/settings/billing/shared-storage"
+    ],
+    getSharedStorageBillingUser: [
+      "GET /users/{username}/settings/billing/shared-storage"
+    ]
+  },
+  checks: {
+    create: ["POST /repos/{owner}/{repo}/check-runs"],
+    createSuite: ["POST /repos/{owner}/{repo}/check-suites"],
+    get: ["GET /repos/{owner}/{repo}/check-runs/{check_run_id}"],
+    getSuite: ["GET /repos/{owner}/{repo}/check-suites/{check_suite_id}"],
+    listAnnotations: [
+      "GET /repos/{owner}/{repo}/check-runs/{check_run_id}/annotations"
+    ],
+    listForRef: ["GET /repos/{owner}/{repo}/commits/{ref}/check-runs"],
+    listForSuite: [
+      "GET /repos/{owner}/{repo}/check-suites/{check_suite_id}/check-runs"
+    ],
+    listSuitesForRef: ["GET /repos/{owner}/{repo}/commits/{ref}/check-suites"],
+    rerequestRun: [
+      "POST /repos/{owner}/{repo}/check-runs/{check_run_id}/rerequest"
+    ],
+    rerequestSuite: [
+      "POST /repos/{owner}/{repo}/check-suites/{check_suite_id}/rerequest"
+    ],
+    setSuitesPreferences: [
+      "PATCH /repos/{owner}/{repo}/check-suites/preferences"
+    ],
+    update: ["PATCH /repos/{owner}/{repo}/check-runs/{check_run_id}"]
+  },
+  codeScanning: {
+    deleteAnalysis: [
+      "DELETE /repos/{owner}/{repo}/code-scanning/analyses/{analysis_id}{?confirm_delete}"
+    ],
+    getAlert: [
+      "GET /repos/{owner}/{repo}/code-scanning/alerts/{alert_number}",
+      {},
+      { renamedParameters: { alert_id: "alert_number" } }
+    ],
+    getAnalysis: [
+      "GET /repos/{owner}/{repo}/code-scanning/analyses/{analysis_id}"
+    ],
+    getCodeqlDatabase: [
+      "GET /repos/{owner}/{repo}/code-scanning/codeql/databases/{language}"
+    ],
+    getDefaultSetup: ["GET /repos/{owner}/{repo}/code-scanning/default-setup"],
+    getSarif: ["GET /repos/{owner}/{repo}/code-scanning/sarifs/{sarif_id}"],
+    listAlertInstances: [
+      "GET /repos/{owner}/{repo}/code-scanning/alerts/{alert_number}/instances"
+    ],
+    listAlertsForOrg: ["GET /orgs/{org}/code-scanning/alerts"],
+    listAlertsForRepo: ["GET /repos/{owner}/{repo}/code-scanning/alerts"],
+    listAlertsInstances: [
+      "GET /repos/{owner}/{repo}/code-scanning/alerts/{alert_number}/instances",
+      {},
+      { renamed: ["codeScanning", "listAlertInstances"] }
+    ],
+    listCodeqlDatabases: [
+      "GET /repos/{owner}/{repo}/code-scanning/codeql/databases"
+    ],
+    listRecentAnalyses: ["GET /repos/{owner}/{repo}/code-scanning/analyses"],
+    updateAlert: [
+      "PATCH /repos/{owner}/{repo}/code-scanning/alerts/{alert_number}"
+    ],
+    updateDefaultSetup: [
+      "PATCH /repos/{owner}/{repo}/code-scanning/default-setup"
+    ],
+    uploadSarif: ["POST /repos/{owner}/{repo}/code-scanning/sarifs"]
+  },
+  codesOfConduct: {
+    getAllCodesOfConduct: ["GET /codes_of_conduct"],
+    getConductCode: ["GET /codes_of_conduct/{key}"]
+  },
+  codespaces: {
+    addRepositoryForSecretForAuthenticatedUser: [
+      "PUT /user/codespaces/secrets/{secret_name}/repositories/{repository_id}"
+    ],
+    addSelectedRepoToOrgSecret: [
+      "PUT /orgs/{org}/codespaces/secrets/{secret_name}/repositories/{repository_id}"
+    ],
+    checkPermissionsForDevcontainer: [
+      "GET /repos/{owner}/{repo}/codespaces/permissions_check"
+    ],
+    codespaceMachinesForAuthenticatedUser: [
+      "GET /user/codespaces/{codespace_name}/machines"
+    ],
+    createForAuthenticatedUser: ["POST /user/codespaces"],
+    createOrUpdateOrgSecret: [
+      "PUT /orgs/{org}/codespaces/secrets/{secret_name}"
+    ],
+    createOrUpdateRepoSecret: [
+      "PUT /repos/{owner}/{repo}/codespaces/secrets/{secret_name}"
+    ],
+    createOrUpdateSecretForAuthenticatedUser: [
+      "PUT /user/codespaces/secrets/{secret_name}"
+    ],
+    createWithPrForAuthenticatedUser: [
+      "POST /repos/{owner}/{repo}/pulls/{pull_number}/codespaces"
+    ],
+    createWithRepoForAuthenticatedUser: [
+      "POST /repos/{owner}/{repo}/codespaces"
+    ],
+    deleteForAuthenticatedUser: ["DELETE /user/codespaces/{codespace_name}"],
+    deleteFromOrganization: [
+      "DELETE /orgs/{org}/members/{username}/codespaces/{codespace_name}"
+    ],
+    deleteOrgSecret: ["DELETE /orgs/{org}/codespaces/secrets/{secret_name}"],
+    deleteRepoSecret: [
+      "DELETE /repos/{owner}/{repo}/codespaces/secrets/{secret_name}"
+    ],
+    deleteSecretForAuthenticatedUser: [
+      "DELETE /user/codespaces/secrets/{secret_name}"
+    ],
+    exportForAuthenticatedUser: [
+      "POST /user/codespaces/{codespace_name}/exports"
+    ],
+    getCodespacesForUserInOrg: [
+      "GET /orgs/{org}/members/{username}/codespaces"
+    ],
+    getExportDetailsForAuthenticatedUser: [
+      "GET /user/codespaces/{codespace_name}/exports/{export_id}"
+    ],
+    getForAuthenticatedUser: ["GET /user/codespaces/{codespace_name}"],
+    getOrgPublicKey: ["GET /orgs/{org}/codespaces/secrets/public-key"],
+    getOrgSecret: ["GET /orgs/{org}/codespaces/secrets/{secret_name}"],
+    getPublicKeyForAuthenticatedUser: [
+      "GET /user/codespaces/secrets/public-key"
+    ],
+    getRepoPublicKey: [
+      "GET /repos/{owner}/{repo}/codespaces/secrets/public-key"
+    ],
+    getRepoSecret: [
+      "GET /repos/{owner}/{repo}/codespaces/secrets/{secret_name}"
+    ],
+    getSecretForAuthenticatedUser: [
+      "GET /user/codespaces/secrets/{secret_name}"
+    ],
+    listDevcontainersInRepositoryForAuthenticatedUser: [
+      "GET /repos/{owner}/{repo}/codespaces/devcontainers"
+    ],
+    listForAuthenticatedUser: ["GET /user/codespaces"],
+    listInOrganization: [
+      "GET /orgs/{org}/codespaces",
+      {},
+      { renamedParameters: { org_id: "org" } }
+    ],
+    listInRepositoryForAuthenticatedUser: [
+      "GET /repos/{owner}/{repo}/codespaces"
+    ],
+    listOrgSecrets: ["GET /orgs/{org}/codespaces/secrets"],
+    listRepoSecrets: ["GET /repos/{owner}/{repo}/codespaces/secrets"],
+    listRepositoriesForSecretForAuthenticatedUser: [
+      "GET /user/codespaces/secrets/{secret_name}/repositories"
+    ],
+    listSecretsForAuthenticatedUser: ["GET /user/codespaces/secrets"],
+    listSelectedReposForOrgSecret: [
+      "GET /orgs/{org}/codespaces/secrets/{secret_name}/repositories"
+    ],
+    preFlightWithRepoForAuthenticatedUser: [
+      "GET /repos/{owner}/{repo}/codespaces/new"
+    ],
+    publishForAuthenticatedUser: [
+      "POST /user/codespaces/{codespace_name}/publish"
+    ],
+    removeRepositoryForSecretForAuthenticatedUser: [
+      "DELETE /user/codespaces/secrets/{secret_name}/repositories/{repository_id}"
+    ],
+    removeSelectedRepoFromOrgSecret: [
+      "DELETE /orgs/{org}/codespaces/secrets/{secret_name}/repositories/{repository_id}"
+    ],
+    repoMachinesForAuthenticatedUser: [
+      "GET /repos/{owner}/{repo}/codespaces/machines"
+    ],
+    setRepositoriesForSecretForAuthenticatedUser: [
+      "PUT /user/codespaces/secrets/{secret_name}/repositories"
+    ],
+    setSelectedReposForOrgSecret: [
+      "PUT /orgs/{org}/codespaces/secrets/{secret_name}/repositories"
+    ],
+    startForAuthenticatedUser: ["POST /user/codespaces/{codespace_name}/start"],
+    stopForAuthenticatedUser: ["POST /user/codespaces/{codespace_name}/stop"],
+    stopInOrganization: [
+      "POST /orgs/{org}/members/{username}/codespaces/{codespace_name}/stop"
+    ],
+    updateForAuthenticatedUser: ["PATCH /user/codespaces/{codespace_name}"]
+  },
+  copilot: {
+    addCopilotSeatsForTeams: [
+      "POST /orgs/{org}/copilot/billing/selected_teams"
+    ],
+    addCopilotSeatsForUsers: [
+      "POST /orgs/{org}/copilot/billing/selected_users"
+    ],
+    cancelCopilotSeatAssignmentForTeams: [
+      "DELETE /orgs/{org}/copilot/billing/selected_teams"
+    ],
+    cancelCopilotSeatAssignmentForUsers: [
+      "DELETE /orgs/{org}/copilot/billing/selected_users"
+    ],
+    getCopilotOrganizationDetails: ["GET /orgs/{org}/copilot/billing"],
+    getCopilotSeatDetailsForUser: [
+      "GET /orgs/{org}/members/{username}/copilot"
+    ],
+    listCopilotSeats: ["GET /orgs/{org}/copilot/billing/seats"]
+  },
+  dependabot: {
+    addSelectedRepoToOrgSecret: [
+      "PUT /orgs/{org}/dependabot/secrets/{secret_name}/repositories/{repository_id}"
+    ],
+    createOrUpdateOrgSecret: [
+      "PUT /orgs/{org}/dependabot/secrets/{secret_name}"
+    ],
+    createOrUpdateRepoSecret: [
+      "PUT /repos/{owner}/{repo}/dependabot/secrets/{secret_name}"
+    ],
+    deleteOrgSecret: ["DELETE /orgs/{org}/dependabot/secrets/{secret_name}"],
+    deleteRepoSecret: [
+      "DELETE /repos/{owner}/{repo}/dependabot/secrets/{secret_name}"
+    ],
+    getAlert: ["GET /repos/{owner}/{repo}/dependabot/alerts/{alert_number}"],
+    getOrgPublicKey: ["GET /orgs/{org}/dependabot/secrets/public-key"],
+    getOrgSecret: ["GET /orgs/{org}/dependabot/secrets/{secret_name}"],
+    getRepoPublicKey: [
+      "GET /repos/{owner}/{repo}/dependabot/secrets/public-key"
+    ],
+    getRepoSecret: [
+      "GET /repos/{owner}/{repo}/dependabot/secrets/{secret_name}"
+    ],
+    listAlertsForEnterprise: [
+      "GET /enterprises/{enterprise}/dependabot/alerts"
+    ],
+    listAlertsForOrg: ["GET /orgs/{org}/dependabot/alerts"],
+    listAlertsForRepo: ["GET /repos/{owner}/{repo}/dependabot/alerts"],
+    listOrgSecrets: ["GET /orgs/{org}/dependabot/secrets"],
+    listRepoSecrets: ["GET /repos/{owner}/{repo}/dependabot/secrets"],
+    listSelectedReposForOrgSecret: [
+      "GET /orgs/{org}/dependabot/secrets/{secret_name}/repositories"
+    ],
+    removeSelectedRepoFromOrgSecret: [
+      "DELETE /orgs/{org}/dependabot/secrets/{secret_name}/repositories/{repository_id}"
+    ],
+    setSelectedReposForOrgSecret: [
+      "PUT /orgs/{org}/dependabot/secrets/{secret_name}/repositories"
+    ],
+    updateAlert: [
+      "PATCH /repos/{owner}/{repo}/dependabot/alerts/{alert_number}"
+    ]
+  },
+  dependencyGraph: {
+    createRepositorySnapshot: [
+      "POST /repos/{owner}/{repo}/dependency-graph/snapshots"
+    ],
+    diffRange: [
+      "GET /repos/{owner}/{repo}/dependency-graph/compare/{basehead}"
+    ],
+    exportSbom: ["GET /repos/{owner}/{repo}/dependency-graph/sbom"]
+  },
+  emojis: { get: ["GET /emojis"] },
+  gists: {
+    checkIsStarred: ["GET /gists/{gist_id}/star"],
+    create: ["POST /gists"],
+    createComment: ["POST /gists/{gist_id}/comments"],
+    delete: ["DELETE /gists/{gist_id}"],
+    deleteComment: ["DELETE /gists/{gist_id}/comments/{comment_id}"],
+    fork: ["POST /gists/{gist_id}/forks"],
+    get: ["GET /gists/{gist_id}"],
+    getComment: ["GET /gists/{gist_id}/comments/{comment_id}"],
+    getRevision: ["GET /gists/{gist_id}/{sha}"],
+    list: ["GET /gists"],
+    listComments: ["GET /gists/{gist_id}/comments"],
+    listCommits: ["GET /gists/{gist_id}/commits"],
+    listForUser: ["GET /users/{username}/gists"],
+    listForks: ["GET /gists/{gist_id}/forks"],
+    listPublic: ["GET /gists/public"],
+    listStarred: ["GET /gists/starred"],
+    star: ["PUT /gists/{gist_id}/star"],
+    unstar: ["DELETE /gists/{gist_id}/star"],
+    update: ["PATCH /gists/{gist_id}"],
+    updateComment: ["PATCH /gists/{gist_id}/comments/{comment_id}"]
+  },
+  git: {
+    createBlob: ["POST /repos/{owner}/{repo}/git/blobs"],
+    createCommit: ["POST /repos/{owner}/{repo}/git/commits"],
+    createRef: ["POST /repos/{owner}/{repo}/git/refs"],
+    createTag: ["POST /repos/{owner}/{repo}/git/tags"],
+    createTree: ["POST /repos/{owner}/{repo}/git/trees"],
+    deleteRef: ["DELETE /repos/{owner}/{repo}/git/refs/{ref}"],
+    getBlob: ["GET /repos/{owner}/{repo}/git/blobs/{file_sha}"],
+    getCommit: ["GET /repos/{owner}/{repo}/git/commits/{commit_sha}"],
+    getRef: ["GET /repos/{owner}/{repo}/git/ref/{ref}"],
+    getTag: ["GET /repos/{owner}/{repo}/git/tags/{tag_sha}"],
+    getTree: ["GET /repos/{owner}/{repo}/git/trees/{tree_sha}"],
+    listMatchingRefs: ["GET /repos/{owner}/{repo}/git/matching-refs/{ref}"],
+    updateRef: ["PATCH /repos/{owner}/{repo}/git/refs/{ref}"]
+  },
+  gitignore: {
+    getAllTemplates: ["GET /gitignore/templates"],
+    getTemplate: ["GET /gitignore/templates/{name}"]
+  },
+  interactions: {
+    getRestrictionsForAuthenticatedUser: ["GET /user/interaction-limits"],
+    getRestrictionsForOrg: ["GET /orgs/{org}/interaction-limits"],
+    getRestrictionsForRepo: ["GET /repos/{owner}/{repo}/interaction-limits"],
+    getRestrictionsForYourPublicRepos: [
+      "GET /user/interaction-limits",
+      {},
+      { renamed: ["interactions", "getRestrictionsForAuthenticatedUser"] }
+    ],
+    removeRestrictionsForAuthenticatedUser: ["DELETE /user/interaction-limits"],
+    removeRestrictionsForOrg: ["DELETE /orgs/{org}/interaction-limits"],
+    removeRestrictionsForRepo: [
+      "DELETE /repos/{owner}/{repo}/interaction-limits"
+    ],
+    removeRestrictionsForYourPublicRepos: [
+      "DELETE /user/interaction-limits",
+      {},
+      { renamed: ["interactions", "removeRestrictionsForAuthenticatedUser"] }
+    ],
+    setRestrictionsForAuthenticatedUser: ["PUT /user/interaction-limits"],
+    setRestrictionsForOrg: ["PUT /orgs/{org}/interaction-limits"],
+    setRestrictionsForRepo: ["PUT /repos/{owner}/{repo}/interaction-limits"],
+    setRestrictionsForYourPublicRepos: [
+      "PUT /user/interaction-limits",
+      {},
+      { renamed: ["interactions", "setRestrictionsForAuthenticatedUser"] }
+    ]
+  },
+  issues: {
+    addAssignees: [
+      "POST /repos/{owner}/{repo}/issues/{issue_number}/assignees"
+    ],
+    addLabels: ["POST /repos/{owner}/{repo}/issues/{issue_number}/labels"],
+    checkUserCanBeAssigned: ["GET /repos/{owner}/{repo}/assignees/{assignee}"],
+    checkUserCanBeAssignedToIssue: [
+      "GET /repos/{owner}/{repo}/issues/{issue_number}/assignees/{assignee}"
+    ],
+    create: ["POST /repos/{owner}/{repo}/issues"],
+    createComment: [
+      "POST /repos/{owner}/{repo}/issues/{issue_number}/comments"
+    ],
+    createLabel: ["POST /repos/{owner}/{repo}/labels"],
+    createMilestone: ["POST /repos/{owner}/{repo}/milestones"],
+    deleteComment: [
+      "DELETE /repos/{owner}/{repo}/issues/comments/{comment_id}"
+    ],
+    deleteLabel: ["DELETE /repos/{owner}/{repo}/labels/{name}"],
+    deleteMilestone: [
+      "DELETE /repos/{owner}/{repo}/milestones/{milestone_number}"
+    ],
+    get: ["GET /repos/{owner}/{repo}/issues/{issue_number}"],
+    getComment: ["GET /repos/{owner}/{repo}/issues/comments/{comment_id}"],
+    getEvent: ["GET /repos/{owner}/{repo}/issues/events/{event_id}"],
+    getLabel: ["GET /repos/{owner}/{repo}/labels/{name}"],
+    getMilestone: ["GET /repos/{owner}/{repo}/milestones/{milestone_number}"],
+    list: ["GET /issues"],
+    listAssignees: ["GET /repos/{owner}/{repo}/assignees"],
+    listComments: ["GET /repos/{owner}/{repo}/issues/{issue_number}/comments"],
+    listCommentsForRepo: ["GET /repos/{owner}/{repo}/issues/comments"],
+    listEvents: ["GET /repos/{owner}/{repo}/issues/{issue_number}/events"],
+    listEventsForRepo: ["GET /repos/{owner}/{repo}/issues/events"],
+    listEventsForTimeline: [
+      "GET /repos/{owner}/{repo}/issues/{issue_number}/timeline"
+    ],
+    listForAuthenticatedUser: ["GET /user/issues"],
+    listForOrg: ["GET /orgs/{org}/issues"],
+    listForRepo: ["GET /repos/{owner}/{repo}/issues"],
+    listLabelsForMilestone: [
+      "GET /repos/{owner}/{repo}/milestones/{milestone_number}/labels"
+    ],
+    listLabelsForRepo: ["GET /repos/{owner}/{repo}/labels"],
+    listLabelsOnIssue: [
+      "GET /repos/{owner}/{repo}/issues/{issue_number}/labels"
+    ],
+    listMilestones: ["GET /repos/{owner}/{repo}/milestones"],
+    lock: ["PUT /repos/{owner}/{repo}/issues/{issue_number}/lock"],
+    removeAllLabels: [
+      "DELETE /repos/{owner}/{repo}/issues/{issue_number}/labels"
+    ],
+    removeAssignees: [
+      "DELETE /repos/{owner}/{repo}/issues/{issue_number}/assignees"
+    ],
+    removeLabel: [
+      "DELETE /repos/{owner}/{repo}/issues/{issue_number}/labels/{name}"
+    ],
+    setLabels: ["PUT /repos/{owner}/{repo}/issues/{issue_number}/labels"],
+    unlock: ["DELETE /repos/{owner}/{repo}/issues/{issue_number}/lock"],
+    update: ["PATCH /repos/{owner}/{repo}/issues/{issue_number}"],
+    updateComment: ["PATCH /repos/{owner}/{repo}/issues/comments/{comment_id}"],
+    updateLabel: ["PATCH /repos/{owner}/{repo}/labels/{name}"],
+    updateMilestone: [
+      "PATCH /repos/{owner}/{repo}/milestones/{milestone_number}"
+    ]
+  },
+  licenses: {
+    get: ["GET /licenses/{license}"],
+    getAllCommonlyUsed: ["GET /licenses"],
+    getForRepo: ["GET /repos/{owner}/{repo}/license"]
+  },
+  markdown: {
+    render: ["POST /markdown"],
+    renderRaw: [
+      "POST /markdown/raw",
+      { headers: { "content-type": "text/plain; charset=utf-8" } }
+    ]
+  },
+  meta: {
+    get: ["GET /meta"],
+    getAllVersions: ["GET /versions"],
+    getOctocat: ["GET /octocat"],
+    getZen: ["GET /zen"],
+    root: ["GET /"]
+  },
+  migrations: {
+    cancelImport: [
+      "DELETE /repos/{owner}/{repo}/import",
+      {},
+      {
+        deprecated: "octokit.rest.migrations.cancelImport() is deprecated, see https://docs.github.com/rest/migrations/source-imports#cancel-an-import"
+      }
+    ],
+    deleteArchiveForAuthenticatedUser: [
+      "DELETE /user/migrations/{migration_id}/archive"
+    ],
+    deleteArchiveForOrg: [
+      "DELETE /orgs/{org}/migrations/{migration_id}/archive"
+    ],
+    downloadArchiveForOrg: [
+      "GET /orgs/{org}/migrations/{migration_id}/archive"
+    ],
+    getArchiveForAuthenticatedUser: [
+      "GET /user/migrations/{migration_id}/archive"
+    ],
+    getCommitAuthors: [
+      "GET /repos/{owner}/{repo}/import/authors",
+      {},
+      {
+        deprecated: "octokit.rest.migrations.getCommitAuthors() is deprecated, see https://docs.github.com/rest/migrations/source-imports#get-commit-authors"
+      }
+    ],
+    getImportStatus: [
+      "GET /repos/{owner}/{repo}/import",
+      {},
+      {
+        deprecated: "octokit.rest.migrations.getImportStatus() is deprecated, see https://docs.github.com/rest/migrations/source-imports#get-an-import-status"
+      }
+    ],
+    getLargeFiles: [
+      "GET /repos/{owner}/{repo}/import/large_files",
+      {},
+      {
+        deprecated: "octokit.rest.migrations.getLargeFiles() is deprecated, see https://docs.github.com/rest/migrations/source-imports#get-large-files"
+      }
+    ],
+    getStatusForAuthenticatedUser: ["GET /user/migrations/{migration_id}"],
+    getStatusForOrg: ["GET /orgs/{org}/migrations/{migration_id}"],
+    listForAuthenticatedUser: ["GET /user/migrations"],
+    listForOrg: ["GET /orgs/{org}/migrations"],
+    listReposForAuthenticatedUser: [
+      "GET /user/migrations/{migration_id}/repositories"
+    ],
+    listReposForOrg: ["GET /orgs/{org}/migrations/{migration_id}/repositories"],
+    listReposForUser: [
+      "GET /user/migrations/{migration_id}/repositories",
+      {},
+      { renamed: ["migrations", "listReposForAuthenticatedUser"] }
+    ],
+    mapCommitAuthor: [
+      "PATCH /repos/{owner}/{repo}/import/authors/{author_id}",
+      {},
+      {
+        deprecated: "octokit.rest.migrations.mapCommitAuthor() is deprecated, see https://docs.github.com/rest/migrations/source-imports#map-a-commit-author"
+      }
+    ],
+    setLfsPreference: [
+      "PATCH /repos/{owner}/{repo}/import/lfs",
+      {},
+      {
+        deprecated: "octokit.rest.migrations.setLfsPreference() is deprecated, see https://docs.github.com/rest/migrations/source-imports#update-git-lfs-preference"
+      }
+    ],
+    startForAuthenticatedUser: ["POST /user/migrations"],
+    startForOrg: ["POST /orgs/{org}/migrations"],
+    startImport: [
+      "PUT /repos/{owner}/{repo}/import",
+      {},
+      {
+        deprecated: "octokit.rest.migrations.startImport() is deprecated, see https://docs.github.com/rest/migrations/source-imports#start-an-import"
+      }
+    ],
+    unlockRepoForAuthenticatedUser: [
+      "DELETE /user/migrations/{migration_id}/repos/{repo_name}/lock"
+    ],
+    unlockRepoForOrg: [
+      "DELETE /orgs/{org}/migrations/{migration_id}/repos/{repo_name}/lock"
+    ],
+    updateImport: [
+      "PATCH /repos/{owner}/{repo}/import",
+      {},
+      {
+        deprecated: "octokit.rest.migrations.updateImport() is deprecated, see https://docs.github.com/rest/migrations/source-imports#update-an-import"
+      }
+    ]
+  },
+  oidc: {
+    getOidcCustomSubTemplateForOrg: [
+      "GET /orgs/{org}/actions/oidc/customization/sub"
+    ],
+    updateOidcCustomSubTemplateForOrg: [
+      "PUT /orgs/{org}/actions/oidc/customization/sub"
+    ]
+  },
+  orgs: {
+    addSecurityManagerTeam: [
+      "PUT /orgs/{org}/security-managers/teams/{team_slug}"
+    ],
+    assignTeamToOrgRole: [
+      "PUT /orgs/{org}/organization-roles/teams/{team_slug}/{role_id}"
+    ],
+    assignUserToOrgRole: [
+      "PUT /orgs/{org}/organization-roles/users/{username}/{role_id}"
+    ],
+    blockUser: ["PUT /orgs/{org}/blocks/{username}"],
+    cancelInvitation: ["DELETE /orgs/{org}/invitations/{invitation_id}"],
+    checkBlockedUser: ["GET /orgs/{org}/blocks/{username}"],
+    checkMembershipForUser: ["GET /orgs/{org}/members/{username}"],
+    checkPublicMembershipForUser: ["GET /orgs/{org}/public_members/{username}"],
+    convertMemberToOutsideCollaborator: [
+      "PUT /orgs/{org}/outside_collaborators/{username}"
+    ],
+    createCustomOrganizationRole: ["POST /orgs/{org}/organization-roles"],
+    createInvitation: ["POST /orgs/{org}/invitations"],
+    createOrUpdateCustomProperties: ["PATCH /orgs/{org}/properties/schema"],
+    createOrUpdateCustomPropertiesValuesForRepos: [
+      "PATCH /orgs/{org}/properties/values"
+    ],
+    createOrUpdateCustomProperty: [
+      "PUT /orgs/{org}/properties/schema/{custom_property_name}"
+    ],
+    createWebhook: ["POST /orgs/{org}/hooks"],
+    delete: ["DELETE /orgs/{org}"],
+    deleteCustomOrganizationRole: [
+      "DELETE /orgs/{org}/organization-roles/{role_id}"
+    ],
+    deleteWebhook: ["DELETE /orgs/{org}/hooks/{hook_id}"],
+    enableOrDisableSecurityProductOnAllOrgRepos: [
+      "POST /orgs/{org}/{security_product}/{enablement}"
+    ],
+    get: ["GET /orgs/{org}"],
+    getAllCustomProperties: ["GET /orgs/{org}/properties/schema"],
+    getCustomProperty: [
+      "GET /orgs/{org}/properties/schema/{custom_property_name}"
+    ],
+    getMembershipForAuthenticatedUser: ["GET /user/memberships/orgs/{org}"],
+    getMembershipForUser: ["GET /orgs/{org}/memberships/{username}"],
+    getOrgRole: ["GET /orgs/{org}/organization-roles/{role_id}"],
+    getWebhook: ["GET /orgs/{org}/hooks/{hook_id}"],
+    getWebhookConfigForOrg: ["GET /orgs/{org}/hooks/{hook_id}/config"],
+    getWebhookDelivery: [
+      "GET /orgs/{org}/hooks/{hook_id}/deliveries/{delivery_id}"
+    ],
+    list: ["GET /organizations"],
+    listAppInstallations: ["GET /orgs/{org}/installations"],
+    listBlockedUsers: ["GET /orgs/{org}/blocks"],
+    listCustomPropertiesValuesForRepos: ["GET /orgs/{org}/properties/values"],
+    listFailedInvitations: ["GET /orgs/{org}/failed_invitations"],
+    listForAuthenticatedUser: ["GET /user/orgs"],
+    listForUser: ["GET /users/{username}/orgs"],
+    listInvitationTeams: ["GET /orgs/{org}/invitations/{invitation_id}/teams"],
+    listMembers: ["GET /orgs/{org}/members"],
+    listMembershipsForAuthenticatedUser: ["GET /user/memberships/orgs"],
+    listOrgRoleTeams: ["GET /orgs/{org}/organization-roles/{role_id}/teams"],
+    listOrgRoleUsers: ["GET /orgs/{org}/organization-roles/{role_id}/users"],
+    listOrgRoles: ["GET /orgs/{org}/organization-roles"],
+    listOrganizationFineGrainedPermissions: [
+      "GET /orgs/{org}/organization-fine-grained-permissions"
+    ],
+    listOutsideCollaborators: ["GET /orgs/{org}/outside_collaborators"],
+    listPatGrantRepositories: [
+      "GET /orgs/{org}/personal-access-tokens/{pat_id}/repositories"
+    ],
+    listPatGrantRequestRepositories: [
+      "GET /orgs/{org}/personal-access-token-requests/{pat_request_id}/repositories"
+    ],
+    listPatGrantRequests: ["GET /orgs/{org}/personal-access-token-requests"],
+    listPatGrants: ["GET /orgs/{org}/personal-access-tokens"],
+    listPendingInvitations: ["GET /orgs/{org}/invitations"],
+    listPublicMembers: ["GET /orgs/{org}/public_members"],
+    listSecurityManagerTeams: ["GET /orgs/{org}/security-managers"],
+    listWebhookDeliveries: ["GET /orgs/{org}/hooks/{hook_id}/deliveries"],
+    listWebhooks: ["GET /orgs/{org}/hooks"],
+    patchCustomOrganizationRole: [
+      "PATCH /orgs/{org}/organization-roles/{role_id}"
+    ],
+    pingWebhook: ["POST /orgs/{org}/hooks/{hook_id}/pings"],
+    redeliverWebhookDelivery: [
+      "POST /orgs/{org}/hooks/{hook_id}/deliveries/{delivery_id}/attempts"
+    ],
+    removeCustomProperty: [
+      "DELETE /orgs/{org}/properties/schema/{custom_property_name}"
+    ],
+    removeMember: ["DELETE /orgs/{org}/members/{username}"],
+    removeMembershipForUser: ["DELETE /orgs/{org}/memberships/{username}"],
+    removeOutsideCollaborator: [
+      "DELETE /orgs/{org}/outside_collaborators/{username}"
+    ],
+    removePublicMembershipForAuthenticatedUser: [
+      "DELETE /orgs/{org}/public_members/{username}"
+    ],
+    removeSecurityManagerTeam: [
+      "DELETE /orgs/{org}/security-managers/teams/{team_slug}"
+    ],
+    reviewPatGrantRequest: [
+      "POST /orgs/{org}/personal-access-token-requests/{pat_request_id}"
+    ],
+    reviewPatGrantRequestsInBulk: [
+      "POST /orgs/{org}/personal-access-token-requests"
+    ],
+    revokeAllOrgRolesTeam: [
+      "DELETE /orgs/{org}/organization-roles/teams/{team_slug}"
+    ],
+    revokeAllOrgRolesUser: [
+      "DELETE /orgs/{org}/organization-roles/users/{username}"
+    ],
+    revokeOrgRoleTeam: [
+      "DELETE /orgs/{org}/organization-roles/teams/{team_slug}/{role_id}"
+    ],
+    revokeOrgRoleUser: [
+      "DELETE /orgs/{org}/organization-roles/users/{username}/{role_id}"
+    ],
+    setMembershipForUser: ["PUT /orgs/{org}/memberships/{username}"],
+    setPublicMembershipForAuthenticatedUser: [
+      "PUT /orgs/{org}/public_members/{username}"
+    ],
+    unblockUser: ["DELETE /orgs/{org}/blocks/{username}"],
+    update: ["PATCH /orgs/{org}"],
+    updateMembershipForAuthenticatedUser: [
+      "PATCH /user/memberships/orgs/{org}"
+    ],
+    updatePatAccess: ["POST /orgs/{org}/personal-access-tokens/{pat_id}"],
+    updatePatAccesses: ["POST /orgs/{org}/personal-access-tokens"],
+    updateWebhook: ["PATCH /orgs/{org}/hooks/{hook_id}"],
+    updateWebhookConfigForOrg: ["PATCH /orgs/{org}/hooks/{hook_id}/config"]
+  },
+  packages: {
+    deletePackageForAuthenticatedUser: [
+      "DELETE /user/packages/{package_type}/{package_name}"
+    ],
+    deletePackageForOrg: [
+      "DELETE /orgs/{org}/packages/{package_type}/{package_name}"
+    ],
+    deletePackageForUser: [
+      "DELETE /users/{username}/packages/{package_type}/{package_name}"
+    ],
+    deletePackageVersionForAuthenticatedUser: [
+      "DELETE /user/packages/{package_type}/{package_name}/versions/{package_version_id}"
+    ],
+    deletePackageVersionForOrg: [
+      "DELETE /orgs/{org}/packages/{package_type}/{package_name}/versions/{package_version_id}"
+    ],
+    deletePackageVersionForUser: [
+      "DELETE /users/{username}/packages/{package_type}/{package_name}/versions/{package_version_id}"
+    ],
+    getAllPackageVersionsForAPackageOwnedByAnOrg: [
+      "GET /orgs/{org}/packages/{package_type}/{package_name}/versions",
+      {},
+      { renamed: ["packages", "getAllPackageVersionsForPackageOwnedByOrg"] }
+    ],
+    getAllPackageVersionsForAPackageOwnedByTheAuthenticatedUser: [
+      "GET /user/packages/{package_type}/{package_name}/versions",
+      {},
+      {
+        renamed: [
+          "packages",
+          "getAllPackageVersionsForPackageOwnedByAuthenticatedUser"
+        ]
+      }
+    ],
+    getAllPackageVersionsForPackageOwnedByAuthenticatedUser: [
+      "GET /user/packages/{package_type}/{package_name}/versions"
+    ],
+    getAllPackageVersionsForPackageOwnedByOrg: [
+      "GET /orgs/{org}/packages/{package_type}/{package_name}/versions"
+    ],
+    getAllPackageVersionsForPackageOwnedByUser: [
+      "GET /users/{username}/packages/{package_type}/{package_name}/versions"
+    ],
+    getPackageForAuthenticatedUser: [
+      "GET /user/packages/{package_type}/{package_name}"
+    ],
+    getPackageForOrganization: [
+      "GET /orgs/{org}/packages/{package_type}/{package_name}"
+    ],
+    getPackageForUser: [
+      "GET /users/{username}/packages/{package_type}/{package_name}"
+    ],
+    getPackageVersionForAuthenticatedUser: [
+      "GET /user/packages/{package_type}/{package_name}/versions/{package_version_id}"
+    ],
+    getPackageVersionForOrganization: [
+      "GET /orgs/{org}/packages/{package_type}/{package_name}/versions/{package_version_id}"
+    ],
+    getPackageVersionForUser: [
+      "GET /users/{username}/packages/{package_type}/{package_name}/versions/{package_version_id}"
+    ],
+    listDockerMigrationConflictingPackagesForAuthenticatedUser: [
+      "GET /user/docker/conflicts"
+    ],
+    listDockerMigrationConflictingPackagesForOrganization: [
+      "GET /orgs/{org}/docker/conflicts"
+    ],
+    listDockerMigrationConflictingPackagesForUser: [
+      "GET /users/{username}/docker/conflicts"
+    ],
+    listPackagesForAuthenticatedUser: ["GET /user/packages"],
+    listPackagesForOrganization: ["GET /orgs/{org}/packages"],
+    listPackagesForUser: ["GET /users/{username}/packages"],
+    restorePackageForAuthenticatedUser: [
+      "POST /user/packages/{package_type}/{package_name}/restore{?token}"
+    ],
+    restorePackageForOrg: [
+      "POST /orgs/{org}/packages/{package_type}/{package_name}/restore{?token}"
+    ],
+    restorePackageForUser: [
+      "POST /users/{username}/packages/{package_type}/{package_name}/restore{?token}"
+    ],
+    restorePackageVersionForAuthenticatedUser: [
+      "POST /user/packages/{package_type}/{package_name}/versions/{package_version_id}/restore"
+    ],
+    restorePackageVersionForOrg: [
+      "POST /orgs/{org}/packages/{package_type}/{package_name}/versions/{package_version_id}/restore"
+    ],
+    restorePackageVersionForUser: [
+      "POST /users/{username}/packages/{package_type}/{package_name}/versions/{package_version_id}/restore"
+    ]
+  },
+  projects: {
+    addCollaborator: ["PUT /projects/{project_id}/collaborators/{username}"],
+    createCard: ["POST /projects/columns/{column_id}/cards"],
+    createColumn: ["POST /projects/{project_id}/columns"],
+    createForAuthenticatedUser: ["POST /user/projects"],
+    createForOrg: ["POST /orgs/{org}/projects"],
+    createForRepo: ["POST /repos/{owner}/{repo}/projects"],
+    delete: ["DELETE /projects/{project_id}"],
+    deleteCard: ["DELETE /projects/columns/cards/{card_id}"],
+    deleteColumn: ["DELETE /projects/columns/{column_id}"],
+    get: ["GET /projects/{project_id}"],
+    getCard: ["GET /projects/columns/cards/{card_id}"],
+    getColumn: ["GET /projects/columns/{column_id}"],
+    getPermissionForUser: [
+      "GET /projects/{project_id}/collaborators/{username}/permission"
+    ],
+    listCards: ["GET /projects/columns/{column_id}/cards"],
+    listCollaborators: ["GET /projects/{project_id}/collaborators"],
+    listColumns: ["GET /projects/{project_id}/columns"],
+    listForOrg: ["GET /orgs/{org}/projects"],
+    listForRepo: ["GET /repos/{owner}/{repo}/projects"],
+    listForUser: ["GET /users/{username}/projects"],
+    moveCard: ["POST /projects/columns/cards/{card_id}/moves"],
+    moveColumn: ["POST /projects/columns/{column_id}/moves"],
+    removeCollaborator: [
+      "DELETE /projects/{project_id}/collaborators/{username}"
+    ],
+    update: ["PATCH /projects/{project_id}"],
+    updateCard: ["PATCH /projects/columns/cards/{card_id}"],
+    updateColumn: ["PATCH /projects/columns/{column_id}"]
+  },
+  pulls: {
+    checkIfMerged: ["GET /repos/{owner}/{repo}/pulls/{pull_number}/merge"],
+    create: ["POST /repos/{owner}/{repo}/pulls"],
+    createReplyForReviewComment: [
+      "POST /repos/{owner}/{repo}/pulls/{pull_number}/comments/{comment_id}/replies"
+    ],
+    createReview: ["POST /repos/{owner}/{repo}/pulls/{pull_number}/reviews"],
+    createReviewComment: [
+      "POST /repos/{owner}/{repo}/pulls/{pull_number}/comments"
+    ],
+    deletePendingReview: [
+      "DELETE /repos/{owner}/{repo}/pulls/{pull_number}/reviews/{review_id}"
+    ],
+    deleteReviewComment: [
+      "DELETE /repos/{owner}/{repo}/pulls/comments/{comment_id}"
+    ],
+    dismissReview: [
+      "PUT /repos/{owner}/{repo}/pulls/{pull_number}/reviews/{review_id}/dismissals"
+    ],
+    get: ["GET /repos/{owner}/{repo}/pulls/{pull_number}"],
+    getReview: [
+      "GET /repos/{owner}/{repo}/pulls/{pull_number}/reviews/{review_id}"
+    ],
+    getReviewComment: ["GET /repos/{owner}/{repo}/pulls/comments/{comment_id}"],
+    list: ["GET /repos/{owner}/{repo}/pulls"],
+    listCommentsForReview: [
+      "GET /repos/{owner}/{repo}/pulls/{pull_number}/reviews/{review_id}/comments"
+    ],
+    listCommits: ["GET /repos/{owner}/{repo}/pulls/{pull_number}/commits"],
+    listFiles: ["GET /repos/{owner}/{repo}/pulls/{pull_number}/files"],
+    listRequestedReviewers: [
+      "GET /repos/{owner}/{repo}/pulls/{pull_number}/requested_reviewers"
+    ],
+    listReviewComments: [
+      "GET /repos/{owner}/{repo}/pulls/{pull_number}/comments"
+    ],
+    listReviewCommentsForRepo: ["GET /repos/{owner}/{repo}/pulls/comments"],
+    listReviews: ["GET /repos/{owner}/{repo}/pulls/{pull_number}/reviews"],
+    merge: ["PUT /repos/{owner}/{repo}/pulls/{pull_number}/merge"],
+    removeRequestedReviewers: [
+      "DELETE /repos/{owner}/{repo}/pulls/{pull_number}/requested_reviewers"
+    ],
+    requestReviewers: [
+      "POST /repos/{owner}/{repo}/pulls/{pull_number}/requested_reviewers"
+    ],
+    submitReview: [
+      "POST /repos/{owner}/{repo}/pulls/{pull_number}/reviews/{review_id}/events"
+    ],
+    update: ["PATCH /repos/{owner}/{repo}/pulls/{pull_number}"],
+    updateBranch: [
+      "PUT /repos/{owner}/{repo}/pulls/{pull_number}/update-branch"
+    ],
+    updateReview: [
+      "PUT /repos/{owner}/{repo}/pulls/{pull_number}/reviews/{review_id}"
+    ],
+    updateReviewComment: [
+      "PATCH /repos/{owner}/{repo}/pulls/comments/{comment_id}"
+    ]
+  },
+  rateLimit: { get: ["GET /rate_limit"] },
+  reactions: {
+    createForCommitComment: [
+      "POST /repos/{owner}/{repo}/comments/{comment_id}/reactions"
+    ],
+    createForIssue: [
+      "POST /repos/{owner}/{repo}/issues/{issue_number}/reactions"
+    ],
+    createForIssueComment: [
+      "POST /repos/{owner}/{repo}/issues/comments/{comment_id}/reactions"
+    ],
+    createForPullRequestReviewComment: [
+      "POST /repos/{owner}/{repo}/pulls/comments/{comment_id}/reactions"
+    ],
+    createForRelease: [
+      "POST /repos/{owner}/{repo}/releases/{release_id}/reactions"
+    ],
+    createForTeamDiscussionCommentInOrg: [
+      "POST /orgs/{org}/teams/{team_slug}/discussions/{discussion_number}/comments/{comment_number}/reactions"
+    ],
+    createForTeamDiscussionInOrg: [
+      "POST /orgs/{org}/teams/{team_slug}/discussions/{discussion_number}/reactions"
+    ],
+    deleteForCommitComment: [
+      "DELETE /repos/{owner}/{repo}/comments/{comment_id}/reactions/{reaction_id}"
+    ],
+    deleteForIssue: [
+      "DELETE /repos/{owner}/{repo}/issues/{issue_number}/reactions/{reaction_id}"
+    ],
+    deleteForIssueComment: [
+      "DELETE /repos/{owner}/{repo}/issues/comments/{comment_id}/reactions/{reaction_id}"
+    ],
+    deleteForPullRequestComment: [
+      "DELETE /repos/{owner}/{repo}/pulls/comments/{comment_id}/reactions/{reaction_id}"
+    ],
+    deleteForRelease: [
+      "DELETE /repos/{owner}/{repo}/releases/{release_id}/reactions/{reaction_id}"
+    ],
+    deleteForTeamDiscussion: [
+      "DELETE /orgs/{org}/teams/{team_slug}/discussions/{discussion_number}/reactions/{reaction_id}"
+    ],
+    deleteForTeamDiscussionComment: [
+      "DELETE /orgs/{org}/teams/{team_slug}/discussions/{discussion_number}/comments/{comment_number}/reactions/{reaction_id}"
+    ],
+    listForCommitComment: [
+      "GET /repos/{owner}/{repo}/comments/{comment_id}/reactions"
+    ],
+    listForIssue: ["GET /repos/{owner}/{repo}/issues/{issue_number}/reactions"],
+    listForIssueComment: [
+      "GET /repos/{owner}/{repo}/issues/comments/{comment_id}/reactions"
+    ],
+    listForPullRequestReviewComment: [
+      "GET /repos/{owner}/{repo}/pulls/comments/{comment_id}/reactions"
+    ],
+    listForRelease: [
+      "GET /repos/{owner}/{repo}/releases/{release_id}/reactions"
+    ],
+    listForTeamDiscussionCommentInOrg: [
+      "GET /orgs/{org}/teams/{team_slug}/discussions/{discussion_number}/comments/{comment_number}/reactions"
+    ],
+    listForTeamDiscussionInOrg: [
+      "GET /orgs/{org}/teams/{team_slug}/discussions/{discussion_number}/reactions"
+    ]
+  },
+  repos: {
+    acceptInvitation: [
+      "PATCH /user/repository_invitations/{invitation_id}",
+      {},
+      { renamed: ["repos", "acceptInvitationForAuthenticatedUser"] }
+    ],
+    acceptInvitationForAuthenticatedUser: [
+      "PATCH /user/repository_invitations/{invitation_id}"
+    ],
+    addAppAccessRestrictions: [
+      "POST /repos/{owner}/{repo}/branches/{branch}/protection/restrictions/apps",
+      {},
+      { mapToData: "apps" }
+    ],
+    addCollaborator: ["PUT /repos/{owner}/{repo}/collaborators/{username}"],
+    addStatusCheckContexts: [
+      "POST /repos/{owner}/{repo}/branches/{branch}/protection/required_status_checks/contexts",
+      {},
+      { mapToData: "contexts" }
+    ],
+    addTeamAccessRestrictions: [
+      "POST /repos/{owner}/{repo}/branches/{branch}/protection/restrictions/teams",
+      {},
+      { mapToData: "teams" }
+    ],
+    addUserAccessRestrictions: [
+      "POST /repos/{owner}/{repo}/branches/{branch}/protection/restrictions/users",
+      {},
+      { mapToData: "users" }
+    ],
+    cancelPagesDeployment: [
+      "POST /repos/{owner}/{repo}/pages/deployments/{pages_deployment_id}/cancel"
+    ],
+    checkAutomatedSecurityFixes: [
+      "GET /repos/{owner}/{repo}/automated-security-fixes"
+    ],
+    checkCollaborator: ["GET /repos/{owner}/{repo}/collaborators/{username}"],
+    checkVulnerabilityAlerts: [
+      "GET /repos/{owner}/{repo}/vulnerability-alerts"
+    ],
+    codeownersErrors: ["GET /repos/{owner}/{repo}/codeowners/errors"],
+    compareCommits: ["GET /repos/{owner}/{repo}/compare/{base}...{head}"],
+    compareCommitsWithBasehead: [
+      "GET /repos/{owner}/{repo}/compare/{basehead}"
+    ],
+    createAutolink: ["POST /repos/{owner}/{repo}/autolinks"],
+    createCommitComment: [
+      "POST /repos/{owner}/{repo}/commits/{commit_sha}/comments"
+    ],
+    createCommitSignatureProtection: [
+      "POST /repos/{owner}/{repo}/branches/{branch}/protection/required_signatures"
+    ],
+    createCommitStatus: ["POST /repos/{owner}/{repo}/statuses/{sha}"],
+    createDeployKey: ["POST /repos/{owner}/{repo}/keys"],
+    createDeployment: ["POST /repos/{owner}/{repo}/deployments"],
+    createDeploymentBranchPolicy: [
+      "POST /repos/{owner}/{repo}/environments/{environment_name}/deployment-branch-policies"
+    ],
+    createDeploymentProtectionRule: [
+      "POST /repos/{owner}/{repo}/environments/{environment_name}/deployment_protection_rules"
+    ],
+    createDeploymentStatus: [
+      "POST /repos/{owner}/{repo}/deployments/{deployment_id}/statuses"
+    ],
+    createDispatchEvent: ["POST /repos/{owner}/{repo}/dispatches"],
+    createForAuthenticatedUser: ["POST /user/repos"],
+    createFork: ["POST /repos/{owner}/{repo}/forks"],
+    createInOrg: ["POST /orgs/{org}/repos"],
+    createOrUpdateCustomPropertiesValues: [
+      "PATCH /repos/{owner}/{repo}/properties/values"
+    ],
+    createOrUpdateEnvironment: [
+      "PUT /repos/{owner}/{repo}/environments/{environment_name}"
+    ],
+    createOrUpdateFileContents: ["PUT /repos/{owner}/{repo}/contents/{path}"],
+    createOrgRuleset: ["POST /orgs/{org}/rulesets"],
+    createPagesDeployment: ["POST /repos/{owner}/{repo}/pages/deployments"],
+    createPagesSite: ["POST /repos/{owner}/{repo}/pages"],
+    createRelease: ["POST /repos/{owner}/{repo}/releases"],
+    createRepoRuleset: ["POST /repos/{owner}/{repo}/rulesets"],
+    createTagProtection: ["POST /repos/{owner}/{repo}/tags/protection"],
+    createUsingTemplate: [
+      "POST /repos/{template_owner}/{template_repo}/generate"
+    ],
+    createWebhook: ["POST /repos/{owner}/{repo}/hooks"],
+    declineInvitation: [
+      "DELETE /user/repository_invitations/{invitation_id}",
+      {},
+      { renamed: ["repos", "declineInvitationForAuthenticatedUser"] }
+    ],
+    declineInvitationForAuthenticatedUser: [
+      "DELETE /user/repository_invitations/{invitation_id}"
+    ],
+    delete: ["DELETE /repos/{owner}/{repo}"],
+    deleteAccessRestrictions: [
+      "DELETE /repos/{owner}/{repo}/branches/{branch}/protection/restrictions"
+    ],
+    deleteAdminBranchProtection: [
+      "DELETE /repos/{owner}/{repo}/branches/{branch}/protection/enforce_admins"
+    ],
+    deleteAnEnvironment: [
+      "DELETE /repos/{owner}/{repo}/environments/{environment_name}"
+    ],
+    deleteAutolink: ["DELETE /repos/{owner}/{repo}/autolinks/{autolink_id}"],
+    deleteBranchProtection: [
+      "DELETE /repos/{owner}/{repo}/branches/{branch}/protection"
+    ],
+    deleteCommitComment: ["DELETE /repos/{owner}/{repo}/comments/{comment_id}"],
+    deleteCommitSignatureProtection: [
+      "DELETE /repos/{owner}/{repo}/branches/{branch}/protection/required_signatures"
+    ],
+    deleteDeployKey: ["DELETE /repos/{owner}/{repo}/keys/{key_id}"],
+    deleteDeployment: [
+      "DELETE /repos/{owner}/{repo}/deployments/{deployment_id}"
+    ],
+    deleteDeploymentBranchPolicy: [
+      "DELETE /repos/{owner}/{repo}/environments/{environment_name}/deployment-branch-policies/{branch_policy_id}"
+    ],
+    deleteFile: ["DELETE /repos/{owner}/{repo}/contents/{path}"],
+    deleteInvitation: [
+      "DELETE /repos/{owner}/{repo}/invitations/{invitation_id}"
+    ],
+    deleteOrgRuleset: ["DELETE /orgs/{org}/rulesets/{ruleset_id}"],
+    deletePagesSite: ["DELETE /repos/{owner}/{repo}/pages"],
+    deletePullRequestReviewProtection: [
+      "DELETE /repos/{owner}/{repo}/branches/{branch}/protection/required_pull_request_reviews"
+    ],
+    deleteRelease: ["DELETE /repos/{owner}/{repo}/releases/{release_id}"],
+    deleteReleaseAsset: [
+      "DELETE /repos/{owner}/{repo}/releases/assets/{asset_id}"
+    ],
+    deleteRepoRuleset: ["DELETE /repos/{owner}/{repo}/rulesets/{ruleset_id}"],
+    deleteTagProtection: [
+      "DELETE /repos/{owner}/{repo}/tags/protection/{tag_protection_id}"
+    ],
+    deleteWebhook: ["DELETE /repos/{owner}/{repo}/hooks/{hook_id}"],
+    disableAutomatedSecurityFixes: [
+      "DELETE /repos/{owner}/{repo}/automated-security-fixes"
+    ],
+    disableDeploymentProtectionRule: [
+      "DELETE /repos/{owner}/{repo}/environments/{environment_name}/deployment_protection_rules/{protection_rule_id}"
+    ],
+    disablePrivateVulnerabilityReporting: [
+      "DELETE /repos/{owner}/{repo}/private-vulnerability-reporting"
+    ],
+    disableVulnerabilityAlerts: [
+      "DELETE /repos/{owner}/{repo}/vulnerability-alerts"
+    ],
+    downloadArchive: [
+      "GET /repos/{owner}/{repo}/zipball/{ref}",
+      {},
+      { renamed: ["repos", "downloadZipballArchive"] }
+    ],
+    downloadTarballArchive: ["GET /repos/{owner}/{repo}/tarball/{ref}"],
+    downloadZipballArchive: ["GET /repos/{owner}/{repo}/zipball/{ref}"],
+    enableAutomatedSecurityFixes: [
+      "PUT /repos/{owner}/{repo}/automated-security-fixes"
+    ],
+    enablePrivateVulnerabilityReporting: [
+      "PUT /repos/{owner}/{repo}/private-vulnerability-reporting"
+    ],
+    enableVulnerabilityAlerts: [
+      "PUT /repos/{owner}/{repo}/vulnerability-alerts"
+    ],
+    generateReleaseNotes: [
+      "POST /repos/{owner}/{repo}/releases/generate-notes"
+    ],
+    get: ["GET /repos/{owner}/{repo}"],
+    getAccessRestrictions: [
+      "GET /repos/{owner}/{repo}/branches/{branch}/protection/restrictions"
+    ],
+    getAdminBranchProtection: [
+      "GET /repos/{owner}/{repo}/branches/{branch}/protection/enforce_admins"
+    ],
+    getAllDeploymentProtectionRules: [
+      "GET /repos/{owner}/{repo}/environments/{environment_name}/deployment_protection_rules"
+    ],
+    getAllEnvironments: ["GET /repos/{owner}/{repo}/environments"],
+    getAllStatusCheckContexts: [
+      "GET /repos/{owner}/{repo}/branches/{branch}/protection/required_status_checks/contexts"
+    ],
+    getAllTopics: ["GET /repos/{owner}/{repo}/topics"],
+    getAppsWithAccessToProtectedBranch: [
+      "GET /repos/{owner}/{repo}/branches/{branch}/protection/restrictions/apps"
+    ],
+    getAutolink: ["GET /repos/{owner}/{repo}/autolinks/{autolink_id}"],
+    getBranch: ["GET /repos/{owner}/{repo}/branches/{branch}"],
+    getBranchProtection: [
+      "GET /repos/{owner}/{repo}/branches/{branch}/protection"
+    ],
+    getBranchRules: ["GET /repos/{owner}/{repo}/rules/branches/{branch}"],
+    getClones: ["GET /repos/{owner}/{repo}/traffic/clones"],
+    getCodeFrequencyStats: ["GET /repos/{owner}/{repo}/stats/code_frequency"],
+    getCollaboratorPermissionLevel: [
+      "GET /repos/{owner}/{repo}/collaborators/{username}/permission"
+    ],
+    getCombinedStatusForRef: ["GET /repos/{owner}/{repo}/commits/{ref}/status"],
+    getCommit: ["GET /repos/{owner}/{repo}/commits/{ref}"],
+    getCommitActivityStats: ["GET /repos/{owner}/{repo}/stats/commit_activity"],
+    getCommitComment: ["GET /repos/{owner}/{repo}/comments/{comment_id}"],
+    getCommitSignatureProtection: [
+      "GET /repos/{owner}/{repo}/branches/{branch}/protection/required_signatures"
+    ],
+    getCommunityProfileMetrics: ["GET /repos/{owner}/{repo}/community/profile"],
+    getContent: ["GET /repos/{owner}/{repo}/contents/{path}"],
+    getContributorsStats: ["GET /repos/{owner}/{repo}/stats/contributors"],
+    getCustomDeploymentProtectionRule: [
+      "GET /repos/{owner}/{repo}/environments/{environment_name}/deployment_protection_rules/{protection_rule_id}"
+    ],
+    getCustomPropertiesValues: ["GET /repos/{owner}/{repo}/properties/values"],
+    getDeployKey: ["GET /repos/{owner}/{repo}/keys/{key_id}"],
+    getDeployment: ["GET /repos/{owner}/{repo}/deployments/{deployment_id}"],
+    getDeploymentBranchPolicy: [
+      "GET /repos/{owner}/{repo}/environments/{environment_name}/deployment-branch-policies/{branch_policy_id}"
+    ],
+    getDeploymentStatus: [
+      "GET /repos/{owner}/{repo}/deployments/{deployment_id}/statuses/{status_id}"
+    ],
+    getEnvironment: [
+      "GET /repos/{owner}/{repo}/environments/{environment_name}"
+    ],
+    getLatestPagesBuild: ["GET /repos/{owner}/{repo}/pages/builds/latest"],
+    getLatestRelease: ["GET /repos/{owner}/{repo}/releases/latest"],
+    getOrgRuleSuite: ["GET /orgs/{org}/rulesets/rule-suites/{rule_suite_id}"],
+    getOrgRuleSuites: ["GET /orgs/{org}/rulesets/rule-suites"],
+    getOrgRuleset: ["GET /orgs/{org}/rulesets/{ruleset_id}"],
+    getOrgRulesets: ["GET /orgs/{org}/rulesets"],
+    getPages: ["GET /repos/{owner}/{repo}/pages"],
+    getPagesBuild: ["GET /repos/{owner}/{repo}/pages/builds/{build_id}"],
+    getPagesDeployment: [
+      "GET /repos/{owner}/{repo}/pages/deployments/{pages_deployment_id}"
+    ],
+    getPagesHealthCheck: ["GET /repos/{owner}/{repo}/pages/health"],
+    getParticipationStats: ["GET /repos/{owner}/{repo}/stats/participation"],
+    getPullRequestReviewProtection: [
+      "GET /repos/{owner}/{repo}/branches/{branch}/protection/required_pull_request_reviews"
+    ],
+    getPunchCardStats: ["GET /repos/{owner}/{repo}/stats/punch_card"],
+    getReadme: ["GET /repos/{owner}/{repo}/readme"],
+    getReadmeInDirectory: ["GET /repos/{owner}/{repo}/readme/{dir}"],
+    getRelease: ["GET /repos/{owner}/{repo}/releases/{release_id}"],
+    getReleaseAsset: ["GET /repos/{owner}/{repo}/releases/assets/{asset_id}"],
+    getReleaseByTag: ["GET /repos/{owner}/{repo}/releases/tags/{tag}"],
+    getRepoRuleSuite: [
+      "GET /repos/{owner}/{repo}/rulesets/rule-suites/{rule_suite_id}"
+    ],
+    getRepoRuleSuites: ["GET /repos/{owner}/{repo}/rulesets/rule-suites"],
+    getRepoRuleset: ["GET /repos/{owner}/{repo}/rulesets/{ruleset_id}"],
+    getRepoRulesets: ["GET /repos/{owner}/{repo}/rulesets"],
+    getStatusChecksProtection: [
+      "GET /repos/{owner}/{repo}/branches/{branch}/protection/required_status_checks"
+    ],
+    getTeamsWithAccessToProtectedBranch: [
+      "GET /repos/{owner}/{repo}/branches/{branch}/protection/restrictions/teams"
+    ],
+    getTopPaths: ["GET /repos/{owner}/{repo}/traffic/popular/paths"],
+    getTopReferrers: ["GET /repos/{owner}/{repo}/traffic/popular/referrers"],
+    getUsersWithAccessToProtectedBranch: [
+      "GET /repos/{owner}/{repo}/branches/{branch}/protection/restrictions/users"
+    ],
+    getViews: ["GET /repos/{owner}/{repo}/traffic/views"],
+    getWebhook: ["GET /repos/{owner}/{repo}/hooks/{hook_id}"],
+    getWebhookConfigForRepo: [
+      "GET /repos/{owner}/{repo}/hooks/{hook_id}/config"
+    ],
+    getWebhookDelivery: [
+      "GET /repos/{owner}/{repo}/hooks/{hook_id}/deliveries/{delivery_id}"
+    ],
+    listActivities: ["GET /repos/{owner}/{repo}/activity"],
+    listAutolinks: ["GET /repos/{owner}/{repo}/autolinks"],
+    listBranches: ["GET /repos/{owner}/{repo}/branches"],
+    listBranchesForHeadCommit: [
+      "GET /repos/{owner}/{repo}/commits/{commit_sha}/branches-where-head"
+    ],
+    listCollaborators: ["GET /repos/{owner}/{repo}/collaborators"],
+    listCommentsForCommit: [
+      "GET /repos/{owner}/{repo}/commits/{commit_sha}/comments"
+    ],
+    listCommitCommentsForRepo: ["GET /repos/{owner}/{repo}/comments"],
+    listCommitStatusesForRef: [
+      "GET /repos/{owner}/{repo}/commits/{ref}/statuses"
+    ],
+    listCommits: ["GET /repos/{owner}/{repo}/commits"],
+    listContributors: ["GET /repos/{owner}/{repo}/contributors"],
+    listCustomDeploymentRuleIntegrations: [
+      "GET /repos/{owner}/{repo}/environments/{environment_name}/deployment_protection_rules/apps"
+    ],
+    listDeployKeys: ["GET /repos/{owner}/{repo}/keys"],
+    listDeploymentBranchPolicies: [
+      "GET /repos/{owner}/{repo}/environments/{environment_name}/deployment-branch-policies"
+    ],
+    listDeploymentStatuses: [
+      "GET /repos/{owner}/{repo}/deployments/{deployment_id}/statuses"
+    ],
+    listDeployments: ["GET /repos/{owner}/{repo}/deployments"],
+    listForAuthenticatedUser: ["GET /user/repos"],
+    listForOrg: ["GET /orgs/{org}/repos"],
+    listForUser: ["GET /users/{username}/repos"],
+    listForks: ["GET /repos/{owner}/{repo}/forks"],
+    listInvitations: ["GET /repos/{owner}/{repo}/invitations"],
+    listInvitationsForAuthenticatedUser: ["GET /user/repository_invitations"],
+    listLanguages: ["GET /repos/{owner}/{repo}/languages"],
+    listPagesBuilds: ["GET /repos/{owner}/{repo}/pages/builds"],
+    listPublic: ["GET /repositories"],
+    listPullRequestsAssociatedWithCommit: [
+      "GET /repos/{owner}/{repo}/commits/{commit_sha}/pulls"
+    ],
+    listReleaseAssets: [
+      "GET /repos/{owner}/{repo}/releases/{release_id}/assets"
+    ],
+    listReleases: ["GET /repos/{owner}/{repo}/releases"],
+    listTagProtection: ["GET /repos/{owner}/{repo}/tags/protection"],
+    listTags: ["GET /repos/{owner}/{repo}/tags"],
+    listTeams: ["GET /repos/{owner}/{repo}/teams"],
+    listWebhookDeliveries: [
+      "GET /repos/{owner}/{repo}/hooks/{hook_id}/deliveries"
+    ],
+    listWebhooks: ["GET /repos/{owner}/{repo}/hooks"],
+    merge: ["POST /repos/{owner}/{repo}/merges"],
+    mergeUpstream: ["POST /repos/{owner}/{repo}/merge-upstream"],
+    pingWebhook: ["POST /repos/{owner}/{repo}/hooks/{hook_id}/pings"],
+    redeliverWebhookDelivery: [
+      "POST /repos/{owner}/{repo}/hooks/{hook_id}/deliveries/{delivery_id}/attempts"
+    ],
+    removeAppAccessRestrictions: [
+      "DELETE /repos/{owner}/{repo}/branches/{branch}/protection/restrictions/apps",
+      {},
+      { mapToData: "apps" }
+    ],
+    removeCollaborator: [
+      "DELETE /repos/{owner}/{repo}/collaborators/{username}"
+    ],
+    removeStatusCheckContexts: [
+      "DELETE /repos/{owner}/{repo}/branches/{branch}/protection/required_status_checks/contexts",
+      {},
+      { mapToData: "contexts" }
+    ],
+    removeStatusCheckProtection: [
+      "DELETE /repos/{owner}/{repo}/branches/{branch}/protection/required_status_checks"
+    ],
+    removeTeamAccessRestrictions: [
+      "DELETE /repos/{owner}/{repo}/branches/{branch}/protection/restrictions/teams",
+      {},
+      { mapToData: "teams" }
+    ],
+    removeUserAccessRestrictions: [
+      "DELETE /repos/{owner}/{repo}/branches/{branch}/protection/restrictions/users",
+      {},
+      { mapToData: "users" }
+    ],
+    renameBranch: ["POST /repos/{owner}/{repo}/branches/{branch}/rename"],
+    replaceAllTopics: ["PUT /repos/{owner}/{repo}/topics"],
+    requestPagesBuild: ["POST /repos/{owner}/{repo}/pages/builds"],
+    setAdminBranchProtection: [
+      "POST /repos/{owner}/{repo}/branches/{branch}/protection/enforce_admins"
+    ],
+    setAppAccessRestrictions: [
+      "PUT /repos/{owner}/{repo}/branches/{branch}/protection/restrictions/apps",
+      {},
+      { mapToData: "apps" }
+    ],
+    setStatusCheckContexts: [
+      "PUT /repos/{owner}/{repo}/branches/{branch}/protection/required_status_checks/contexts",
+      {},
+      { mapToData: "contexts" }
+    ],
+    setTeamAccessRestrictions: [
+      "PUT /repos/{owner}/{repo}/branches/{branch}/protection/restrictions/teams",
+      {},
+      { mapToData: "teams" }
+    ],
+    setUserAccessRestrictions: [
+      "PUT /repos/{owner}/{repo}/branches/{branch}/protection/restrictions/users",
+      {},
+      { mapToData: "users" }
+    ],
+    testPushWebhook: ["POST /repos/{owner}/{repo}/hooks/{hook_id}/tests"],
+    transfer: ["POST /repos/{owner}/{repo}/transfer"],
+    update: ["PATCH /repos/{owner}/{repo}"],
+    updateBranchProtection: [
+      "PUT /repos/{owner}/{repo}/branches/{branch}/protection"
+    ],
+    updateCommitComment: ["PATCH /repos/{owner}/{repo}/comments/{comment_id}"],
+    updateDeploymentBranchPolicy: [
+      "PUT /repos/{owner}/{repo}/environments/{environment_name}/deployment-branch-policies/{branch_policy_id}"
+    ],
+    updateInformationAboutPagesSite: ["PUT /repos/{owner}/{repo}/pages"],
+    updateInvitation: [
+      "PATCH /repos/{owner}/{repo}/invitations/{invitation_id}"
+    ],
+    updateOrgRuleset: ["PUT /orgs/{org}/rulesets/{ruleset_id}"],
+    updatePullRequestReviewProtection: [
+      "PATCH /repos/{owner}/{repo}/branches/{branch}/protection/required_pull_request_reviews"
+    ],
+    updateRelease: ["PATCH /repos/{owner}/{repo}/releases/{release_id}"],
+    updateReleaseAsset: [
+      "PATCH /repos/{owner}/{repo}/releases/assets/{asset_id}"
+    ],
+    updateRepoRuleset: ["PUT /repos/{owner}/{repo}/rulesets/{ruleset_id}"],
+    updateStatusCheckPotection: [
+      "PATCH /repos/{owner}/{repo}/branches/{branch}/protection/required_status_checks",
+      {},
+      { renamed: ["repos", "updateStatusCheckProtection"] }
+    ],
+    updateStatusCheckProtection: [
+      "PATCH /repos/{owner}/{repo}/branches/{branch}/protection/required_status_checks"
+    ],
+    updateWebhook: ["PATCH /repos/{owner}/{repo}/hooks/{hook_id}"],
+    updateWebhookConfigForRepo: [
+      "PATCH /repos/{owner}/{repo}/hooks/{hook_id}/config"
+    ],
+    uploadReleaseAsset: [
+      "POST /repos/{owner}/{repo}/releases/{release_id}/assets{?name,label}",
+      { baseUrl: "https://uploads.github.com" }
+    ]
+  },
+  search: {
+    code: ["GET /search/code"],
+    commits: ["GET /search/commits"],
+    issuesAndPullRequests: ["GET /search/issues"],
+    labels: ["GET /search/labels"],
+    repos: ["GET /search/repositories"],
+    topics: ["GET /search/topics"],
+    users: ["GET /search/users"]
+  },
+  secretScanning: {
+    getAlert: [
+      "GET /repos/{owner}/{repo}/secret-scanning/alerts/{alert_number}"
+    ],
+    listAlertsForEnterprise: [
+      "GET /enterprises/{enterprise}/secret-scanning/alerts"
+    ],
+    listAlertsForOrg: ["GET /orgs/{org}/secret-scanning/alerts"],
+    listAlertsForRepo: ["GET /repos/{owner}/{repo}/secret-scanning/alerts"],
+    listLocationsForAlert: [
+      "GET /repos/{owner}/{repo}/secret-scanning/alerts/{alert_number}/locations"
+    ],
+    updateAlert: [
+      "PATCH /repos/{owner}/{repo}/secret-scanning/alerts/{alert_number}"
+    ]
+  },
+  securityAdvisories: {
+    createFork: [
+      "POST /repos/{owner}/{repo}/security-advisories/{ghsa_id}/forks"
+    ],
+    createPrivateVulnerabilityReport: [
+      "POST /repos/{owner}/{repo}/security-advisories/reports"
+    ],
+    createRepositoryAdvisory: [
+      "POST /repos/{owner}/{repo}/security-advisories"
+    ],
+    createRepositoryAdvisoryCveRequest: [
+      "POST /repos/{owner}/{repo}/security-advisories/{ghsa_id}/cve"
+    ],
+    getGlobalAdvisory: ["GET /advisories/{ghsa_id}"],
+    getRepositoryAdvisory: [
+      "GET /repos/{owner}/{repo}/security-advisories/{ghsa_id}"
+    ],
+    listGlobalAdvisories: ["GET /advisories"],
+    listOrgRepositoryAdvisories: ["GET /orgs/{org}/security-advisories"],
+    listRepositoryAdvisories: ["GET /repos/{owner}/{repo}/security-advisories"],
+    updateRepositoryAdvisory: [
+      "PATCH /repos/{owner}/{repo}/security-advisories/{ghsa_id}"
+    ]
+  },
+  teams: {
+    addOrUpdateMembershipForUserInOrg: [
+      "PUT /orgs/{org}/teams/{team_slug}/memberships/{username}"
+    ],
+    addOrUpdateProjectPermissionsInOrg: [
+      "PUT /orgs/{org}/teams/{team_slug}/projects/{project_id}"
+    ],
+    addOrUpdateRepoPermissionsInOrg: [
+      "PUT /orgs/{org}/teams/{team_slug}/repos/{owner}/{repo}"
+    ],
+    checkPermissionsForProjectInOrg: [
+      "GET /orgs/{org}/teams/{team_slug}/projects/{project_id}"
+    ],
+    checkPermissionsForRepoInOrg: [
+      "GET /orgs/{org}/teams/{team_slug}/repos/{owner}/{repo}"
+    ],
+    create: ["POST /orgs/{org}/teams"],
+    createDiscussionCommentInOrg: [
+      "POST /orgs/{org}/teams/{team_slug}/discussions/{discussion_number}/comments"
+    ],
+    createDiscussionInOrg: ["POST /orgs/{org}/teams/{team_slug}/discussions"],
+    deleteDiscussionCommentInOrg: [
+      "DELETE /orgs/{org}/teams/{team_slug}/discussions/{discussion_number}/comments/{comment_number}"
+    ],
+    deleteDiscussionInOrg: [
+      "DELETE /orgs/{org}/teams/{team_slug}/discussions/{discussion_number}"
+    ],
+    deleteInOrg: ["DELETE /orgs/{org}/teams/{team_slug}"],
+    getByName: ["GET /orgs/{org}/teams/{team_slug}"],
+    getDiscussionCommentInOrg: [
+      "GET /orgs/{org}/teams/{team_slug}/discussions/{discussion_number}/comments/{comment_number}"
+    ],
+    getDiscussionInOrg: [
+      "GET /orgs/{org}/teams/{team_slug}/discussions/{discussion_number}"
+    ],
+    getMembershipForUserInOrg: [
+      "GET /orgs/{org}/teams/{team_slug}/memberships/{username}"
+    ],
+    list: ["GET /orgs/{org}/teams"],
+    listChildInOrg: ["GET /orgs/{org}/teams/{team_slug}/teams"],
+    listDiscussionCommentsInOrg: [
+      "GET /orgs/{org}/teams/{team_slug}/discussions/{discussion_number}/comments"
+    ],
+    listDiscussionsInOrg: ["GET /orgs/{org}/teams/{team_slug}/discussions"],
+    listForAuthenticatedUser: ["GET /user/teams"],
+    listMembersInOrg: ["GET /orgs/{org}/teams/{team_slug}/members"],
+    listPendingInvitationsInOrg: [
+      "GET /orgs/{org}/teams/{team_slug}/invitations"
+    ],
+    listProjectsInOrg: ["GET /orgs/{org}/teams/{team_slug}/projects"],
+    listReposInOrg: ["GET /orgs/{org}/teams/{team_slug}/repos"],
+    removeMembershipForUserInOrg: [
+      "DELETE /orgs/{org}/teams/{team_slug}/memberships/{username}"
+    ],
+    removeProjectInOrg: [
+      "DELETE /orgs/{org}/teams/{team_slug}/projects/{project_id}"
+    ],
+    removeRepoInOrg: [
+      "DELETE /orgs/{org}/teams/{team_slug}/repos/{owner}/{repo}"
+    ],
+    updateDiscussionCommentInOrg: [
+      "PATCH /orgs/{org}/teams/{team_slug}/discussions/{discussion_number}/comments/{comment_number}"
+    ],
+    updateDiscussionInOrg: [
+      "PATCH /orgs/{org}/teams/{team_slug}/discussions/{discussion_number}"
+    ],
+    updateInOrg: ["PATCH /orgs/{org}/teams/{team_slug}"]
+  },
+  users: {
+    addEmailForAuthenticated: [
+      "POST /user/emails",
+      {},
+      { renamed: ["users", "addEmailForAuthenticatedUser"] }
+    ],
+    addEmailForAuthenticatedUser: ["POST /user/emails"],
+    addSocialAccountForAuthenticatedUser: ["POST /user/social_accounts"],
+    block: ["PUT /user/blocks/{username}"],
+    checkBlocked: ["GET /user/blocks/{username}"],
+    checkFollowingForUser: ["GET /users/{username}/following/{target_user}"],
+    checkPersonIsFollowedByAuthenticated: ["GET /user/following/{username}"],
+    createGpgKeyForAuthenticated: [
+      "POST /user/gpg_keys",
+      {},
+      { renamed: ["users", "createGpgKeyForAuthenticatedUser"] }
+    ],
+    createGpgKeyForAuthenticatedUser: ["POST /user/gpg_keys"],
+    createPublicSshKeyForAuthenticated: [
+      "POST /user/keys",
+      {},
+      { renamed: ["users", "createPublicSshKeyForAuthenticatedUser"] }
+    ],
+    createPublicSshKeyForAuthenticatedUser: ["POST /user/keys"],
+    createSshSigningKeyForAuthenticatedUser: ["POST /user/ssh_signing_keys"],
+    deleteEmailForAuthenticated: [
+      "DELETE /user/emails",
+      {},
+      { renamed: ["users", "deleteEmailForAuthenticatedUser"] }
+    ],
+    deleteEmailForAuthenticatedUser: ["DELETE /user/emails"],
+    deleteGpgKeyForAuthenticated: [
+      "DELETE /user/gpg_keys/{gpg_key_id}",
+      {},
+      { renamed: ["users", "deleteGpgKeyForAuthenticatedUser"] }
+    ],
+    deleteGpgKeyForAuthenticatedUser: ["DELETE /user/gpg_keys/{gpg_key_id}"],
+    deletePublicSshKeyForAuthenticated: [
+      "DELETE /user/keys/{key_id}",
+      {},
+      { renamed: ["users", "deletePublicSshKeyForAuthenticatedUser"] }
+    ],
+    deletePublicSshKeyForAuthenticatedUser: ["DELETE /user/keys/{key_id}"],
+    deleteSocialAccountForAuthenticatedUser: ["DELETE /user/social_accounts"],
+    deleteSshSigningKeyForAuthenticatedUser: [
+      "DELETE /user/ssh_signing_keys/{ssh_signing_key_id}"
+    ],
+    follow: ["PUT /user/following/{username}"],
+    getAuthenticated: ["GET /user"],
+    getByUsername: ["GET /users/{username}"],
+    getContextForUser: ["GET /users/{username}/hovercard"],
+    getGpgKeyForAuthenticated: [
+      "GET /user/gpg_keys/{gpg_key_id}",
+      {},
+      { renamed: ["users", "getGpgKeyForAuthenticatedUser"] }
+    ],
+    getGpgKeyForAuthenticatedUser: ["GET /user/gpg_keys/{gpg_key_id}"],
+    getPublicSshKeyForAuthenticated: [
+      "GET /user/keys/{key_id}",
+      {},
+      { renamed: ["users", "getPublicSshKeyForAuthenticatedUser"] }
+    ],
+    getPublicSshKeyForAuthenticatedUser: ["GET /user/keys/{key_id}"],
+    getSshSigningKeyForAuthenticatedUser: [
+      "GET /user/ssh_signing_keys/{ssh_signing_key_id}"
+    ],
+    list: ["GET /users"],
+    listBlockedByAuthenticated: [
+      "GET /user/blocks",
+      {},
+      { renamed: ["users", "listBlockedByAuthenticatedUser"] }
+    ],
+    listBlockedByAuthenticatedUser: ["GET /user/blocks"],
+    listEmailsForAuthenticated: [
+      "GET /user/emails",
+      {},
+      { renamed: ["users", "listEmailsForAuthenticatedUser"] }
+    ],
+    listEmailsForAuthenticatedUser: ["GET /user/emails"],
+    listFollowedByAuthenticated: [
+      "GET /user/following",
+      {},
+      { renamed: ["users", "listFollowedByAuthenticatedUser"] }
+    ],
+    listFollowedByAuthenticatedUser: ["GET /user/following"],
+    listFollowersForAuthenticatedUser: ["GET /user/followers"],
+    listFollowersForUser: ["GET /users/{username}/followers"],
+    listFollowingForUser: ["GET /users/{username}/following"],
+    listGpgKeysForAuthenticated: [
+      "GET /user/gpg_keys",
+      {},
+      { renamed: ["users", "listGpgKeysForAuthenticatedUser"] }
+    ],
+    listGpgKeysForAuthenticatedUser: ["GET /user/gpg_keys"],
+    listGpgKeysForUser: ["GET /users/{username}/gpg_keys"],
+    listPublicEmailsForAuthenticated: [
+      "GET /user/public_emails",
+      {},
+      { renamed: ["users", "listPublicEmailsForAuthenticatedUser"] }
+    ],
+    listPublicEmailsForAuthenticatedUser: ["GET /user/public_emails"],
+    listPublicKeysForUser: ["GET /users/{username}/keys"],
+    listPublicSshKeysForAuthenticated: [
+      "GET /user/keys",
+      {},
+      { renamed: ["users", "listPublicSshKeysForAuthenticatedUser"] }
+    ],
+    listPublicSshKeysForAuthenticatedUser: ["GET /user/keys"],
+    listSocialAccountsForAuthenticatedUser: ["GET /user/social_accounts"],
+    listSocialAccountsForUser: ["GET /users/{username}/social_accounts"],
+    listSshSigningKeysForAuthenticatedUser: ["GET /user/ssh_signing_keys"],
+    listSshSigningKeysForUser: ["GET /users/{username}/ssh_signing_keys"],
+    setPrimaryEmailVisibilityForAuthenticated: [
+      "PATCH /user/email/visibility",
+      {},
+      { renamed: ["users", "setPrimaryEmailVisibilityForAuthenticatedUser"] }
+    ],
+    setPrimaryEmailVisibilityForAuthenticatedUser: [
+      "PATCH /user/email/visibility"
+    ],
+    unblock: ["DELETE /user/blocks/{username}"],
+    unfollow: ["DELETE /user/following/{username}"],
+    updateAuthenticated: ["PATCH /user"]
+  }
+};
+var endpoints_default = Endpoints;
+
+const endpointMethodsMap = /* @__PURE__ */ new Map();
+for (const [scope, endpoints] of Object.entries(endpoints_default)) {
+  for (const [methodName, endpoint] of Object.entries(endpoints)) {
+    const [route, defaults, decorations] = endpoint;
+    const [method, url] = route.split(/ /);
+    const endpointDefaults = Object.assign(
+      {
+        method,
+        url
+      },
+      defaults
+    );
+    if (!endpointMethodsMap.has(scope)) {
+      endpointMethodsMap.set(scope, /* @__PURE__ */ new Map());
+    }
+    endpointMethodsMap.get(scope).set(methodName, {
+      scope,
+      methodName,
+      endpointDefaults,
+      decorations
+    });
+  }
+}
+const handler = {
+  has({ scope }, methodName) {
+    return endpointMethodsMap.get(scope).has(methodName);
+  },
+  getOwnPropertyDescriptor(target, methodName) {
+    return {
+      value: this.get(target, methodName),
+      // ensures method is in the cache
+      configurable: true,
+      writable: true,
+      enumerable: true
+    };
+  },
+  defineProperty(target, methodName, descriptor) {
+    Object.defineProperty(target.cache, methodName, descriptor);
+    return true;
+  },
+  deleteProperty(target, methodName) {
+    delete target.cache[methodName];
+    return true;
+  },
+  ownKeys({ scope }) {
+    return [...endpointMethodsMap.get(scope).keys()];
+  },
+  set(target, methodName, value) {
+    return target.cache[methodName] = value;
+  },
+  get({ octokit, scope, cache }, methodName) {
+    if (cache[methodName]) {
+      return cache[methodName];
+    }
+    const method = endpointMethodsMap.get(scope).get(methodName);
+    if (!method) {
+      return void 0;
+    }
+    const { endpointDefaults, decorations } = method;
+    if (decorations) {
+      cache[methodName] = decorate(
+        octokit,
+        scope,
+        methodName,
+        endpointDefaults,
+        decorations
+      );
+    } else {
+      cache[methodName] = octokit.request.defaults(endpointDefaults);
+    }
+    return cache[methodName];
+  }
+};
+function endpointsToMethods(octokit) {
+  const newMethods = {};
+  for (const scope of endpointMethodsMap.keys()) {
+    newMethods[scope] = new Proxy({ octokit, scope, cache: {} }, handler);
+  }
+  return newMethods;
+}
+function decorate(octokit, scope, methodName, defaults, decorations) {
+  const requestWithDefaults = octokit.request.defaults(defaults);
+  function withDecorations(...args) {
+    let options = requestWithDefaults.endpoint.merge(...args);
+    if (decorations.mapToData) {
+      options = Object.assign({}, options, {
+        data: options[decorations.mapToData],
+        [decorations.mapToData]: void 0
+      });
+      return requestWithDefaults(options);
+    }
+    if (decorations.renamed) {
+      const [newScope, newMethodName] = decorations.renamed;
+      octokit.log.warn(
+        `octokit.${scope}.${methodName}() has been renamed to octokit.${newScope}.${newMethodName}()`
+      );
+    }
+    if (decorations.deprecated) {
+      octokit.log.warn(decorations.deprecated);
+    }
+    if (decorations.renamedParameters) {
+      const options2 = requestWithDefaults.endpoint.merge(...args);
+      for (const [name, alias] of Object.entries(
+        decorations.renamedParameters
+      )) {
+        if (name in options2) {
+          octokit.log.warn(
+            `"${name}" parameter is deprecated for "octokit.${scope}.${methodName}()". Use "${alias}" instead`
+          );
+          if (!(alias in options2)) {
+            options2[alias] = options2[name];
+          }
+          delete options2[name];
+        }
+      }
+      return requestWithDefaults(options2);
+    }
+    return requestWithDefaults(...args);
+  }
+  return Object.assign(withDecorations, requestWithDefaults);
+}
+
+function restEndpointMethods(octokit) {
+  const api = endpointsToMethods(octokit);
+  return {
+    rest: api
+  };
+}
+restEndpointMethods.VERSION = VERSION$1;
+function legacyRestEndpointMethods(octokit) {
+  const api = endpointsToMethods(octokit);
+  return {
+    ...api,
+    rest: api
+  };
+}
+legacyRestEndpointMethods.VERSION = VERSION$1;
+
+var distSrc = /*#__PURE__*/Object.freeze({
+	__proto__: null,
+	legacyRestEndpointMethods: legacyRestEndpointMethods,
+	restEndpointMethods: restEndpointMethods
+});
+
+var require$$3 = /*@__PURE__*/getAugmentedNamespace(distSrc);
+
+// pkg/dist-src/version.js
+var VERSION = "9.2.2";
+
+// pkg/dist-src/normalize-paginated-list-response.js
+function normalizePaginatedListResponse(response) {
+  if (!response.data) {
+    return {
+      ...response,
+      data: []
+    };
+  }
+  const responseNeedsNormalization = "total_count" in response.data && !("url" in response.data);
+  if (!responseNeedsNormalization)
+    return response;
+  const incompleteResults = response.data.incomplete_results;
+  const repositorySelection = response.data.repository_selection;
+  const totalCount = response.data.total_count;
+  delete response.data.incomplete_results;
+  delete response.data.repository_selection;
+  delete response.data.total_count;
+  const namespaceKey = Object.keys(response.data)[0];
+  const data = response.data[namespaceKey];
+  response.data = data;
+  if (typeof incompleteResults !== "undefined") {
+    response.data.incomplete_results = incompleteResults;
+  }
+  if (typeof repositorySelection !== "undefined") {
+    response.data.repository_selection = repositorySelection;
+  }
+  response.data.total_count = totalCount;
+  return response;
+}
+
+// pkg/dist-src/iterator.js
+function iterator(octokit, route, parameters) {
+  const options = typeof route === "function" ? route.endpoint(parameters) : octokit.request.endpoint(route, parameters);
+  const requestMethod = typeof route === "function" ? route : octokit.request;
+  const method = options.method;
+  const headers = options.headers;
+  let url = options.url;
+  return {
+    [Symbol.asyncIterator]: () => ({
+      async next() {
+        if (!url)
+          return { done: true };
+        try {
+          const response = await requestMethod({ method, url, headers });
+          const normalizedResponse = normalizePaginatedListResponse(response);
+          url = ((normalizedResponse.headers.link || "").match(
+            /<([^<>]+)>;\s*rel="next"/
+          ) || [])[1];
+          return { value: normalizedResponse };
+        } catch (error) {
+          if (error.status !== 409)
+            throw error;
+          url = "";
+          return {
+            value: {
+              status: 200,
+              headers: {},
+              data: []
+            }
+          };
+        }
+      }
+    })
+  };
+}
+
+// pkg/dist-src/paginate.js
+function paginate(octokit, route, parameters, mapFn) {
+  if (typeof parameters === "function") {
+    mapFn = parameters;
+    parameters = void 0;
+  }
+  return gather(
+    octokit,
+    [],
+    iterator(octokit, route, parameters)[Symbol.asyncIterator](),
+    mapFn
+  );
+}
+function gather(octokit, results, iterator2, mapFn) {
+  return iterator2.next().then((result) => {
+    if (result.done) {
+      return results;
+    }
+    let earlyExit = false;
+    function done() {
+      earlyExit = true;
+    }
+    results = results.concat(
+      mapFn ? mapFn(result.value, done) : result.value.data
+    );
+    if (earlyExit) {
+      return results;
+    }
+    return gather(octokit, results, iterator2, mapFn);
+  });
+}
+
+// pkg/dist-src/compose-paginate.js
+var composePaginateRest = Object.assign(paginate, {
+  iterator
+});
+
+// pkg/dist-src/generated/paginating-endpoints.js
+var paginatingEndpoints = [
+  "GET /advisories",
+  "GET /app/hook/deliveries",
+  "GET /app/installation-requests",
+  "GET /app/installations",
+  "GET /assignments/{assignment_id}/accepted_assignments",
+  "GET /classrooms",
+  "GET /classrooms/{classroom_id}/assignments",
+  "GET /enterprises/{enterprise}/dependabot/alerts",
+  "GET /enterprises/{enterprise}/secret-scanning/alerts",
+  "GET /events",
+  "GET /gists",
+  "GET /gists/public",
+  "GET /gists/starred",
+  "GET /gists/{gist_id}/comments",
+  "GET /gists/{gist_id}/commits",
+  "GET /gists/{gist_id}/forks",
+  "GET /installation/repositories",
+  "GET /issues",
+  "GET /licenses",
+  "GET /marketplace_listing/plans",
+  "GET /marketplace_listing/plans/{plan_id}/accounts",
+  "GET /marketplace_listing/stubbed/plans",
+  "GET /marketplace_listing/stubbed/plans/{plan_id}/accounts",
+  "GET /networks/{owner}/{repo}/events",
+  "GET /notifications",
+  "GET /organizations",
+  "GET /orgs/{org}/actions/cache/usage-by-repository",
+  "GET /orgs/{org}/actions/permissions/repositories",
+  "GET /orgs/{org}/actions/runners",
+  "GET /orgs/{org}/actions/secrets",
+  "GET /orgs/{org}/actions/secrets/{secret_name}/repositories",
+  "GET /orgs/{org}/actions/variables",
+  "GET /orgs/{org}/actions/variables/{name}/repositories",
+  "GET /orgs/{org}/blocks",
+  "GET /orgs/{org}/code-scanning/alerts",
+  "GET /orgs/{org}/codespaces",
+  "GET /orgs/{org}/codespaces/secrets",
+  "GET /orgs/{org}/codespaces/secrets/{secret_name}/repositories",
+  "GET /orgs/{org}/copilot/billing/seats",
+  "GET /orgs/{org}/dependabot/alerts",
+  "GET /orgs/{org}/dependabot/secrets",
+  "GET /orgs/{org}/dependabot/secrets/{secret_name}/repositories",
+  "GET /orgs/{org}/events",
+  "GET /orgs/{org}/failed_invitations",
+  "GET /orgs/{org}/hooks",
+  "GET /orgs/{org}/hooks/{hook_id}/deliveries",
+  "GET /orgs/{org}/installations",
+  "GET /orgs/{org}/invitations",
+  "GET /orgs/{org}/invitations/{invitation_id}/teams",
+  "GET /orgs/{org}/issues",
+  "GET /orgs/{org}/members",
+  "GET /orgs/{org}/members/{username}/codespaces",
+  "GET /orgs/{org}/migrations",
+  "GET /orgs/{org}/migrations/{migration_id}/repositories",
+  "GET /orgs/{org}/organization-roles/{role_id}/teams",
+  "GET /orgs/{org}/organization-roles/{role_id}/users",
+  "GET /orgs/{org}/outside_collaborators",
+  "GET /orgs/{org}/packages",
+  "GET /orgs/{org}/packages/{package_type}/{package_name}/versions",
+  "GET /orgs/{org}/personal-access-token-requests",
+  "GET /orgs/{org}/personal-access-token-requests/{pat_request_id}/repositories",
+  "GET /orgs/{org}/personal-access-tokens",
+  "GET /orgs/{org}/personal-access-tokens/{pat_id}/repositories",
+  "GET /orgs/{org}/projects",
+  "GET /orgs/{org}/properties/values",
+  "GET /orgs/{org}/public_members",
+  "GET /orgs/{org}/repos",
+  "GET /orgs/{org}/rulesets",
+  "GET /orgs/{org}/rulesets/rule-suites",
+  "GET /orgs/{org}/secret-scanning/alerts",
+  "GET /orgs/{org}/security-advisories",
+  "GET /orgs/{org}/teams",
+  "GET /orgs/{org}/teams/{team_slug}/discussions",
+  "GET /orgs/{org}/teams/{team_slug}/discussions/{discussion_number}/comments",
+  "GET /orgs/{org}/teams/{team_slug}/discussions/{discussion_number}/comments/{comment_number}/reactions",
+  "GET /orgs/{org}/teams/{team_slug}/discussions/{discussion_number}/reactions",
+  "GET /orgs/{org}/teams/{team_slug}/invitations",
+  "GET /orgs/{org}/teams/{team_slug}/members",
+  "GET /orgs/{org}/teams/{team_slug}/projects",
+  "GET /orgs/{org}/teams/{team_slug}/repos",
+  "GET /orgs/{org}/teams/{team_slug}/teams",
+  "GET /projects/columns/{column_id}/cards",
+  "GET /projects/{project_id}/collaborators",
+  "GET /projects/{project_id}/columns",
+  "GET /repos/{owner}/{repo}/actions/artifacts",
+  "GET /repos/{owner}/{repo}/actions/caches",
+  "GET /repos/{owner}/{repo}/actions/organization-secrets",
+  "GET /repos/{owner}/{repo}/actions/organization-variables",
+  "GET /repos/{owner}/{repo}/actions/runners",
+  "GET /repos/{owner}/{repo}/actions/runs",
+  "GET /repos/{owner}/{repo}/actions/runs/{run_id}/artifacts",
+  "GET /repos/{owner}/{repo}/actions/runs/{run_id}/attempts/{attempt_number}/jobs",
+  "GET /repos/{owner}/{repo}/actions/runs/{run_id}/jobs",
+  "GET /repos/{owner}/{repo}/actions/secrets",
+  "GET /repos/{owner}/{repo}/actions/variables",
+  "GET /repos/{owner}/{repo}/actions/workflows",
+  "GET /repos/{owner}/{repo}/actions/workflows/{workflow_id}/runs",
+  "GET /repos/{owner}/{repo}/activity",
+  "GET /repos/{owner}/{repo}/assignees",
+  "GET /repos/{owner}/{repo}/branches",
+  "GET /repos/{owner}/{repo}/check-runs/{check_run_id}/annotations",
+  "GET /repos/{owner}/{repo}/check-suites/{check_suite_id}/check-runs",
+  "GET /repos/{owner}/{repo}/code-scanning/alerts",
+  "GET /repos/{owner}/{repo}/code-scanning/alerts/{alert_number}/instances",
+  "GET /repos/{owner}/{repo}/code-scanning/analyses",
+  "GET /repos/{owner}/{repo}/codespaces",
+  "GET /repos/{owner}/{repo}/codespaces/devcontainers",
+  "GET /repos/{owner}/{repo}/codespaces/secrets",
+  "GET /repos/{owner}/{repo}/collaborators",
+  "GET /repos/{owner}/{repo}/comments",
+  "GET /repos/{owner}/{repo}/comments/{comment_id}/reactions",
+  "GET /repos/{owner}/{repo}/commits",
+  "GET /repos/{owner}/{repo}/commits/{commit_sha}/comments",
+  "GET /repos/{owner}/{repo}/commits/{commit_sha}/pulls",
+  "GET /repos/{owner}/{repo}/commits/{ref}/check-runs",
+  "GET /repos/{owner}/{repo}/commits/{ref}/check-suites",
+  "GET /repos/{owner}/{repo}/commits/{ref}/status",
+  "GET /repos/{owner}/{repo}/commits/{ref}/statuses",
+  "GET /repos/{owner}/{repo}/contributors",
+  "GET /repos/{owner}/{repo}/dependabot/alerts",
+  "GET /repos/{owner}/{repo}/dependabot/secrets",
+  "GET /repos/{owner}/{repo}/deployments",
+  "GET /repos/{owner}/{repo}/deployments/{deployment_id}/statuses",
+  "GET /repos/{owner}/{repo}/environments",
+  "GET /repos/{owner}/{repo}/environments/{environment_name}/deployment-branch-policies",
+  "GET /repos/{owner}/{repo}/environments/{environment_name}/deployment_protection_rules/apps",
+  "GET /repos/{owner}/{repo}/events",
+  "GET /repos/{owner}/{repo}/forks",
+  "GET /repos/{owner}/{repo}/hooks",
+  "GET /repos/{owner}/{repo}/hooks/{hook_id}/deliveries",
+  "GET /repos/{owner}/{repo}/invitations",
+  "GET /repos/{owner}/{repo}/issues",
+  "GET /repos/{owner}/{repo}/issues/comments",
+  "GET /repos/{owner}/{repo}/issues/comments/{comment_id}/reactions",
+  "GET /repos/{owner}/{repo}/issues/events",
+  "GET /repos/{owner}/{repo}/issues/{issue_number}/comments",
+  "GET /repos/{owner}/{repo}/issues/{issue_number}/events",
+  "GET /repos/{owner}/{repo}/issues/{issue_number}/labels",
+  "GET /repos/{owner}/{repo}/issues/{issue_number}/reactions",
+  "GET /repos/{owner}/{repo}/issues/{issue_number}/timeline",
+  "GET /repos/{owner}/{repo}/keys",
+  "GET /repos/{owner}/{repo}/labels",
+  "GET /repos/{owner}/{repo}/milestones",
+  "GET /repos/{owner}/{repo}/milestones/{milestone_number}/labels",
+  "GET /repos/{owner}/{repo}/notifications",
+  "GET /repos/{owner}/{repo}/pages/builds",
+  "GET /repos/{owner}/{repo}/projects",
+  "GET /repos/{owner}/{repo}/pulls",
+  "GET /repos/{owner}/{repo}/pulls/comments",
+  "GET /repos/{owner}/{repo}/pulls/comments/{comment_id}/reactions",
+  "GET /repos/{owner}/{repo}/pulls/{pull_number}/comments",
+  "GET /repos/{owner}/{repo}/pulls/{pull_number}/commits",
+  "GET /repos/{owner}/{repo}/pulls/{pull_number}/files",
+  "GET /repos/{owner}/{repo}/pulls/{pull_number}/reviews",
+  "GET /repos/{owner}/{repo}/pulls/{pull_number}/reviews/{review_id}/comments",
+  "GET /repos/{owner}/{repo}/releases",
+  "GET /repos/{owner}/{repo}/releases/{release_id}/assets",
+  "GET /repos/{owner}/{repo}/releases/{release_id}/reactions",
+  "GET /repos/{owner}/{repo}/rules/branches/{branch}",
+  "GET /repos/{owner}/{repo}/rulesets",
+  "GET /repos/{owner}/{repo}/rulesets/rule-suites",
+  "GET /repos/{owner}/{repo}/secret-scanning/alerts",
+  "GET /repos/{owner}/{repo}/secret-scanning/alerts/{alert_number}/locations",
+  "GET /repos/{owner}/{repo}/security-advisories",
+  "GET /repos/{owner}/{repo}/stargazers",
+  "GET /repos/{owner}/{repo}/subscribers",
+  "GET /repos/{owner}/{repo}/tags",
+  "GET /repos/{owner}/{repo}/teams",
+  "GET /repos/{owner}/{repo}/topics",
+  "GET /repositories",
+  "GET /repositories/{repository_id}/environments/{environment_name}/secrets",
+  "GET /repositories/{repository_id}/environments/{environment_name}/variables",
+  "GET /search/code",
+  "GET /search/commits",
+  "GET /search/issues",
+  "GET /search/labels",
+  "GET /search/repositories",
+  "GET /search/topics",
+  "GET /search/users",
+  "GET /teams/{team_id}/discussions",
+  "GET /teams/{team_id}/discussions/{discussion_number}/comments",
+  "GET /teams/{team_id}/discussions/{discussion_number}/comments/{comment_number}/reactions",
+  "GET /teams/{team_id}/discussions/{discussion_number}/reactions",
+  "GET /teams/{team_id}/invitations",
+  "GET /teams/{team_id}/members",
+  "GET /teams/{team_id}/projects",
+  "GET /teams/{team_id}/repos",
+  "GET /teams/{team_id}/teams",
+  "GET /user/blocks",
+  "GET /user/codespaces",
+  "GET /user/codespaces/secrets",
+  "GET /user/emails",
+  "GET /user/followers",
+  "GET /user/following",
+  "GET /user/gpg_keys",
+  "GET /user/installations",
+  "GET /user/installations/{installation_id}/repositories",
+  "GET /user/issues",
+  "GET /user/keys",
+  "GET /user/marketplace_purchases",
+  "GET /user/marketplace_purchases/stubbed",
+  "GET /user/memberships/orgs",
+  "GET /user/migrations",
+  "GET /user/migrations/{migration_id}/repositories",
+  "GET /user/orgs",
+  "GET /user/packages",
+  "GET /user/packages/{package_type}/{package_name}/versions",
+  "GET /user/public_emails",
+  "GET /user/repos",
+  "GET /user/repository_invitations",
+  "GET /user/social_accounts",
+  "GET /user/ssh_signing_keys",
+  "GET /user/starred",
+  "GET /user/subscriptions",
+  "GET /user/teams",
+  "GET /users",
+  "GET /users/{username}/events",
+  "GET /users/{username}/events/orgs/{org}",
+  "GET /users/{username}/events/public",
+  "GET /users/{username}/followers",
+  "GET /users/{username}/following",
+  "GET /users/{username}/gists",
+  "GET /users/{username}/gpg_keys",
+  "GET /users/{username}/keys",
+  "GET /users/{username}/orgs",
+  "GET /users/{username}/packages",
+  "GET /users/{username}/projects",
+  "GET /users/{username}/received_events",
+  "GET /users/{username}/received_events/public",
+  "GET /users/{username}/repos",
+  "GET /users/{username}/social_accounts",
+  "GET /users/{username}/ssh_signing_keys",
+  "GET /users/{username}/starred",
+  "GET /users/{username}/subscriptions"
+];
+
+// pkg/dist-src/paginating-endpoints.js
+function isPaginatingEndpoint(arg) {
+  if (typeof arg === "string") {
+    return paginatingEndpoints.includes(arg);
+  } else {
+    return false;
+  }
+}
+
+// pkg/dist-src/index.js
+function paginateRest(octokit) {
+  return {
+    paginate: Object.assign(paginate.bind(null, octokit), {
+      iterator: iterator.bind(null, octokit)
+    })
+  };
+}
+paginateRest.VERSION = VERSION;
+
+var distWeb = /*#__PURE__*/Object.freeze({
+	__proto__: null,
+	composePaginateRest: composePaginateRest,
+	isPaginatingEndpoint: isPaginatingEndpoint,
+	paginateRest: paginateRest,
+	paginatingEndpoints: paginatingEndpoints
+});
+
+var require$$4 = /*@__PURE__*/getAugmentedNamespace(distWeb);
+
+var hasRequiredUtils;
+
+function requireUtils () {
+	if (hasRequiredUtils) return utils$1;
+	hasRequiredUtils = 1;
+	(function (exports) {
+		var __createBinding = (utils$1 && utils$1.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+		    if (k2 === undefined) k2 = k;
+		    var desc = Object.getOwnPropertyDescriptor(m, k);
+		    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
+		      desc = { enumerable: true, get: function() { return m[k]; } };
+		    }
+		    Object.defineProperty(o, k2, desc);
+		}) : (function(o, m, k, k2) {
+		    if (k2 === undefined) k2 = k;
+		    o[k2] = m[k];
+		}));
+		var __setModuleDefault = (utils$1 && utils$1.__setModuleDefault) || (Object.create ? (function(o, v) {
+		    Object.defineProperty(o, "default", { enumerable: true, value: v });
+		}) : function(o, v) {
+		    o["default"] = v;
+		});
+		var __importStar = (utils$1 && utils$1.__importStar) || function (mod) {
+		    if (mod && mod.__esModule) return mod;
+		    var result = {};
+		    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
+		    __setModuleDefault(result, mod);
+		    return result;
+		};
+		Object.defineProperty(exports, "__esModule", { value: true });
+		exports.getOctokitOptions = exports.GitHub = exports.defaults = exports.context = void 0;
+		const Context = __importStar(requireContext());
+		const Utils = __importStar(requireUtils$1());
+		// octokit + plugins
+		const core_1 = require$$2;
+		const plugin_rest_endpoint_methods_1 = require$$3;
+		const plugin_paginate_rest_1 = require$$4;
+		exports.context = new Context.Context();
+		const baseUrl = Utils.getApiBaseUrl();
+		exports.defaults = {
+		    baseUrl,
+		    request: {
+		        agent: Utils.getProxyAgent(baseUrl),
+		        fetch: Utils.getProxyFetch(baseUrl)
+		    }
+		};
+		exports.GitHub = core_1.Octokit.plugin(plugin_rest_endpoint_methods_1.restEndpointMethods, plugin_paginate_rest_1.paginateRest).defaults(exports.defaults);
+		/**
+		 * Convience function to correctly format Octokit Options to pass into the constructor.
+		 *
+		 * @param     token    the repo PAT or GITHUB_TOKEN
+		 * @param     options  other options to set
+		 */
+		function getOctokitOptions(token, options) {
+		    const opts = Object.assign({}, options || {}); // Shallow clone - don't mutate the object provided by the caller
+		    // Auth
+		    const auth = Utils.getAuthString(token, opts);
+		    if (auth) {
+		        opts.auth = auth;
+		    }
+		    return opts;
+		}
+		exports.getOctokitOptions = getOctokitOptions;
+		
+	} (utils$1));
+	return utils$1;
+}
+
+var hasRequiredGithub;
+
+function requireGithub () {
+	if (hasRequiredGithub) return github;
+	hasRequiredGithub = 1;
+	var __createBinding = (github && github.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+	    if (k2 === undefined) k2 = k;
+	    var desc = Object.getOwnPropertyDescriptor(m, k);
+	    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
+	      desc = { enumerable: true, get: function() { return m[k]; } };
+	    }
+	    Object.defineProperty(o, k2, desc);
+	}) : (function(o, m, k, k2) {
+	    if (k2 === undefined) k2 = k;
+	    o[k2] = m[k];
+	}));
+	var __setModuleDefault = (github && github.__setModuleDefault) || (Object.create ? (function(o, v) {
+	    Object.defineProperty(o, "default", { enumerable: true, value: v });
+	}) : function(o, v) {
+	    o["default"] = v;
+	});
+	var __importStar = (github && github.__importStar) || function (mod) {
+	    if (mod && mod.__esModule) return mod;
+	    var result = {};
+	    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
+	    __setModuleDefault(result, mod);
+	    return result;
+	};
+	Object.defineProperty(github, "__esModule", { value: true });
+	github.getOctokit = github.context = void 0;
+	const Context = __importStar(requireContext());
+	const utils_1 = requireUtils();
+	github.context = new Context.Context();
+	/**
+	 * Returns a hydrated octokit ready to use for GitHub Actions
+	 *
+	 * @param     token    the repo PAT or GITHUB_TOKEN
+	 * @param     options  other options to set
+	 */
+	function getOctokit(token, options, ...additionalPlugins) {
+	    const GitHubWithPlugins = utils_1.GitHub.plugin(...additionalPlugins);
+	    return new GitHubWithPlugins((0, utils_1.getOctokitOptions)(token, options));
+	}
+	github.getOctokit = getOctokit;
+	
+	return github;
+}
+
+var githubExports = requireGithub();
+
+/*!
+Copyright (c) the purl authors
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+*/
+
+var packageUrl$1;
+var hasRequiredPackageUrl$1;
+
+function requirePackageUrl$1 () {
+	if (hasRequiredPackageUrl$1) return packageUrl$1;
+	hasRequiredPackageUrl$1 = 1;
+	const KnownQualifierNames = Object.freeze({
+	  // known qualifiers as defined here:
+	  // https://github.com/package-url/purl-spec/blob/master/PURL-SPECIFICATION.rst#known-qualifiers-keyvalue-pairs
+	  RepositoryUrl: 'repository_url',
+	  DownloadUrl: 'download_url',
+	  VcsUrl: 'vcs_url',
+	  FileName: 'file_name',
+	  Checksum: 'checksum'
+	});
+
+	class PackageURL {
+
+	  static get KnownQualifierNames() {
+	    return KnownQualifierNames;
+	  }
+
+	  constructor(type, namespace, name, version, qualifiers, subpath) {
+	    let required = { 'type': type, 'name': name };
+	    Object.keys(required).forEach(key => {
+	      if (!required[key]) {
+	        throw new Error('Invalid purl: "' + key + '" is a required field.');
+	      }
+	    });
+
+	    let strings = { 'type': type, 'namespace': namespace, 'name': name, 'versions': version, 'subpath': subpath };
+	    Object.keys(strings).forEach(key => {
+	      if (strings[key] && typeof strings[key] === 'string' || !strings[key]) {
+	        return;
+	      }
+	      throw new Error('Invalid purl: "' + key + '" argument must be a string.');
+	    });
+
+	    if (qualifiers) {
+	      if (typeof qualifiers !== 'object') {
+	        throw new Error('Invalid purl: "qualifiers" argument must be a dictionary.');
+	      }
+	      Object.keys(qualifiers).forEach(key => {
+	        if (!/^[a-z]+$/i.test(key) && !/[\.-_]/.test(key)) {
+	          throw new Error('Invalid purl: qualifier "' + key + '" contains an illegal character.');
+	        }
+	      });
+	    }
+
+	    this.type = type;
+	    this.name = name;
+	    this.namespace = namespace;
+	    this.version = version;
+	    this.qualifiers = qualifiers;
+	    this.subpath = subpath;
+	  }
+
+	  _handlePyPi() {
+	    this.name = this.name.toLowerCase().replace(/_/g, '-');
+	  }
+	  _handlePub() {
+	    this.name = this.name.toLowerCase();
+	    if (!/^[a-z0-9_]+$/i.test(this.name)) {
+	      throw new Error('Invalid purl: contains an illegal character.');
+	    }
+	  }
+
+	  toString() {
+	    var purl = ['pkg:', encodeURIComponent(this.type), '/'];
+
+	    if (this.type === 'pypi') {
+	      this._handlePyPi();
+	    }
+	    if (this.type === 'pub') {
+	      this._handlePub();
+	    }
+
+	    if (this.namespace) {
+	      purl.push(
+	        encodeURIComponent(this.namespace)
+	          .replace(/%3A/g, ':')
+	          .replace(/%2F/g, '/')
+	        );
+	      purl.push('/');
+	    }
+
+	    purl.push(encodeURIComponent(this.name).replace(/%3A/g, ':'));
+
+	    if (this.version) {
+	      purl.push('@');
+	      purl.push(encodeURIComponent(this.version).replace(/%3A/g, ':').replace(/%2B/g,'+'));
+	    }
+
+	    if (this.qualifiers) {
+	      purl.push('?');
+
+	      let qualifiers = this.qualifiers;
+	      let qualifierString = [];
+	      Object.keys(qualifiers).sort().forEach(key => {
+	        qualifierString.push(
+	          encodeURIComponent(key).replace(/%3A/g, ':')
+	          + '='
+	          + encodeURIComponent(qualifiers[key]).replace(/%2F/g, '/')
+	        );
+	      });
+
+	      purl.push(qualifierString.join('&'));
+	    }
+
+	    if (this.subpath) {
+	      purl.push('#');
+	      purl.push(encodeURIComponent(this.subpath)
+	        .replace(/%3A/g, ':')
+	        .replace(/%2F/g, '/'));
+	    }
+
+	    return purl.join('');
+	  }
+
+	  static fromString(purl) {
+	    if (!purl || typeof purl !== 'string' || !purl.trim()) {
+	      throw new Error('A purl string argument is required.');
+	    }
+
+	    let scheme = purl.slice(0, purl.indexOf(':'));
+	    let remainder = purl.slice(purl.indexOf(':') + 1);
+	    if (scheme !== 'pkg') {
+	      throw new Error('purl is missing the required "pkg" scheme component.');
+	    }
+	    // this strip '/, // and /// as possible in :// or :///
+	    // from https://gist.github.com/refo/47632c8a547f2d9b6517#file-remove-leading-slash
+	    remainder = remainder.trim().replace(/^\/+/g, '');
+
+	    let type;
+	    [type, remainder] = remainder.split('/', 2);
+	    if (!type || !remainder) {
+	      throw new Error('purl is missing the required "type" component.');
+	    }
+	    type = decodeURIComponent(type);
+
+	    let url = new URL(purl);
+
+	    let qualifiers = null;
+	    url.searchParams.forEach((value, key) => {
+	      if (!qualifiers) {
+	        qualifiers = {};
+	      }
+	      qualifiers[key] = value;
+	    });
+	    let subpath = url.hash;
+	    if (subpath.indexOf('#') === 0) {
+	      subpath = subpath.substring(1);
+	    }
+	    subpath = subpath.length === 0
+	      ? null
+	      : decodeURIComponent(subpath);
+
+	    if (url.username !== '' || url.password !== '') {
+	      throw new Error('Invalid purl: cannot contain a "user:pass@host:port"');
+	    }
+
+	    // this strip '/, // and /// as possible in :// or :///
+	    // from https://gist.github.com/refo/47632c8a547f2d9b6517#file-remove-leading-slash
+	    let path = url.pathname.trim().replace(/^\/+/g, '');
+
+	    // version is optional - check for existence
+	    let version = null;
+	    if (path.includes('@')) {
+	      let index = path.indexOf('@');
+	      let rawVersion= path.substring(index + 1);
+	      version = decodeURIComponent(rawVersion);
+
+	      // Convert percent-encoded colons (:) back, to stay in line with the `toString`
+	      // implementation of this library.
+	      // https://github.com/package-url/packageurl-js/blob/58026c86978c6e356e5e07f29ecfdccbf8829918/src/package-url.js#L98C10-L98C10
+	      let versionEncoded = encodeURIComponent(version).replace(/%3A/g, ':').replace(/%2B/g,'+');
+
+	      if (rawVersion !== versionEncoded) {
+	        throw new Error('Invalid purl: version must be percent-encoded');
+	      }
+
+	      remainder = path.substring(0, index);
+	    } else {
+	      remainder = path;
+	    }
+
+	    // The 'remainder' should now consist of an optional namespace and the name
+	    let remaining = remainder.split('/').slice(1);
+	    let name = null;
+	    let namespace = null;
+	    if (remaining.length > 1) {
+	      let nameIndex = remaining.length - 1;
+	      let namespaceComponents = remaining.slice(0, nameIndex);
+	      name = decodeURIComponent(remaining[nameIndex]);
+	      namespace = decodeURIComponent(namespaceComponents.join('/'));
+	    } else if (remaining.length === 1) {
+	      name = decodeURIComponent(remaining[0]);
+	    }
+
+	    if (name === '') {
+	      throw new Error('purl is missing the required "name" component.');
+	    }
+
+	    return new PackageURL(type, namespace, name, version, qualifiers, subpath);
+	  }
+
+	}
+	packageUrl$1 = PackageURL;
+	return packageUrl$1;
+}
+
+/*!
+Copyright (c) the purl authors
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+*/
+
+var packageurlJs$1;
+var hasRequiredPackageurlJs$1;
+
+function requirePackageurlJs$1 () {
+	if (hasRequiredPackageurlJs$1) return packageurlJs$1;
+	hasRequiredPackageurlJs$1 = 1;
+	const PackageURL = requirePackageUrl$1();
+
+	packageurlJs$1 = {
+	  PackageURL
+	};
+	return packageurlJs$1;
+}
+
+var packageurlJsExports$1 = requirePackageurlJs$1();
+
+class RequestError extends Error {
+  name;
+  /**
+   * http status code
+   */
+  status;
+  /**
+   * Request options that lead to the error.
+   */
+  request;
+  /**
+   * Response object if a response was received
+   */
+  response;
+  constructor(message, statusCode, options) {
+    super(message);
+    this.name = "HttpError";
+    this.status = Number.parseInt(statusCode);
+    if (Number.isNaN(this.status)) {
+      this.status = 0;
+    }
+    if ("response" in options) {
+      this.response = options.response;
+    }
+    const requestCopy = Object.assign({}, options.request);
+    if (options.request.headers.authorization) {
+      requestCopy.headers = Object.assign({}, options.request.headers, {
+        authorization: options.request.headers.authorization.replace(
+          /(?<! ) .*$/,
+          " [REDACTED]"
+        )
+      });
+    }
+    requestCopy.url = requestCopy.url.replace(/\bclient_secret=\w+/g, "client_secret=[REDACTED]").replace(/\baccess_token=\w+/g, "access_token=[REDACTED]");
+    this.request = requestCopy;
+  }
+}
+
+var o=class{depPackage;relationship;scope;constructor(e,t,s){this.depPackage=e,t!==void 0&&(this.relationship=t),s!==void 0&&(this.scope=s);}toJSON(){return {package_url:this.depPackage.packageURL.toString(),relationship:this.relationship,scope:this.scope,dependencies:this.depPackage.packageDependencyIDs}}},g=class{resolved;name;file;constructor(e,t){this.resolved={},this.name=e,t&&(this.file={source_location:t});}addDirectDependency(e,t){this.resolved[e.packageID()]=new o(e,"direct",t);}addIndirectDependency(e,t){this.resolved[e.packageID()]??=new o(e,"indirect",t);}hasDependency(e){return this.lookupDependency(e)!==void 0}lookupDependency(e){return this.resolved[e.packageID()]}countDependencies(){return Object.keys(this.resolved).length}filterDependencies(e){return Object.values(this.resolved).reduce((t,s)=>(e(s)&&t.push(s.depPackage),t),[])}directDependencies(){return this.filterDependencies(e=>e.relationship==="direct")}indirectDependencies(){return this.filterDependencies(e=>e.relationship==="indirect")}};var c=class{packageURL;dependencies;constructor(e){typeof e=="string"?this.packageURL=packageurlJsExports$1.PackageURL.fromString(e):this.packageURL=e,this.dependencies=[];}dependsOn(e){return this.dependencies.push(e),this}dependsOnPackages(e){for(let t of e)this.dependsOn(t);return this}get packageDependencyIDs(){return this.dependencies.map(e=>e.packageID())}packageID(){return this.packageURL.toString()}namespace(){return this.packageURL.namespace??null}name(){return this.packageURL.name}version(){return this.packageURL.version||""}matching(e){return (e.namespace===void 0||this.packageURL.namespace===e.namespace)&&(e.name===void 0||this.packageURL.name===e.name)&&(e.version===void 0||this.packageURL.version===e.version)}};var h=class{database;constructor(){this.database={};}package(e){let t=this.lookupPackage(e);if(t)return t;let s=new c(e);return this.addPackage(s),s}packagesMatching(e){return Object.values(this.database).filter(t=>t.matching(e))}addPackage(e){this.database[e.packageURL.toString()]=e;}removePackage(e){delete this.database[e.packageURL.toString()];}lookupPackage(e){if(typeof e=="string"){let t=packageurlJsExports$1.PackageURL.fromString(e);return this.database[t.toString()]}return this.database[e.toString()]}hasPackage(e){return this.lookupPackage(e)!==void 0}countPackages(){return Object.values(this.database).length}};function y(r){return {correlator:r.job,id:r.runId.toString()}}function P(r){return ["pull_request","pull_request_comment","pull_request_review","pull_request_review_comment"].includes(r.eventName)?r.payload.pull_request.head.sha:r.sha}var l=class{manifests;version;job;sha;ref;scanned;detector;constructor(e,t=githubExports.context,s,p=new Date,n=0){this.detector=e,this.version=n,this.job=s||y(t),this.sha=P(t),this.ref=t.ref,this.scanned=p.toISOString(),this.manifests={};}addManifest(e){this.manifests[e.name]=e;}prettyJSON(){return JSON.stringify(this,void 0,4)}};async function L(r,e=githubExports.context){coreExports.setOutput("snapshot",JSON.stringify(r)),coreExports.notice("Submitting snapshot..."),coreExports.notice(r.prettyJSON());let t=e.repo,s=coreExports.getInput("token")||await coreExports.getIDToken(),p=githubExports.getOctokit(s);try{let n=await p.request("POST /repos/{owner}/{repo}/dependency-graph/snapshots",{headers:{accept:"application/vnd.github.foo-bar-preview+json"},owner:t.owner,repo:t.repo,...r}),d=n.data.result;d==="SUCCESS"||d==="ACCEPTED"?coreExports.notice(`Snapshot successfully created at ${n.data.created_at.toString()}`):coreExports.error(`Snapshot creation failed with result: "${d}: ${n.data.message}"`);}catch(n){throw n instanceof RequestError&&(coreExports.error(`HTTP Status ${n.status} for request ${n.request.method} ${n.request.url}`),n.response&&coreExports.error(`Response body:
+${JSON.stringify(n.response.data,void 0,2)}`)),n instanceof Error&&(coreExports.error(n.message),n.stack&&coreExports.error(n.stack)),new Error(`Failed to submit snapshot: ${n}`)}}
+
+const ALIAS = Symbol.for('yaml.alias');
+const DOC = Symbol.for('yaml.document');
+const MAP = Symbol.for('yaml.map');
+const PAIR = Symbol.for('yaml.pair');
+const SCALAR$1 = Symbol.for('yaml.scalar');
+const SEQ = Symbol.for('yaml.seq');
+const NODE_TYPE = Symbol.for('yaml.node.type');
+const isAlias = (node) => !!node && typeof node === 'object' && node[NODE_TYPE] === ALIAS;
+const isDocument = (node) => !!node && typeof node === 'object' && node[NODE_TYPE] === DOC;
+const isMap = (node) => !!node && typeof node === 'object' && node[NODE_TYPE] === MAP;
+const isPair = (node) => !!node && typeof node === 'object' && node[NODE_TYPE] === PAIR;
+const isScalar = (node) => !!node && typeof node === 'object' && node[NODE_TYPE] === SCALAR$1;
+const isSeq = (node) => !!node && typeof node === 'object' && node[NODE_TYPE] === SEQ;
+function isCollection(node) {
+    if (node && typeof node === 'object')
+        switch (node[NODE_TYPE]) {
+            case MAP:
+            case SEQ:
+                return true;
+        }
+    return false;
+}
+function isNode(node) {
+    if (node && typeof node === 'object')
+        switch (node[NODE_TYPE]) {
+            case ALIAS:
+            case MAP:
+            case SCALAR$1:
+            case SEQ:
+                return true;
+        }
+    return false;
+}
+const hasAnchor = (node) => (isScalar(node) || isCollection(node)) && !!node.anchor;
+
+const BREAK = Symbol('break visit');
+const SKIP = Symbol('skip children');
+const REMOVE = Symbol('remove node');
+/**
+ * Apply a visitor to an AST node or document.
+ *
+ * Walks through the tree (depth-first) starting from `node`, calling a
+ * `visitor` function with three arguments:
+ *   - `key`: For sequence values and map `Pair`, the node's index in the
+ *     collection. Within a `Pair`, `'key'` or `'value'`, correspondingly.
+ *     `null` for the root node.
+ *   - `node`: The current node.
+ *   - `path`: The ancestry of the current node.
+ *
+ * The return value of the visitor may be used to control the traversal:
+ *   - `undefined` (default): Do nothing and continue
+ *   - `visit.SKIP`: Do not visit the children of this node, continue with next
+ *     sibling
+ *   - `visit.BREAK`: Terminate traversal completely
+ *   - `visit.REMOVE`: Remove the current node, then continue with the next one
+ *   - `Node`: Replace the current node, then continue by visiting it
+ *   - `number`: While iterating the items of a sequence or map, set the index
+ *     of the next step. This is useful especially if the index of the current
+ *     node has changed.
+ *
+ * If `visitor` is a single function, it will be called with all values
+ * encountered in the tree, including e.g. `null` values. Alternatively,
+ * separate visitor functions may be defined for each `Map`, `Pair`, `Seq`,
+ * `Alias` and `Scalar` node. To define the same visitor function for more than
+ * one node type, use the `Collection` (map and seq), `Value` (map, seq & scalar)
+ * and `Node` (alias, map, seq & scalar) targets. Of all these, only the most
+ * specific defined one will be used for each node.
+ */
+function visit(node, visitor) {
+    const visitor_ = initVisitor(visitor);
+    if (isDocument(node)) {
+        const cd = visit_(null, node.contents, visitor_, Object.freeze([node]));
+        if (cd === REMOVE)
+            node.contents = null;
+    }
+    else
+        visit_(null, node, visitor_, Object.freeze([]));
+}
+// Without the `as symbol` casts, TS declares these in the `visit`
+// namespace using `var`, but then complains about that because
+// `unique symbol` must be `const`.
+/** Terminate visit traversal completely */
+visit.BREAK = BREAK;
+/** Do not visit the children of the current node */
+visit.SKIP = SKIP;
+/** Remove the current node */
+visit.REMOVE = REMOVE;
+function visit_(key, node, visitor, path) {
+    const ctrl = callVisitor(key, node, visitor, path);
+    if (isNode(ctrl) || isPair(ctrl)) {
+        replaceNode(key, path, ctrl);
+        return visit_(key, ctrl, visitor, path);
+    }
+    if (typeof ctrl !== 'symbol') {
+        if (isCollection(node)) {
+            path = Object.freeze(path.concat(node));
+            for (let i = 0; i < node.items.length; ++i) {
+                const ci = visit_(i, node.items[i], visitor, path);
+                if (typeof ci === 'number')
+                    i = ci - 1;
+                else if (ci === BREAK)
+                    return BREAK;
+                else if (ci === REMOVE) {
+                    node.items.splice(i, 1);
+                    i -= 1;
+                }
+            }
+        }
+        else if (isPair(node)) {
+            path = Object.freeze(path.concat(node));
+            const ck = visit_('key', node.key, visitor, path);
+            if (ck === BREAK)
+                return BREAK;
+            else if (ck === REMOVE)
+                node.key = null;
+            const cv = visit_('value', node.value, visitor, path);
+            if (cv === BREAK)
+                return BREAK;
+            else if (cv === REMOVE)
+                node.value = null;
+        }
+    }
+    return ctrl;
+}
+function initVisitor(visitor) {
+    if (typeof visitor === 'object' &&
+        (visitor.Collection || visitor.Node || visitor.Value)) {
+        return Object.assign({
+            Alias: visitor.Node,
+            Map: visitor.Node,
+            Scalar: visitor.Node,
+            Seq: visitor.Node
+        }, visitor.Value && {
+            Map: visitor.Value,
+            Scalar: visitor.Value,
+            Seq: visitor.Value
+        }, visitor.Collection && {
+            Map: visitor.Collection,
+            Seq: visitor.Collection
+        }, visitor);
+    }
+    return visitor;
+}
+function callVisitor(key, node, visitor, path) {
+    if (typeof visitor === 'function')
+        return visitor(key, node, path);
+    if (isMap(node))
+        return visitor.Map?.(key, node, path);
+    if (isSeq(node))
+        return visitor.Seq?.(key, node, path);
+    if (isPair(node))
+        return visitor.Pair?.(key, node, path);
+    if (isScalar(node))
+        return visitor.Scalar?.(key, node, path);
+    if (isAlias(node))
+        return visitor.Alias?.(key, node, path);
+    return undefined;
+}
+function replaceNode(key, path, node) {
+    const parent = path[path.length - 1];
+    if (isCollection(parent)) {
+        parent.items[key] = node;
+    }
+    else if (isPair(parent)) {
+        if (key === 'key')
+            parent.key = node;
+        else
+            parent.value = node;
+    }
+    else if (isDocument(parent)) {
+        parent.contents = node;
+    }
+    else {
+        const pt = isAlias(parent) ? 'alias' : 'scalar';
+        throw new Error(`Cannot replace node with ${pt} parent`);
+    }
+}
+
+const escapeChars = {
+    '!': '%21',
+    ',': '%2C',
+    '[': '%5B',
+    ']': '%5D',
+    '{': '%7B',
+    '}': '%7D'
+};
+const escapeTagName = (tn) => tn.replace(/[!,[\]{}]/g, ch => escapeChars[ch]);
+class Directives {
+    constructor(yaml, tags) {
+        /**
+         * The directives-end/doc-start marker `---`. If `null`, a marker may still be
+         * included in the document's stringified representation.
+         */
+        this.docStart = null;
+        /** The doc-end marker `...`.  */
+        this.docEnd = false;
+        this.yaml = Object.assign({}, Directives.defaultYaml, yaml);
+        this.tags = Object.assign({}, Directives.defaultTags, tags);
+    }
+    clone() {
+        const copy = new Directives(this.yaml, this.tags);
+        copy.docStart = this.docStart;
+        return copy;
+    }
+    /**
+     * During parsing, get a Directives instance for the current document and
+     * update the stream state according to the current version's spec.
+     */
+    atDocument() {
+        const res = new Directives(this.yaml, this.tags);
+        switch (this.yaml.version) {
+            case '1.1':
+                this.atNextDocument = true;
+                break;
+            case '1.2':
+                this.atNextDocument = false;
+                this.yaml = {
+                    explicit: Directives.defaultYaml.explicit,
+                    version: '1.2'
+                };
+                this.tags = Object.assign({}, Directives.defaultTags);
+                break;
+        }
+        return res;
+    }
+    /**
+     * @param onError - May be called even if the action was successful
+     * @returns `true` on success
+     */
+    add(line, onError) {
+        if (this.atNextDocument) {
+            this.yaml = { explicit: Directives.defaultYaml.explicit, version: '1.1' };
+            this.tags = Object.assign({}, Directives.defaultTags);
+            this.atNextDocument = false;
+        }
+        const parts = line.trim().split(/[ \t]+/);
+        const name = parts.shift();
+        switch (name) {
+            case '%TAG': {
+                if (parts.length !== 2) {
+                    onError(0, '%TAG directive should contain exactly two parts');
+                    if (parts.length < 2)
+                        return false;
+                }
+                const [handle, prefix] = parts;
+                this.tags[handle] = prefix;
+                return true;
+            }
+            case '%YAML': {
+                this.yaml.explicit = true;
+                if (parts.length !== 1) {
+                    onError(0, '%YAML directive should contain exactly one part');
+                    return false;
+                }
+                const [version] = parts;
+                if (version === '1.1' || version === '1.2') {
+                    this.yaml.version = version;
+                    return true;
+                }
+                else {
+                    const isValid = /^\d+\.\d+$/.test(version);
+                    onError(6, `Unsupported YAML version ${version}`, isValid);
+                    return false;
+                }
+            }
+            default:
+                onError(0, `Unknown directive ${name}`, true);
+                return false;
+        }
+    }
+    /**
+     * Resolves a tag, matching handles to those defined in %TAG directives.
+     *
+     * @returns Resolved tag, which may also be the non-specific tag `'!'` or a
+     *   `'!local'` tag, or `null` if unresolvable.
+     */
+    tagName(source, onError) {
+        if (source === '!')
+            return '!'; // non-specific tag
+        if (source[0] !== '!') {
+            onError(`Not a valid tag: ${source}`);
+            return null;
+        }
+        if (source[1] === '<') {
+            const verbatim = source.slice(2, -1);
+            if (verbatim === '!' || verbatim === '!!') {
+                onError(`Verbatim tags aren't resolved, so ${source} is invalid.`);
+                return null;
+            }
+            if (source[source.length - 1] !== '>')
+                onError('Verbatim tags must end with a >');
+            return verbatim;
+        }
+        const [, handle, suffix] = source.match(/^(.*!)([^!]*)$/s);
+        if (!suffix)
+            onError(`The ${source} tag has no suffix`);
+        const prefix = this.tags[handle];
+        if (prefix) {
+            try {
+                return prefix + decodeURIComponent(suffix);
+            }
+            catch (error) {
+                onError(String(error));
+                return null;
+            }
+        }
+        if (handle === '!')
+            return source; // local tag
+        onError(`Could not resolve tag: ${source}`);
+        return null;
+    }
+    /**
+     * Given a fully resolved tag, returns its printable string form,
+     * taking into account current tag prefixes and defaults.
+     */
+    tagString(tag) {
+        for (const [handle, prefix] of Object.entries(this.tags)) {
+            if (tag.startsWith(prefix))
+                return handle + escapeTagName(tag.substring(prefix.length));
+        }
+        return tag[0] === '!' ? tag : `!<${tag}>`;
+    }
+    toString(doc) {
+        const lines = this.yaml.explicit
+            ? [`%YAML ${this.yaml.version || '1.2'}`]
+            : [];
+        const tagEntries = Object.entries(this.tags);
+        let tagNames;
+        if (doc && tagEntries.length > 0 && isNode(doc.contents)) {
+            const tags = {};
+            visit(doc.contents, (_key, node) => {
+                if (isNode(node) && node.tag)
+                    tags[node.tag] = true;
+            });
+            tagNames = Object.keys(tags);
+        }
+        else
+            tagNames = [];
+        for (const [handle, prefix] of tagEntries) {
+            if (handle === '!!' && prefix === 'tag:yaml.org,2002:')
+                continue;
+            if (!doc || tagNames.some(tn => tn.startsWith(prefix)))
+                lines.push(`%TAG ${handle} ${prefix}`);
+        }
+        return lines.join('\n');
+    }
+}
+Directives.defaultYaml = { explicit: false, version: '1.2' };
+Directives.defaultTags = { '!!': 'tag:yaml.org,2002:' };
+
+/**
+ * Verify that the input string is a valid anchor.
+ *
+ * Will throw on errors.
+ */
+function anchorIsValid(anchor) {
+    if (/[\x00-\x19\s,[\]{}]/.test(anchor)) {
+        const sa = JSON.stringify(anchor);
+        const msg = `Anchor must not contain whitespace or control characters: ${sa}`;
+        throw new Error(msg);
+    }
+    return true;
+}
+function anchorNames(root) {
+    const anchors = new Set();
+    visit(root, {
+        Value(_key, node) {
+            if (node.anchor)
+                anchors.add(node.anchor);
+        }
+    });
+    return anchors;
+}
+/** Find a new anchor name with the given `prefix` and a one-indexed suffix. */
+function findNewAnchor(prefix, exclude) {
+    for (let i = 1; true; ++i) {
+        const name = `${prefix}${i}`;
+        if (!exclude.has(name))
+            return name;
+    }
+}
+function createNodeAnchors(doc, prefix) {
+    const aliasObjects = [];
+    const sourceObjects = new Map();
+    let prevAnchors = null;
+    return {
+        onAnchor: (source) => {
+            aliasObjects.push(source);
+            prevAnchors ?? (prevAnchors = anchorNames(doc));
+            const anchor = findNewAnchor(prefix, prevAnchors);
+            prevAnchors.add(anchor);
+            return anchor;
+        },
+        /**
+         * With circular references, the source node is only resolved after all
+         * of its child nodes are. This is why anchors are set only after all of
+         * the nodes have been created.
+         */
+        setAnchors: () => {
+            for (const source of aliasObjects) {
+                const ref = sourceObjects.get(source);
+                if (typeof ref === 'object' &&
+                    ref.anchor &&
+                    (isScalar(ref.node) || isCollection(ref.node))) {
+                    ref.node.anchor = ref.anchor;
+                }
+                else {
+                    const error = new Error('Failed to resolve repeated object (this should not happen)');
+                    error.source = source;
+                    throw error;
+                }
+            }
+        },
+        sourceObjects
+    };
+}
+
+/**
+ * Applies the JSON.parse reviver algorithm as defined in the ECMA-262 spec,
+ * in section 24.5.1.1 "Runtime Semantics: InternalizeJSONProperty" of the
+ * 2021 edition: https://tc39.es/ecma262/#sec-json.parse
+ *
+ * Includes extensions for handling Map and Set objects.
+ */
+function applyReviver(reviver, obj, key, val) {
+    if (val && typeof val === 'object') {
+        if (Array.isArray(val)) {
+            for (let i = 0, len = val.length; i < len; ++i) {
+                const v0 = val[i];
+                const v1 = applyReviver(reviver, val, String(i), v0);
+                // eslint-disable-next-line @typescript-eslint/no-array-delete
+                if (v1 === undefined)
+                    delete val[i];
+                else if (v1 !== v0)
+                    val[i] = v1;
+            }
+        }
+        else if (val instanceof Map) {
+            for (const k of Array.from(val.keys())) {
+                const v0 = val.get(k);
+                const v1 = applyReviver(reviver, val, k, v0);
+                if (v1 === undefined)
+                    val.delete(k);
+                else if (v1 !== v0)
+                    val.set(k, v1);
+            }
+        }
+        else if (val instanceof Set) {
+            for (const v0 of Array.from(val)) {
+                const v1 = applyReviver(reviver, val, v0, v0);
+                if (v1 === undefined)
+                    val.delete(v0);
+                else if (v1 !== v0) {
+                    val.delete(v0);
+                    val.add(v1);
+                }
+            }
+        }
+        else {
+            for (const [k, v0] of Object.entries(val)) {
+                const v1 = applyReviver(reviver, val, k, v0);
+                if (v1 === undefined)
+                    delete val[k];
+                else if (v1 !== v0)
+                    val[k] = v1;
+            }
+        }
+    }
+    return reviver.call(obj, key, val);
+}
+
+/**
+ * Recursively convert any node or its contents to native JavaScript
+ *
+ * @param value - The input value
+ * @param arg - If `value` defines a `toJSON()` method, use this
+ *   as its first argument
+ * @param ctx - Conversion context, originally set in Document#toJS(). If
+ *   `{ keep: true }` is not set, output should be suitable for JSON
+ *   stringification.
+ */
+function toJS(value, arg, ctx) {
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-return
+    if (Array.isArray(value))
+        return value.map((v, i) => toJS(v, String(i), ctx));
+    if (value && typeof value.toJSON === 'function') {
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-call
+        if (!ctx || !hasAnchor(value))
+            return value.toJSON(arg, ctx);
+        const data = { aliasCount: 0, count: 1, res: undefined };
+        ctx.anchors.set(value, data);
+        ctx.onCreate = res => {
+            data.res = res;
+            delete ctx.onCreate;
+        };
+        const res = value.toJSON(arg, ctx);
+        if (ctx.onCreate)
+            ctx.onCreate(res);
+        return res;
+    }
+    if (typeof value === 'bigint' && !ctx?.keep)
+        return Number(value);
+    return value;
+}
+
+class NodeBase {
+    constructor(type) {
+        Object.defineProperty(this, NODE_TYPE, { value: type });
+    }
+    /** Create a copy of this node.  */
+    clone() {
+        const copy = Object.create(Object.getPrototypeOf(this), Object.getOwnPropertyDescriptors(this));
+        if (this.range)
+            copy.range = this.range.slice();
+        return copy;
+    }
+    /** A plain JavaScript representation of this node. */
+    toJS(doc, { mapAsMap, maxAliasCount, onAnchor, reviver } = {}) {
+        if (!isDocument(doc))
+            throw new TypeError('A document argument is required');
+        const ctx = {
+            anchors: new Map(),
+            doc,
+            keep: true,
+            mapAsMap: mapAsMap === true,
+            mapKeyWarned: false,
+            maxAliasCount: typeof maxAliasCount === 'number' ? maxAliasCount : 100
+        };
+        const res = toJS(this, '', ctx);
+        if (typeof onAnchor === 'function')
+            for (const { count, res } of ctx.anchors.values())
+                onAnchor(res, count);
+        return typeof reviver === 'function'
+            ? applyReviver(reviver, { '': res }, '', res)
+            : res;
+    }
+}
+
+class Alias extends NodeBase {
+    constructor(source) {
+        super(ALIAS);
+        this.source = source;
+        Object.defineProperty(this, 'tag', {
+            set() {
+                throw new Error('Alias nodes cannot have tags');
+            }
+        });
+    }
+    /**
+     * Resolve the value of this alias within `doc`, finding the last
+     * instance of the `source` anchor before this node.
+     */
+    resolve(doc, ctx) {
+        let nodes;
+        if (ctx?.aliasResolveCache) {
+            nodes = ctx.aliasResolveCache;
+        }
+        else {
+            nodes = [];
+            visit(doc, {
+                Node: (_key, node) => {
+                    if (isAlias(node) || hasAnchor(node))
+                        nodes.push(node);
+                }
+            });
+            if (ctx)
+                ctx.aliasResolveCache = nodes;
+        }
+        let found = undefined;
+        for (const node of nodes) {
+            if (node === this)
+                break;
+            if (node.anchor === this.source)
+                found = node;
+        }
+        return found;
+    }
+    toJSON(_arg, ctx) {
+        if (!ctx)
+            return { source: this.source };
+        const { anchors, doc, maxAliasCount } = ctx;
+        const source = this.resolve(doc, ctx);
+        if (!source) {
+            const msg = `Unresolved alias (the anchor must be set before the alias): ${this.source}`;
+            throw new ReferenceError(msg);
+        }
+        let data = anchors.get(source);
+        if (!data) {
+            // Resolve anchors for Node.prototype.toJS()
+            toJS(source, null, ctx);
+            data = anchors.get(source);
+        }
+        /* istanbul ignore if */
+        if (data?.res === undefined) {
+            const msg = 'This should not happen: Alias anchor was not resolved?';
+            throw new ReferenceError(msg);
+        }
+        if (maxAliasCount >= 0) {
+            data.count += 1;
+            if (data.aliasCount === 0)
+                data.aliasCount = getAliasCount(doc, source, anchors);
+            if (data.count * data.aliasCount > maxAliasCount) {
+                const msg = 'Excessive alias count indicates a resource exhaustion attack';
+                throw new ReferenceError(msg);
+            }
+        }
+        return data.res;
+    }
+    toString(ctx, _onComment, _onChompKeep) {
+        const src = `*${this.source}`;
+        if (ctx) {
+            anchorIsValid(this.source);
+            if (ctx.options.verifyAliasOrder && !ctx.anchors.has(this.source)) {
+                const msg = `Unresolved alias (the anchor must be set before the alias): ${this.source}`;
+                throw new Error(msg);
+            }
+            if (ctx.implicitKey)
+                return `${src} `;
+        }
+        return src;
+    }
+}
+function getAliasCount(doc, node, anchors) {
+    if (isAlias(node)) {
+        const source = node.resolve(doc);
+        const anchor = anchors && source && anchors.get(source);
+        return anchor ? anchor.count * anchor.aliasCount : 0;
+    }
+    else if (isCollection(node)) {
+        let count = 0;
+        for (const item of node.items) {
+            const c = getAliasCount(doc, item, anchors);
+            if (c > count)
+                count = c;
+        }
+        return count;
+    }
+    else if (isPair(node)) {
+        const kc = getAliasCount(doc, node.key, anchors);
+        const vc = getAliasCount(doc, node.value, anchors);
+        return Math.max(kc, vc);
+    }
+    return 1;
+}
+
+const isScalarValue = (value) => !value || (typeof value !== 'function' && typeof value !== 'object');
+class Scalar extends NodeBase {
+    constructor(value) {
+        super(SCALAR$1);
+        this.value = value;
+    }
+    toJSON(arg, ctx) {
+        return ctx?.keep ? this.value : toJS(this.value, arg, ctx);
+    }
+    toString() {
+        return String(this.value);
+    }
+}
+Scalar.BLOCK_FOLDED = 'BLOCK_FOLDED';
+Scalar.BLOCK_LITERAL = 'BLOCK_LITERAL';
+Scalar.PLAIN = 'PLAIN';
+Scalar.QUOTE_DOUBLE = 'QUOTE_DOUBLE';
+Scalar.QUOTE_SINGLE = 'QUOTE_SINGLE';
+
+const defaultTagPrefix = 'tag:yaml.org,2002:';
+function findTagObject(value, tagName, tags) {
+    if (tagName) {
+        const match = tags.filter(t => t.tag === tagName);
+        const tagObj = match.find(t => !t.format) ?? match[0];
+        if (!tagObj)
+            throw new Error(`Tag ${tagName} not found`);
+        return tagObj;
+    }
+    return tags.find(t => t.identify?.(value) && !t.format);
+}
+function createNode(value, tagName, ctx) {
+    if (isDocument(value))
+        value = value.contents;
+    if (isNode(value))
+        return value;
+    if (isPair(value)) {
+        const map = ctx.schema[MAP].createNode?.(ctx.schema, null, ctx);
+        map.items.push(value);
+        return map;
+    }
+    if (value instanceof String ||
+        value instanceof Number ||
+        value instanceof Boolean ||
+        (typeof BigInt !== 'undefined' && value instanceof BigInt) // not supported everywhere
+    ) {
+        // https://tc39.es/ecma262/#sec-serializejsonproperty
+        value = value.valueOf();
+    }
+    const { aliasDuplicateObjects, onAnchor, onTagObj, schema, sourceObjects } = ctx;
+    // Detect duplicate references to the same object & use Alias nodes for all
+    // after first. The `ref` wrapper allows for circular references to resolve.
+    let ref = undefined;
+    if (aliasDuplicateObjects && value && typeof value === 'object') {
+        ref = sourceObjects.get(value);
+        if (ref) {
+            ref.anchor ?? (ref.anchor = onAnchor(value));
+            return new Alias(ref.anchor);
+        }
+        else {
+            ref = { anchor: null, node: null };
+            sourceObjects.set(value, ref);
+        }
+    }
+    if (tagName?.startsWith('!!'))
+        tagName = defaultTagPrefix + tagName.slice(2);
+    let tagObj = findTagObject(value, tagName, schema.tags);
+    if (!tagObj) {
+        if (value && typeof value.toJSON === 'function') {
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-call
+            value = value.toJSON();
+        }
+        if (!value || typeof value !== 'object') {
+            const node = new Scalar(value);
+            if (ref)
+                ref.node = node;
+            return node;
+        }
+        tagObj =
+            value instanceof Map
+                ? schema[MAP]
+                : Symbol.iterator in Object(value)
+                    ? schema[SEQ]
+                    : schema[MAP];
+    }
+    if (onTagObj) {
+        onTagObj(tagObj);
+        delete ctx.onTagObj;
+    }
+    const node = tagObj?.createNode
+        ? tagObj.createNode(ctx.schema, value, ctx)
+        : typeof tagObj?.nodeClass?.from === 'function'
+            ? tagObj.nodeClass.from(ctx.schema, value, ctx)
+            : new Scalar(value);
+    if (tagName)
+        node.tag = tagName;
+    else if (!tagObj.default)
+        node.tag = tagObj.tag;
+    if (ref)
+        ref.node = node;
+    return node;
+}
+
+function collectionFromPath(schema, path, value) {
+    let v = value;
+    for (let i = path.length - 1; i >= 0; --i) {
+        const k = path[i];
+        if (typeof k === 'number' && Number.isInteger(k) && k >= 0) {
+            const a = [];
+            a[k] = v;
+            v = a;
+        }
+        else {
+            v = new Map([[k, v]]);
+        }
+    }
+    return createNode(v, undefined, {
+        aliasDuplicateObjects: false,
+        keepUndefined: false,
+        onAnchor: () => {
+            throw new Error('This should not happen, please report a bug.');
+        },
+        schema,
+        sourceObjects: new Map()
+    });
+}
+// Type guard is intentionally a little wrong so as to be more useful,
+// as it does not cover untypable empty non-string iterables (e.g. []).
+const isEmptyPath = (path) => path == null ||
+    (typeof path === 'object' && !!path[Symbol.iterator]().next().done);
+class Collection extends NodeBase {
+    constructor(type, schema) {
+        super(type);
+        Object.defineProperty(this, 'schema', {
+            value: schema,
+            configurable: true,
+            enumerable: false,
+            writable: true
+        });
+    }
+    /**
+     * Create a copy of this collection.
+     *
+     * @param schema - If defined, overwrites the original's schema
+     */
+    clone(schema) {
+        const copy = Object.create(Object.getPrototypeOf(this), Object.getOwnPropertyDescriptors(this));
+        if (schema)
+            copy.schema = schema;
+        copy.items = copy.items.map(it => isNode(it) || isPair(it) ? it.clone(schema) : it);
+        if (this.range)
+            copy.range = this.range.slice();
+        return copy;
+    }
+    /**
+     * Adds a value to the collection. For `!!map` and `!!omap` the value must
+     * be a Pair instance or a `{ key, value }` object, which may not have a key
+     * that already exists in the map.
+     */
+    addIn(path, value) {
+        if (isEmptyPath(path))
+            this.add(value);
+        else {
+            const [key, ...rest] = path;
+            const node = this.get(key, true);
+            if (isCollection(node))
+                node.addIn(rest, value);
+            else if (node === undefined && this.schema)
+                this.set(key, collectionFromPath(this.schema, rest, value));
+            else
+                throw new Error(`Expected YAML collection at ${key}. Remaining path: ${rest}`);
+        }
+    }
+    /**
+     * Removes a value from the collection.
+     * @returns `true` if the item was found and removed.
+     */
+    deleteIn(path) {
+        const [key, ...rest] = path;
+        if (rest.length === 0)
+            return this.delete(key);
+        const node = this.get(key, true);
+        if (isCollection(node))
+            return node.deleteIn(rest);
+        else
+            throw new Error(`Expected YAML collection at ${key}. Remaining path: ${rest}`);
+    }
+    /**
+     * Returns item at `key`, or `undefined` if not found. By default unwraps
+     * scalar values from their surrounding node; to disable set `keepScalar` to
+     * `true` (collections are always returned intact).
+     */
+    getIn(path, keepScalar) {
+        const [key, ...rest] = path;
+        const node = this.get(key, true);
+        if (rest.length === 0)
+            return !keepScalar && isScalar(node) ? node.value : node;
+        else
+            return isCollection(node) ? node.getIn(rest, keepScalar) : undefined;
+    }
+    hasAllNullValues(allowScalar) {
+        return this.items.every(node => {
+            if (!isPair(node))
+                return false;
+            const n = node.value;
+            return (n == null ||
+                (allowScalar &&
+                    isScalar(n) &&
+                    n.value == null &&
+                    !n.commentBefore &&
+                    !n.comment &&
+                    !n.tag));
+        });
+    }
+    /**
+     * Checks if the collection includes a value with the key `key`.
+     */
+    hasIn(path) {
+        const [key, ...rest] = path;
+        if (rest.length === 0)
+            return this.has(key);
+        const node = this.get(key, true);
+        return isCollection(node) ? node.hasIn(rest) : false;
+    }
+    /**
+     * Sets a value in this collection. For `!!set`, `value` needs to be a
+     * boolean to add/remove the item from the set.
+     */
+    setIn(path, value) {
+        const [key, ...rest] = path;
+        if (rest.length === 0) {
+            this.set(key, value);
+        }
+        else {
+            const node = this.get(key, true);
+            if (isCollection(node))
+                node.setIn(rest, value);
+            else if (node === undefined && this.schema)
+                this.set(key, collectionFromPath(this.schema, rest, value));
+            else
+                throw new Error(`Expected YAML collection at ${key}. Remaining path: ${rest}`);
+        }
+    }
+}
+
+/**
+ * Stringifies a comment.
+ *
+ * Empty comment lines are left empty,
+ * lines consisting of a single space are replaced by `#`,
+ * and all other lines are prefixed with a `#`.
+ */
+const stringifyComment = (str) => str.replace(/^(?!$)(?: $)?/gm, '#');
+function indentComment(comment, indent) {
+    if (/^\n+$/.test(comment))
+        return comment.substring(1);
+    return indent ? comment.replace(/^(?! *$)/gm, indent) : comment;
+}
+const lineComment = (str, indent, comment) => str.endsWith('\n')
+    ? indentComment(comment, indent)
+    : comment.includes('\n')
+        ? '\n' + indentComment(comment, indent)
+        : (str.endsWith(' ') ? '' : ' ') + comment;
+
+const FOLD_FLOW = 'flow';
+const FOLD_BLOCK = 'block';
+const FOLD_QUOTED = 'quoted';
+/**
+ * Tries to keep input at up to `lineWidth` characters, splitting only on spaces
+ * not followed by newlines or spaces unless `mode` is `'quoted'`. Lines are
+ * terminated with `\n` and started with `indent`.
+ */
+function foldFlowLines(text, indent, mode = 'flow', { indentAtStart, lineWidth = 80, minContentWidth = 20, onFold, onOverflow } = {}) {
+    if (!lineWidth || lineWidth < 0)
+        return text;
+    if (lineWidth < minContentWidth)
+        minContentWidth = 0;
+    const endStep = Math.max(1 + minContentWidth, 1 + lineWidth - indent.length);
+    if (text.length <= endStep)
+        return text;
+    const folds = [];
+    const escapedFolds = {};
+    let end = lineWidth - indent.length;
+    if (typeof indentAtStart === 'number') {
+        if (indentAtStart > lineWidth - Math.max(2, minContentWidth))
+            folds.push(0);
+        else
+            end = lineWidth - indentAtStart;
+    }
+    let split = undefined;
+    let prev = undefined;
+    let overflow = false;
+    let i = -1;
+    let escStart = -1;
+    let escEnd = -1;
+    if (mode === FOLD_BLOCK) {
+        i = consumeMoreIndentedLines(text, i, indent.length);
+        if (i !== -1)
+            end = i + endStep;
+    }
+    for (let ch; (ch = text[(i += 1)]);) {
+        if (mode === FOLD_QUOTED && ch === '\\') {
+            escStart = i;
+            switch (text[i + 1]) {
+                case 'x':
+                    i += 3;
+                    break;
+                case 'u':
+                    i += 5;
+                    break;
+                case 'U':
+                    i += 9;
+                    break;
+                default:
+                    i += 1;
+            }
+            escEnd = i;
+        }
+        if (ch === '\n') {
+            if (mode === FOLD_BLOCK)
+                i = consumeMoreIndentedLines(text, i, indent.length);
+            end = i + indent.length + endStep;
+            split = undefined;
+        }
+        else {
+            if (ch === ' ' &&
+                prev &&
+                prev !== ' ' &&
+                prev !== '\n' &&
+                prev !== '\t') {
+                // space surrounded by non-space can be replaced with newline + indent
+                const next = text[i + 1];
+                if (next && next !== ' ' && next !== '\n' && next !== '\t')
+                    split = i;
+            }
+            if (i >= end) {
+                if (split) {
+                    folds.push(split);
+                    end = split + endStep;
+                    split = undefined;
+                }
+                else if (mode === FOLD_QUOTED) {
+                    // white-space collected at end may stretch past lineWidth
+                    while (prev === ' ' || prev === '\t') {
+                        prev = ch;
+                        ch = text[(i += 1)];
+                        overflow = true;
+                    }
+                    // Account for newline escape, but don't break preceding escape
+                    const j = i > escEnd + 1 ? i - 2 : escStart - 1;
+                    // Bail out if lineWidth & minContentWidth are shorter than an escape string
+                    if (escapedFolds[j])
+                        return text;
+                    folds.push(j);
+                    escapedFolds[j] = true;
+                    end = j + endStep;
+                    split = undefined;
+                }
+                else {
+                    overflow = true;
+                }
+            }
+        }
+        prev = ch;
+    }
+    if (overflow && onOverflow)
+        onOverflow();
+    if (folds.length === 0)
+        return text;
+    if (onFold)
+        onFold();
+    let res = text.slice(0, folds[0]);
+    for (let i = 0; i < folds.length; ++i) {
+        const fold = folds[i];
+        const end = folds[i + 1] || text.length;
+        if (fold === 0)
+            res = `\n${indent}${text.slice(0, end)}`;
+        else {
+            if (mode === FOLD_QUOTED && escapedFolds[fold])
+                res += `${text[fold]}\\`;
+            res += `\n${indent}${text.slice(fold + 1, end)}`;
+        }
+    }
+    return res;
+}
+/**
+ * Presumes `i + 1` is at the start of a line
+ * @returns index of last newline in more-indented block
+ */
+function consumeMoreIndentedLines(text, i, indent) {
+    let end = i;
+    let start = i + 1;
+    let ch = text[start];
+    while (ch === ' ' || ch === '\t') {
+        if (i < start + indent) {
+            ch = text[++i];
+        }
+        else {
+            do {
+                ch = text[++i];
+            } while (ch && ch !== '\n');
+            end = i;
+            start = i + 1;
+            ch = text[start];
+        }
+    }
+    return end;
+}
+
+const getFoldOptions = (ctx, isBlock) => ({
+    indentAtStart: isBlock ? ctx.indent.length : ctx.indentAtStart,
+    lineWidth: ctx.options.lineWidth,
+    minContentWidth: ctx.options.minContentWidth
+});
+// Also checks for lines starting with %, as parsing the output as YAML 1.1 will
+// presume that's starting a new document.
+const containsDocumentMarker = (str) => /^(%|---|\.\.\.)/m.test(str);
+function lineLengthOverLimit(str, lineWidth, indentLength) {
+    if (!lineWidth || lineWidth < 0)
+        return false;
+    const limit = lineWidth - indentLength;
+    const strLen = str.length;
+    if (strLen <= limit)
+        return false;
+    for (let i = 0, start = 0; i < strLen; ++i) {
+        if (str[i] === '\n') {
+            if (i - start > limit)
+                return true;
+            start = i + 1;
+            if (strLen - start <= limit)
+                return false;
+        }
+    }
+    return true;
+}
+function doubleQuotedString(value, ctx) {
+    const json = JSON.stringify(value);
+    if (ctx.options.doubleQuotedAsJSON)
+        return json;
+    const { implicitKey } = ctx;
+    const minMultiLineLength = ctx.options.doubleQuotedMinMultiLineLength;
+    const indent = ctx.indent || (containsDocumentMarker(value) ? '  ' : '');
+    let str = '';
+    let start = 0;
+    for (let i = 0, ch = json[i]; ch; ch = json[++i]) {
+        if (ch === ' ' && json[i + 1] === '\\' && json[i + 2] === 'n') {
+            // space before newline needs to be escaped to not be folded
+            str += json.slice(start, i) + '\\ ';
+            i += 1;
+            start = i;
+            ch = '\\';
+        }
+        if (ch === '\\')
+            switch (json[i + 1]) {
+                case 'u':
+                    {
+                        str += json.slice(start, i);
+                        const code = json.substr(i + 2, 4);
+                        switch (code) {
+                            case '0000':
+                                str += '\\0';
+                                break;
+                            case '0007':
+                                str += '\\a';
+                                break;
+                            case '000b':
+                                str += '\\v';
+                                break;
+                            case '001b':
+                                str += '\\e';
+                                break;
+                            case '0085':
+                                str += '\\N';
+                                break;
+                            case '00a0':
+                                str += '\\_';
+                                break;
+                            case '2028':
+                                str += '\\L';
+                                break;
+                            case '2029':
+                                str += '\\P';
+                                break;
+                            default:
+                                if (code.substr(0, 2) === '00')
+                                    str += '\\x' + code.substr(2);
+                                else
+                                    str += json.substr(i, 6);
+                        }
+                        i += 5;
+                        start = i + 1;
+                    }
+                    break;
+                case 'n':
+                    if (implicitKey ||
+                        json[i + 2] === '"' ||
+                        json.length < minMultiLineLength) {
+                        i += 1;
+                    }
+                    else {
+                        // folding will eat first newline
+                        str += json.slice(start, i) + '\n\n';
+                        while (json[i + 2] === '\\' &&
+                            json[i + 3] === 'n' &&
+                            json[i + 4] !== '"') {
+                            str += '\n';
+                            i += 2;
+                        }
+                        str += indent;
+                        // space after newline needs to be escaped to not be folded
+                        if (json[i + 2] === ' ')
+                            str += '\\';
+                        i += 1;
+                        start = i + 1;
+                    }
+                    break;
+                default:
+                    i += 1;
+            }
+    }
+    str = start ? str + json.slice(start) : json;
+    return implicitKey
+        ? str
+        : foldFlowLines(str, indent, FOLD_QUOTED, getFoldOptions(ctx, false));
+}
+function singleQuotedString(value, ctx) {
+    if (ctx.options.singleQuote === false ||
+        (ctx.implicitKey && value.includes('\n')) ||
+        /[ \t]\n|\n[ \t]/.test(value) // single quoted string can't have leading or trailing whitespace around newline
+    )
+        return doubleQuotedString(value, ctx);
+    const indent = ctx.indent || (containsDocumentMarker(value) ? '  ' : '');
+    const res = "'" + value.replace(/'/g, "''").replace(/\n+/g, `$&\n${indent}`) + "'";
+    return ctx.implicitKey
+        ? res
+        : foldFlowLines(res, indent, FOLD_FLOW, getFoldOptions(ctx, false));
+}
+function quotedString(value, ctx) {
+    const { singleQuote } = ctx.options;
+    let qs;
+    if (singleQuote === false)
+        qs = doubleQuotedString;
+    else {
+        const hasDouble = value.includes('"');
+        const hasSingle = value.includes("'");
+        if (hasDouble && !hasSingle)
+            qs = singleQuotedString;
+        else if (hasSingle && !hasDouble)
+            qs = doubleQuotedString;
+        else
+            qs = singleQuote ? singleQuotedString : doubleQuotedString;
+    }
+    return qs(value, ctx);
+}
+// The negative lookbehind avoids a polynomial search,
+// but isn't supported yet on Safari: https://caniuse.com/js-regexp-lookbehind
+let blockEndNewlines;
+try {
+    blockEndNewlines = new RegExp('(^|(?<!\n))\n+(?!\n|$)', 'g');
+}
+catch {
+    blockEndNewlines = /\n+(?!\n|$)/g;
+}
+function blockString({ comment, type, value }, ctx, onComment, onChompKeep) {
+    const { blockQuote, commentString, lineWidth } = ctx.options;
+    // 1. Block can't end in whitespace unless the last line is non-empty.
+    // 2. Strings consisting of only whitespace are best rendered explicitly.
+    if (!blockQuote || /\n[\t ]+$/.test(value)) {
+        return quotedString(value, ctx);
+    }
+    const indent = ctx.indent ||
+        (ctx.forceBlockIndent || containsDocumentMarker(value) ? '  ' : '');
+    const literal = blockQuote === 'literal'
+        ? true
+        : blockQuote === 'folded' || type === Scalar.BLOCK_FOLDED
+            ? false
+            : type === Scalar.BLOCK_LITERAL
+                ? true
+                : !lineLengthOverLimit(value, lineWidth, indent.length);
+    if (!value)
+        return literal ? '|\n' : '>\n';
+    // determine chomping from whitespace at value end
+    let chomp;
+    let endStart;
+    for (endStart = value.length; endStart > 0; --endStart) {
+        const ch = value[endStart - 1];
+        if (ch !== '\n' && ch !== '\t' && ch !== ' ')
+            break;
+    }
+    let end = value.substring(endStart);
+    const endNlPos = end.indexOf('\n');
+    if (endNlPos === -1) {
+        chomp = '-'; // strip
+    }
+    else if (value === end || endNlPos !== end.length - 1) {
+        chomp = '+'; // keep
+        if (onChompKeep)
+            onChompKeep();
+    }
+    else {
+        chomp = ''; // clip
+    }
+    if (end) {
+        value = value.slice(0, -end.length);
+        if (end[end.length - 1] === '\n')
+            end = end.slice(0, -1);
+        end = end.replace(blockEndNewlines, `$&${indent}`);
+    }
+    // determine indent indicator from whitespace at value start
+    let startWithSpace = false;
+    let startEnd;
+    let startNlPos = -1;
+    for (startEnd = 0; startEnd < value.length; ++startEnd) {
+        const ch = value[startEnd];
+        if (ch === ' ')
+            startWithSpace = true;
+        else if (ch === '\n')
+            startNlPos = startEnd;
+        else
+            break;
+    }
+    let start = value.substring(0, startNlPos < startEnd ? startNlPos + 1 : startEnd);
+    if (start) {
+        value = value.substring(start.length);
+        start = start.replace(/\n+/g, `$&${indent}`);
+    }
+    const indentSize = indent ? '2' : '1'; // root is at -1
+    // Leading | or > is added later
+    let header = (startWithSpace ? indentSize : '') + chomp;
+    if (comment) {
+        header += ' ' + commentString(comment.replace(/ ?[\r\n]+/g, ' '));
+        if (onComment)
+            onComment();
+    }
+    if (!literal) {
+        const foldedValue = value
+            .replace(/\n+/g, '\n$&')
+            .replace(/(?:^|\n)([\t ].*)(?:([\n\t ]*)\n(?![\n\t ]))?/g, '$1$2') // more-indented lines aren't folded
+            //                ^ more-ind. ^ empty     ^ capture next empty lines only at end of indent
+            .replace(/\n+/g, `$&${indent}`);
+        let literalFallback = false;
+        const foldOptions = getFoldOptions(ctx, true);
+        if (blockQuote !== 'folded' && type !== Scalar.BLOCK_FOLDED) {
+            foldOptions.onOverflow = () => {
+                literalFallback = true;
+            };
+        }
+        const body = foldFlowLines(`${start}${foldedValue}${end}`, indent, FOLD_BLOCK, foldOptions);
+        if (!literalFallback)
+            return `>${header}\n${indent}${body}`;
+    }
+    value = value.replace(/\n+/g, `$&${indent}`);
+    return `|${header}\n${indent}${start}${value}${end}`;
+}
+function plainString(item, ctx, onComment, onChompKeep) {
+    const { type, value } = item;
+    const { actualString, implicitKey, indent, indentStep, inFlow } = ctx;
+    if ((implicitKey && value.includes('\n')) ||
+        (inFlow && /[[\]{},]/.test(value))) {
+        return quotedString(value, ctx);
+    }
+    if (/^[\n\t ,[\]{}#&*!|>'"%@`]|^[?-]$|^[?-][ \t]|[\n:][ \t]|[ \t]\n|[\n\t ]#|[\n\t :]$/.test(value)) {
+        // not allowed:
+        // - '-' or '?'
+        // - start with an indicator character (except [?:-]) or /[?-] /
+        // - '\n ', ': ' or ' \n' anywhere
+        // - '#' not preceded by a non-space char
+        // - end with ' ' or ':'
+        return implicitKey || inFlow || !value.includes('\n')
+            ? quotedString(value, ctx)
+            : blockString(item, ctx, onComment, onChompKeep);
+    }
+    if (!implicitKey &&
+        !inFlow &&
+        type !== Scalar.PLAIN &&
+        value.includes('\n')) {
+        // Where allowed & type not set explicitly, prefer block style for multiline strings
+        return blockString(item, ctx, onComment, onChompKeep);
+    }
+    if (containsDocumentMarker(value)) {
+        if (indent === '') {
+            ctx.forceBlockIndent = true;
+            return blockString(item, ctx, onComment, onChompKeep);
+        }
+        else if (implicitKey && indent === indentStep) {
+            return quotedString(value, ctx);
+        }
+    }
+    const str = value.replace(/\n+/g, `$&\n${indent}`);
+    // Verify that output will be parsed as a string, as e.g. plain numbers and
+    // booleans get parsed with those types in v1.2 (e.g. '42', 'true' & '0.9e-3'),
+    // and others in v1.1.
+    if (actualString) {
+        const test = (tag) => tag.default && tag.tag !== 'tag:yaml.org,2002:str' && tag.test?.test(str);
+        const { compat, tags } = ctx.doc.schema;
+        if (tags.some(test) || compat?.some(test))
+            return quotedString(value, ctx);
+    }
+    return implicitKey
+        ? str
+        : foldFlowLines(str, indent, FOLD_FLOW, getFoldOptions(ctx, false));
+}
+function stringifyString(item, ctx, onComment, onChompKeep) {
+    const { implicitKey, inFlow } = ctx;
+    const ss = typeof item.value === 'string'
+        ? item
+        : Object.assign({}, item, { value: String(item.value) });
+    let { type } = item;
+    if (type !== Scalar.QUOTE_DOUBLE) {
+        // force double quotes on control characters & unpaired surrogates
+        if (/[\x00-\x08\x0b-\x1f\x7f-\x9f\u{D800}-\u{DFFF}]/u.test(ss.value))
+            type = Scalar.QUOTE_DOUBLE;
+    }
+    const _stringify = (_type) => {
+        switch (_type) {
+            case Scalar.BLOCK_FOLDED:
+            case Scalar.BLOCK_LITERAL:
+                return implicitKey || inFlow
+                    ? quotedString(ss.value, ctx) // blocks are not valid inside flow containers
+                    : blockString(ss, ctx, onComment, onChompKeep);
+            case Scalar.QUOTE_DOUBLE:
+                return doubleQuotedString(ss.value, ctx);
+            case Scalar.QUOTE_SINGLE:
+                return singleQuotedString(ss.value, ctx);
+            case Scalar.PLAIN:
+                return plainString(ss, ctx, onComment, onChompKeep);
+            default:
+                return null;
+        }
+    };
+    let res = _stringify(type);
+    if (res === null) {
+        const { defaultKeyType, defaultStringType } = ctx.options;
+        const t = (implicitKey && defaultKeyType) || defaultStringType;
+        res = _stringify(t);
+        if (res === null)
+            throw new Error(`Unsupported default string type ${t}`);
+    }
+    return res;
+}
+
+function createStringifyContext(doc, options) {
+    const opt = Object.assign({
+        blockQuote: true,
+        commentString: stringifyComment,
+        defaultKeyType: null,
+        defaultStringType: 'PLAIN',
+        directives: null,
+        doubleQuotedAsJSON: false,
+        doubleQuotedMinMultiLineLength: 40,
+        falseStr: 'false',
+        flowCollectionPadding: true,
+        indentSeq: true,
+        lineWidth: 80,
+        minContentWidth: 20,
+        nullStr: 'null',
+        simpleKeys: false,
+        singleQuote: null,
+        trueStr: 'true',
+        verifyAliasOrder: true
+    }, doc.schema.toStringOptions, options);
+    let inFlow;
+    switch (opt.collectionStyle) {
+        case 'block':
+            inFlow = false;
+            break;
+        case 'flow':
+            inFlow = true;
+            break;
+        default:
+            inFlow = null;
+    }
+    return {
+        anchors: new Set(),
+        doc,
+        flowCollectionPadding: opt.flowCollectionPadding ? ' ' : '',
+        indent: '',
+        indentStep: typeof opt.indent === 'number' ? ' '.repeat(opt.indent) : '  ',
+        inFlow,
+        options: opt
+    };
+}
+function getTagObject(tags, item) {
+    if (item.tag) {
+        const match = tags.filter(t => t.tag === item.tag);
+        if (match.length > 0)
+            return match.find(t => t.format === item.format) ?? match[0];
+    }
+    let tagObj = undefined;
+    let obj;
+    if (isScalar(item)) {
+        obj = item.value;
+        let match = tags.filter(t => t.identify?.(obj));
+        if (match.length > 1) {
+            const testMatch = match.filter(t => t.test);
+            if (testMatch.length > 0)
+                match = testMatch;
+        }
+        tagObj =
+            match.find(t => t.format === item.format) ?? match.find(t => !t.format);
+    }
+    else {
+        obj = item;
+        tagObj = tags.find(t => t.nodeClass && obj instanceof t.nodeClass);
+    }
+    if (!tagObj) {
+        const name = obj?.constructor?.name ?? (obj === null ? 'null' : typeof obj);
+        throw new Error(`Tag not resolved for ${name} value`);
+    }
+    return tagObj;
+}
+// needs to be called before value stringifier to allow for circular anchor refs
+function stringifyProps(node, tagObj, { anchors, doc }) {
+    if (!doc.directives)
+        return '';
+    const props = [];
+    const anchor = (isScalar(node) || isCollection(node)) && node.anchor;
+    if (anchor && anchorIsValid(anchor)) {
+        anchors.add(anchor);
+        props.push(`&${anchor}`);
+    }
+    const tag = node.tag ?? (tagObj.default ? null : tagObj.tag);
+    if (tag)
+        props.push(doc.directives.tagString(tag));
+    return props.join(' ');
+}
+function stringify(item, ctx, onComment, onChompKeep) {
+    if (isPair(item))
+        return item.toString(ctx, onComment, onChompKeep);
+    if (isAlias(item)) {
+        if (ctx.doc.directives)
+            return item.toString(ctx);
+        if (ctx.resolvedAliases?.has(item)) {
+            throw new TypeError(`Cannot stringify circular structure without alias nodes`);
+        }
+        else {
+            if (ctx.resolvedAliases)
+                ctx.resolvedAliases.add(item);
+            else
+                ctx.resolvedAliases = new Set([item]);
+            item = item.resolve(ctx.doc);
+        }
+    }
+    let tagObj = undefined;
+    const node = isNode(item)
+        ? item
+        : ctx.doc.createNode(item, { onTagObj: o => (tagObj = o) });
+    tagObj ?? (tagObj = getTagObject(ctx.doc.schema.tags, node));
+    const props = stringifyProps(node, tagObj, ctx);
+    if (props.length > 0)
+        ctx.indentAtStart = (ctx.indentAtStart ?? 0) + props.length + 1;
+    const str = typeof tagObj.stringify === 'function'
+        ? tagObj.stringify(node, ctx, onComment, onChompKeep)
+        : isScalar(node)
+            ? stringifyString(node, ctx, onComment, onChompKeep)
+            : node.toString(ctx, onComment, onChompKeep);
+    if (!props)
+        return str;
+    return isScalar(node) || str[0] === '{' || str[0] === '['
+        ? `${props} ${str}`
+        : `${props}\n${ctx.indent}${str}`;
+}
+
+function stringifyPair({ key, value }, ctx, onComment, onChompKeep) {
+    const { allNullValues, doc, indent, indentStep, options: { commentString, indentSeq, simpleKeys } } = ctx;
+    let keyComment = (isNode(key) && key.comment) || null;
+    if (simpleKeys) {
+        if (keyComment) {
+            throw new Error('With simple keys, key nodes cannot have comments');
+        }
+        if (isCollection(key) || (!isNode(key) && typeof key === 'object')) {
+            const msg = 'With simple keys, collection cannot be used as a key value';
+            throw new Error(msg);
+        }
+    }
+    let explicitKey = !simpleKeys &&
+        (!key ||
+            (keyComment && value == null && !ctx.inFlow) ||
+            isCollection(key) ||
+            (isScalar(key)
+                ? key.type === Scalar.BLOCK_FOLDED || key.type === Scalar.BLOCK_LITERAL
+                : typeof key === 'object'));
+    ctx = Object.assign({}, ctx, {
+        allNullValues: false,
+        implicitKey: !explicitKey && (simpleKeys || !allNullValues),
+        indent: indent + indentStep
+    });
+    let keyCommentDone = false;
+    let chompKeep = false;
+    let str = stringify(key, ctx, () => (keyCommentDone = true), () => (chompKeep = true));
+    if (!explicitKey && !ctx.inFlow && str.length > 1024) {
+        if (simpleKeys)
+            throw new Error('With simple keys, single line scalar must not span more than 1024 characters');
+        explicitKey = true;
+    }
+    if (ctx.inFlow) {
+        if (allNullValues || value == null) {
+            if (keyCommentDone && onComment)
+                onComment();
+            return str === '' ? '?' : explicitKey ? `? ${str}` : str;
+        }
+    }
+    else if ((allNullValues && !simpleKeys) || (value == null && explicitKey)) {
+        str = `? ${str}`;
+        if (keyComment && !keyCommentDone) {
+            str += lineComment(str, ctx.indent, commentString(keyComment));
+        }
+        else if (chompKeep && onChompKeep)
+            onChompKeep();
+        return str;
+    }
+    if (keyCommentDone)
+        keyComment = null;
+    if (explicitKey) {
+        if (keyComment)
+            str += lineComment(str, ctx.indent, commentString(keyComment));
+        str = `? ${str}\n${indent}:`;
+    }
+    else {
+        str = `${str}:`;
+        if (keyComment)
+            str += lineComment(str, ctx.indent, commentString(keyComment));
+    }
+    let vsb, vcb, valueComment;
+    if (isNode(value)) {
+        vsb = !!value.spaceBefore;
+        vcb = value.commentBefore;
+        valueComment = value.comment;
+    }
+    else {
+        vsb = false;
+        vcb = null;
+        valueComment = null;
+        if (value && typeof value === 'object')
+            value = doc.createNode(value);
+    }
+    ctx.implicitKey = false;
+    if (!explicitKey && !keyComment && isScalar(value))
+        ctx.indentAtStart = str.length + 1;
+    chompKeep = false;
+    if (!indentSeq &&
+        indentStep.length >= 2 &&
+        !ctx.inFlow &&
+        !explicitKey &&
+        isSeq(value) &&
+        !value.flow &&
+        !value.tag &&
+        !value.anchor) {
+        // If indentSeq === false, consider '- ' as part of indentation where possible
+        ctx.indent = ctx.indent.substring(2);
+    }
+    let valueCommentDone = false;
+    const valueStr = stringify(value, ctx, () => (valueCommentDone = true), () => (chompKeep = true));
+    let ws = ' ';
+    if (keyComment || vsb || vcb) {
+        ws = vsb ? '\n' : '';
+        if (vcb) {
+            const cs = commentString(vcb);
+            ws += `\n${indentComment(cs, ctx.indent)}`;
+        }
+        if (valueStr === '' && !ctx.inFlow) {
+            if (ws === '\n' && valueComment)
+                ws = '\n\n';
+        }
+        else {
+            ws += `\n${ctx.indent}`;
+        }
+    }
+    else if (!explicitKey && isCollection(value)) {
+        const vs0 = valueStr[0];
+        const nl0 = valueStr.indexOf('\n');
+        const hasNewline = nl0 !== -1;
+        const flow = ctx.inFlow ?? value.flow ?? value.items.length === 0;
+        if (hasNewline || !flow) {
+            let hasPropsLine = false;
+            if (hasNewline && (vs0 === '&' || vs0 === '!')) {
+                let sp0 = valueStr.indexOf(' ');
+                if (vs0 === '&' &&
+                    sp0 !== -1 &&
+                    sp0 < nl0 &&
+                    valueStr[sp0 + 1] === '!') {
+                    sp0 = valueStr.indexOf(' ', sp0 + 1);
+                }
+                if (sp0 === -1 || nl0 < sp0)
+                    hasPropsLine = true;
+            }
+            if (!hasPropsLine)
+                ws = `\n${ctx.indent}`;
+        }
+    }
+    else if (valueStr === '' || valueStr[0] === '\n') {
+        ws = '';
+    }
+    str += ws + valueStr;
+    if (ctx.inFlow) {
+        if (valueCommentDone && onComment)
+            onComment();
+    }
+    else if (valueComment && !valueCommentDone) {
+        str += lineComment(str, ctx.indent, commentString(valueComment));
+    }
+    else if (chompKeep && onChompKeep) {
+        onChompKeep();
+    }
+    return str;
+}
+
+function warn(logLevel, warning) {
+    if (logLevel === 'debug' || logLevel === 'warn') {
+        console.warn(warning);
+    }
+}
+
+// If the value associated with a merge key is a single mapping node, each of
+// its key/value pairs is inserted into the current mapping, unless the key
+// already exists in it. If the value associated with the merge key is a
+// sequence, then this sequence is expected to contain mapping nodes and each
+// of these nodes is merged in turn according to its order in the sequence.
+// Keys in mapping nodes earlier in the sequence override keys specified in
+// later mapping nodes. -- http://yaml.org/type/merge.html
+const MERGE_KEY = '<<';
+const merge = {
+    identify: value => value === MERGE_KEY ||
+        (typeof value === 'symbol' && value.description === MERGE_KEY),
+    default: 'key',
+    tag: 'tag:yaml.org,2002:merge',
+    test: /^<<$/,
+    resolve: () => Object.assign(new Scalar(Symbol(MERGE_KEY)), {
+        addToJSMap: addMergeToJSMap
+    }),
+    stringify: () => MERGE_KEY
+};
+const isMergeKey = (ctx, key) => (merge.identify(key) ||
+    (isScalar(key) &&
+        (!key.type || key.type === Scalar.PLAIN) &&
+        merge.identify(key.value))) &&
+    ctx?.doc.schema.tags.some(tag => tag.tag === merge.tag && tag.default);
+function addMergeToJSMap(ctx, map, value) {
+    value = ctx && isAlias(value) ? value.resolve(ctx.doc) : value;
+    if (isSeq(value))
+        for (const it of value.items)
+            mergeValue(ctx, map, it);
+    else if (Array.isArray(value))
+        for (const it of value)
+            mergeValue(ctx, map, it);
+    else
+        mergeValue(ctx, map, value);
+}
+function mergeValue(ctx, map, value) {
+    const source = ctx && isAlias(value) ? value.resolve(ctx.doc) : value;
+    if (!isMap(source))
+        throw new Error('Merge sources must be maps or map aliases');
+    const srcMap = source.toJSON(null, ctx, Map);
+    for (const [key, value] of srcMap) {
+        if (map instanceof Map) {
+            if (!map.has(key))
+                map.set(key, value);
+        }
+        else if (map instanceof Set) {
+            map.add(key);
+        }
+        else if (!Object.prototype.hasOwnProperty.call(map, key)) {
+            Object.defineProperty(map, key, {
+                value,
+                writable: true,
+                enumerable: true,
+                configurable: true
+            });
+        }
+    }
+    return map;
+}
+
+function addPairToJSMap(ctx, map, { key, value }) {
+    if (isNode(key) && key.addToJSMap)
+        key.addToJSMap(ctx, map, value);
+    // TODO: Should drop this special case for bare << handling
+    else if (isMergeKey(ctx, key))
+        addMergeToJSMap(ctx, map, value);
+    else {
+        const jsKey = toJS(key, '', ctx);
+        if (map instanceof Map) {
+            map.set(jsKey, toJS(value, jsKey, ctx));
+        }
+        else if (map instanceof Set) {
+            map.add(jsKey);
+        }
+        else {
+            const stringKey = stringifyKey(key, jsKey, ctx);
+            const jsValue = toJS(value, stringKey, ctx);
+            if (stringKey in map)
+                Object.defineProperty(map, stringKey, {
+                    value: jsValue,
+                    writable: true,
+                    enumerable: true,
+                    configurable: true
+                });
+            else
+                map[stringKey] = jsValue;
+        }
+    }
+    return map;
+}
+function stringifyKey(key, jsKey, ctx) {
+    if (jsKey === null)
+        return '';
+    // eslint-disable-next-line @typescript-eslint/no-base-to-string
+    if (typeof jsKey !== 'object')
+        return String(jsKey);
+    if (isNode(key) && ctx?.doc) {
+        const strCtx = createStringifyContext(ctx.doc, {});
+        strCtx.anchors = new Set();
+        for (const node of ctx.anchors.keys())
+            strCtx.anchors.add(node.anchor);
+        strCtx.inFlow = true;
+        strCtx.inStringifyKey = true;
+        const strKey = key.toString(strCtx);
+        if (!ctx.mapKeyWarned) {
+            let jsonStr = JSON.stringify(strKey);
+            if (jsonStr.length > 40)
+                jsonStr = jsonStr.substring(0, 36) + '..."';
+            warn(ctx.doc.options.logLevel, `Keys with collection values will be stringified due to JS Object restrictions: ${jsonStr}. Set mapAsMap: true to use object keys.`);
+            ctx.mapKeyWarned = true;
+        }
+        return strKey;
+    }
+    return JSON.stringify(jsKey);
+}
+
+function createPair(key, value, ctx) {
+    const k = createNode(key, undefined, ctx);
+    const v = createNode(value, undefined, ctx);
+    return new Pair(k, v);
+}
+class Pair {
+    constructor(key, value = null) {
+        Object.defineProperty(this, NODE_TYPE, { value: PAIR });
+        this.key = key;
+        this.value = value;
+    }
+    clone(schema) {
+        let { key, value } = this;
+        if (isNode(key))
+            key = key.clone(schema);
+        if (isNode(value))
+            value = value.clone(schema);
+        return new Pair(key, value);
+    }
+    toJSON(_, ctx) {
+        const pair = ctx?.mapAsMap ? new Map() : {};
+        return addPairToJSMap(ctx, pair, this);
+    }
+    toString(ctx, onComment, onChompKeep) {
+        return ctx?.doc
+            ? stringifyPair(this, ctx, onComment, onChompKeep)
+            : JSON.stringify(this);
+    }
+}
+
+function stringifyCollection(collection, ctx, options) {
+    const flow = ctx.inFlow ?? collection.flow;
+    const stringify = flow ? stringifyFlowCollection : stringifyBlockCollection;
+    return stringify(collection, ctx, options);
+}
+function stringifyBlockCollection({ comment, items }, ctx, { blockItemPrefix, flowChars, itemIndent, onChompKeep, onComment }) {
+    const { indent, options: { commentString } } = ctx;
+    const itemCtx = Object.assign({}, ctx, { indent: itemIndent, type: null });
+    let chompKeep = false; // flag for the preceding node's status
+    const lines = [];
+    for (let i = 0; i < items.length; ++i) {
+        const item = items[i];
+        let comment = null;
+        if (isNode(item)) {
+            if (!chompKeep && item.spaceBefore)
+                lines.push('');
+            addCommentBefore(ctx, lines, item.commentBefore, chompKeep);
+            if (item.comment)
+                comment = item.comment;
+        }
+        else if (isPair(item)) {
+            const ik = isNode(item.key) ? item.key : null;
+            if (ik) {
+                if (!chompKeep && ik.spaceBefore)
+                    lines.push('');
+                addCommentBefore(ctx, lines, ik.commentBefore, chompKeep);
+            }
+        }
+        chompKeep = false;
+        let str = stringify(item, itemCtx, () => (comment = null), () => (chompKeep = true));
+        if (comment)
+            str += lineComment(str, itemIndent, commentString(comment));
+        if (chompKeep && comment)
+            chompKeep = false;
+        lines.push(blockItemPrefix + str);
+    }
+    let str;
+    if (lines.length === 0) {
+        str = flowChars.start + flowChars.end;
+    }
+    else {
+        str = lines[0];
+        for (let i = 1; i < lines.length; ++i) {
+            const line = lines[i];
+            str += line ? `\n${indent}${line}` : '\n';
+        }
+    }
+    if (comment) {
+        str += '\n' + indentComment(commentString(comment), indent);
+        if (onComment)
+            onComment();
+    }
+    else if (chompKeep && onChompKeep)
+        onChompKeep();
+    return str;
+}
+function stringifyFlowCollection({ items }, ctx, { flowChars, itemIndent }) {
+    const { indent, indentStep, flowCollectionPadding: fcPadding, options: { commentString } } = ctx;
+    itemIndent += indentStep;
+    const itemCtx = Object.assign({}, ctx, {
+        indent: itemIndent,
+        inFlow: true,
+        type: null
+    });
+    let reqNewline = false;
+    let linesAtValue = 0;
+    const lines = [];
+    for (let i = 0; i < items.length; ++i) {
+        const item = items[i];
+        let comment = null;
+        if (isNode(item)) {
+            if (item.spaceBefore)
+                lines.push('');
+            addCommentBefore(ctx, lines, item.commentBefore, false);
+            if (item.comment)
+                comment = item.comment;
+        }
+        else if (isPair(item)) {
+            const ik = isNode(item.key) ? item.key : null;
+            if (ik) {
+                if (ik.spaceBefore)
+                    lines.push('');
+                addCommentBefore(ctx, lines, ik.commentBefore, false);
+                if (ik.comment)
+                    reqNewline = true;
+            }
+            const iv = isNode(item.value) ? item.value : null;
+            if (iv) {
+                if (iv.comment)
+                    comment = iv.comment;
+                if (iv.commentBefore)
+                    reqNewline = true;
+            }
+            else if (item.value == null && ik?.comment) {
+                comment = ik.comment;
+            }
+        }
+        if (comment)
+            reqNewline = true;
+        let str = stringify(item, itemCtx, () => (comment = null));
+        if (i < items.length - 1)
+            str += ',';
+        if (comment)
+            str += lineComment(str, itemIndent, commentString(comment));
+        if (!reqNewline && (lines.length > linesAtValue || str.includes('\n')))
+            reqNewline = true;
+        lines.push(str);
+        linesAtValue = lines.length;
+    }
+    const { start, end } = flowChars;
+    if (lines.length === 0) {
+        return start + end;
+    }
+    else {
+        if (!reqNewline) {
+            const len = lines.reduce((sum, line) => sum + line.length + 2, 2);
+            reqNewline = ctx.options.lineWidth > 0 && len > ctx.options.lineWidth;
+        }
+        if (reqNewline) {
+            let str = start;
+            for (const line of lines)
+                str += line ? `\n${indentStep}${indent}${line}` : '\n';
+            return `${str}\n${indent}${end}`;
+        }
+        else {
+            return `${start}${fcPadding}${lines.join(' ')}${fcPadding}${end}`;
+        }
+    }
+}
+function addCommentBefore({ indent, options: { commentString } }, lines, comment, chompKeep) {
+    if (comment && chompKeep)
+        comment = comment.replace(/^\n+/, '');
+    if (comment) {
+        const ic = indentComment(commentString(comment), indent);
+        lines.push(ic.trimStart()); // Avoid double indent on first line
+    }
+}
+
+function findPair(items, key) {
+    const k = isScalar(key) ? key.value : key;
+    for (const it of items) {
+        if (isPair(it)) {
+            if (it.key === key || it.key === k)
+                return it;
+            if (isScalar(it.key) && it.key.value === k)
+                return it;
+        }
+    }
+    return undefined;
+}
+class YAMLMap extends Collection {
+    static get tagName() {
+        return 'tag:yaml.org,2002:map';
+    }
+    constructor(schema) {
+        super(MAP, schema);
+        this.items = [];
+    }
+    /**
+     * A generic collection parsing method that can be extended
+     * to other node classes that inherit from YAMLMap
+     */
+    static from(schema, obj, ctx) {
+        const { keepUndefined, replacer } = ctx;
+        const map = new this(schema);
+        const add = (key, value) => {
+            if (typeof replacer === 'function')
+                value = replacer.call(obj, key, value);
+            else if (Array.isArray(replacer) && !replacer.includes(key))
+                return;
+            if (value !== undefined || keepUndefined)
+                map.items.push(createPair(key, value, ctx));
+        };
+        if (obj instanceof Map) {
+            for (const [key, value] of obj)
+                add(key, value);
+        }
+        else if (obj && typeof obj === 'object') {
+            for (const key of Object.keys(obj))
+                add(key, obj[key]);
+        }
+        if (typeof schema.sortMapEntries === 'function') {
+            map.items.sort(schema.sortMapEntries);
+        }
+        return map;
+    }
+    /**
+     * Adds a value to the collection.
+     *
+     * @param overwrite - If not set `true`, using a key that is already in the
+     *   collection will throw. Otherwise, overwrites the previous value.
+     */
+    add(pair, overwrite) {
+        let _pair;
+        if (isPair(pair))
+            _pair = pair;
+        else if (!pair || typeof pair !== 'object' || !('key' in pair)) {
+            // In TypeScript, this never happens.
+            _pair = new Pair(pair, pair?.value);
+        }
+        else
+            _pair = new Pair(pair.key, pair.value);
+        const prev = findPair(this.items, _pair.key);
+        const sortEntries = this.schema?.sortMapEntries;
+        if (prev) {
+            if (!overwrite)
+                throw new Error(`Key ${_pair.key} already set`);
+            // For scalars, keep the old node & its comments and anchors
+            if (isScalar(prev.value) && isScalarValue(_pair.value))
+                prev.value.value = _pair.value;
+            else
+                prev.value = _pair.value;
+        }
+        else if (sortEntries) {
+            const i = this.items.findIndex(item => sortEntries(_pair, item) < 0);
+            if (i === -1)
+                this.items.push(_pair);
+            else
+                this.items.splice(i, 0, _pair);
+        }
+        else {
+            this.items.push(_pair);
+        }
+    }
+    delete(key) {
+        const it = findPair(this.items, key);
+        if (!it)
+            return false;
+        const del = this.items.splice(this.items.indexOf(it), 1);
+        return del.length > 0;
+    }
+    get(key, keepScalar) {
+        const it = findPair(this.items, key);
+        const node = it?.value;
+        return (!keepScalar && isScalar(node) ? node.value : node) ?? undefined;
+    }
+    has(key) {
+        return !!findPair(this.items, key);
+    }
+    set(key, value) {
+        this.add(new Pair(key, value), true);
+    }
+    /**
+     * @param ctx - Conversion context, originally set in Document#toJS()
+     * @param {Class} Type - If set, forces the returned collection type
+     * @returns Instance of Type, Map, or Object
+     */
+    toJSON(_, ctx, Type) {
+        const map = Type ? new Type() : ctx?.mapAsMap ? new Map() : {};
+        if (ctx?.onCreate)
+            ctx.onCreate(map);
+        for (const item of this.items)
+            addPairToJSMap(ctx, map, item);
+        return map;
+    }
+    toString(ctx, onComment, onChompKeep) {
+        if (!ctx)
+            return JSON.stringify(this);
+        for (const item of this.items) {
+            if (!isPair(item))
+                throw new Error(`Map items must all be pairs; found ${JSON.stringify(item)} instead`);
+        }
+        if (!ctx.allNullValues && this.hasAllNullValues(false))
+            ctx = Object.assign({}, ctx, { allNullValues: true });
+        return stringifyCollection(this, ctx, {
+            blockItemPrefix: '',
+            flowChars: { start: '{', end: '}' },
+            itemIndent: ctx.indent || '',
+            onChompKeep,
+            onComment
+        });
+    }
+}
+
+const map = {
+    collection: 'map',
+    default: true,
+    nodeClass: YAMLMap,
+    tag: 'tag:yaml.org,2002:map',
+    resolve(map, onError) {
+        if (!isMap(map))
+            onError('Expected a mapping for this tag');
+        return map;
+    },
+    createNode: (schema, obj, ctx) => YAMLMap.from(schema, obj, ctx)
+};
+
+class YAMLSeq extends Collection {
+    static get tagName() {
+        return 'tag:yaml.org,2002:seq';
+    }
+    constructor(schema) {
+        super(SEQ, schema);
+        this.items = [];
+    }
+    add(value) {
+        this.items.push(value);
+    }
+    /**
+     * Removes a value from the collection.
+     *
+     * `key` must contain a representation of an integer for this to succeed.
+     * It may be wrapped in a `Scalar`.
+     *
+     * @returns `true` if the item was found and removed.
+     */
+    delete(key) {
+        const idx = asItemIndex(key);
+        if (typeof idx !== 'number')
+            return false;
+        const del = this.items.splice(idx, 1);
+        return del.length > 0;
+    }
+    get(key, keepScalar) {
+        const idx = asItemIndex(key);
+        if (typeof idx !== 'number')
+            return undefined;
+        const it = this.items[idx];
+        return !keepScalar && isScalar(it) ? it.value : it;
+    }
+    /**
+     * Checks if the collection includes a value with the key `key`.
+     *
+     * `key` must contain a representation of an integer for this to succeed.
+     * It may be wrapped in a `Scalar`.
+     */
+    has(key) {
+        const idx = asItemIndex(key);
+        return typeof idx === 'number' && idx < this.items.length;
+    }
+    /**
+     * Sets a value in this collection. For `!!set`, `value` needs to be a
+     * boolean to add/remove the item from the set.
+     *
+     * If `key` does not contain a representation of an integer, this will throw.
+     * It may be wrapped in a `Scalar`.
+     */
+    set(key, value) {
+        const idx = asItemIndex(key);
+        if (typeof idx !== 'number')
+            throw new Error(`Expected a valid index, not ${key}.`);
+        const prev = this.items[idx];
+        if (isScalar(prev) && isScalarValue(value))
+            prev.value = value;
+        else
+            this.items[idx] = value;
+    }
+    toJSON(_, ctx) {
+        const seq = [];
+        if (ctx?.onCreate)
+            ctx.onCreate(seq);
+        let i = 0;
+        for (const item of this.items)
+            seq.push(toJS(item, String(i++), ctx));
+        return seq;
+    }
+    toString(ctx, onComment, onChompKeep) {
+        if (!ctx)
+            return JSON.stringify(this);
+        return stringifyCollection(this, ctx, {
+            blockItemPrefix: '- ',
+            flowChars: { start: '[', end: ']' },
+            itemIndent: (ctx.indent || '') + '  ',
+            onChompKeep,
+            onComment
+        });
+    }
+    static from(schema, obj, ctx) {
+        const { replacer } = ctx;
+        const seq = new this(schema);
+        if (obj && Symbol.iterator in Object(obj)) {
+            let i = 0;
+            for (let it of obj) {
+                if (typeof replacer === 'function') {
+                    const key = obj instanceof Set ? it : String(i++);
+                    it = replacer.call(obj, key, it);
+                }
+                seq.items.push(createNode(it, undefined, ctx));
+            }
+        }
+        return seq;
+    }
+}
+function asItemIndex(key) {
+    let idx = isScalar(key) ? key.value : key;
+    if (idx && typeof idx === 'string')
+        idx = Number(idx);
+    return typeof idx === 'number' && Number.isInteger(idx) && idx >= 0
+        ? idx
+        : null;
+}
+
+const seq = {
+    collection: 'seq',
+    default: true,
+    nodeClass: YAMLSeq,
+    tag: 'tag:yaml.org,2002:seq',
+    resolve(seq, onError) {
+        if (!isSeq(seq))
+            onError('Expected a sequence for this tag');
+        return seq;
+    },
+    createNode: (schema, obj, ctx) => YAMLSeq.from(schema, obj, ctx)
+};
+
+const string = {
+    identify: value => typeof value === 'string',
+    default: true,
+    tag: 'tag:yaml.org,2002:str',
+    resolve: str => str,
+    stringify(item, ctx, onComment, onChompKeep) {
+        ctx = Object.assign({ actualString: true }, ctx);
+        return stringifyString(item, ctx, onComment, onChompKeep);
+    }
+};
+
+const nullTag = {
+    identify: value => value == null,
+    createNode: () => new Scalar(null),
+    default: true,
+    tag: 'tag:yaml.org,2002:null',
+    test: /^(?:~|[Nn]ull|NULL)?$/,
+    resolve: () => new Scalar(null),
+    stringify: ({ source }, ctx) => typeof source === 'string' && nullTag.test.test(source)
+        ? source
+        : ctx.options.nullStr
+};
+
+const boolTag = {
+    identify: value => typeof value === 'boolean',
+    default: true,
+    tag: 'tag:yaml.org,2002:bool',
+    test: /^(?:[Tt]rue|TRUE|[Ff]alse|FALSE)$/,
+    resolve: str => new Scalar(str[0] === 't' || str[0] === 'T'),
+    stringify({ source, value }, ctx) {
+        if (source && boolTag.test.test(source)) {
+            const sv = source[0] === 't' || source[0] === 'T';
+            if (value === sv)
+                return source;
+        }
+        return value ? ctx.options.trueStr : ctx.options.falseStr;
+    }
+};
+
+function stringifyNumber({ format, minFractionDigits, tag, value }) {
+    if (typeof value === 'bigint')
+        return String(value);
+    const num = typeof value === 'number' ? value : Number(value);
+    if (!isFinite(num))
+        return isNaN(num) ? '.nan' : num < 0 ? '-.inf' : '.inf';
+    let n = Object.is(value, -0) ? '-0' : JSON.stringify(value);
+    if (!format &&
+        minFractionDigits &&
+        (!tag || tag === 'tag:yaml.org,2002:float') &&
+        /^\d/.test(n)) {
+        let i = n.indexOf('.');
+        if (i < 0) {
+            i = n.length;
+            n += '.';
+        }
+        let d = minFractionDigits - (n.length - i - 1);
+        while (d-- > 0)
+            n += '0';
+    }
+    return n;
+}
+
+const floatNaN$1 = {
+    identify: value => typeof value === 'number',
+    default: true,
+    tag: 'tag:yaml.org,2002:float',
+    test: /^(?:[-+]?\.(?:inf|Inf|INF)|\.nan|\.NaN|\.NAN)$/,
+    resolve: str => str.slice(-3).toLowerCase() === 'nan'
+        ? NaN
+        : str[0] === '-'
+            ? Number.NEGATIVE_INFINITY
+            : Number.POSITIVE_INFINITY,
+    stringify: stringifyNumber
+};
+const floatExp$1 = {
+    identify: value => typeof value === 'number',
+    default: true,
+    tag: 'tag:yaml.org,2002:float',
+    format: 'EXP',
+    test: /^[-+]?(?:\.[0-9]+|[0-9]+(?:\.[0-9]*)?)[eE][-+]?[0-9]+$/,
+    resolve: str => parseFloat(str),
+    stringify(node) {
+        const num = Number(node.value);
+        return isFinite(num) ? num.toExponential() : stringifyNumber(node);
+    }
+};
+const float$1 = {
+    identify: value => typeof value === 'number',
+    default: true,
+    tag: 'tag:yaml.org,2002:float',
+    test: /^[-+]?(?:\.[0-9]+|[0-9]+\.[0-9]*)$/,
+    resolve(str) {
+        const node = new Scalar(parseFloat(str));
+        const dot = str.indexOf('.');
+        if (dot !== -1 && str[str.length - 1] === '0')
+            node.minFractionDigits = str.length - dot - 1;
+        return node;
+    },
+    stringify: stringifyNumber
+};
+
+const intIdentify$2 = (value) => typeof value === 'bigint' || Number.isInteger(value);
+const intResolve$1 = (str, offset, radix, { intAsBigInt }) => (intAsBigInt ? BigInt(str) : parseInt(str.substring(offset), radix));
+function intStringify$1(node, radix, prefix) {
+    const { value } = node;
+    if (intIdentify$2(value) && value >= 0)
+        return prefix + value.toString(radix);
+    return stringifyNumber(node);
+}
+const intOct$1 = {
+    identify: value => intIdentify$2(value) && value >= 0,
+    default: true,
+    tag: 'tag:yaml.org,2002:int',
+    format: 'OCT',
+    test: /^0o[0-7]+$/,
+    resolve: (str, _onError, opt) => intResolve$1(str, 2, 8, opt),
+    stringify: node => intStringify$1(node, 8, '0o')
+};
+const int$1 = {
+    identify: intIdentify$2,
+    default: true,
+    tag: 'tag:yaml.org,2002:int',
+    test: /^[-+]?[0-9]+$/,
+    resolve: (str, _onError, opt) => intResolve$1(str, 0, 10, opt),
+    stringify: stringifyNumber
+};
+const intHex$1 = {
+    identify: value => intIdentify$2(value) && value >= 0,
+    default: true,
+    tag: 'tag:yaml.org,2002:int',
+    format: 'HEX',
+    test: /^0x[0-9a-fA-F]+$/,
+    resolve: (str, _onError, opt) => intResolve$1(str, 2, 16, opt),
+    stringify: node => intStringify$1(node, 16, '0x')
+};
+
+const schema$2 = [
+    map,
+    seq,
+    string,
+    nullTag,
+    boolTag,
+    intOct$1,
+    int$1,
+    intHex$1,
+    floatNaN$1,
+    floatExp$1,
+    float$1
+];
+
+function intIdentify$1(value) {
+    return typeof value === 'bigint' || Number.isInteger(value);
+}
+const stringifyJSON = ({ value }) => JSON.stringify(value);
+const jsonScalars = [
+    {
+        identify: value => typeof value === 'string',
+        default: true,
+        tag: 'tag:yaml.org,2002:str',
+        resolve: str => str,
+        stringify: stringifyJSON
+    },
+    {
+        identify: value => value == null,
+        createNode: () => new Scalar(null),
+        default: true,
+        tag: 'tag:yaml.org,2002:null',
+        test: /^null$/,
+        resolve: () => null,
+        stringify: stringifyJSON
+    },
+    {
+        identify: value => typeof value === 'boolean',
+        default: true,
+        tag: 'tag:yaml.org,2002:bool',
+        test: /^true$|^false$/,
+        resolve: str => str === 'true',
+        stringify: stringifyJSON
+    },
+    {
+        identify: intIdentify$1,
+        default: true,
+        tag: 'tag:yaml.org,2002:int',
+        test: /^-?(?:0|[1-9][0-9]*)$/,
+        resolve: (str, _onError, { intAsBigInt }) => intAsBigInt ? BigInt(str) : parseInt(str, 10),
+        stringify: ({ value }) => intIdentify$1(value) ? value.toString() : JSON.stringify(value)
+    },
+    {
+        identify: value => typeof value === 'number',
+        default: true,
+        tag: 'tag:yaml.org,2002:float',
+        test: /^-?(?:0|[1-9][0-9]*)(?:\.[0-9]*)?(?:[eE][-+]?[0-9]+)?$/,
+        resolve: str => parseFloat(str),
+        stringify: stringifyJSON
+    }
+];
+const jsonError = {
+    default: true,
+    tag: '',
+    test: /^/,
+    resolve(str, onError) {
+        onError(`Unresolved plain scalar ${JSON.stringify(str)}`);
+        return str;
+    }
+};
+const schema$1 = [map, seq].concat(jsonScalars, jsonError);
+
+const binary = {
+    identify: value => value instanceof Uint8Array, // Buffer inherits from Uint8Array
+    default: false,
+    tag: 'tag:yaml.org,2002:binary',
+    /**
+     * Returns a Buffer in node and an Uint8Array in browsers
+     *
+     * To use the resulting buffer as an image, you'll want to do something like:
+     *
+     *   const blob = new Blob([buffer], { type: 'image/jpeg' })
+     *   document.querySelector('#photo').src = URL.createObjectURL(blob)
+     */
+    resolve(src, onError) {
+        if (typeof atob === 'function') {
+            // On IE 11, atob() can't handle newlines
+            const str = atob(src.replace(/[\n\r]/g, ''));
+            const buffer = new Uint8Array(str.length);
+            for (let i = 0; i < str.length; ++i)
+                buffer[i] = str.charCodeAt(i);
+            return buffer;
+        }
+        else {
+            onError('This environment does not support reading binary tags; either Buffer or atob is required');
+            return src;
+        }
+    },
+    stringify({ comment, type, value }, ctx, onComment, onChompKeep) {
+        if (!value)
+            return '';
+        const buf = value; // checked earlier by binary.identify()
+        let str;
+        if (typeof btoa === 'function') {
+            let s = '';
+            for (let i = 0; i < buf.length; ++i)
+                s += String.fromCharCode(buf[i]);
+            str = btoa(s);
+        }
+        else {
+            throw new Error('This environment does not support writing binary tags; either Buffer or btoa is required');
+        }
+        type ?? (type = Scalar.BLOCK_LITERAL);
+        if (type !== Scalar.QUOTE_DOUBLE) {
+            const lineWidth = Math.max(ctx.options.lineWidth - ctx.indent.length, ctx.options.minContentWidth);
+            const n = Math.ceil(str.length / lineWidth);
+            const lines = new Array(n);
+            for (let i = 0, o = 0; i < n; ++i, o += lineWidth) {
+                lines[i] = str.substr(o, lineWidth);
+            }
+            str = lines.join(type === Scalar.BLOCK_LITERAL ? '\n' : ' ');
+        }
+        return stringifyString({ comment, type, value: str }, ctx, onComment, onChompKeep);
+    }
+};
+
+function resolvePairs(seq, onError) {
+    if (isSeq(seq)) {
+        for (let i = 0; i < seq.items.length; ++i) {
+            let item = seq.items[i];
+            if (isPair(item))
+                continue;
+            else if (isMap(item)) {
+                if (item.items.length > 1)
+                    onError('Each pair must have its own sequence indicator');
+                const pair = item.items[0] || new Pair(new Scalar(null));
+                if (item.commentBefore)
+                    pair.key.commentBefore = pair.key.commentBefore
+                        ? `${item.commentBefore}\n${pair.key.commentBefore}`
+                        : item.commentBefore;
+                if (item.comment) {
+                    const cn = pair.value ?? pair.key;
+                    cn.comment = cn.comment
+                        ? `${item.comment}\n${cn.comment}`
+                        : item.comment;
+                }
+                item = pair;
+            }
+            seq.items[i] = isPair(item) ? item : new Pair(item);
+        }
+    }
+    else
+        onError('Expected a sequence for this tag');
+    return seq;
+}
+function createPairs(schema, iterable, ctx) {
+    const { replacer } = ctx;
+    const pairs = new YAMLSeq(schema);
+    pairs.tag = 'tag:yaml.org,2002:pairs';
+    let i = 0;
+    if (iterable && Symbol.iterator in Object(iterable))
+        for (let it of iterable) {
+            if (typeof replacer === 'function')
+                it = replacer.call(iterable, String(i++), it);
+            let key, value;
+            if (Array.isArray(it)) {
+                if (it.length === 2) {
+                    key = it[0];
+                    value = it[1];
+                }
+                else
+                    throw new TypeError(`Expected [key, value] tuple: ${it}`);
+            }
+            else if (it && it instanceof Object) {
+                const keys = Object.keys(it);
+                if (keys.length === 1) {
+                    key = keys[0];
+                    value = it[key];
+                }
+                else {
+                    throw new TypeError(`Expected tuple with one key, not ${keys.length} keys`);
+                }
+            }
+            else {
+                key = it;
+            }
+            pairs.items.push(createPair(key, value, ctx));
+        }
+    return pairs;
+}
+const pairs = {
+    collection: 'seq',
+    default: false,
+    tag: 'tag:yaml.org,2002:pairs',
+    resolve: resolvePairs,
+    createNode: createPairs
+};
+
+class YAMLOMap extends YAMLSeq {
+    constructor() {
+        super();
+        this.add = YAMLMap.prototype.add.bind(this);
+        this.delete = YAMLMap.prototype.delete.bind(this);
+        this.get = YAMLMap.prototype.get.bind(this);
+        this.has = YAMLMap.prototype.has.bind(this);
+        this.set = YAMLMap.prototype.set.bind(this);
+        this.tag = YAMLOMap.tag;
+    }
+    /**
+     * If `ctx` is given, the return type is actually `Map<unknown, unknown>`,
+     * but TypeScript won't allow widening the signature of a child method.
+     */
+    toJSON(_, ctx) {
+        if (!ctx)
+            return super.toJSON(_);
+        const map = new Map();
+        if (ctx?.onCreate)
+            ctx.onCreate(map);
+        for (const pair of this.items) {
+            let key, value;
+            if (isPair(pair)) {
+                key = toJS(pair.key, '', ctx);
+                value = toJS(pair.value, key, ctx);
+            }
+            else {
+                key = toJS(pair, '', ctx);
+            }
+            if (map.has(key))
+                throw new Error('Ordered maps must not include duplicate keys');
+            map.set(key, value);
+        }
+        return map;
+    }
+    static from(schema, iterable, ctx) {
+        const pairs = createPairs(schema, iterable, ctx);
+        const omap = new this();
+        omap.items = pairs.items;
+        return omap;
+    }
+}
+YAMLOMap.tag = 'tag:yaml.org,2002:omap';
+const omap = {
+    collection: 'seq',
+    identify: value => value instanceof Map,
+    nodeClass: YAMLOMap,
+    default: false,
+    tag: 'tag:yaml.org,2002:omap',
+    resolve(seq, onError) {
+        const pairs = resolvePairs(seq, onError);
+        const seenKeys = [];
+        for (const { key } of pairs.items) {
+            if (isScalar(key)) {
+                if (seenKeys.includes(key.value)) {
+                    onError(`Ordered maps must not include duplicate keys: ${key.value}`);
+                }
+                else {
+                    seenKeys.push(key.value);
+                }
+            }
+        }
+        return Object.assign(new YAMLOMap(), pairs);
+    },
+    createNode: (schema, iterable, ctx) => YAMLOMap.from(schema, iterable, ctx)
+};
+
+function boolStringify({ value, source }, ctx) {
+    const boolObj = value ? trueTag : falseTag;
+    if (source && boolObj.test.test(source))
+        return source;
+    return value ? ctx.options.trueStr : ctx.options.falseStr;
+}
+const trueTag = {
+    identify: value => value === true,
+    default: true,
+    tag: 'tag:yaml.org,2002:bool',
+    test: /^(?:Y|y|[Yy]es|YES|[Tt]rue|TRUE|[Oo]n|ON)$/,
+    resolve: () => new Scalar(true),
+    stringify: boolStringify
+};
+const falseTag = {
+    identify: value => value === false,
+    default: true,
+    tag: 'tag:yaml.org,2002:bool',
+    test: /^(?:N|n|[Nn]o|NO|[Ff]alse|FALSE|[Oo]ff|OFF)$/,
+    resolve: () => new Scalar(false),
+    stringify: boolStringify
+};
+
+const floatNaN = {
+    identify: value => typeof value === 'number',
+    default: true,
+    tag: 'tag:yaml.org,2002:float',
+    test: /^(?:[-+]?\.(?:inf|Inf|INF)|\.nan|\.NaN|\.NAN)$/,
+    resolve: (str) => str.slice(-3).toLowerCase() === 'nan'
+        ? NaN
+        : str[0] === '-'
+            ? Number.NEGATIVE_INFINITY
+            : Number.POSITIVE_INFINITY,
+    stringify: stringifyNumber
+};
+const floatExp = {
+    identify: value => typeof value === 'number',
+    default: true,
+    tag: 'tag:yaml.org,2002:float',
+    format: 'EXP',
+    test: /^[-+]?(?:[0-9][0-9_]*)?(?:\.[0-9_]*)?[eE][-+]?[0-9]+$/,
+    resolve: (str) => parseFloat(str.replace(/_/g, '')),
+    stringify(node) {
+        const num = Number(node.value);
+        return isFinite(num) ? num.toExponential() : stringifyNumber(node);
+    }
+};
+const float = {
+    identify: value => typeof value === 'number',
+    default: true,
+    tag: 'tag:yaml.org,2002:float',
+    test: /^[-+]?(?:[0-9][0-9_]*)?\.[0-9_]*$/,
+    resolve(str) {
+        const node = new Scalar(parseFloat(str.replace(/_/g, '')));
+        const dot = str.indexOf('.');
+        if (dot !== -1) {
+            const f = str.substring(dot + 1).replace(/_/g, '');
+            if (f[f.length - 1] === '0')
+                node.minFractionDigits = f.length;
+        }
+        return node;
+    },
+    stringify: stringifyNumber
+};
+
+const intIdentify = (value) => typeof value === 'bigint' || Number.isInteger(value);
+function intResolve(str, offset, radix, { intAsBigInt }) {
+    const sign = str[0];
+    if (sign === '-' || sign === '+')
+        offset += 1;
+    str = str.substring(offset).replace(/_/g, '');
+    if (intAsBigInt) {
+        switch (radix) {
+            case 2:
+                str = `0b${str}`;
+                break;
+            case 8:
+                str = `0o${str}`;
+                break;
+            case 16:
+                str = `0x${str}`;
+                break;
+        }
+        const n = BigInt(str);
+        return sign === '-' ? BigInt(-1) * n : n;
+    }
+    const n = parseInt(str, radix);
+    return sign === '-' ? -1 * n : n;
+}
+function intStringify(node, radix, prefix) {
+    const { value } = node;
+    if (intIdentify(value)) {
+        const str = value.toString(radix);
+        return value < 0 ? '-' + prefix + str.substr(1) : prefix + str;
+    }
+    return stringifyNumber(node);
+}
+const intBin = {
+    identify: intIdentify,
+    default: true,
+    tag: 'tag:yaml.org,2002:int',
+    format: 'BIN',
+    test: /^[-+]?0b[0-1_]+$/,
+    resolve: (str, _onError, opt) => intResolve(str, 2, 2, opt),
+    stringify: node => intStringify(node, 2, '0b')
+};
+const intOct = {
+    identify: intIdentify,
+    default: true,
+    tag: 'tag:yaml.org,2002:int',
+    format: 'OCT',
+    test: /^[-+]?0[0-7_]+$/,
+    resolve: (str, _onError, opt) => intResolve(str, 1, 8, opt),
+    stringify: node => intStringify(node, 8, '0')
+};
+const int = {
+    identify: intIdentify,
+    default: true,
+    tag: 'tag:yaml.org,2002:int',
+    test: /^[-+]?[0-9][0-9_]*$/,
+    resolve: (str, _onError, opt) => intResolve(str, 0, 10, opt),
+    stringify: stringifyNumber
+};
+const intHex = {
+    identify: intIdentify,
+    default: true,
+    tag: 'tag:yaml.org,2002:int',
+    format: 'HEX',
+    test: /^[-+]?0x[0-9a-fA-F_]+$/,
+    resolve: (str, _onError, opt) => intResolve(str, 2, 16, opt),
+    stringify: node => intStringify(node, 16, '0x')
+};
+
+class YAMLSet extends YAMLMap {
+    constructor(schema) {
+        super(schema);
+        this.tag = YAMLSet.tag;
+    }
+    add(key) {
+        let pair;
+        if (isPair(key))
+            pair = key;
+        else if (key &&
+            typeof key === 'object' &&
+            'key' in key &&
+            'value' in key &&
+            key.value === null)
+            pair = new Pair(key.key, null);
+        else
+            pair = new Pair(key, null);
+        const prev = findPair(this.items, pair.key);
+        if (!prev)
+            this.items.push(pair);
+    }
+    /**
+     * If `keepPair` is `true`, returns the Pair matching `key`.
+     * Otherwise, returns the value of that Pair's key.
+     */
+    get(key, keepPair) {
+        const pair = findPair(this.items, key);
+        return !keepPair && isPair(pair)
+            ? isScalar(pair.key)
+                ? pair.key.value
+                : pair.key
+            : pair;
+    }
+    set(key, value) {
+        if (typeof value !== 'boolean')
+            throw new Error(`Expected boolean value for set(key, value) in a YAML set, not ${typeof value}`);
+        const prev = findPair(this.items, key);
+        if (prev && !value) {
+            this.items.splice(this.items.indexOf(prev), 1);
+        }
+        else if (!prev && value) {
+            this.items.push(new Pair(key));
+        }
+    }
+    toJSON(_, ctx) {
+        return super.toJSON(_, ctx, Set);
+    }
+    toString(ctx, onComment, onChompKeep) {
+        if (!ctx)
+            return JSON.stringify(this);
+        if (this.hasAllNullValues(true))
+            return super.toString(Object.assign({}, ctx, { allNullValues: true }), onComment, onChompKeep);
+        else
+            throw new Error('Set items must all have null values');
+    }
+    static from(schema, iterable, ctx) {
+        const { replacer } = ctx;
+        const set = new this(schema);
+        if (iterable && Symbol.iterator in Object(iterable))
+            for (let value of iterable) {
+                if (typeof replacer === 'function')
+                    value = replacer.call(iterable, value, value);
+                set.items.push(createPair(value, null, ctx));
+            }
+        return set;
+    }
+}
+YAMLSet.tag = 'tag:yaml.org,2002:set';
+const set = {
+    collection: 'map',
+    identify: value => value instanceof Set,
+    nodeClass: YAMLSet,
+    default: false,
+    tag: 'tag:yaml.org,2002:set',
+    createNode: (schema, iterable, ctx) => YAMLSet.from(schema, iterable, ctx),
+    resolve(map, onError) {
+        if (isMap(map)) {
+            if (map.hasAllNullValues(true))
+                return Object.assign(new YAMLSet(), map);
+            else
+                onError('Set items must all have null values');
+        }
+        else
+            onError('Expected a mapping for this tag');
+        return map;
+    }
+};
+
+/** Internal types handle bigint as number, because TS can't figure it out. */
+function parseSexagesimal(str, asBigInt) {
+    const sign = str[0];
+    const parts = sign === '-' || sign === '+' ? str.substring(1) : str;
+    const num = (n) => asBigInt ? BigInt(n) : Number(n);
+    const res = parts
+        .replace(/_/g, '')
+        .split(':')
+        .reduce((res, p) => res * num(60) + num(p), num(0));
+    return (sign === '-' ? num(-1) * res : res);
+}
+/**
+ * hhhh:mm:ss.sss
+ *
+ * Internal types handle bigint as number, because TS can't figure it out.
+ */
+function stringifySexagesimal(node) {
+    let { value } = node;
+    let num = (n) => n;
+    if (typeof value === 'bigint')
+        num = n => BigInt(n);
+    else if (isNaN(value) || !isFinite(value))
+        return stringifyNumber(node);
+    let sign = '';
+    if (value < 0) {
+        sign = '-';
+        value *= num(-1);
+    }
+    const _60 = num(60);
+    const parts = [value % _60]; // seconds, including ms
+    if (value < 60) {
+        parts.unshift(0); // at least one : is required
+    }
+    else {
+        value = (value - parts[0]) / _60;
+        parts.unshift(value % _60); // minutes
+        if (value >= 60) {
+            value = (value - parts[0]) / _60;
+            parts.unshift(value); // hours
+        }
+    }
+    return (sign +
+        parts
+            .map(n => String(n).padStart(2, '0'))
+            .join(':')
+            .replace(/000000\d*$/, '') // % 60 may introduce error
+    );
+}
+const intTime = {
+    identify: value => typeof value === 'bigint' || Number.isInteger(value),
+    default: true,
+    tag: 'tag:yaml.org,2002:int',
+    format: 'TIME',
+    test: /^[-+]?[0-9][0-9_]*(?::[0-5]?[0-9])+$/,
+    resolve: (str, _onError, { intAsBigInt }) => parseSexagesimal(str, intAsBigInt),
+    stringify: stringifySexagesimal
+};
+const floatTime = {
+    identify: value => typeof value === 'number',
+    default: true,
+    tag: 'tag:yaml.org,2002:float',
+    format: 'TIME',
+    test: /^[-+]?[0-9][0-9_]*(?::[0-5]?[0-9])+\.[0-9_]*$/,
+    resolve: str => parseSexagesimal(str, false),
+    stringify: stringifySexagesimal
+};
+const timestamp = {
+    identify: value => value instanceof Date,
+    default: true,
+    tag: 'tag:yaml.org,2002:timestamp',
+    // If the time zone is omitted, the timestamp is assumed to be specified in UTC. The time part
+    // may be omitted altogether, resulting in a date format. In such a case, the time part is
+    // assumed to be 00:00:00Z (start of day, UTC).
+    test: RegExp('^([0-9]{4})-([0-9]{1,2})-([0-9]{1,2})' + // YYYY-Mm-Dd
+        '(?:' + // time is optional
+        '(?:t|T|[ \\t]+)' + // t | T | whitespace
+        '([0-9]{1,2}):([0-9]{1,2}):([0-9]{1,2}(\\.[0-9]+)?)' + // Hh:Mm:Ss(.ss)?
+        '(?:[ \\t]*(Z|[-+][012]?[0-9](?::[0-9]{2})?))?' + // Z | +5 | -03:30
+        ')?$'),
+    resolve(str) {
+        const match = str.match(timestamp.test);
+        if (!match)
+            throw new Error('!!timestamp expects a date, starting with yyyy-mm-dd');
+        const [, year, month, day, hour, minute, second] = match.map(Number);
+        const millisec = match[7] ? Number((match[7] + '00').substr(1, 3)) : 0;
+        let date = Date.UTC(year, month - 1, day, hour || 0, minute || 0, second || 0, millisec);
+        const tz = match[8];
+        if (tz && tz !== 'Z') {
+            let d = parseSexagesimal(tz, false);
+            if (Math.abs(d) < 30)
+                d *= 60;
+            date -= 60000 * d;
+        }
+        return new Date(date);
+    },
+    stringify: ({ value }) => value?.toISOString().replace(/(T00:00:00)?\.000Z$/, '') ?? ''
+};
+
+const schema = [
+    map,
+    seq,
+    string,
+    nullTag,
+    trueTag,
+    falseTag,
+    intBin,
+    intOct,
+    int,
+    intHex,
+    floatNaN,
+    floatExp,
+    float,
+    binary,
+    merge,
+    omap,
+    pairs,
+    set,
+    intTime,
+    floatTime,
+    timestamp
+];
+
+const schemas = new Map([
+    ['core', schema$2],
+    ['failsafe', [map, seq, string]],
+    ['json', schema$1],
+    ['yaml11', schema],
+    ['yaml-1.1', schema]
+]);
+const tagsByName = {
+    binary,
+    bool: boolTag,
+    float: float$1,
+    floatExp: floatExp$1,
+    floatNaN: floatNaN$1,
+    floatTime,
+    int: int$1,
+    intHex: intHex$1,
+    intOct: intOct$1,
+    intTime,
+    map,
+    merge,
+    null: nullTag,
+    omap,
+    pairs,
+    seq,
+    set,
+    timestamp
+};
+const coreKnownTags = {
+    'tag:yaml.org,2002:binary': binary,
+    'tag:yaml.org,2002:merge': merge,
+    'tag:yaml.org,2002:omap': omap,
+    'tag:yaml.org,2002:pairs': pairs,
+    'tag:yaml.org,2002:set': set,
+    'tag:yaml.org,2002:timestamp': timestamp
+};
+function getTags(customTags, schemaName, addMergeTag) {
+    const schemaTags = schemas.get(schemaName);
+    if (schemaTags && !customTags) {
+        return addMergeTag && !schemaTags.includes(merge)
+            ? schemaTags.concat(merge)
+            : schemaTags.slice();
+    }
+    let tags = schemaTags;
+    if (!tags) {
+        if (Array.isArray(customTags))
+            tags = [];
+        else {
+            const keys = Array.from(schemas.keys())
+                .filter(key => key !== 'yaml11')
+                .map(key => JSON.stringify(key))
+                .join(', ');
+            throw new Error(`Unknown schema "${schemaName}"; use one of ${keys} or define customTags array`);
+        }
+    }
+    if (Array.isArray(customTags)) {
+        for (const tag of customTags)
+            tags = tags.concat(tag);
+    }
+    else if (typeof customTags === 'function') {
+        tags = customTags(tags.slice());
+    }
+    if (addMergeTag)
+        tags = tags.concat(merge);
+    return tags.reduce((tags, tag) => {
+        const tagObj = typeof tag === 'string' ? tagsByName[tag] : tag;
+        if (!tagObj) {
+            const tagName = JSON.stringify(tag);
+            const keys = Object.keys(tagsByName)
+                .map(key => JSON.stringify(key))
+                .join(', ');
+            throw new Error(`Unknown custom tag ${tagName}; use one of ${keys}`);
+        }
+        if (!tags.includes(tagObj))
+            tags.push(tagObj);
+        return tags;
+    }, []);
+}
+
+const sortMapEntriesByKey = (a, b) => a.key < b.key ? -1 : a.key > b.key ? 1 : 0;
+class Schema {
+    constructor({ compat, customTags, merge, resolveKnownTags, schema, sortMapEntries, toStringDefaults }) {
+        this.compat = Array.isArray(compat)
+            ? getTags(compat, 'compat')
+            : compat
+                ? getTags(null, compat)
+                : null;
+        this.name = (typeof schema === 'string' && schema) || 'core';
+        this.knownTags = resolveKnownTags ? coreKnownTags : {};
+        this.tags = getTags(customTags, this.name, merge);
+        this.toStringOptions = toStringDefaults ?? null;
+        Object.defineProperty(this, MAP, { value: map });
+        Object.defineProperty(this, SCALAR$1, { value: string });
+        Object.defineProperty(this, SEQ, { value: seq });
+        // Used by createMap()
+        this.sortMapEntries =
+            typeof sortMapEntries === 'function'
+                ? sortMapEntries
+                : sortMapEntries === true
+                    ? sortMapEntriesByKey
+                    : null;
+    }
+    clone() {
+        const copy = Object.create(Schema.prototype, Object.getOwnPropertyDescriptors(this));
+        copy.tags = this.tags.slice();
+        return copy;
+    }
+}
+
+function stringifyDocument(doc, options) {
+    const lines = [];
+    let hasDirectives = options.directives === true;
+    if (options.directives !== false && doc.directives) {
+        const dir = doc.directives.toString(doc);
+        if (dir) {
+            lines.push(dir);
+            hasDirectives = true;
+        }
+        else if (doc.directives.docStart)
+            hasDirectives = true;
+    }
+    if (hasDirectives)
+        lines.push('---');
+    const ctx = createStringifyContext(doc, options);
+    const { commentString } = ctx.options;
+    if (doc.commentBefore) {
+        if (lines.length !== 1)
+            lines.unshift('');
+        const cs = commentString(doc.commentBefore);
+        lines.unshift(indentComment(cs, ''));
+    }
+    let chompKeep = false;
+    let contentComment = null;
+    if (doc.contents) {
+        if (isNode(doc.contents)) {
+            if (doc.contents.spaceBefore && hasDirectives)
+                lines.push('');
+            if (doc.contents.commentBefore) {
+                const cs = commentString(doc.contents.commentBefore);
+                lines.push(indentComment(cs, ''));
+            }
+            // top-level block scalars need to be indented if followed by a comment
+            ctx.forceBlockIndent = !!doc.comment;
+            contentComment = doc.contents.comment;
+        }
+        const onChompKeep = contentComment ? undefined : () => (chompKeep = true);
+        let body = stringify(doc.contents, ctx, () => (contentComment = null), onChompKeep);
+        if (contentComment)
+            body += lineComment(body, '', commentString(contentComment));
+        if ((body[0] === '|' || body[0] === '>') &&
+            lines[lines.length - 1] === '---') {
+            // Top-level block scalars with a preceding doc marker ought to use the
+            // same line for their header.
+            lines[lines.length - 1] = `--- ${body}`;
+        }
+        else
+            lines.push(body);
+    }
+    else {
+        lines.push(stringify(doc.contents, ctx));
+    }
+    if (doc.directives?.docEnd) {
+        if (doc.comment) {
+            const cs = commentString(doc.comment);
+            if (cs.includes('\n')) {
+                lines.push('...');
+                lines.push(indentComment(cs, ''));
+            }
+            else {
+                lines.push(`... ${cs}`);
+            }
+        }
+        else {
+            lines.push('...');
+        }
+    }
+    else {
+        let dc = doc.comment;
+        if (dc && chompKeep)
+            dc = dc.replace(/^\n+/, '');
+        if (dc) {
+            if ((!chompKeep || contentComment) && lines[lines.length - 1] !== '')
+                lines.push('');
+            lines.push(indentComment(commentString(dc), ''));
+        }
+    }
+    return lines.join('\n') + '\n';
+}
+
+class Document {
+    constructor(value, replacer, options) {
+        /** A comment before this Document */
+        this.commentBefore = null;
+        /** A comment immediately after this Document */
+        this.comment = null;
+        /** Errors encountered during parsing. */
+        this.errors = [];
+        /** Warnings encountered during parsing. */
+        this.warnings = [];
+        Object.defineProperty(this, NODE_TYPE, { value: DOC });
+        let _replacer = null;
+        if (typeof replacer === 'function' || Array.isArray(replacer)) {
+            _replacer = replacer;
+        }
+        else if (options === undefined && replacer) {
+            options = replacer;
+            replacer = undefined;
+        }
+        const opt = Object.assign({
+            intAsBigInt: false,
+            keepSourceTokens: false,
+            logLevel: 'warn',
+            prettyErrors: true,
+            strict: true,
+            stringKeys: false,
+            uniqueKeys: true,
+            version: '1.2'
+        }, options);
+        this.options = opt;
+        let { version } = opt;
+        if (options?._directives) {
+            this.directives = options._directives.atDocument();
+            if (this.directives.yaml.explicit)
+                version = this.directives.yaml.version;
+        }
+        else
+            this.directives = new Directives({ version });
+        this.setSchema(version, options);
+        // @ts-expect-error We can't really know that this matches Contents.
+        this.contents =
+            value === undefined ? null : this.createNode(value, _replacer, options);
+    }
+    /**
+     * Create a deep copy of this Document and its contents.
+     *
+     * Custom Node values that inherit from `Object` still refer to their original instances.
+     */
+    clone() {
+        const copy = Object.create(Document.prototype, {
+            [NODE_TYPE]: { value: DOC }
+        });
+        copy.commentBefore = this.commentBefore;
+        copy.comment = this.comment;
+        copy.errors = this.errors.slice();
+        copy.warnings = this.warnings.slice();
+        copy.options = Object.assign({}, this.options);
+        if (this.directives)
+            copy.directives = this.directives.clone();
+        copy.schema = this.schema.clone();
+        // @ts-expect-error We can't really know that this matches Contents.
+        copy.contents = isNode(this.contents)
+            ? this.contents.clone(copy.schema)
+            : this.contents;
+        if (this.range)
+            copy.range = this.range.slice();
+        return copy;
+    }
+    /** Adds a value to the document. */
+    add(value) {
+        if (assertCollection(this.contents))
+            this.contents.add(value);
+    }
+    /** Adds a value to the document. */
+    addIn(path, value) {
+        if (assertCollection(this.contents))
+            this.contents.addIn(path, value);
+    }
+    /**
+     * Create a new `Alias` node, ensuring that the target `node` has the required anchor.
+     *
+     * If `node` already has an anchor, `name` is ignored.
+     * Otherwise, the `node.anchor` value will be set to `name`,
+     * or if an anchor with that name is already present in the document,
+     * `name` will be used as a prefix for a new unique anchor.
+     * If `name` is undefined, the generated anchor will use 'a' as a prefix.
+     */
+    createAlias(node, name) {
+        if (!node.anchor) {
+            const prev = anchorNames(this);
+            node.anchor =
+                // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing
+                !name || prev.has(name) ? findNewAnchor(name || 'a', prev) : name;
+        }
+        return new Alias(node.anchor);
+    }
+    createNode(value, replacer, options) {
+        let _replacer = undefined;
+        if (typeof replacer === 'function') {
+            value = replacer.call({ '': value }, '', value);
+            _replacer = replacer;
+        }
+        else if (Array.isArray(replacer)) {
+            const keyToStr = (v) => typeof v === 'number' || v instanceof String || v instanceof Number;
+            const asStr = replacer.filter(keyToStr).map(String);
+            if (asStr.length > 0)
+                replacer = replacer.concat(asStr);
+            _replacer = replacer;
+        }
+        else if (options === undefined && replacer) {
+            options = replacer;
+            replacer = undefined;
+        }
+        const { aliasDuplicateObjects, anchorPrefix, flow, keepUndefined, onTagObj, tag } = options ?? {};
+        const { onAnchor, setAnchors, sourceObjects } = createNodeAnchors(this, 
+        // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing
+        anchorPrefix || 'a');
+        const ctx = {
+            aliasDuplicateObjects: aliasDuplicateObjects ?? true,
+            keepUndefined: keepUndefined ?? false,
+            onAnchor,
+            onTagObj,
+            replacer: _replacer,
+            schema: this.schema,
+            sourceObjects
+        };
+        const node = createNode(value, tag, ctx);
+        if (flow && isCollection(node))
+            node.flow = true;
+        setAnchors();
+        return node;
+    }
+    /**
+     * Convert a key and a value into a `Pair` using the current schema,
+     * recursively wrapping all values as `Scalar` or `Collection` nodes.
+     */
+    createPair(key, value, options = {}) {
+        const k = this.createNode(key, null, options);
+        const v = this.createNode(value, null, options);
+        return new Pair(k, v);
+    }
+    /**
+     * Removes a value from the document.
+     * @returns `true` if the item was found and removed.
+     */
+    delete(key) {
+        return assertCollection(this.contents) ? this.contents.delete(key) : false;
+    }
+    /**
+     * Removes a value from the document.
+     * @returns `true` if the item was found and removed.
+     */
+    deleteIn(path) {
+        if (isEmptyPath(path)) {
+            if (this.contents == null)
+                return false;
+            // @ts-expect-error Presumed impossible if Strict extends false
+            this.contents = null;
+            return true;
+        }
+        return assertCollection(this.contents)
+            ? this.contents.deleteIn(path)
+            : false;
+    }
+    /**
+     * Returns item at `key`, or `undefined` if not found. By default unwraps
+     * scalar values from their surrounding node; to disable set `keepScalar` to
+     * `true` (collections are always returned intact).
+     */
+    get(key, keepScalar) {
+        return isCollection(this.contents)
+            ? this.contents.get(key, keepScalar)
+            : undefined;
+    }
+    /**
+     * Returns item at `path`, or `undefined` if not found. By default unwraps
+     * scalar values from their surrounding node; to disable set `keepScalar` to
+     * `true` (collections are always returned intact).
+     */
+    getIn(path, keepScalar) {
+        if (isEmptyPath(path))
+            return !keepScalar && isScalar(this.contents)
+                ? this.contents.value
+                : this.contents;
+        return isCollection(this.contents)
+            ? this.contents.getIn(path, keepScalar)
+            : undefined;
+    }
+    /**
+     * Checks if the document includes a value with the key `key`.
+     */
+    has(key) {
+        return isCollection(this.contents) ? this.contents.has(key) : false;
+    }
+    /**
+     * Checks if the document includes a value at `path`.
+     */
+    hasIn(path) {
+        if (isEmptyPath(path))
+            return this.contents !== undefined;
+        return isCollection(this.contents) ? this.contents.hasIn(path) : false;
+    }
+    /**
+     * Sets a value in this document. For `!!set`, `value` needs to be a
+     * boolean to add/remove the item from the set.
+     */
+    set(key, value) {
+        if (this.contents == null) {
+            // @ts-expect-error We can't really know that this matches Contents.
+            this.contents = collectionFromPath(this.schema, [key], value);
+        }
+        else if (assertCollection(this.contents)) {
+            this.contents.set(key, value);
+        }
+    }
+    /**
+     * Sets a value in this document. For `!!set`, `value` needs to be a
+     * boolean to add/remove the item from the set.
+     */
+    setIn(path, value) {
+        if (isEmptyPath(path)) {
+            // @ts-expect-error We can't really know that this matches Contents.
+            this.contents = value;
+        }
+        else if (this.contents == null) {
+            // @ts-expect-error We can't really know that this matches Contents.
+            this.contents = collectionFromPath(this.schema, Array.from(path), value);
+        }
+        else if (assertCollection(this.contents)) {
+            this.contents.setIn(path, value);
+        }
+    }
+    /**
+     * Change the YAML version and schema used by the document.
+     * A `null` version disables support for directives, explicit tags, anchors, and aliases.
+     * It also requires the `schema` option to be given as a `Schema` instance value.
+     *
+     * Overrides all previously set schema options.
+     */
+    setSchema(version, options = {}) {
+        if (typeof version === 'number')
+            version = String(version);
+        let opt;
+        switch (version) {
+            case '1.1':
+                if (this.directives)
+                    this.directives.yaml.version = '1.1';
+                else
+                    this.directives = new Directives({ version: '1.1' });
+                opt = { resolveKnownTags: false, schema: 'yaml-1.1' };
+                break;
+            case '1.2':
+            case 'next':
+                if (this.directives)
+                    this.directives.yaml.version = version;
+                else
+                    this.directives = new Directives({ version });
+                opt = { resolveKnownTags: true, schema: 'core' };
+                break;
+            case null:
+                if (this.directives)
+                    delete this.directives;
+                opt = null;
+                break;
+            default: {
+                const sv = JSON.stringify(version);
+                throw new Error(`Expected '1.1', '1.2' or null as first argument, but found: ${sv}`);
+            }
+        }
+        // Not using `instanceof Schema` to allow for duck typing
+        if (options.schema instanceof Object)
+            this.schema = options.schema;
+        else if (opt)
+            this.schema = new Schema(Object.assign(opt, options));
+        else
+            throw new Error(`With a null YAML version, the { schema: Schema } option is required`);
+    }
+    // json & jsonArg are only used from toJSON()
+    toJS({ json, jsonArg, mapAsMap, maxAliasCount, onAnchor, reviver } = {}) {
+        const ctx = {
+            anchors: new Map(),
+            doc: this,
+            keep: !json,
+            mapAsMap: mapAsMap === true,
+            mapKeyWarned: false,
+            maxAliasCount: typeof maxAliasCount === 'number' ? maxAliasCount : 100
+        };
+        const res = toJS(this.contents, jsonArg ?? '', ctx);
+        if (typeof onAnchor === 'function')
+            for (const { count, res } of ctx.anchors.values())
+                onAnchor(res, count);
+        return typeof reviver === 'function'
+            ? applyReviver(reviver, { '': res }, '', res)
+            : res;
+    }
+    /**
+     * A JSON representation of the document `contents`.
+     *
+     * @param jsonArg Used by `JSON.stringify` to indicate the array index or
+     *   property name.
+     */
+    toJSON(jsonArg, onAnchor) {
+        return this.toJS({ json: true, jsonArg, mapAsMap: false, onAnchor });
+    }
+    /** A YAML representation of the document. */
+    toString(options = {}) {
+        if (this.errors.length > 0)
+            throw new Error('Document with errors cannot be stringified');
+        if ('indent' in options &&
+            (!Number.isInteger(options.indent) || Number(options.indent) <= 0)) {
+            const s = JSON.stringify(options.indent);
+            throw new Error(`"indent" option must be a positive integer, not ${s}`);
+        }
+        return stringifyDocument(this, options);
+    }
+}
+function assertCollection(contents) {
+    if (isCollection(contents))
+        return true;
+    throw new Error('Expected a YAML collection as document contents');
+}
+
+class YAMLError extends Error {
+    constructor(name, pos, code, message) {
+        super();
+        this.name = name;
+        this.code = code;
+        this.message = message;
+        this.pos = pos;
+    }
+}
+class YAMLParseError extends YAMLError {
+    constructor(pos, code, message) {
+        super('YAMLParseError', pos, code, message);
+    }
+}
+class YAMLWarning extends YAMLError {
+    constructor(pos, code, message) {
+        super('YAMLWarning', pos, code, message);
+    }
+}
+const prettifyError = (src, lc) => (error) => {
+    if (error.pos[0] === -1)
+        return;
+    error.linePos = error.pos.map(pos => lc.linePos(pos));
+    const { line, col } = error.linePos[0];
+    error.message += ` at line ${line}, column ${col}`;
+    let ci = col - 1;
+    let lineStr = src
+        .substring(lc.lineStarts[line - 1], lc.lineStarts[line])
+        .replace(/[\n\r]+$/, '');
+    // Trim to max 80 chars, keeping col position near the middle
+    if (ci >= 60 && lineStr.length > 80) {
+        const trimStart = Math.min(ci - 39, lineStr.length - 79);
+        lineStr = '…' + lineStr.substring(trimStart);
+        ci -= trimStart - 1;
+    }
+    if (lineStr.length > 80)
+        lineStr = lineStr.substring(0, 79) + '…';
+    // Include previous line in context if pointing at line start
+    if (line > 1 && /^ *$/.test(lineStr.substring(0, ci))) {
+        // Regexp won't match if start is trimmed
+        let prev = src.substring(lc.lineStarts[line - 2], lc.lineStarts[line - 1]);
+        if (prev.length > 80)
+            prev = prev.substring(0, 79) + '…\n';
+        lineStr = prev + lineStr;
+    }
+    if (/[^ ]/.test(lineStr)) {
+        let count = 1;
+        const end = error.linePos[1];
+        if (end?.line === line && end.col > col) {
+            count = Math.max(1, Math.min(end.col - col, 80 - ci));
+        }
+        const pointer = ' '.repeat(ci) + '^'.repeat(count);
+        error.message += `:\n\n${lineStr}\n${pointer}\n`;
+    }
+};
+
+function resolveProps(tokens, { flow, indicator, next, offset, onError, parentIndent, startOnNewline }) {
+    let spaceBefore = false;
+    let atNewline = startOnNewline;
+    let hasSpace = startOnNewline;
+    let comment = '';
+    let commentSep = '';
+    let hasNewline = false;
+    let reqSpace = false;
+    let tab = null;
+    let anchor = null;
+    let tag = null;
+    let newlineAfterProp = null;
+    let comma = null;
+    let found = null;
+    let start = null;
+    for (const token of tokens) {
+        if (reqSpace) {
+            if (token.type !== 'space' &&
+                token.type !== 'newline' &&
+                token.type !== 'comma')
+                onError(token.offset, 'MISSING_CHAR', 'Tags and anchors must be separated from the next token by white space');
+            reqSpace = false;
+        }
+        if (tab) {
+            if (atNewline && token.type !== 'comment' && token.type !== 'newline') {
+                onError(tab, 'TAB_AS_INDENT', 'Tabs are not allowed as indentation');
+            }
+            tab = null;
+        }
+        switch (token.type) {
+            case 'space':
+                // At the doc level, tabs at line start may be parsed
+                // as leading white space rather than indentation.
+                // In a flow collection, only the parser handles indent.
+                if (!flow &&
+                    (indicator !== 'doc-start' || next?.type !== 'flow-collection') &&
+                    token.source.includes('\t')) {
+                    tab = token;
+                }
+                hasSpace = true;
+                break;
+            case 'comment': {
+                if (!hasSpace)
+                    onError(token, 'MISSING_CHAR', 'Comments must be separated from other tokens by white space characters');
+                const cb = token.source.substring(1) || ' ';
+                if (!comment)
+                    comment = cb;
+                else
+                    comment += commentSep + cb;
+                commentSep = '';
+                atNewline = false;
+                break;
+            }
+            case 'newline':
+                if (atNewline) {
+                    if (comment)
+                        comment += token.source;
+                    else if (!found || indicator !== 'seq-item-ind')
+                        spaceBefore = true;
+                }
+                else
+                    commentSep += token.source;
+                atNewline = true;
+                hasNewline = true;
+                if (anchor || tag)
+                    newlineAfterProp = token;
+                hasSpace = true;
+                break;
+            case 'anchor':
+                if (anchor)
+                    onError(token, 'MULTIPLE_ANCHORS', 'A node can have at most one anchor');
+                if (token.source.endsWith(':'))
+                    onError(token.offset + token.source.length - 1, 'BAD_ALIAS', 'Anchor ending in : is ambiguous', true);
+                anchor = token;
+                start ?? (start = token.offset);
+                atNewline = false;
+                hasSpace = false;
+                reqSpace = true;
+                break;
+            case 'tag': {
+                if (tag)
+                    onError(token, 'MULTIPLE_TAGS', 'A node can have at most one tag');
+                tag = token;
+                start ?? (start = token.offset);
+                atNewline = false;
+                hasSpace = false;
+                reqSpace = true;
+                break;
+            }
+            case indicator:
+                // Could here handle preceding comments differently
+                if (anchor || tag)
+                    onError(token, 'BAD_PROP_ORDER', `Anchors and tags must be after the ${token.source} indicator`);
+                if (found)
+                    onError(token, 'UNEXPECTED_TOKEN', `Unexpected ${token.source} in ${flow ?? 'collection'}`);
+                found = token;
+                atNewline =
+                    indicator === 'seq-item-ind' || indicator === 'explicit-key-ind';
+                hasSpace = false;
+                break;
+            case 'comma':
+                if (flow) {
+                    if (comma)
+                        onError(token, 'UNEXPECTED_TOKEN', `Unexpected , in ${flow}`);
+                    comma = token;
+                    atNewline = false;
+                    hasSpace = false;
+                    break;
+                }
+            // else fallthrough
+            default:
+                onError(token, 'UNEXPECTED_TOKEN', `Unexpected ${token.type} token`);
+                atNewline = false;
+                hasSpace = false;
+        }
+    }
+    const last = tokens[tokens.length - 1];
+    const end = last ? last.offset + last.source.length : offset;
+    if (reqSpace &&
+        next &&
+        next.type !== 'space' &&
+        next.type !== 'newline' &&
+        next.type !== 'comma' &&
+        (next.type !== 'scalar' || next.source !== '')) {
+        onError(next.offset, 'MISSING_CHAR', 'Tags and anchors must be separated from the next token by white space');
+    }
+    if (tab &&
+        ((atNewline && tab.indent <= parentIndent) ||
+            next?.type === 'block-map' ||
+            next?.type === 'block-seq'))
+        onError(tab, 'TAB_AS_INDENT', 'Tabs are not allowed as indentation');
+    return {
+        comma,
+        found,
+        spaceBefore,
+        comment,
+        hasNewline,
+        anchor,
+        tag,
+        newlineAfterProp,
+        end,
+        start: start ?? end
+    };
+}
+
+function containsNewline(key) {
+    if (!key)
+        return null;
+    switch (key.type) {
+        case 'alias':
+        case 'scalar':
+        case 'double-quoted-scalar':
+        case 'single-quoted-scalar':
+            if (key.source.includes('\n'))
+                return true;
+            if (key.end)
+                for (const st of key.end)
+                    if (st.type === 'newline')
+                        return true;
+            return false;
+        case 'flow-collection':
+            for (const it of key.items) {
+                for (const st of it.start)
+                    if (st.type === 'newline')
+                        return true;
+                if (it.sep)
+                    for (const st of it.sep)
+                        if (st.type === 'newline')
+                            return true;
+                if (containsNewline(it.key) || containsNewline(it.value))
+                    return true;
+            }
+            return false;
+        default:
+            return true;
+    }
+}
+
+function flowIndentCheck(indent, fc, onError) {
+    if (fc?.type === 'flow-collection') {
+        const end = fc.end[0];
+        if (end.indent === indent &&
+            (end.source === ']' || end.source === '}') &&
+            containsNewline(fc)) {
+            const msg = 'Flow end indicator should be more indented than parent';
+            onError(end, 'BAD_INDENT', msg, true);
+        }
+    }
+}
+
+function mapIncludes(ctx, items, search) {
+    const { uniqueKeys } = ctx.options;
+    if (uniqueKeys === false)
+        return false;
+    const isEqual = typeof uniqueKeys === 'function'
+        ? uniqueKeys
+        : (a, b) => a === b || (isScalar(a) && isScalar(b) && a.value === b.value);
+    return items.some(pair => isEqual(pair.key, search));
+}
+
+const startColMsg = 'All mapping items must start at the same column';
+function resolveBlockMap({ composeNode, composeEmptyNode }, ctx, bm, onError, tag) {
+    const NodeClass = tag?.nodeClass ?? YAMLMap;
+    const map = new NodeClass(ctx.schema);
+    if (ctx.atRoot)
+        ctx.atRoot = false;
+    let offset = bm.offset;
+    let commentEnd = null;
+    for (const collItem of bm.items) {
+        const { start, key, sep, value } = collItem;
+        // key properties
+        const keyProps = resolveProps(start, {
+            indicator: 'explicit-key-ind',
+            next: key ?? sep?.[0],
+            offset,
+            onError,
+            parentIndent: bm.indent,
+            startOnNewline: true
+        });
+        const implicitKey = !keyProps.found;
+        if (implicitKey) {
+            if (key) {
+                if (key.type === 'block-seq')
+                    onError(offset, 'BLOCK_AS_IMPLICIT_KEY', 'A block sequence may not be used as an implicit map key');
+                else if ('indent' in key && key.indent !== bm.indent)
+                    onError(offset, 'BAD_INDENT', startColMsg);
+            }
+            if (!keyProps.anchor && !keyProps.tag && !sep) {
+                commentEnd = keyProps.end;
+                if (keyProps.comment) {
+                    if (map.comment)
+                        map.comment += '\n' + keyProps.comment;
+                    else
+                        map.comment = keyProps.comment;
+                }
+                continue;
+            }
+            if (keyProps.newlineAfterProp || containsNewline(key)) {
+                onError(key ?? start[start.length - 1], 'MULTILINE_IMPLICIT_KEY', 'Implicit keys need to be on a single line');
+            }
+        }
+        else if (keyProps.found?.indent !== bm.indent) {
+            onError(offset, 'BAD_INDENT', startColMsg);
+        }
+        // key value
+        ctx.atKey = true;
+        const keyStart = keyProps.end;
+        const keyNode = key
+            ? composeNode(ctx, key, keyProps, onError)
+            : composeEmptyNode(ctx, keyStart, start, null, keyProps, onError);
+        if (ctx.schema.compat)
+            flowIndentCheck(bm.indent, key, onError);
+        ctx.atKey = false;
+        if (mapIncludes(ctx, map.items, keyNode))
+            onError(keyStart, 'DUPLICATE_KEY', 'Map keys must be unique');
+        // value properties
+        const valueProps = resolveProps(sep ?? [], {
+            indicator: 'map-value-ind',
+            next: value,
+            offset: keyNode.range[2],
+            onError,
+            parentIndent: bm.indent,
+            startOnNewline: !key || key.type === 'block-scalar'
+        });
+        offset = valueProps.end;
+        if (valueProps.found) {
+            if (implicitKey) {
+                if (value?.type === 'block-map' && !valueProps.hasNewline)
+                    onError(offset, 'BLOCK_AS_IMPLICIT_KEY', 'Nested mappings are not allowed in compact mappings');
+                if (ctx.options.strict &&
+                    keyProps.start < valueProps.found.offset - 1024)
+                    onError(keyNode.range, 'KEY_OVER_1024_CHARS', 'The : indicator must be at most 1024 chars after the start of an implicit block mapping key');
+            }
+            // value value
+            const valueNode = value
+                ? composeNode(ctx, value, valueProps, onError)
+                : composeEmptyNode(ctx, offset, sep, null, valueProps, onError);
+            if (ctx.schema.compat)
+                flowIndentCheck(bm.indent, value, onError);
+            offset = valueNode.range[2];
+            const pair = new Pair(keyNode, valueNode);
+            if (ctx.options.keepSourceTokens)
+                pair.srcToken = collItem;
+            map.items.push(pair);
+        }
+        else {
+            // key with no value
+            if (implicitKey)
+                onError(keyNode.range, 'MISSING_CHAR', 'Implicit map keys need to be followed by map values');
+            if (valueProps.comment) {
+                if (keyNode.comment)
+                    keyNode.comment += '\n' + valueProps.comment;
+                else
+                    keyNode.comment = valueProps.comment;
+            }
+            const pair = new Pair(keyNode);
+            if (ctx.options.keepSourceTokens)
+                pair.srcToken = collItem;
+            map.items.push(pair);
+        }
+    }
+    if (commentEnd && commentEnd < offset)
+        onError(commentEnd, 'IMPOSSIBLE', 'Map comment with trailing content');
+    map.range = [bm.offset, offset, commentEnd ?? offset];
+    return map;
+}
+
+function resolveBlockSeq({ composeNode, composeEmptyNode }, ctx, bs, onError, tag) {
+    const NodeClass = tag?.nodeClass ?? YAMLSeq;
+    const seq = new NodeClass(ctx.schema);
+    if (ctx.atRoot)
+        ctx.atRoot = false;
+    if (ctx.atKey)
+        ctx.atKey = false;
+    let offset = bs.offset;
+    let commentEnd = null;
+    for (const { start, value } of bs.items) {
+        const props = resolveProps(start, {
+            indicator: 'seq-item-ind',
+            next: value,
+            offset,
+            onError,
+            parentIndent: bs.indent,
+            startOnNewline: true
+        });
+        if (!props.found) {
+            if (props.anchor || props.tag || value) {
+                if (value?.type === 'block-seq')
+                    onError(props.end, 'BAD_INDENT', 'All sequence items must start at the same column');
+                else
+                    onError(offset, 'MISSING_CHAR', 'Sequence item without - indicator');
+            }
+            else {
+                commentEnd = props.end;
+                if (props.comment)
+                    seq.comment = props.comment;
+                continue;
+            }
+        }
+        const node = value
+            ? composeNode(ctx, value, props, onError)
+            : composeEmptyNode(ctx, props.end, start, null, props, onError);
+        if (ctx.schema.compat)
+            flowIndentCheck(bs.indent, value, onError);
+        offset = node.range[2];
+        seq.items.push(node);
+    }
+    seq.range = [bs.offset, offset, commentEnd ?? offset];
+    return seq;
+}
+
+function resolveEnd(end, offset, reqSpace, onError) {
+    let comment = '';
+    if (end) {
+        let hasSpace = false;
+        let sep = '';
+        for (const token of end) {
+            const { source, type } = token;
+            switch (type) {
+                case 'space':
+                    hasSpace = true;
+                    break;
+                case 'comment': {
+                    if (reqSpace && !hasSpace)
+                        onError(token, 'MISSING_CHAR', 'Comments must be separated from other tokens by white space characters');
+                    const cb = source.substring(1) || ' ';
+                    if (!comment)
+                        comment = cb;
+                    else
+                        comment += sep + cb;
+                    sep = '';
+                    break;
+                }
+                case 'newline':
+                    if (comment)
+                        sep += source;
+                    hasSpace = true;
+                    break;
+                default:
+                    onError(token, 'UNEXPECTED_TOKEN', `Unexpected ${type} at node end`);
+            }
+            offset += source.length;
+        }
+    }
+    return { comment, offset };
+}
+
+const blockMsg = 'Block collections are not allowed within flow collections';
+const isBlock = (token) => token && (token.type === 'block-map' || token.type === 'block-seq');
+function resolveFlowCollection({ composeNode, composeEmptyNode }, ctx, fc, onError, tag) {
+    const isMap = fc.start.source === '{';
+    const fcName = isMap ? 'flow map' : 'flow sequence';
+    const NodeClass = (tag?.nodeClass ?? (isMap ? YAMLMap : YAMLSeq));
+    const coll = new NodeClass(ctx.schema);
+    coll.flow = true;
+    const atRoot = ctx.atRoot;
+    if (atRoot)
+        ctx.atRoot = false;
+    if (ctx.atKey)
+        ctx.atKey = false;
+    let offset = fc.offset + fc.start.source.length;
+    for (let i = 0; i < fc.items.length; ++i) {
+        const collItem = fc.items[i];
+        const { start, key, sep, value } = collItem;
+        const props = resolveProps(start, {
+            flow: fcName,
+            indicator: 'explicit-key-ind',
+            next: key ?? sep?.[0],
+            offset,
+            onError,
+            parentIndent: fc.indent,
+            startOnNewline: false
+        });
+        if (!props.found) {
+            if (!props.anchor && !props.tag && !sep && !value) {
+                if (i === 0 && props.comma)
+                    onError(props.comma, 'UNEXPECTED_TOKEN', `Unexpected , in ${fcName}`);
+                else if (i < fc.items.length - 1)
+                    onError(props.start, 'UNEXPECTED_TOKEN', `Unexpected empty item in ${fcName}`);
+                if (props.comment) {
+                    if (coll.comment)
+                        coll.comment += '\n' + props.comment;
+                    else
+                        coll.comment = props.comment;
+                }
+                offset = props.end;
+                continue;
+            }
+            if (!isMap && ctx.options.strict && containsNewline(key))
+                onError(key, // checked by containsNewline()
+                'MULTILINE_IMPLICIT_KEY', 'Implicit keys of flow sequence pairs need to be on a single line');
+        }
+        if (i === 0) {
+            if (props.comma)
+                onError(props.comma, 'UNEXPECTED_TOKEN', `Unexpected , in ${fcName}`);
+        }
+        else {
+            if (!props.comma)
+                onError(props.start, 'MISSING_CHAR', `Missing , between ${fcName} items`);
+            if (props.comment) {
+                let prevItemComment = '';
+                loop: for (const st of start) {
+                    switch (st.type) {
+                        case 'comma':
+                        case 'space':
+                            break;
+                        case 'comment':
+                            prevItemComment = st.source.substring(1);
+                            break loop;
+                        default:
+                            break loop;
+                    }
+                }
+                if (prevItemComment) {
+                    let prev = coll.items[coll.items.length - 1];
+                    if (isPair(prev))
+                        prev = prev.value ?? prev.key;
+                    if (prev.comment)
+                        prev.comment += '\n' + prevItemComment;
+                    else
+                        prev.comment = prevItemComment;
+                    props.comment = props.comment.substring(prevItemComment.length + 1);
+                }
+            }
+        }
+        if (!isMap && !sep && !props.found) {
+            // item is a value in a seq
+            // → key & sep are empty, start does not include ? or :
+            const valueNode = value
+                ? composeNode(ctx, value, props, onError)
+                : composeEmptyNode(ctx, props.end, sep, null, props, onError);
+            coll.items.push(valueNode);
+            offset = valueNode.range[2];
+            if (isBlock(value))
+                onError(valueNode.range, 'BLOCK_IN_FLOW', blockMsg);
+        }
+        else {
+            // item is a key+value pair
+            // key value
+            ctx.atKey = true;
+            const keyStart = props.end;
+            const keyNode = key
+                ? composeNode(ctx, key, props, onError)
+                : composeEmptyNode(ctx, keyStart, start, null, props, onError);
+            if (isBlock(key))
+                onError(keyNode.range, 'BLOCK_IN_FLOW', blockMsg);
+            ctx.atKey = false;
+            // value properties
+            const valueProps = resolveProps(sep ?? [], {
+                flow: fcName,
+                indicator: 'map-value-ind',
+                next: value,
+                offset: keyNode.range[2],
+                onError,
+                parentIndent: fc.indent,
+                startOnNewline: false
+            });
+            if (valueProps.found) {
+                if (!isMap && !props.found && ctx.options.strict) {
+                    if (sep)
+                        for (const st of sep) {
+                            if (st === valueProps.found)
+                                break;
+                            if (st.type === 'newline') {
+                                onError(st, 'MULTILINE_IMPLICIT_KEY', 'Implicit keys of flow sequence pairs need to be on a single line');
+                                break;
+                            }
+                        }
+                    if (props.start < valueProps.found.offset - 1024)
+                        onError(valueProps.found, 'KEY_OVER_1024_CHARS', 'The : indicator must be at most 1024 chars after the start of an implicit flow sequence key');
+                }
+            }
+            else if (value) {
+                if ('source' in value && value.source?.[0] === ':')
+                    onError(value, 'MISSING_CHAR', `Missing space after : in ${fcName}`);
+                else
+                    onError(valueProps.start, 'MISSING_CHAR', `Missing , or : between ${fcName} items`);
+            }
+            // value value
+            const valueNode = value
+                ? composeNode(ctx, value, valueProps, onError)
+                : valueProps.found
+                    ? composeEmptyNode(ctx, valueProps.end, sep, null, valueProps, onError)
+                    : null;
+            if (valueNode) {
+                if (isBlock(value))
+                    onError(valueNode.range, 'BLOCK_IN_FLOW', blockMsg);
+            }
+            else if (valueProps.comment) {
+                if (keyNode.comment)
+                    keyNode.comment += '\n' + valueProps.comment;
+                else
+                    keyNode.comment = valueProps.comment;
+            }
+            const pair = new Pair(keyNode, valueNode);
+            if (ctx.options.keepSourceTokens)
+                pair.srcToken = collItem;
+            if (isMap) {
+                const map = coll;
+                if (mapIncludes(ctx, map.items, keyNode))
+                    onError(keyStart, 'DUPLICATE_KEY', 'Map keys must be unique');
+                map.items.push(pair);
+            }
+            else {
+                const map = new YAMLMap(ctx.schema);
+                map.flow = true;
+                map.items.push(pair);
+                const endRange = (valueNode ?? keyNode).range;
+                map.range = [keyNode.range[0], endRange[1], endRange[2]];
+                coll.items.push(map);
+            }
+            offset = valueNode ? valueNode.range[2] : valueProps.end;
+        }
+    }
+    const expectedEnd = isMap ? '}' : ']';
+    const [ce, ...ee] = fc.end;
+    let cePos = offset;
+    if (ce?.source === expectedEnd)
+        cePos = ce.offset + ce.source.length;
+    else {
+        const name = fcName[0].toUpperCase() + fcName.substring(1);
+        const msg = atRoot
+            ? `${name} must end with a ${expectedEnd}`
+            : `${name} in block collection must be sufficiently indented and end with a ${expectedEnd}`;
+        onError(offset, atRoot ? 'MISSING_CHAR' : 'BAD_INDENT', msg);
+        if (ce && ce.source.length !== 1)
+            ee.unshift(ce);
+    }
+    if (ee.length > 0) {
+        const end = resolveEnd(ee, cePos, ctx.options.strict, onError);
+        if (end.comment) {
+            if (coll.comment)
+                coll.comment += '\n' + end.comment;
+            else
+                coll.comment = end.comment;
+        }
+        coll.range = [fc.offset, cePos, end.offset];
+    }
+    else {
+        coll.range = [fc.offset, cePos, cePos];
+    }
+    return coll;
+}
+
+function resolveCollection(CN, ctx, token, onError, tagName, tag) {
+    const coll = token.type === 'block-map'
+        ? resolveBlockMap(CN, ctx, token, onError, tag)
+        : token.type === 'block-seq'
+            ? resolveBlockSeq(CN, ctx, token, onError, tag)
+            : resolveFlowCollection(CN, ctx, token, onError, tag);
+    const Coll = coll.constructor;
+    // If we got a tagName matching the class, or the tag name is '!',
+    // then use the tagName from the node class used to create it.
+    if (tagName === '!' || tagName === Coll.tagName) {
+        coll.tag = Coll.tagName;
+        return coll;
+    }
+    if (tagName)
+        coll.tag = tagName;
+    return coll;
+}
+function composeCollection(CN, ctx, token, props, onError) {
+    const tagToken = props.tag;
+    const tagName = !tagToken
+        ? null
+        : ctx.directives.tagName(tagToken.source, msg => onError(tagToken, 'TAG_RESOLVE_FAILED', msg));
+    if (token.type === 'block-seq') {
+        const { anchor, newlineAfterProp: nl } = props;
+        const lastProp = anchor && tagToken
+            ? anchor.offset > tagToken.offset
+                ? anchor
+                : tagToken
+            : (anchor ?? tagToken);
+        if (lastProp && (!nl || nl.offset < lastProp.offset)) {
+            const message = 'Missing newline after block sequence props';
+            onError(lastProp, 'MISSING_CHAR', message);
+        }
+    }
+    const expType = token.type === 'block-map'
+        ? 'map'
+        : token.type === 'block-seq'
+            ? 'seq'
+            : token.start.source === '{'
+                ? 'map'
+                : 'seq';
+    // shortcut: check if it's a generic YAMLMap or YAMLSeq
+    // before jumping into the custom tag logic.
+    if (!tagToken ||
+        !tagName ||
+        tagName === '!' ||
+        (tagName === YAMLMap.tagName && expType === 'map') ||
+        (tagName === YAMLSeq.tagName && expType === 'seq')) {
+        return resolveCollection(CN, ctx, token, onError, tagName);
+    }
+    let tag = ctx.schema.tags.find(t => t.tag === tagName && t.collection === expType);
+    if (!tag) {
+        const kt = ctx.schema.knownTags[tagName];
+        if (kt?.collection === expType) {
+            ctx.schema.tags.push(Object.assign({}, kt, { default: false }));
+            tag = kt;
+        }
+        else {
+            if (kt) {
+                onError(tagToken, 'BAD_COLLECTION_TYPE', `${kt.tag} used for ${expType} collection, but expects ${kt.collection ?? 'scalar'}`, true);
+            }
+            else {
+                onError(tagToken, 'TAG_RESOLVE_FAILED', `Unresolved tag: ${tagName}`, true);
+            }
+            return resolveCollection(CN, ctx, token, onError, tagName);
+        }
+    }
+    const coll = resolveCollection(CN, ctx, token, onError, tagName, tag);
+    const res = tag.resolve?.(coll, msg => onError(tagToken, 'TAG_RESOLVE_FAILED', msg), ctx.options) ?? coll;
+    const node = isNode(res)
+        ? res
+        : new Scalar(res);
+    node.range = coll.range;
+    node.tag = tagName;
+    if (tag?.format)
+        node.format = tag.format;
+    return node;
+}
+
+function resolveBlockScalar(ctx, scalar, onError) {
+    const start = scalar.offset;
+    const header = parseBlockScalarHeader(scalar, ctx.options.strict, onError);
+    if (!header)
+        return { value: '', type: null, comment: '', range: [start, start, start] };
+    const type = header.mode === '>' ? Scalar.BLOCK_FOLDED : Scalar.BLOCK_LITERAL;
+    const lines = scalar.source ? splitLines(scalar.source) : [];
+    // determine the end of content & start of chomping
+    let chompStart = lines.length;
+    for (let i = lines.length - 1; i >= 0; --i) {
+        const content = lines[i][1];
+        if (content === '' || content === '\r')
+            chompStart = i;
+        else
+            break;
+    }
+    // shortcut for empty contents
+    if (chompStart === 0) {
+        const value = header.chomp === '+' && lines.length > 0
+            ? '\n'.repeat(Math.max(1, lines.length - 1))
+            : '';
+        let end = start + header.length;
+        if (scalar.source)
+            end += scalar.source.length;
+        return { value, type, comment: header.comment, range: [start, end, end] };
+    }
+    // find the indentation level to trim from start
+    let trimIndent = scalar.indent + header.indent;
+    let offset = scalar.offset + header.length;
+    let contentStart = 0;
+    for (let i = 0; i < chompStart; ++i) {
+        const [indent, content] = lines[i];
+        if (content === '' || content === '\r') {
+            if (header.indent === 0 && indent.length > trimIndent)
+                trimIndent = indent.length;
+        }
+        else {
+            if (indent.length < trimIndent) {
+                const message = 'Block scalars with more-indented leading empty lines must use an explicit indentation indicator';
+                onError(offset + indent.length, 'MISSING_CHAR', message);
+            }
+            if (header.indent === 0)
+                trimIndent = indent.length;
+            contentStart = i;
+            if (trimIndent === 0 && !ctx.atRoot) {
+                const message = 'Block scalar values in collections must be indented';
+                onError(offset, 'BAD_INDENT', message);
+            }
+            break;
+        }
+        offset += indent.length + content.length + 1;
+    }
+    // include trailing more-indented empty lines in content
+    for (let i = lines.length - 1; i >= chompStart; --i) {
+        if (lines[i][0].length > trimIndent)
+            chompStart = i + 1;
+    }
+    let value = '';
+    let sep = '';
+    let prevMoreIndented = false;
+    // leading whitespace is kept intact
+    for (let i = 0; i < contentStart; ++i)
+        value += lines[i][0].slice(trimIndent) + '\n';
+    for (let i = contentStart; i < chompStart; ++i) {
+        let [indent, content] = lines[i];
+        offset += indent.length + content.length + 1;
+        const crlf = content[content.length - 1] === '\r';
+        if (crlf)
+            content = content.slice(0, -1);
+        /* istanbul ignore if already caught in lexer */
+        if (content && indent.length < trimIndent) {
+            const src = header.indent
+                ? 'explicit indentation indicator'
+                : 'first line';
+            const message = `Block scalar lines must not be less indented than their ${src}`;
+            onError(offset - content.length - (crlf ? 2 : 1), 'BAD_INDENT', message);
+            indent = '';
+        }
+        if (type === Scalar.BLOCK_LITERAL) {
+            value += sep + indent.slice(trimIndent) + content;
+            sep = '\n';
+        }
+        else if (indent.length > trimIndent || content[0] === '\t') {
+            // more-indented content within a folded block
+            if (sep === ' ')
+                sep = '\n';
+            else if (!prevMoreIndented && sep === '\n')
+                sep = '\n\n';
+            value += sep + indent.slice(trimIndent) + content;
+            sep = '\n';
+            prevMoreIndented = true;
+        }
+        else if (content === '') {
+            // empty line
+            if (sep === '\n')
+                value += '\n';
+            else
+                sep = '\n';
+        }
+        else {
+            value += sep + content;
+            sep = ' ';
+            prevMoreIndented = false;
+        }
+    }
+    switch (header.chomp) {
+        case '-':
+            break;
+        case '+':
+            for (let i = chompStart; i < lines.length; ++i)
+                value += '\n' + lines[i][0].slice(trimIndent);
+            if (value[value.length - 1] !== '\n')
+                value += '\n';
+            break;
+        default:
+            value += '\n';
+    }
+    const end = start + header.length + scalar.source.length;
+    return { value, type, comment: header.comment, range: [start, end, end] };
+}
+function parseBlockScalarHeader({ offset, props }, strict, onError) {
+    /* istanbul ignore if should not happen */
+    if (props[0].type !== 'block-scalar-header') {
+        onError(props[0], 'IMPOSSIBLE', 'Block scalar header not found');
+        return null;
+    }
+    const { source } = props[0];
+    const mode = source[0];
+    let indent = 0;
+    let chomp = '';
+    let error = -1;
+    for (let i = 1; i < source.length; ++i) {
+        const ch = source[i];
+        if (!chomp && (ch === '-' || ch === '+'))
+            chomp = ch;
+        else {
+            const n = Number(ch);
+            if (!indent && n)
+                indent = n;
+            else if (error === -1)
+                error = offset + i;
+        }
+    }
+    if (error !== -1)
+        onError(error, 'UNEXPECTED_TOKEN', `Block scalar header includes extra characters: ${source}`);
+    let hasSpace = false;
+    let comment = '';
+    let length = source.length;
+    for (let i = 1; i < props.length; ++i) {
+        const token = props[i];
+        switch (token.type) {
+            case 'space':
+                hasSpace = true;
+            // fallthrough
+            case 'newline':
+                length += token.source.length;
+                break;
+            case 'comment':
+                if (strict && !hasSpace) {
+                    const message = 'Comments must be separated from other tokens by white space characters';
+                    onError(token, 'MISSING_CHAR', message);
+                }
+                length += token.source.length;
+                comment = token.source.substring(1);
+                break;
+            case 'error':
+                onError(token, 'UNEXPECTED_TOKEN', token.message);
+                length += token.source.length;
+                break;
+            /* istanbul ignore next should not happen */
+            default: {
+                const message = `Unexpected token in block scalar header: ${token.type}`;
+                onError(token, 'UNEXPECTED_TOKEN', message);
+                const ts = token.source;
+                if (ts && typeof ts === 'string')
+                    length += ts.length;
+            }
+        }
+    }
+    return { mode, indent, chomp, comment, length };
+}
+/** @returns Array of lines split up as `[indent, content]` */
+function splitLines(source) {
+    const split = source.split(/\n( *)/);
+    const first = split[0];
+    const m = first.match(/^( *)/);
+    const line0 = m?.[1]
+        ? [m[1], first.slice(m[1].length)]
+        : ['', first];
+    const lines = [line0];
+    for (let i = 1; i < split.length; i += 2)
+        lines.push([split[i], split[i + 1]]);
+    return lines;
+}
+
+function resolveFlowScalar(scalar, strict, onError) {
+    const { offset, type, source, end } = scalar;
+    let _type;
+    let value;
+    const _onError = (rel, code, msg) => onError(offset + rel, code, msg);
+    switch (type) {
+        case 'scalar':
+            _type = Scalar.PLAIN;
+            value = plainValue(source, _onError);
+            break;
+        case 'single-quoted-scalar':
+            _type = Scalar.QUOTE_SINGLE;
+            value = singleQuotedValue(source, _onError);
+            break;
+        case 'double-quoted-scalar':
+            _type = Scalar.QUOTE_DOUBLE;
+            value = doubleQuotedValue(source, _onError);
+            break;
+        /* istanbul ignore next should not happen */
+        default:
+            onError(scalar, 'UNEXPECTED_TOKEN', `Expected a flow scalar value, but found: ${type}`);
+            return {
+                value: '',
+                type: null,
+                comment: '',
+                range: [offset, offset + source.length, offset + source.length]
+            };
+    }
+    const valueEnd = offset + source.length;
+    const re = resolveEnd(end, valueEnd, strict, onError);
+    return {
+        value,
+        type: _type,
+        comment: re.comment,
+        range: [offset, valueEnd, re.offset]
+    };
+}
+function plainValue(source, onError) {
+    let badChar = '';
+    switch (source[0]) {
+        /* istanbul ignore next should not happen */
+        case '\t':
+            badChar = 'a tab character';
+            break;
+        case ',':
+            badChar = 'flow indicator character ,';
+            break;
+        case '%':
+            badChar = 'directive indicator character %';
+            break;
+        case '|':
+        case '>': {
+            badChar = `block scalar indicator ${source[0]}`;
+            break;
+        }
+        case '@':
+        case '`': {
+            badChar = `reserved character ${source[0]}`;
+            break;
+        }
+    }
+    if (badChar)
+        onError(0, 'BAD_SCALAR_START', `Plain value cannot start with ${badChar}`);
+    return foldLines(source);
+}
+function singleQuotedValue(source, onError) {
+    if (source[source.length - 1] !== "'" || source.length === 1)
+        onError(source.length, 'MISSING_CHAR', "Missing closing 'quote");
+    return foldLines(source.slice(1, -1)).replace(/''/g, "'");
+}
+function foldLines(source) {
+    /**
+     * The negative lookbehind here and in the `re` RegExp is to
+     * prevent causing a polynomial search time in certain cases.
+     *
+     * The try-catch is for Safari, which doesn't support this yet:
+     * https://caniuse.com/js-regexp-lookbehind
+     */
+    let first, line;
+    try {
+        first = new RegExp('(.*?)(?<![ \t])[ \t]*\r?\n', 'sy');
+        line = new RegExp('[ \t]*(.*?)(?:(?<![ \t])[ \t]*)?\r?\n', 'sy');
+    }
+    catch {
+        first = /(.*?)[ \t]*\r?\n/sy;
+        line = /[ \t]*(.*?)[ \t]*\r?\n/sy;
+    }
+    let match = first.exec(source);
+    if (!match)
+        return source;
+    let res = match[1];
+    let sep = ' ';
+    let pos = first.lastIndex;
+    line.lastIndex = pos;
+    while ((match = line.exec(source))) {
+        if (match[1] === '') {
+            if (sep === '\n')
+                res += sep;
+            else
+                sep = '\n';
+        }
+        else {
+            res += sep + match[1];
+            sep = ' ';
+        }
+        pos = line.lastIndex;
+    }
+    const last = /[ \t]*(.*)/sy;
+    last.lastIndex = pos;
+    match = last.exec(source);
+    return res + sep + (match?.[1] ?? '');
+}
+function doubleQuotedValue(source, onError) {
+    let res = '';
+    for (let i = 1; i < source.length - 1; ++i) {
+        const ch = source[i];
+        if (ch === '\r' && source[i + 1] === '\n')
+            continue;
+        if (ch === '\n') {
+            const { fold, offset } = foldNewline(source, i);
+            res += fold;
+            i = offset;
+        }
+        else if (ch === '\\') {
+            let next = source[++i];
+            const cc = escapeCodes[next];
+            if (cc)
+                res += cc;
+            else if (next === '\n') {
+                // skip escaped newlines, but still trim the following line
+                next = source[i + 1];
+                while (next === ' ' || next === '\t')
+                    next = source[++i + 1];
+            }
+            else if (next === '\r' && source[i + 1] === '\n') {
+                // skip escaped CRLF newlines, but still trim the following line
+                next = source[++i + 1];
+                while (next === ' ' || next === '\t')
+                    next = source[++i + 1];
+            }
+            else if (next === 'x' || next === 'u' || next === 'U') {
+                const length = { x: 2, u: 4, U: 8 }[next];
+                res += parseCharCode(source, i + 1, length, onError);
+                i += length;
+            }
+            else {
+                const raw = source.substr(i - 1, 2);
+                onError(i - 1, 'BAD_DQ_ESCAPE', `Invalid escape sequence ${raw}`);
+                res += raw;
+            }
+        }
+        else if (ch === ' ' || ch === '\t') {
+            // trim trailing whitespace
+            const wsStart = i;
+            let next = source[i + 1];
+            while (next === ' ' || next === '\t')
+                next = source[++i + 1];
+            if (next !== '\n' && !(next === '\r' && source[i + 2] === '\n'))
+                res += i > wsStart ? source.slice(wsStart, i + 1) : ch;
+        }
+        else {
+            res += ch;
+        }
+    }
+    if (source[source.length - 1] !== '"' || source.length === 1)
+        onError(source.length, 'MISSING_CHAR', 'Missing closing "quote');
+    return res;
+}
+/**
+ * Fold a single newline into a space, multiple newlines to N - 1 newlines.
+ * Presumes `source[offset] === '\n'`
+ */
+function foldNewline(source, offset) {
+    let fold = '';
+    let ch = source[offset + 1];
+    while (ch === ' ' || ch === '\t' || ch === '\n' || ch === '\r') {
+        if (ch === '\r' && source[offset + 2] !== '\n')
+            break;
+        if (ch === '\n')
+            fold += '\n';
+        offset += 1;
+        ch = source[offset + 1];
+    }
+    if (!fold)
+        fold = ' ';
+    return { fold, offset };
+}
+const escapeCodes = {
+    '0': '\0', // null character
+    a: '\x07', // bell character
+    b: '\b', // backspace
+    e: '\x1b', // escape character
+    f: '\f', // form feed
+    n: '\n', // line feed
+    r: '\r', // carriage return
+    t: '\t', // horizontal tab
+    v: '\v', // vertical tab
+    N: '\u0085', // Unicode next line
+    _: '\u00a0', // Unicode non-breaking space
+    L: '\u2028', // Unicode line separator
+    P: '\u2029', // Unicode paragraph separator
+    ' ': ' ',
+    '"': '"',
+    '/': '/',
+    '\\': '\\',
+    '\t': '\t'
+};
+function parseCharCode(source, offset, length, onError) {
+    const cc = source.substr(offset, length);
+    const ok = cc.length === length && /^[0-9a-fA-F]+$/.test(cc);
+    const code = ok ? parseInt(cc, 16) : NaN;
+    if (isNaN(code)) {
+        const raw = source.substr(offset - 2, length + 2);
+        onError(offset - 2, 'BAD_DQ_ESCAPE', `Invalid escape sequence ${raw}`);
+        return raw;
+    }
+    return String.fromCodePoint(code);
+}
+
+function composeScalar(ctx, token, tagToken, onError) {
+    const { value, type, comment, range } = token.type === 'block-scalar'
+        ? resolveBlockScalar(ctx, token, onError)
+        : resolveFlowScalar(token, ctx.options.strict, onError);
+    const tagName = tagToken
+        ? ctx.directives.tagName(tagToken.source, msg => onError(tagToken, 'TAG_RESOLVE_FAILED', msg))
+        : null;
+    let tag;
+    if (ctx.options.stringKeys && ctx.atKey) {
+        tag = ctx.schema[SCALAR$1];
+    }
+    else if (tagName)
+        tag = findScalarTagByName(ctx.schema, value, tagName, tagToken, onError);
+    else if (token.type === 'scalar')
+        tag = findScalarTagByTest(ctx, value, token, onError);
+    else
+        tag = ctx.schema[SCALAR$1];
+    let scalar;
+    try {
+        const res = tag.resolve(value, msg => onError(tagToken ?? token, 'TAG_RESOLVE_FAILED', msg), ctx.options);
+        scalar = isScalar(res) ? res : new Scalar(res);
+    }
+    catch (error) {
+        const msg = error instanceof Error ? error.message : String(error);
+        onError(tagToken ?? token, 'TAG_RESOLVE_FAILED', msg);
+        scalar = new Scalar(value);
+    }
+    scalar.range = range;
+    scalar.source = value;
+    if (type)
+        scalar.type = type;
+    if (tagName)
+        scalar.tag = tagName;
+    if (tag.format)
+        scalar.format = tag.format;
+    if (comment)
+        scalar.comment = comment;
+    return scalar;
+}
+function findScalarTagByName(schema, value, tagName, tagToken, onError) {
+    if (tagName === '!')
+        return schema[SCALAR$1]; // non-specific tag
+    const matchWithTest = [];
+    for (const tag of schema.tags) {
+        if (!tag.collection && tag.tag === tagName) {
+            if (tag.default && tag.test)
+                matchWithTest.push(tag);
+            else
+                return tag;
+        }
+    }
+    for (const tag of matchWithTest)
+        if (tag.test?.test(value))
+            return tag;
+    const kt = schema.knownTags[tagName];
+    if (kt && !kt.collection) {
+        // Ensure that the known tag is available for stringifying,
+        // but does not get used by default.
+        schema.tags.push(Object.assign({}, kt, { default: false, test: undefined }));
+        return kt;
+    }
+    onError(tagToken, 'TAG_RESOLVE_FAILED', `Unresolved tag: ${tagName}`, tagName !== 'tag:yaml.org,2002:str');
+    return schema[SCALAR$1];
+}
+function findScalarTagByTest({ atKey, directives, schema }, value, token, onError) {
+    const tag = schema.tags.find(tag => (tag.default === true || (atKey && tag.default === 'key')) &&
+        tag.test?.test(value)) || schema[SCALAR$1];
+    if (schema.compat) {
+        const compat = schema.compat.find(tag => tag.default && tag.test?.test(value)) ??
+            schema[SCALAR$1];
+        if (tag.tag !== compat.tag) {
+            const ts = directives.tagString(tag.tag);
+            const cs = directives.tagString(compat.tag);
+            const msg = `Value may be parsed as either ${ts} or ${cs}`;
+            onError(token, 'TAG_RESOLVE_FAILED', msg, true);
+        }
+    }
+    return tag;
+}
+
+function emptyScalarPosition(offset, before, pos) {
+    if (before) {
+        pos ?? (pos = before.length);
+        for (let i = pos - 1; i >= 0; --i) {
+            let st = before[i];
+            switch (st.type) {
+                case 'space':
+                case 'comment':
+                case 'newline':
+                    offset -= st.source.length;
+                    continue;
+            }
+            // Technically, an empty scalar is immediately after the last non-empty
+            // node, but it's more useful to place it after any whitespace.
+            st = before[++i];
+            while (st?.type === 'space') {
+                offset += st.source.length;
+                st = before[++i];
+            }
+            break;
+        }
+    }
+    return offset;
+}
+
+const CN = { composeNode, composeEmptyNode };
+function composeNode(ctx, token, props, onError) {
+    const atKey = ctx.atKey;
+    const { spaceBefore, comment, anchor, tag } = props;
+    let node;
+    let isSrcToken = true;
+    switch (token.type) {
+        case 'alias':
+            node = composeAlias(ctx, token, onError);
+            if (anchor || tag)
+                onError(token, 'ALIAS_PROPS', 'An alias node must not specify any properties');
+            break;
+        case 'scalar':
+        case 'single-quoted-scalar':
+        case 'double-quoted-scalar':
+        case 'block-scalar':
+            node = composeScalar(ctx, token, tag, onError);
+            if (anchor)
+                node.anchor = anchor.source.substring(1);
+            break;
+        case 'block-map':
+        case 'block-seq':
+        case 'flow-collection':
+            node = composeCollection(CN, ctx, token, props, onError);
+            if (anchor)
+                node.anchor = anchor.source.substring(1);
+            break;
+        default: {
+            const message = token.type === 'error'
+                ? token.message
+                : `Unsupported token (type: ${token.type})`;
+            onError(token, 'UNEXPECTED_TOKEN', message);
+            node = composeEmptyNode(ctx, token.offset, undefined, null, props, onError);
+            isSrcToken = false;
+        }
+    }
+    if (anchor && node.anchor === '')
+        onError(anchor, 'BAD_ALIAS', 'Anchor cannot be an empty string');
+    if (atKey &&
+        ctx.options.stringKeys &&
+        (!isScalar(node) ||
+            typeof node.value !== 'string' ||
+            (node.tag && node.tag !== 'tag:yaml.org,2002:str'))) {
+        const msg = 'With stringKeys, all keys must be strings';
+        onError(tag ?? token, 'NON_STRING_KEY', msg);
+    }
+    if (spaceBefore)
+        node.spaceBefore = true;
+    if (comment) {
+        if (token.type === 'scalar' && token.source === '')
+            node.comment = comment;
+        else
+            node.commentBefore = comment;
+    }
+    // @ts-expect-error Type checking misses meaning of isSrcToken
+    if (ctx.options.keepSourceTokens && isSrcToken)
+        node.srcToken = token;
+    return node;
+}
+function composeEmptyNode(ctx, offset, before, pos, { spaceBefore, comment, anchor, tag, end }, onError) {
+    const token = {
+        type: 'scalar',
+        offset: emptyScalarPosition(offset, before, pos),
+        indent: -1,
+        source: ''
+    };
+    const node = composeScalar(ctx, token, tag, onError);
+    if (anchor) {
+        node.anchor = anchor.source.substring(1);
+        if (node.anchor === '')
+            onError(anchor, 'BAD_ALIAS', 'Anchor cannot be an empty string');
+    }
+    if (spaceBefore)
+        node.spaceBefore = true;
+    if (comment) {
+        node.comment = comment;
+        node.range[2] = end;
+    }
+    return node;
+}
+function composeAlias({ options }, { offset, source, end }, onError) {
+    const alias = new Alias(source.substring(1));
+    if (alias.source === '')
+        onError(offset, 'BAD_ALIAS', 'Alias cannot be an empty string');
+    if (alias.source.endsWith(':'))
+        onError(offset + source.length - 1, 'BAD_ALIAS', 'Alias ending in : is ambiguous', true);
+    const valueEnd = offset + source.length;
+    const re = resolveEnd(end, valueEnd, options.strict, onError);
+    alias.range = [offset, valueEnd, re.offset];
+    if (re.comment)
+        alias.comment = re.comment;
+    return alias;
+}
+
+function composeDoc(options, directives, { offset, start, value, end }, onError) {
+    const opts = Object.assign({ _directives: directives }, options);
+    const doc = new Document(undefined, opts);
+    const ctx = {
+        atKey: false,
+        atRoot: true,
+        directives: doc.directives,
+        options: doc.options,
+        schema: doc.schema
+    };
+    const props = resolveProps(start, {
+        indicator: 'doc-start',
+        next: value ?? end?.[0],
+        offset,
+        onError,
+        parentIndent: 0,
+        startOnNewline: true
+    });
+    if (props.found) {
+        doc.directives.docStart = true;
+        if (value &&
+            (value.type === 'block-map' || value.type === 'block-seq') &&
+            !props.hasNewline)
+            onError(props.end, 'MISSING_CHAR', 'Block collection cannot start on same line with directives-end marker');
+    }
+    // @ts-expect-error If Contents is set, let's trust the user
+    doc.contents = value
+        ? composeNode(ctx, value, props, onError)
+        : composeEmptyNode(ctx, props.end, start, null, props, onError);
+    const contentEnd = doc.contents.range[2];
+    const re = resolveEnd(end, contentEnd, false, onError);
+    if (re.comment)
+        doc.comment = re.comment;
+    doc.range = [offset, contentEnd, re.offset];
+    return doc;
+}
+
+function getErrorPos(src) {
+    if (typeof src === 'number')
+        return [src, src + 1];
+    if (Array.isArray(src))
+        return src.length === 2 ? src : [src[0], src[1]];
+    const { offset, source } = src;
+    return [offset, offset + (typeof source === 'string' ? source.length : 1)];
+}
+function parsePrelude(prelude) {
+    let comment = '';
+    let atComment = false;
+    let afterEmptyLine = false;
+    for (let i = 0; i < prelude.length; ++i) {
+        const source = prelude[i];
+        switch (source[0]) {
+            case '#':
+                comment +=
+                    (comment === '' ? '' : afterEmptyLine ? '\n\n' : '\n') +
+                        (source.substring(1) || ' ');
+                atComment = true;
+                afterEmptyLine = false;
+                break;
+            case '%':
+                if (prelude[i + 1]?.[0] !== '#')
+                    i += 1;
+                atComment = false;
+                break;
+            default:
+                // This may be wrong after doc-end, but in that case it doesn't matter
+                if (!atComment)
+                    afterEmptyLine = true;
+                atComment = false;
+        }
+    }
+    return { comment, afterEmptyLine };
+}
+/**
+ * Compose a stream of CST nodes into a stream of YAML Documents.
+ *
+ * ```ts
+ * import { Composer, Parser } from 'yaml'
+ *
+ * const src: string = ...
+ * const tokens = new Parser().parse(src)
+ * const docs = new Composer().compose(tokens)
+ * ```
+ */
+class Composer {
+    constructor(options = {}) {
+        this.doc = null;
+        this.atDirectives = false;
+        this.prelude = [];
+        this.errors = [];
+        this.warnings = [];
+        this.onError = (source, code, message, warning) => {
+            const pos = getErrorPos(source);
+            if (warning)
+                this.warnings.push(new YAMLWarning(pos, code, message));
+            else
+                this.errors.push(new YAMLParseError(pos, code, message));
+        };
+        // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing
+        this.directives = new Directives({ version: options.version || '1.2' });
+        this.options = options;
+    }
+    decorate(doc, afterDoc) {
+        const { comment, afterEmptyLine } = parsePrelude(this.prelude);
+        //console.log({ dc: doc.comment, prelude, comment })
+        if (comment) {
+            const dc = doc.contents;
+            if (afterDoc) {
+                doc.comment = doc.comment ? `${doc.comment}\n${comment}` : comment;
+            }
+            else if (afterEmptyLine || doc.directives.docStart || !dc) {
+                doc.commentBefore = comment;
+            }
+            else if (isCollection(dc) && !dc.flow && dc.items.length > 0) {
+                let it = dc.items[0];
+                if (isPair(it))
+                    it = it.key;
+                const cb = it.commentBefore;
+                it.commentBefore = cb ? `${comment}\n${cb}` : comment;
+            }
+            else {
+                const cb = dc.commentBefore;
+                dc.commentBefore = cb ? `${comment}\n${cb}` : comment;
+            }
+        }
+        if (afterDoc) {
+            Array.prototype.push.apply(doc.errors, this.errors);
+            Array.prototype.push.apply(doc.warnings, this.warnings);
+        }
+        else {
+            doc.errors = this.errors;
+            doc.warnings = this.warnings;
+        }
+        this.prelude = [];
+        this.errors = [];
+        this.warnings = [];
+    }
+    /**
+     * Current stream status information.
+     *
+     * Mostly useful at the end of input for an empty stream.
+     */
+    streamInfo() {
+        return {
+            comment: parsePrelude(this.prelude).comment,
+            directives: this.directives,
+            errors: this.errors,
+            warnings: this.warnings
+        };
+    }
+    /**
+     * Compose tokens into documents.
+     *
+     * @param forceDoc - If the stream contains no document, still emit a final document including any comments and directives that would be applied to a subsequent document.
+     * @param endOffset - Should be set if `forceDoc` is also set, to set the document range end and to indicate errors correctly.
+     */
+    *compose(tokens, forceDoc = false, endOffset = -1) {
+        for (const token of tokens)
+            yield* this.next(token);
+        yield* this.end(forceDoc, endOffset);
+    }
+    /** Advance the composer by one CST token. */
+    *next(token) {
+        switch (token.type) {
+            case 'directive':
+                this.directives.add(token.source, (offset, message, warning) => {
+                    const pos = getErrorPos(token);
+                    pos[0] += offset;
+                    this.onError(pos, 'BAD_DIRECTIVE', message, warning);
+                });
+                this.prelude.push(token.source);
+                this.atDirectives = true;
+                break;
+            case 'document': {
+                const doc = composeDoc(this.options, this.directives, token, this.onError);
+                if (this.atDirectives && !doc.directives.docStart)
+                    this.onError(token, 'MISSING_CHAR', 'Missing directives-end/doc-start indicator line');
+                this.decorate(doc, false);
+                if (this.doc)
+                    yield this.doc;
+                this.doc = doc;
+                this.atDirectives = false;
+                break;
+            }
+            case 'byte-order-mark':
+            case 'space':
+                break;
+            case 'comment':
+            case 'newline':
+                this.prelude.push(token.source);
+                break;
+            case 'error': {
+                const msg = token.source
+                    ? `${token.message}: ${JSON.stringify(token.source)}`
+                    : token.message;
+                const error = new YAMLParseError(getErrorPos(token), 'UNEXPECTED_TOKEN', msg);
+                if (this.atDirectives || !this.doc)
+                    this.errors.push(error);
+                else
+                    this.doc.errors.push(error);
+                break;
+            }
+            case 'doc-end': {
+                if (!this.doc) {
+                    const msg = 'Unexpected doc-end without preceding document';
+                    this.errors.push(new YAMLParseError(getErrorPos(token), 'UNEXPECTED_TOKEN', msg));
+                    break;
+                }
+                this.doc.directives.docEnd = true;
+                const end = resolveEnd(token.end, token.offset + token.source.length, this.doc.options.strict, this.onError);
+                this.decorate(this.doc, true);
+                if (end.comment) {
+                    const dc = this.doc.comment;
+                    this.doc.comment = dc ? `${dc}\n${end.comment}` : end.comment;
+                }
+                this.doc.range[2] = end.offset;
+                break;
+            }
+            default:
+                this.errors.push(new YAMLParseError(getErrorPos(token), 'UNEXPECTED_TOKEN', `Unsupported token ${token.type}`));
+        }
+    }
+    /**
+     * Call at end of input to yield any remaining document.
+     *
+     * @param forceDoc - If the stream contains no document, still emit a final document including any comments and directives that would be applied to a subsequent document.
+     * @param endOffset - Should be set if `forceDoc` is also set, to set the document range end and to indicate errors correctly.
+     */
+    *end(forceDoc = false, endOffset = -1) {
+        if (this.doc) {
+            this.decorate(this.doc, true);
+            yield this.doc;
+            this.doc = null;
+        }
+        else if (forceDoc) {
+            const opts = Object.assign({ _directives: this.directives }, this.options);
+            const doc = new Document(undefined, opts);
+            if (this.atDirectives)
+                this.onError(endOffset, 'MISSING_CHAR', 'Missing directives-end indicator line');
+            doc.range = [0, endOffset, endOffset];
+            this.decorate(doc, false);
+            yield doc;
+        }
+    }
+}
+
+/** The byte order mark */
+const BOM = '\u{FEFF}';
+/** Start of doc-mode */
+const DOCUMENT = '\x02'; // C0: Start of Text
+/** Unexpected end of flow-mode */
+const FLOW_END = '\x18'; // C0: Cancel
+/** Next token is a scalar value */
+const SCALAR = '\x1f'; // C0: Unit Separator
+/** Identify the type of a lexer token. May return `null` for unknown tokens. */
+function tokenType(source) {
+    switch (source) {
+        case BOM:
+            return 'byte-order-mark';
+        case DOCUMENT:
+            return 'doc-mode';
+        case FLOW_END:
+            return 'flow-error-end';
+        case SCALAR:
+            return 'scalar';
+        case '---':
+            return 'doc-start';
+        case '...':
+            return 'doc-end';
+        case '':
+        case '\n':
+        case '\r\n':
+            return 'newline';
+        case '-':
+            return 'seq-item-ind';
+        case '?':
+            return 'explicit-key-ind';
+        case ':':
+            return 'map-value-ind';
+        case '{':
+            return 'flow-map-start';
+        case '}':
+            return 'flow-map-end';
+        case '[':
+            return 'flow-seq-start';
+        case ']':
+            return 'flow-seq-end';
+        case ',':
+            return 'comma';
+    }
+    switch (source[0]) {
+        case ' ':
+        case '\t':
+            return 'space';
+        case '#':
+            return 'comment';
+        case '%':
+            return 'directive-line';
+        case '*':
+            return 'alias';
+        case '&':
+            return 'anchor';
+        case '!':
+            return 'tag';
+        case "'":
+            return 'single-quoted-scalar';
+        case '"':
+            return 'double-quoted-scalar';
+        case '|':
+        case '>':
+            return 'block-scalar-header';
+    }
+    return null;
+}
+
+/*
+START -> stream
+
+stream
+  directive -> line-end -> stream
+  indent + line-end -> stream
+  [else] -> line-start
+
+line-end
+  comment -> line-end
+  newline -> .
+  input-end -> END
+
+line-start
+  doc-start -> doc
+  doc-end -> stream
+  [else] -> indent -> block-start
+
+block-start
+  seq-item-start -> block-start
+  explicit-key-start -> block-start
+  map-value-start -> block-start
+  [else] -> doc
+
+doc
+  line-end -> line-start
+  spaces -> doc
+  anchor -> doc
+  tag -> doc
+  flow-start -> flow -> doc
+  flow-end -> error -> doc
+  seq-item-start -> error -> doc
+  explicit-key-start -> error -> doc
+  map-value-start -> doc
+  alias -> doc
+  quote-start -> quoted-scalar -> doc
+  block-scalar-header -> line-end -> block-scalar(min) -> line-start
+  [else] -> plain-scalar(false, min) -> doc
+
+flow
+  line-end -> flow
+  spaces -> flow
+  anchor -> flow
+  tag -> flow
+  flow-start -> flow -> flow
+  flow-end -> .
+  seq-item-start -> error -> flow
+  explicit-key-start -> flow
+  map-value-start -> flow
+  alias -> flow
+  quote-start -> quoted-scalar -> flow
+  comma -> flow
+  [else] -> plain-scalar(true, 0) -> flow
+
+quoted-scalar
+  quote-end -> .
+  [else] -> quoted-scalar
+
+block-scalar(min)
+  newline + peek(indent < min) -> .
+  [else] -> block-scalar(min)
+
+plain-scalar(is-flow, min)
+  scalar-end(is-flow) -> .
+  peek(newline + (indent < min)) -> .
+  [else] -> plain-scalar(min)
+*/
+function isEmpty(ch) {
+    switch (ch) {
+        case undefined:
+        case ' ':
+        case '\n':
+        case '\r':
+        case '\t':
+            return true;
+        default:
+            return false;
+    }
+}
+const hexDigits = new Set('0123456789ABCDEFabcdef');
+const tagChars = new Set("0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz-#;/?:@&=+$_.!~*'()");
+const flowIndicatorChars = new Set(',[]{}');
+const invalidAnchorChars = new Set(' ,[]{}\n\r\t');
+const isNotAnchorChar = (ch) => !ch || invalidAnchorChars.has(ch);
+/**
+ * Splits an input string into lexical tokens, i.e. smaller strings that are
+ * easily identifiable by `tokens.tokenType()`.
+ *
+ * Lexing starts always in a "stream" context. Incomplete input may be buffered
+ * until a complete token can be emitted.
+ *
+ * In addition to slices of the original input, the following control characters
+ * may also be emitted:
+ *
+ * - `\x02` (Start of Text): A document starts with the next token
+ * - `\x18` (Cancel): Unexpected end of flow-mode (indicates an error)
+ * - `\x1f` (Unit Separator): Next token is a scalar value
+ * - `\u{FEFF}` (Byte order mark): Emitted separately outside documents
+ */
+class Lexer {
+    constructor() {
+        /**
+         * Flag indicating whether the end of the current buffer marks the end of
+         * all input
+         */
+        this.atEnd = false;
+        /**
+         * Explicit indent set in block scalar header, as an offset from the current
+         * minimum indent, so e.g. set to 1 from a header `|2+`. Set to -1 if not
+         * explicitly set.
+         */
+        this.blockScalarIndent = -1;
+        /**
+         * Block scalars that include a + (keep) chomping indicator in their header
+         * include trailing empty lines, which are otherwise excluded from the
+         * scalar's contents.
+         */
+        this.blockScalarKeep = false;
+        /** Current input */
+        this.buffer = '';
+        /**
+         * Flag noting whether the map value indicator : can immediately follow this
+         * node within a flow context.
+         */
+        this.flowKey = false;
+        /** Count of surrounding flow collection levels. */
+        this.flowLevel = 0;
+        /**
+         * Minimum level of indentation required for next lines to be parsed as a
+         * part of the current scalar value.
+         */
+        this.indentNext = 0;
+        /** Indentation level of the current line. */
+        this.indentValue = 0;
+        /** Position of the next \n character. */
+        this.lineEndPos = null;
+        /** Stores the state of the lexer if reaching the end of incpomplete input */
+        this.next = null;
+        /** A pointer to `buffer`; the current position of the lexer. */
+        this.pos = 0;
+    }
+    /**
+     * Generate YAML tokens from the `source` string. If `incomplete`,
+     * a part of the last line may be left as a buffer for the next call.
+     *
+     * @returns A generator of lexical tokens
+     */
+    *lex(source, incomplete = false) {
+        if (source) {
+            if (typeof source !== 'string')
+                throw TypeError('source is not a string');
+            this.buffer = this.buffer ? this.buffer + source : source;
+            this.lineEndPos = null;
+        }
+        this.atEnd = !incomplete;
+        let next = this.next ?? 'stream';
+        while (next && (incomplete || this.hasChars(1)))
+            next = yield* this.parseNext(next);
+    }
+    atLineEnd() {
+        let i = this.pos;
+        let ch = this.buffer[i];
+        while (ch === ' ' || ch === '\t')
+            ch = this.buffer[++i];
+        if (!ch || ch === '#' || ch === '\n')
+            return true;
+        if (ch === '\r')
+            return this.buffer[i + 1] === '\n';
+        return false;
+    }
+    charAt(n) {
+        return this.buffer[this.pos + n];
+    }
+    continueScalar(offset) {
+        let ch = this.buffer[offset];
+        if (this.indentNext > 0) {
+            let indent = 0;
+            while (ch === ' ')
+                ch = this.buffer[++indent + offset];
+            if (ch === '\r') {
+                const next = this.buffer[indent + offset + 1];
+                if (next === '\n' || (!next && !this.atEnd))
+                    return offset + indent + 1;
+            }
+            return ch === '\n' || indent >= this.indentNext || (!ch && !this.atEnd)
+                ? offset + indent
+                : -1;
+        }
+        if (ch === '-' || ch === '.') {
+            const dt = this.buffer.substr(offset, 3);
+            if ((dt === '---' || dt === '...') && isEmpty(this.buffer[offset + 3]))
+                return -1;
+        }
+        return offset;
+    }
+    getLine() {
+        let end = this.lineEndPos;
+        if (typeof end !== 'number' || (end !== -1 && end < this.pos)) {
+            end = this.buffer.indexOf('\n', this.pos);
+            this.lineEndPos = end;
+        }
+        if (end === -1)
+            return this.atEnd ? this.buffer.substring(this.pos) : null;
+        if (this.buffer[end - 1] === '\r')
+            end -= 1;
+        return this.buffer.substring(this.pos, end);
+    }
+    hasChars(n) {
+        return this.pos + n <= this.buffer.length;
+    }
+    setNext(state) {
+        this.buffer = this.buffer.substring(this.pos);
+        this.pos = 0;
+        this.lineEndPos = null;
+        this.next = state;
+        return null;
+    }
+    peek(n) {
+        return this.buffer.substr(this.pos, n);
+    }
+    *parseNext(next) {
+        switch (next) {
+            case 'stream':
+                return yield* this.parseStream();
+            case 'line-start':
+                return yield* this.parseLineStart();
+            case 'block-start':
+                return yield* this.parseBlockStart();
+            case 'doc':
+                return yield* this.parseDocument();
+            case 'flow':
+                return yield* this.parseFlowCollection();
+            case 'quoted-scalar':
+                return yield* this.parseQuotedScalar();
+            case 'block-scalar':
+                return yield* this.parseBlockScalar();
+            case 'plain-scalar':
+                return yield* this.parsePlainScalar();
+        }
+    }
+    *parseStream() {
+        let line = this.getLine();
+        if (line === null)
+            return this.setNext('stream');
+        if (line[0] === BOM) {
+            yield* this.pushCount(1);
+            line = line.substring(1);
+        }
+        if (line[0] === '%') {
+            let dirEnd = line.length;
+            let cs = line.indexOf('#');
+            while (cs !== -1) {
+                const ch = line[cs - 1];
+                if (ch === ' ' || ch === '\t') {
+                    dirEnd = cs - 1;
+                    break;
+                }
+                else {
+                    cs = line.indexOf('#', cs + 1);
+                }
+            }
+            while (true) {
+                const ch = line[dirEnd - 1];
+                if (ch === ' ' || ch === '\t')
+                    dirEnd -= 1;
+                else
+                    break;
+            }
+            const n = (yield* this.pushCount(dirEnd)) + (yield* this.pushSpaces(true));
+            yield* this.pushCount(line.length - n); // possible comment
+            this.pushNewline();
+            return 'stream';
+        }
+        if (this.atLineEnd()) {
+            const sp = yield* this.pushSpaces(true);
+            yield* this.pushCount(line.length - sp);
+            yield* this.pushNewline();
+            return 'stream';
+        }
+        yield DOCUMENT;
+        return yield* this.parseLineStart();
+    }
+    *parseLineStart() {
+        const ch = this.charAt(0);
+        if (!ch && !this.atEnd)
+            return this.setNext('line-start');
+        if (ch === '-' || ch === '.') {
+            if (!this.atEnd && !this.hasChars(4))
+                return this.setNext('line-start');
+            const s = this.peek(3);
+            if ((s === '---' || s === '...') && isEmpty(this.charAt(3))) {
+                yield* this.pushCount(3);
+                this.indentValue = 0;
+                this.indentNext = 0;
+                return s === '---' ? 'doc' : 'stream';
+            }
+        }
+        this.indentValue = yield* this.pushSpaces(false);
+        if (this.indentNext > this.indentValue && !isEmpty(this.charAt(1)))
+            this.indentNext = this.indentValue;
+        return yield* this.parseBlockStart();
+    }
+    *parseBlockStart() {
+        const [ch0, ch1] = this.peek(2);
+        if (!ch1 && !this.atEnd)
+            return this.setNext('block-start');
+        if ((ch0 === '-' || ch0 === '?' || ch0 === ':') && isEmpty(ch1)) {
+            const n = (yield* this.pushCount(1)) + (yield* this.pushSpaces(true));
+            this.indentNext = this.indentValue + 1;
+            this.indentValue += n;
+            return yield* this.parseBlockStart();
+        }
+        return 'doc';
+    }
+    *parseDocument() {
+        yield* this.pushSpaces(true);
+        const line = this.getLine();
+        if (line === null)
+            return this.setNext('doc');
+        let n = yield* this.pushIndicators();
+        switch (line[n]) {
+            case '#':
+                yield* this.pushCount(line.length - n);
+            // fallthrough
+            case undefined:
+                yield* this.pushNewline();
+                return yield* this.parseLineStart();
+            case '{':
+            case '[':
+                yield* this.pushCount(1);
+                this.flowKey = false;
+                this.flowLevel = 1;
+                return 'flow';
+            case '}':
+            case ']':
+                // this is an error
+                yield* this.pushCount(1);
+                return 'doc';
+            case '*':
+                yield* this.pushUntil(isNotAnchorChar);
+                return 'doc';
+            case '"':
+            case "'":
+                return yield* this.parseQuotedScalar();
+            case '|':
+            case '>':
+                n += yield* this.parseBlockScalarHeader();
+                n += yield* this.pushSpaces(true);
+                yield* this.pushCount(line.length - n);
+                yield* this.pushNewline();
+                return yield* this.parseBlockScalar();
+            default:
+                return yield* this.parsePlainScalar();
+        }
+    }
+    *parseFlowCollection() {
+        let nl, sp;
+        let indent = -1;
+        do {
+            nl = yield* this.pushNewline();
+            if (nl > 0) {
+                sp = yield* this.pushSpaces(false);
+                this.indentValue = indent = sp;
+            }
+            else {
+                sp = 0;
+            }
+            sp += yield* this.pushSpaces(true);
+        } while (nl + sp > 0);
+        const line = this.getLine();
+        if (line === null)
+            return this.setNext('flow');
+        if ((indent !== -1 && indent < this.indentNext && line[0] !== '#') ||
+            (indent === 0 &&
+                (line.startsWith('---') || line.startsWith('...')) &&
+                isEmpty(line[3]))) {
+            // Allowing for the terminal ] or } at the same (rather than greater)
+            // indent level as the initial [ or { is technically invalid, but
+            // failing here would be surprising to users.
+            const atFlowEndMarker = indent === this.indentNext - 1 &&
+                this.flowLevel === 1 &&
+                (line[0] === ']' || line[0] === '}');
+            if (!atFlowEndMarker) {
+                // this is an error
+                this.flowLevel = 0;
+                yield FLOW_END;
+                return yield* this.parseLineStart();
+            }
+        }
+        let n = 0;
+        while (line[n] === ',') {
+            n += yield* this.pushCount(1);
+            n += yield* this.pushSpaces(true);
+            this.flowKey = false;
+        }
+        n += yield* this.pushIndicators();
+        switch (line[n]) {
+            case undefined:
+                return 'flow';
+            case '#':
+                yield* this.pushCount(line.length - n);
+                return 'flow';
+            case '{':
+            case '[':
+                yield* this.pushCount(1);
+                this.flowKey = false;
+                this.flowLevel += 1;
+                return 'flow';
+            case '}':
+            case ']':
+                yield* this.pushCount(1);
+                this.flowKey = true;
+                this.flowLevel -= 1;
+                return this.flowLevel ? 'flow' : 'doc';
+            case '*':
+                yield* this.pushUntil(isNotAnchorChar);
+                return 'flow';
+            case '"':
+            case "'":
+                this.flowKey = true;
+                return yield* this.parseQuotedScalar();
+            case ':': {
+                const next = this.charAt(1);
+                if (this.flowKey || isEmpty(next) || next === ',') {
+                    this.flowKey = false;
+                    yield* this.pushCount(1);
+                    yield* this.pushSpaces(true);
+                    return 'flow';
+                }
+            }
+            // fallthrough
+            default:
+                this.flowKey = false;
+                return yield* this.parsePlainScalar();
+        }
+    }
+    *parseQuotedScalar() {
+        const quote = this.charAt(0);
+        let end = this.buffer.indexOf(quote, this.pos + 1);
+        if (quote === "'") {
+            while (end !== -1 && this.buffer[end + 1] === "'")
+                end = this.buffer.indexOf("'", end + 2);
+        }
+        else {
+            // double-quote
+            while (end !== -1) {
+                let n = 0;
+                while (this.buffer[end - 1 - n] === '\\')
+                    n += 1;
+                if (n % 2 === 0)
+                    break;
+                end = this.buffer.indexOf('"', end + 1);
+            }
+        }
+        // Only looking for newlines within the quotes
+        const qb = this.buffer.substring(0, end);
+        let nl = qb.indexOf('\n', this.pos);
+        if (nl !== -1) {
+            while (nl !== -1) {
+                const cs = this.continueScalar(nl + 1);
+                if (cs === -1)
+                    break;
+                nl = qb.indexOf('\n', cs);
+            }
+            if (nl !== -1) {
+                // this is an error caused by an unexpected unindent
+                end = nl - (qb[nl - 1] === '\r' ? 2 : 1);
+            }
+        }
+        if (end === -1) {
+            if (!this.atEnd)
+                return this.setNext('quoted-scalar');
+            end = this.buffer.length;
+        }
+        yield* this.pushToIndex(end + 1, false);
+        return this.flowLevel ? 'flow' : 'doc';
+    }
+    *parseBlockScalarHeader() {
+        this.blockScalarIndent = -1;
+        this.blockScalarKeep = false;
+        let i = this.pos;
+        while (true) {
+            const ch = this.buffer[++i];
+            if (ch === '+')
+                this.blockScalarKeep = true;
+            else if (ch > '0' && ch <= '9')
+                this.blockScalarIndent = Number(ch) - 1;
+            else if (ch !== '-')
+                break;
+        }
+        return yield* this.pushUntil(ch => isEmpty(ch) || ch === '#');
+    }
+    *parseBlockScalar() {
+        let nl = this.pos - 1; // may be -1 if this.pos === 0
+        let indent = 0;
+        let ch;
+        loop: for (let i = this.pos; (ch = this.buffer[i]); ++i) {
+            switch (ch) {
+                case ' ':
+                    indent += 1;
+                    break;
+                case '\n':
+                    nl = i;
+                    indent = 0;
+                    break;
+                case '\r': {
+                    const next = this.buffer[i + 1];
+                    if (!next && !this.atEnd)
+                        return this.setNext('block-scalar');
+                    if (next === '\n')
+                        break;
+                } // fallthrough
+                default:
+                    break loop;
+            }
+        }
+        if (!ch && !this.atEnd)
+            return this.setNext('block-scalar');
+        if (indent >= this.indentNext) {
+            if (this.blockScalarIndent === -1)
+                this.indentNext = indent;
+            else {
+                this.indentNext =
+                    this.blockScalarIndent + (this.indentNext === 0 ? 1 : this.indentNext);
+            }
+            do {
+                const cs = this.continueScalar(nl + 1);
+                if (cs === -1)
+                    break;
+                nl = this.buffer.indexOf('\n', cs);
+            } while (nl !== -1);
+            if (nl === -1) {
+                if (!this.atEnd)
+                    return this.setNext('block-scalar');
+                nl = this.buffer.length;
+            }
+        }
+        // Trailing insufficiently indented tabs are invalid.
+        // To catch that during parsing, we include them in the block scalar value.
+        let i = nl + 1;
+        ch = this.buffer[i];
+        while (ch === ' ')
+            ch = this.buffer[++i];
+        if (ch === '\t') {
+            while (ch === '\t' || ch === ' ' || ch === '\r' || ch === '\n')
+                ch = this.buffer[++i];
+            nl = i - 1;
+        }
+        else if (!this.blockScalarKeep) {
+            do {
+                let i = nl - 1;
+                let ch = this.buffer[i];
+                if (ch === '\r')
+                    ch = this.buffer[--i];
+                const lastChar = i; // Drop the line if last char not more indented
+                while (ch === ' ')
+                    ch = this.buffer[--i];
+                if (ch === '\n' && i >= this.pos && i + 1 + indent > lastChar)
+                    nl = i;
+                else
+                    break;
+            } while (true);
+        }
+        yield SCALAR;
+        yield* this.pushToIndex(nl + 1, true);
+        return yield* this.parseLineStart();
+    }
+    *parsePlainScalar() {
+        const inFlow = this.flowLevel > 0;
+        let end = this.pos - 1;
+        let i = this.pos - 1;
+        let ch;
+        while ((ch = this.buffer[++i])) {
+            if (ch === ':') {
+                const next = this.buffer[i + 1];
+                if (isEmpty(next) || (inFlow && flowIndicatorChars.has(next)))
+                    break;
+                end = i;
+            }
+            else if (isEmpty(ch)) {
+                let next = this.buffer[i + 1];
+                if (ch === '\r') {
+                    if (next === '\n') {
+                        i += 1;
+                        ch = '\n';
+                        next = this.buffer[i + 1];
+                    }
+                    else
+                        end = i;
+                }
+                if (next === '#' || (inFlow && flowIndicatorChars.has(next)))
+                    break;
+                if (ch === '\n') {
+                    const cs = this.continueScalar(i + 1);
+                    if (cs === -1)
+                        break;
+                    i = Math.max(i, cs - 2); // to advance, but still account for ' #'
+                }
+            }
+            else {
+                if (inFlow && flowIndicatorChars.has(ch))
+                    break;
+                end = i;
+            }
+        }
+        if (!ch && !this.atEnd)
+            return this.setNext('plain-scalar');
+        yield SCALAR;
+        yield* this.pushToIndex(end + 1, true);
+        return inFlow ? 'flow' : 'doc';
+    }
+    *pushCount(n) {
+        if (n > 0) {
+            yield this.buffer.substr(this.pos, n);
+            this.pos += n;
+            return n;
+        }
+        return 0;
+    }
+    *pushToIndex(i, allowEmpty) {
+        const s = this.buffer.slice(this.pos, i);
+        if (s) {
+            yield s;
+            this.pos += s.length;
+            return s.length;
+        }
+        else if (allowEmpty)
+            yield '';
+        return 0;
+    }
+    *pushIndicators() {
+        switch (this.charAt(0)) {
+            case '!':
+                return ((yield* this.pushTag()) +
+                    (yield* this.pushSpaces(true)) +
+                    (yield* this.pushIndicators()));
+            case '&':
+                return ((yield* this.pushUntil(isNotAnchorChar)) +
+                    (yield* this.pushSpaces(true)) +
+                    (yield* this.pushIndicators()));
+            case '-': // this is an error
+            case '?': // this is an error outside flow collections
+            case ':': {
+                const inFlow = this.flowLevel > 0;
+                const ch1 = this.charAt(1);
+                if (isEmpty(ch1) || (inFlow && flowIndicatorChars.has(ch1))) {
+                    if (!inFlow)
+                        this.indentNext = this.indentValue + 1;
+                    else if (this.flowKey)
+                        this.flowKey = false;
+                    return ((yield* this.pushCount(1)) +
+                        (yield* this.pushSpaces(true)) +
+                        (yield* this.pushIndicators()));
+                }
+            }
+        }
+        return 0;
+    }
+    *pushTag() {
+        if (this.charAt(1) === '<') {
+            let i = this.pos + 2;
+            let ch = this.buffer[i];
+            while (!isEmpty(ch) && ch !== '>')
+                ch = this.buffer[++i];
+            return yield* this.pushToIndex(ch === '>' ? i + 1 : i, false);
+        }
+        else {
+            let i = this.pos + 1;
+            let ch = this.buffer[i];
+            while (ch) {
+                if (tagChars.has(ch))
+                    ch = this.buffer[++i];
+                else if (ch === '%' &&
+                    hexDigits.has(this.buffer[i + 1]) &&
+                    hexDigits.has(this.buffer[i + 2])) {
+                    ch = this.buffer[(i += 3)];
+                }
+                else
+                    break;
+            }
+            return yield* this.pushToIndex(i, false);
+        }
+    }
+    *pushNewline() {
+        const ch = this.buffer[this.pos];
+        if (ch === '\n')
+            return yield* this.pushCount(1);
+        else if (ch === '\r' && this.charAt(1) === '\n')
+            return yield* this.pushCount(2);
+        else
+            return 0;
+    }
+    *pushSpaces(allowTabs) {
+        let i = this.pos - 1;
+        let ch;
+        do {
+            ch = this.buffer[++i];
+        } while (ch === ' ' || (allowTabs && ch === '\t'));
+        const n = i - this.pos;
+        if (n > 0) {
+            yield this.buffer.substr(this.pos, n);
+            this.pos = i;
+        }
+        return n;
+    }
+    *pushUntil(test) {
+        let i = this.pos;
+        let ch = this.buffer[i];
+        while (!test(ch))
+            ch = this.buffer[++i];
+        return yield* this.pushToIndex(i, false);
+    }
+}
+
+/**
+ * Tracks newlines during parsing in order to provide an efficient API for
+ * determining the one-indexed `{ line, col }` position for any offset
+ * within the input.
+ */
+class LineCounter {
+    constructor() {
+        this.lineStarts = [];
+        /**
+         * Should be called in ascending order. Otherwise, call
+         * `lineCounter.lineStarts.sort()` before calling `linePos()`.
+         */
+        this.addNewLine = (offset) => this.lineStarts.push(offset);
+        /**
+         * Performs a binary search and returns the 1-indexed { line, col }
+         * position of `offset`. If `line === 0`, `addNewLine` has never been
+         * called or `offset` is before the first known newline.
+         */
+        this.linePos = (offset) => {
+            let low = 0;
+            let high = this.lineStarts.length;
+            while (low < high) {
+                const mid = (low + high) >> 1; // Math.floor((low + high) / 2)
+                if (this.lineStarts[mid] < offset)
+                    low = mid + 1;
+                else
+                    high = mid;
+            }
+            if (this.lineStarts[low] === offset)
+                return { line: low + 1, col: 1 };
+            if (low === 0)
+                return { line: 0, col: offset };
+            const start = this.lineStarts[low - 1];
+            return { line: low, col: offset - start + 1 };
+        };
+    }
+}
+
+function includesToken(list, type) {
+    for (let i = 0; i < list.length; ++i)
+        if (list[i].type === type)
+            return true;
+    return false;
+}
+function findNonEmptyIndex(list) {
+    for (let i = 0; i < list.length; ++i) {
+        switch (list[i].type) {
+            case 'space':
+            case 'comment':
+            case 'newline':
+                break;
+            default:
+                return i;
+        }
+    }
+    return -1;
+}
+function isFlowToken(token) {
+    switch (token?.type) {
+        case 'alias':
+        case 'scalar':
+        case 'single-quoted-scalar':
+        case 'double-quoted-scalar':
+        case 'flow-collection':
+            return true;
+        default:
+            return false;
+    }
+}
+function getPrevProps(parent) {
+    switch (parent.type) {
+        case 'document':
+            return parent.start;
+        case 'block-map': {
+            const it = parent.items[parent.items.length - 1];
+            return it.sep ?? it.start;
+        }
+        case 'block-seq':
+            return parent.items[parent.items.length - 1].start;
+        /* istanbul ignore next should not happen */
+        default:
+            return [];
+    }
+}
+/** Note: May modify input array */
+function getFirstKeyStartProps(prev) {
+    if (prev.length === 0)
+        return [];
+    let i = prev.length;
+    loop: while (--i >= 0) {
+        switch (prev[i].type) {
+            case 'doc-start':
+            case 'explicit-key-ind':
+            case 'map-value-ind':
+            case 'seq-item-ind':
+            case 'newline':
+                break loop;
+        }
+    }
+    while (prev[++i]?.type === 'space') {
+        /* loop */
+    }
+    return prev.splice(i, prev.length);
+}
+function fixFlowSeqItems(fc) {
+    if (fc.start.type === 'flow-seq-start') {
+        for (const it of fc.items) {
+            if (it.sep &&
+                !it.value &&
+                !includesToken(it.start, 'explicit-key-ind') &&
+                !includesToken(it.sep, 'map-value-ind')) {
+                if (it.key)
+                    it.value = it.key;
+                delete it.key;
+                if (isFlowToken(it.value)) {
+                    if (it.value.end)
+                        Array.prototype.push.apply(it.value.end, it.sep);
+                    else
+                        it.value.end = it.sep;
+                }
+                else
+                    Array.prototype.push.apply(it.start, it.sep);
+                delete it.sep;
+            }
+        }
+    }
+}
+/**
+ * A YAML concrete syntax tree (CST) parser
+ *
+ * ```ts
+ * const src: string = ...
+ * for (const token of new Parser().parse(src)) {
+ *   // token: Token
+ * }
+ * ```
+ *
+ * To use the parser with a user-provided lexer:
+ *
+ * ```ts
+ * function* parse(source: string, lexer: Lexer) {
+ *   const parser = new Parser()
+ *   for (const lexeme of lexer.lex(source))
+ *     yield* parser.next(lexeme)
+ *   yield* parser.end()
+ * }
+ *
+ * const src: string = ...
+ * const lexer = new Lexer()
+ * for (const token of parse(src, lexer)) {
+ *   // token: Token
+ * }
+ * ```
+ */
+class Parser {
+    /**
+     * @param onNewLine - If defined, called separately with the start position of
+     *   each new line (in `parse()`, including the start of input).
+     */
+    constructor(onNewLine) {
+        /** If true, space and sequence indicators count as indentation */
+        this.atNewLine = true;
+        /** If true, next token is a scalar value */
+        this.atScalar = false;
+        /** Current indentation level */
+        this.indent = 0;
+        /** Current offset since the start of parsing */
+        this.offset = 0;
+        /** On the same line with a block map key */
+        this.onKeyLine = false;
+        /** Top indicates the node that's currently being built */
+        this.stack = [];
+        /** The source of the current token, set in parse() */
+        this.source = '';
+        /** The type of the current token, set in parse() */
+        this.type = '';
+        // Must be defined after `next()`
+        this.lexer = new Lexer();
+        this.onNewLine = onNewLine;
+    }
+    /**
+     * Parse `source` as a YAML stream.
+     * If `incomplete`, a part of the last line may be left as a buffer for the next call.
+     *
+     * Errors are not thrown, but yielded as `{ type: 'error', message }` tokens.
+     *
+     * @returns A generator of tokens representing each directive, document, and other structure.
+     */
+    *parse(source, incomplete = false) {
+        if (this.onNewLine && this.offset === 0)
+            this.onNewLine(0);
+        for (const lexeme of this.lexer.lex(source, incomplete))
+            yield* this.next(lexeme);
+        if (!incomplete)
+            yield* this.end();
+    }
+    /**
+     * Advance the parser by the `source` of one lexical token.
+     */
+    *next(source) {
+        this.source = source;
+        if (this.atScalar) {
+            this.atScalar = false;
+            yield* this.step();
+            this.offset += source.length;
+            return;
+        }
+        const type = tokenType(source);
+        if (!type) {
+            const message = `Not a YAML token: ${source}`;
+            yield* this.pop({ type: 'error', offset: this.offset, message, source });
+            this.offset += source.length;
+        }
+        else if (type === 'scalar') {
+            this.atNewLine = false;
+            this.atScalar = true;
+            this.type = 'scalar';
+        }
+        else {
+            this.type = type;
+            yield* this.step();
+            switch (type) {
+                case 'newline':
+                    this.atNewLine = true;
+                    this.indent = 0;
+                    if (this.onNewLine)
+                        this.onNewLine(this.offset + source.length);
+                    break;
+                case 'space':
+                    if (this.atNewLine && source[0] === ' ')
+                        this.indent += source.length;
+                    break;
+                case 'explicit-key-ind':
+                case 'map-value-ind':
+                case 'seq-item-ind':
+                    if (this.atNewLine)
+                        this.indent += source.length;
+                    break;
+                case 'doc-mode':
+                case 'flow-error-end':
+                    return;
+                default:
+                    this.atNewLine = false;
+            }
+            this.offset += source.length;
+        }
+    }
+    /** Call at end of input to push out any remaining constructions */
+    *end() {
+        while (this.stack.length > 0)
+            yield* this.pop();
+    }
+    get sourceToken() {
+        const st = {
+            type: this.type,
+            offset: this.offset,
+            indent: this.indent,
+            source: this.source
+        };
+        return st;
+    }
+    *step() {
+        const top = this.peek(1);
+        if (this.type === 'doc-end' && top?.type !== 'doc-end') {
+            while (this.stack.length > 0)
+                yield* this.pop();
+            this.stack.push({
+                type: 'doc-end',
+                offset: this.offset,
+                source: this.source
+            });
+            return;
+        }
+        if (!top)
+            return yield* this.stream();
+        switch (top.type) {
+            case 'document':
+                return yield* this.document(top);
+            case 'alias':
+            case 'scalar':
+            case 'single-quoted-scalar':
+            case 'double-quoted-scalar':
+                return yield* this.scalar(top);
+            case 'block-scalar':
+                return yield* this.blockScalar(top);
+            case 'block-map':
+                return yield* this.blockMap(top);
+            case 'block-seq':
+                return yield* this.blockSequence(top);
+            case 'flow-collection':
+                return yield* this.flowCollection(top);
+            case 'doc-end':
+                return yield* this.documentEnd(top);
+        }
+        /* istanbul ignore next should not happen */
+        yield* this.pop();
+    }
+    peek(n) {
+        return this.stack[this.stack.length - n];
+    }
+    *pop(error) {
+        const token = error ?? this.stack.pop();
+        /* istanbul ignore if should not happen */
+        if (!token) {
+            const message = 'Tried to pop an empty stack';
+            yield { type: 'error', offset: this.offset, source: '', message };
+        }
+        else if (this.stack.length === 0) {
+            yield token;
+        }
+        else {
+            const top = this.peek(1);
+            if (token.type === 'block-scalar') {
+                // Block scalars use their parent rather than header indent
+                token.indent = 'indent' in top ? top.indent : 0;
+            }
+            else if (token.type === 'flow-collection' && top.type === 'document') {
+                // Ignore all indent for top-level flow collections
+                token.indent = 0;
+            }
+            if (token.type === 'flow-collection')
+                fixFlowSeqItems(token);
+            switch (top.type) {
+                case 'document':
+                    top.value = token;
+                    break;
+                case 'block-scalar':
+                    top.props.push(token); // error
+                    break;
+                case 'block-map': {
+                    const it = top.items[top.items.length - 1];
+                    if (it.value) {
+                        top.items.push({ start: [], key: token, sep: [] });
+                        this.onKeyLine = true;
+                        return;
+                    }
+                    else if (it.sep) {
+                        it.value = token;
+                    }
+                    else {
+                        Object.assign(it, { key: token, sep: [] });
+                        this.onKeyLine = !it.explicitKey;
+                        return;
+                    }
+                    break;
+                }
+                case 'block-seq': {
+                    const it = top.items[top.items.length - 1];
+                    if (it.value)
+                        top.items.push({ start: [], value: token });
+                    else
+                        it.value = token;
+                    break;
+                }
+                case 'flow-collection': {
+                    const it = top.items[top.items.length - 1];
+                    if (!it || it.value)
+                        top.items.push({ start: [], key: token, sep: [] });
+                    else if (it.sep)
+                        it.value = token;
+                    else
+                        Object.assign(it, { key: token, sep: [] });
+                    return;
+                }
+                /* istanbul ignore next should not happen */
+                default:
+                    yield* this.pop();
+                    yield* this.pop(token);
+            }
+            if ((top.type === 'document' ||
+                top.type === 'block-map' ||
+                top.type === 'block-seq') &&
+                (token.type === 'block-map' || token.type === 'block-seq')) {
+                const last = token.items[token.items.length - 1];
+                if (last &&
+                    !last.sep &&
+                    !last.value &&
+                    last.start.length > 0 &&
+                    findNonEmptyIndex(last.start) === -1 &&
+                    (token.indent === 0 ||
+                        last.start.every(st => st.type !== 'comment' || st.indent < token.indent))) {
+                    if (top.type === 'document')
+                        top.end = last.start;
+                    else
+                        top.items.push({ start: last.start });
+                    token.items.splice(-1, 1);
+                }
+            }
+        }
+    }
+    *stream() {
+        switch (this.type) {
+            case 'directive-line':
+                yield { type: 'directive', offset: this.offset, source: this.source };
+                return;
+            case 'byte-order-mark':
+            case 'space':
+            case 'comment':
+            case 'newline':
+                yield this.sourceToken;
+                return;
+            case 'doc-mode':
+            case 'doc-start': {
+                const doc = {
+                    type: 'document',
+                    offset: this.offset,
+                    start: []
+                };
+                if (this.type === 'doc-start')
+                    doc.start.push(this.sourceToken);
+                this.stack.push(doc);
+                return;
+            }
+        }
+        yield {
+            type: 'error',
+            offset: this.offset,
+            message: `Unexpected ${this.type} token in YAML stream`,
+            source: this.source
+        };
+    }
+    *document(doc) {
+        if (doc.value)
+            return yield* this.lineEnd(doc);
+        switch (this.type) {
+            case 'doc-start': {
+                if (findNonEmptyIndex(doc.start) !== -1) {
+                    yield* this.pop();
+                    yield* this.step();
+                }
+                else
+                    doc.start.push(this.sourceToken);
+                return;
+            }
+            case 'anchor':
+            case 'tag':
+            case 'space':
+            case 'comment':
+            case 'newline':
+                doc.start.push(this.sourceToken);
+                return;
+        }
+        const bv = this.startBlockValue(doc);
+        if (bv)
+            this.stack.push(bv);
+        else {
+            yield {
+                type: 'error',
+                offset: this.offset,
+                message: `Unexpected ${this.type} token in YAML document`,
+                source: this.source
+            };
+        }
+    }
+    *scalar(scalar) {
+        if (this.type === 'map-value-ind') {
+            const prev = getPrevProps(this.peek(2));
+            const start = getFirstKeyStartProps(prev);
+            let sep;
+            if (scalar.end) {
+                sep = scalar.end;
+                sep.push(this.sourceToken);
+                delete scalar.end;
+            }
+            else
+                sep = [this.sourceToken];
+            const map = {
+                type: 'block-map',
+                offset: scalar.offset,
+                indent: scalar.indent,
+                items: [{ start, key: scalar, sep }]
+            };
+            this.onKeyLine = true;
+            this.stack[this.stack.length - 1] = map;
+        }
+        else
+            yield* this.lineEnd(scalar);
+    }
+    *blockScalar(scalar) {
+        switch (this.type) {
+            case 'space':
+            case 'comment':
+            case 'newline':
+                scalar.props.push(this.sourceToken);
+                return;
+            case 'scalar':
+                scalar.source = this.source;
+                // block-scalar source includes trailing newline
+                this.atNewLine = true;
+                this.indent = 0;
+                if (this.onNewLine) {
+                    let nl = this.source.indexOf('\n') + 1;
+                    while (nl !== 0) {
+                        this.onNewLine(this.offset + nl);
+                        nl = this.source.indexOf('\n', nl) + 1;
+                    }
+                }
+                yield* this.pop();
+                break;
+            /* istanbul ignore next should not happen */
+            default:
+                yield* this.pop();
+                yield* this.step();
+        }
+    }
+    *blockMap(map) {
+        const it = map.items[map.items.length - 1];
+        // it.sep is true-ish if pair already has key or : separator
+        switch (this.type) {
+            case 'newline':
+                this.onKeyLine = false;
+                if (it.value) {
+                    const end = 'end' in it.value ? it.value.end : undefined;
+                    const last = Array.isArray(end) ? end[end.length - 1] : undefined;
+                    if (last?.type === 'comment')
+                        end?.push(this.sourceToken);
+                    else
+                        map.items.push({ start: [this.sourceToken] });
+                }
+                else if (it.sep) {
+                    it.sep.push(this.sourceToken);
+                }
+                else {
+                    it.start.push(this.sourceToken);
+                }
+                return;
+            case 'space':
+            case 'comment':
+                if (it.value) {
+                    map.items.push({ start: [this.sourceToken] });
+                }
+                else if (it.sep) {
+                    it.sep.push(this.sourceToken);
+                }
+                else {
+                    if (this.atIndentedComment(it.start, map.indent)) {
+                        const prev = map.items[map.items.length - 2];
+                        const end = prev?.value?.end;
+                        if (Array.isArray(end)) {
+                            Array.prototype.push.apply(end, it.start);
+                            end.push(this.sourceToken);
+                            map.items.pop();
+                            return;
+                        }
+                    }
+                    it.start.push(this.sourceToken);
+                }
+                return;
+        }
+        if (this.indent >= map.indent) {
+            const atMapIndent = !this.onKeyLine && this.indent === map.indent;
+            const atNextItem = atMapIndent &&
+                (it.sep || it.explicitKey) &&
+                this.type !== 'seq-item-ind';
+            // For empty nodes, assign newline-separated not indented empty tokens to following node
+            let start = [];
+            if (atNextItem && it.sep && !it.value) {
+                const nl = [];
+                for (let i = 0; i < it.sep.length; ++i) {
+                    const st = it.sep[i];
+                    switch (st.type) {
+                        case 'newline':
+                            nl.push(i);
+                            break;
+                        case 'space':
+                            break;
+                        case 'comment':
+                            if (st.indent > map.indent)
+                                nl.length = 0;
+                            break;
+                        default:
+                            nl.length = 0;
+                    }
+                }
+                if (nl.length >= 2)
+                    start = it.sep.splice(nl[1]);
+            }
+            switch (this.type) {
+                case 'anchor':
+                case 'tag':
+                    if (atNextItem || it.value) {
+                        start.push(this.sourceToken);
+                        map.items.push({ start });
+                        this.onKeyLine = true;
+                    }
+                    else if (it.sep) {
+                        it.sep.push(this.sourceToken);
+                    }
+                    else {
+                        it.start.push(this.sourceToken);
+                    }
+                    return;
+                case 'explicit-key-ind':
+                    if (!it.sep && !it.explicitKey) {
+                        it.start.push(this.sourceToken);
+                        it.explicitKey = true;
+                    }
+                    else if (atNextItem || it.value) {
+                        start.push(this.sourceToken);
+                        map.items.push({ start, explicitKey: true });
+                    }
+                    else {
+                        this.stack.push({
+                            type: 'block-map',
+                            offset: this.offset,
+                            indent: this.indent,
+                            items: [{ start: [this.sourceToken], explicitKey: true }]
+                        });
+                    }
+                    this.onKeyLine = true;
+                    return;
+                case 'map-value-ind':
+                    if (it.explicitKey) {
+                        if (!it.sep) {
+                            if (includesToken(it.start, 'newline')) {
+                                Object.assign(it, { key: null, sep: [this.sourceToken] });
+                            }
+                            else {
+                                const start = getFirstKeyStartProps(it.start);
+                                this.stack.push({
+                                    type: 'block-map',
+                                    offset: this.offset,
+                                    indent: this.indent,
+                                    items: [{ start, key: null, sep: [this.sourceToken] }]
+                                });
+                            }
+                        }
+                        else if (it.value) {
+                            map.items.push({ start: [], key: null, sep: [this.sourceToken] });
+                        }
+                        else if (includesToken(it.sep, 'map-value-ind')) {
+                            this.stack.push({
+                                type: 'block-map',
+                                offset: this.offset,
+                                indent: this.indent,
+                                items: [{ start, key: null, sep: [this.sourceToken] }]
+                            });
+                        }
+                        else if (isFlowToken(it.key) &&
+                            !includesToken(it.sep, 'newline')) {
+                            const start = getFirstKeyStartProps(it.start);
+                            const key = it.key;
+                            const sep = it.sep;
+                            sep.push(this.sourceToken);
+                            // @ts-expect-error type guard is wrong here
+                            delete it.key;
+                            // @ts-expect-error type guard is wrong here
+                            delete it.sep;
+                            this.stack.push({
+                                type: 'block-map',
+                                offset: this.offset,
+                                indent: this.indent,
+                                items: [{ start, key, sep }]
+                            });
+                        }
+                        else if (start.length > 0) {
+                            // Not actually at next item
+                            it.sep = it.sep.concat(start, this.sourceToken);
+                        }
+                        else {
+                            it.sep.push(this.sourceToken);
+                        }
+                    }
+                    else {
+                        if (!it.sep) {
+                            Object.assign(it, { key: null, sep: [this.sourceToken] });
+                        }
+                        else if (it.value || atNextItem) {
+                            map.items.push({ start, key: null, sep: [this.sourceToken] });
+                        }
+                        else if (includesToken(it.sep, 'map-value-ind')) {
+                            this.stack.push({
+                                type: 'block-map',
+                                offset: this.offset,
+                                indent: this.indent,
+                                items: [{ start: [], key: null, sep: [this.sourceToken] }]
+                            });
+                        }
+                        else {
+                            it.sep.push(this.sourceToken);
+                        }
+                    }
+                    this.onKeyLine = true;
+                    return;
+                case 'alias':
+                case 'scalar':
+                case 'single-quoted-scalar':
+                case 'double-quoted-scalar': {
+                    const fs = this.flowScalar(this.type);
+                    if (atNextItem || it.value) {
+                        map.items.push({ start, key: fs, sep: [] });
+                        this.onKeyLine = true;
+                    }
+                    else if (it.sep) {
+                        this.stack.push(fs);
+                    }
+                    else {
+                        Object.assign(it, { key: fs, sep: [] });
+                        this.onKeyLine = true;
+                    }
+                    return;
+                }
+                default: {
+                    const bv = this.startBlockValue(map);
+                    if (bv) {
+                        if (bv.type === 'block-seq') {
+                            if (!it.explicitKey &&
+                                it.sep &&
+                                !includesToken(it.sep, 'newline')) {
+                                yield* this.pop({
+                                    type: 'error',
+                                    offset: this.offset,
+                                    message: 'Unexpected block-seq-ind on same line with key',
+                                    source: this.source
+                                });
+                                return;
+                            }
+                        }
+                        else if (atMapIndent) {
+                            map.items.push({ start });
+                        }
+                        this.stack.push(bv);
+                        return;
+                    }
+                }
+            }
+        }
+        yield* this.pop();
+        yield* this.step();
+    }
+    *blockSequence(seq) {
+        const it = seq.items[seq.items.length - 1];
+        switch (this.type) {
+            case 'newline':
+                if (it.value) {
+                    const end = 'end' in it.value ? it.value.end : undefined;
+                    const last = Array.isArray(end) ? end[end.length - 1] : undefined;
+                    if (last?.type === 'comment')
+                        end?.push(this.sourceToken);
+                    else
+                        seq.items.push({ start: [this.sourceToken] });
+                }
+                else
+                    it.start.push(this.sourceToken);
+                return;
+            case 'space':
+            case 'comment':
+                if (it.value)
+                    seq.items.push({ start: [this.sourceToken] });
+                else {
+                    if (this.atIndentedComment(it.start, seq.indent)) {
+                        const prev = seq.items[seq.items.length - 2];
+                        const end = prev?.value?.end;
+                        if (Array.isArray(end)) {
+                            Array.prototype.push.apply(end, it.start);
+                            end.push(this.sourceToken);
+                            seq.items.pop();
+                            return;
+                        }
+                    }
+                    it.start.push(this.sourceToken);
+                }
+                return;
+            case 'anchor':
+            case 'tag':
+                if (it.value || this.indent <= seq.indent)
+                    break;
+                it.start.push(this.sourceToken);
+                return;
+            case 'seq-item-ind':
+                if (this.indent !== seq.indent)
+                    break;
+                if (it.value || includesToken(it.start, 'seq-item-ind'))
+                    seq.items.push({ start: [this.sourceToken] });
+                else
+                    it.start.push(this.sourceToken);
+                return;
+        }
+        if (this.indent > seq.indent) {
+            const bv = this.startBlockValue(seq);
+            if (bv) {
+                this.stack.push(bv);
+                return;
+            }
+        }
+        yield* this.pop();
+        yield* this.step();
+    }
+    *flowCollection(fc) {
+        const it = fc.items[fc.items.length - 1];
+        if (this.type === 'flow-error-end') {
+            let top;
+            do {
+                yield* this.pop();
+                top = this.peek(1);
+            } while (top?.type === 'flow-collection');
+        }
+        else if (fc.end.length === 0) {
+            switch (this.type) {
+                case 'comma':
+                case 'explicit-key-ind':
+                    if (!it || it.sep)
+                        fc.items.push({ start: [this.sourceToken] });
+                    else
+                        it.start.push(this.sourceToken);
+                    return;
+                case 'map-value-ind':
+                    if (!it || it.value)
+                        fc.items.push({ start: [], key: null, sep: [this.sourceToken] });
+                    else if (it.sep)
+                        it.sep.push(this.sourceToken);
+                    else
+                        Object.assign(it, { key: null, sep: [this.sourceToken] });
+                    return;
+                case 'space':
+                case 'comment':
+                case 'newline':
+                case 'anchor':
+                case 'tag':
+                    if (!it || it.value)
+                        fc.items.push({ start: [this.sourceToken] });
+                    else if (it.sep)
+                        it.sep.push(this.sourceToken);
+                    else
+                        it.start.push(this.sourceToken);
+                    return;
+                case 'alias':
+                case 'scalar':
+                case 'single-quoted-scalar':
+                case 'double-quoted-scalar': {
+                    const fs = this.flowScalar(this.type);
+                    if (!it || it.value)
+                        fc.items.push({ start: [], key: fs, sep: [] });
+                    else if (it.sep)
+                        this.stack.push(fs);
+                    else
+                        Object.assign(it, { key: fs, sep: [] });
+                    return;
+                }
+                case 'flow-map-end':
+                case 'flow-seq-end':
+                    fc.end.push(this.sourceToken);
+                    return;
+            }
+            const bv = this.startBlockValue(fc);
+            /* istanbul ignore else should not happen */
+            if (bv)
+                this.stack.push(bv);
+            else {
+                yield* this.pop();
+                yield* this.step();
+            }
+        }
+        else {
+            const parent = this.peek(2);
+            if (parent.type === 'block-map' &&
+                ((this.type === 'map-value-ind' && parent.indent === fc.indent) ||
+                    (this.type === 'newline' &&
+                        !parent.items[parent.items.length - 1].sep))) {
+                yield* this.pop();
+                yield* this.step();
+            }
+            else if (this.type === 'map-value-ind' &&
+                parent.type !== 'flow-collection') {
+                const prev = getPrevProps(parent);
+                const start = getFirstKeyStartProps(prev);
+                fixFlowSeqItems(fc);
+                const sep = fc.end.splice(1, fc.end.length);
+                sep.push(this.sourceToken);
+                const map = {
+                    type: 'block-map',
+                    offset: fc.offset,
+                    indent: fc.indent,
+                    items: [{ start, key: fc, sep }]
+                };
+                this.onKeyLine = true;
+                this.stack[this.stack.length - 1] = map;
+            }
+            else {
+                yield* this.lineEnd(fc);
+            }
+        }
+    }
+    flowScalar(type) {
+        if (this.onNewLine) {
+            let nl = this.source.indexOf('\n') + 1;
+            while (nl !== 0) {
+                this.onNewLine(this.offset + nl);
+                nl = this.source.indexOf('\n', nl) + 1;
+            }
+        }
+        return {
+            type,
+            offset: this.offset,
+            indent: this.indent,
+            source: this.source
+        };
+    }
+    startBlockValue(parent) {
+        switch (this.type) {
+            case 'alias':
+            case 'scalar':
+            case 'single-quoted-scalar':
+            case 'double-quoted-scalar':
+                return this.flowScalar(this.type);
+            case 'block-scalar-header':
+                return {
+                    type: 'block-scalar',
+                    offset: this.offset,
+                    indent: this.indent,
+                    props: [this.sourceToken],
+                    source: ''
+                };
+            case 'flow-map-start':
+            case 'flow-seq-start':
+                return {
+                    type: 'flow-collection',
+                    offset: this.offset,
+                    indent: this.indent,
+                    start: this.sourceToken,
+                    items: [],
+                    end: []
+                };
+            case 'seq-item-ind':
+                return {
+                    type: 'block-seq',
+                    offset: this.offset,
+                    indent: this.indent,
+                    items: [{ start: [this.sourceToken] }]
+                };
+            case 'explicit-key-ind': {
+                this.onKeyLine = true;
+                const prev = getPrevProps(parent);
+                const start = getFirstKeyStartProps(prev);
+                start.push(this.sourceToken);
+                return {
+                    type: 'block-map',
+                    offset: this.offset,
+                    indent: this.indent,
+                    items: [{ start, explicitKey: true }]
+                };
+            }
+            case 'map-value-ind': {
+                this.onKeyLine = true;
+                const prev = getPrevProps(parent);
+                const start = getFirstKeyStartProps(prev);
+                return {
+                    type: 'block-map',
+                    offset: this.offset,
+                    indent: this.indent,
+                    items: [{ start, key: null, sep: [this.sourceToken] }]
+                };
+            }
+        }
+        return null;
+    }
+    atIndentedComment(start, indent) {
+        if (this.type !== 'comment')
+            return false;
+        if (this.indent <= indent)
+            return false;
+        return start.every(st => st.type === 'newline' || st.type === 'space');
+    }
+    *documentEnd(docEnd) {
+        if (this.type !== 'doc-mode') {
+            if (docEnd.end)
+                docEnd.end.push(this.sourceToken);
+            else
+                docEnd.end = [this.sourceToken];
+            if (this.type === 'newline')
+                yield* this.pop();
+        }
+    }
+    *lineEnd(token) {
+        switch (this.type) {
+            case 'comma':
+            case 'doc-start':
+            case 'doc-end':
+            case 'flow-seq-end':
+            case 'flow-map-end':
+            case 'map-value-ind':
+                yield* this.pop();
+                yield* this.step();
+                break;
+            case 'newline':
+                this.onKeyLine = false;
+            // fallthrough
+            case 'space':
+            case 'comment':
+            default:
+                // all other values are errors
+                if (token.end)
+                    token.end.push(this.sourceToken);
+                else
+                    token.end = [this.sourceToken];
+                if (this.type === 'newline')
+                    yield* this.pop();
+        }
+    }
+}
+
+function parseOptions(options) {
+    const prettyErrors = options.prettyErrors !== false;
+    const lineCounter = options.lineCounter || (prettyErrors && new LineCounter()) || null;
+    return { lineCounter, prettyErrors };
+}
+/** Parse an input string into a single YAML.Document */
+function parseDocument(source, options = {}) {
+    const { lineCounter, prettyErrors } = parseOptions(options);
+    const parser = new Parser(lineCounter?.addNewLine);
+    const composer = new Composer(options);
+    // `doc` is always set by compose.end(true) at the very latest
+    let doc = null;
+    for (const _doc of composer.compose(parser.parse(source), true, source.length)) {
+        if (!doc)
+            doc = _doc;
+        else if (doc.options.logLevel !== 'silent') {
+            doc.errors.push(new YAMLParseError(_doc.range.slice(0, 2), 'MULTIPLE_DOCS', 'Source contains multiple documents; please use YAML.parseAllDocuments()'));
+            break;
+        }
+    }
+    if (prettyErrors && lineCounter) {
+        doc.errors.forEach(prettifyError(source, lineCounter));
+        doc.warnings.forEach(prettifyError(source, lineCounter));
+    }
+    return doc;
+}
+function parse(src, reviver, options) {
+    let _reviver = undefined;
+    const doc = parseDocument(src, options);
+    if (!doc)
+        return null;
+    doc.warnings.forEach(warning => warn(doc.options.logLevel, warning));
+    if (doc.errors.length > 0) {
+        if (doc.options.logLevel !== 'silent')
+            throw doc.errors[0];
+        else
+            doc.errors = [];
+    }
+    return doc.toJS(Object.assign({ reviver: _reviver }, options));
+}
+
+/**
+ * Scans workflow files for GitHub Actions references
+ */
+class WorkflowScanner {
+    workflowPath;
+    constructor(workflowPath) {
+        this.workflowPath = workflowPath;
+    }
+    /**
+     * Scans all workflow files in the specified directory
+     * @returns Array of action references found in workflow files
+     */
+    async scanWorkflows() {
+        const actions = [];
+        if (!fs.existsSync(this.workflowPath)) {
+            coreExports.warning(`Workflow path does not exist: ${this.workflowPath}`);
+            return actions;
+        }
+        const files = fs.readdirSync(this.workflowPath);
+        const workflowFiles = files.filter((file) => (file.endsWith('.yml') || file.endsWith('.yaml')) &&
+            fs.statSync(require$$1.join(this.workflowPath, file)).isFile());
+        coreExports.info(`Found ${workflowFiles.length} workflow files`);
+        for (const file of workflowFiles) {
+            const filePath = require$$1.join(this.workflowPath, file);
+            coreExports.debug(`Scanning workflow file: ${filePath}`);
+            try {
+                const content = fs.readFileSync(filePath, 'utf8');
+                const workflow = parse(content);
+                const fileActions = this.extractActionsFromWorkflow(workflow, file);
+                actions.push(...fileActions);
+            }
+            catch (error) {
+                if (error instanceof Error) {
+                    coreExports.warning(`Failed to parse workflow file ${file}: ${error.message}`);
+                }
+            }
+        }
+        return actions;
+    }
+    /**
+     * Extracts action references from a parsed workflow object
+     */
+    extractActionsFromWorkflow(workflow, workflowFile) {
+        const actions = [];
+        if (!workflow || !workflow.jobs) {
+            return actions;
+        }
+        for (const [, job] of Object.entries(workflow.jobs)) {
+            if (typeof job === 'object' && job !== null && 'steps' in job) {
+                const jobSteps = job.steps;
+                if (Array.isArray(jobSteps)) {
+                    for (const step of jobSteps) {
+                        if (step && step.uses) {
+                            const actionRef = this.parseActionReference(step.uses, workflowFile);
+                            if (actionRef) {
+                                actions.push(actionRef);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        return actions;
+    }
+    /**
+     * Parses an action reference string (e.g., "actions/checkout@v3")
+     */
+    parseActionReference(uses, workflowFile) {
+        // Skip local actions (start with ./)
+        if (uses.startsWith('./') || uses.startsWith('.\\')) {
+            coreExports.debug(`Skipping local action: ${uses}`);
+            return null;
+        }
+        // Skip Docker actions
+        if (uses.startsWith('docker://')) {
+            coreExports.debug(`Skipping Docker action: ${uses}`);
+            return null;
+        }
+        // Parse owner/repo@ref format
+        const match = uses.match(/^([^/]+)\/([^@]+)@(.+)$/);
+        if (!match) {
+            coreExports.warning(`Invalid action reference format: ${uses}`);
+            return null;
+        }
+        const [, owner, repo, ref] = match;
+        return {
+            owner,
+            repo,
+            ref,
+            fullReference: uses,
+            workflow: workflowFile
+        };
+    }
+}
+
+var re = {exports: {}};
+
+var constants$1;
+var hasRequiredConstants$1;
+
+function requireConstants$1 () {
+	if (hasRequiredConstants$1) return constants$1;
+	hasRequiredConstants$1 = 1;
+
+	// Note: this is the semver.org version of the spec that it implements
+	// Not necessarily the package version of this code.
+	const SEMVER_SPEC_VERSION = '2.0.0';
+
+	const MAX_LENGTH = 256;
+	const MAX_SAFE_INTEGER = Number.MAX_SAFE_INTEGER ||
+	/* istanbul ignore next */ 9007199254740991;
+
+	// Max safe segment length for coercion.
+	const MAX_SAFE_COMPONENT_LENGTH = 16;
+
+	// Max safe length for a build identifier. The max length minus 6 characters for
+	// the shortest version with a build 0.0.0+BUILD.
+	const MAX_SAFE_BUILD_LENGTH = MAX_LENGTH - 6;
+
+	const RELEASE_TYPES = [
+	  'major',
+	  'premajor',
+	  'minor',
+	  'preminor',
+	  'patch',
+	  'prepatch',
+	  'prerelease',
+	];
+
+	constants$1 = {
+	  MAX_LENGTH,
+	  MAX_SAFE_COMPONENT_LENGTH,
+	  MAX_SAFE_BUILD_LENGTH,
+	  MAX_SAFE_INTEGER,
+	  RELEASE_TYPES,
+	  SEMVER_SPEC_VERSION,
+	  FLAG_INCLUDE_PRERELEASE: 0b001,
+	  FLAG_LOOSE: 0b010,
+	};
+	return constants$1;
+}
+
+var debug_1;
+var hasRequiredDebug;
+
+function requireDebug () {
+	if (hasRequiredDebug) return debug_1;
+	hasRequiredDebug = 1;
+
+	const debug = (
+	  typeof process === 'object' &&
+	  process.env &&
+	  process.env.NODE_DEBUG &&
+	  /\bsemver\b/i.test(process.env.NODE_DEBUG)
+	) ? (...args) => console.error('SEMVER', ...args)
+	  : () => {};
+
+	debug_1 = debug;
+	return debug_1;
+}
+
+var hasRequiredRe;
+
+function requireRe () {
+	if (hasRequiredRe) return re.exports;
+	hasRequiredRe = 1;
+	(function (module, exports) {
+
+		const {
+		  MAX_SAFE_COMPONENT_LENGTH,
+		  MAX_SAFE_BUILD_LENGTH,
+		  MAX_LENGTH,
+		} = requireConstants$1();
+		const debug = requireDebug();
+		exports = module.exports = {};
+
+		// The actual regexps go on exports.re
+		const re = exports.re = [];
+		const safeRe = exports.safeRe = [];
+		const src = exports.src = [];
+		const safeSrc = exports.safeSrc = [];
+		const t = exports.t = {};
+		let R = 0;
+
+		const LETTERDASHNUMBER = '[a-zA-Z0-9-]';
+
+		// Replace some greedy regex tokens to prevent regex dos issues. These regex are
+		// used internally via the safeRe object since all inputs in this library get
+		// normalized first to trim and collapse all extra whitespace. The original
+		// regexes are exported for userland consumption and lower level usage. A
+		// future breaking change could export the safer regex only with a note that
+		// all input should have extra whitespace removed.
+		const safeRegexReplacements = [
+		  ['\\s', 1],
+		  ['\\d', MAX_LENGTH],
+		  [LETTERDASHNUMBER, MAX_SAFE_BUILD_LENGTH],
+		];
+
+		const makeSafeRegex = (value) => {
+		  for (const [token, max] of safeRegexReplacements) {
+		    value = value
+		      .split(`${token}*`).join(`${token}{0,${max}}`)
+		      .split(`${token}+`).join(`${token}{1,${max}}`);
+		  }
+		  return value
+		};
+
+		const createToken = (name, value, isGlobal) => {
+		  const safe = makeSafeRegex(value);
+		  const index = R++;
+		  debug(name, index, value);
+		  t[name] = index;
+		  src[index] = value;
+		  safeSrc[index] = safe;
+		  re[index] = new RegExp(value, isGlobal ? 'g' : undefined);
+		  safeRe[index] = new RegExp(safe, isGlobal ? 'g' : undefined);
+		};
+
+		// The following Regular Expressions can be used for tokenizing,
+		// validating, and parsing SemVer version strings.
+
+		// ## Numeric Identifier
+		// A single `0`, or a non-zero digit followed by zero or more digits.
+
+		createToken('NUMERICIDENTIFIER', '0|[1-9]\\d*');
+		createToken('NUMERICIDENTIFIERLOOSE', '\\d+');
+
+		// ## Non-numeric Identifier
+		// Zero or more digits, followed by a letter or hyphen, and then zero or
+		// more letters, digits, or hyphens.
+
+		createToken('NONNUMERICIDENTIFIER', `\\d*[a-zA-Z-]${LETTERDASHNUMBER}*`);
+
+		// ## Main Version
+		// Three dot-separated numeric identifiers.
+
+		createToken('MAINVERSION', `(${src[t.NUMERICIDENTIFIER]})\\.` +
+		                   `(${src[t.NUMERICIDENTIFIER]})\\.` +
+		                   `(${src[t.NUMERICIDENTIFIER]})`);
+
+		createToken('MAINVERSIONLOOSE', `(${src[t.NUMERICIDENTIFIERLOOSE]})\\.` +
+		                        `(${src[t.NUMERICIDENTIFIERLOOSE]})\\.` +
+		                        `(${src[t.NUMERICIDENTIFIERLOOSE]})`);
+
+		// ## Pre-release Version Identifier
+		// A numeric identifier, or a non-numeric identifier.
+		// Non-numberic identifiers include numberic identifiers but can be longer.
+		// Therefore non-numberic identifiers must go first.
+
+		createToken('PRERELEASEIDENTIFIER', `(?:${src[t.NONNUMERICIDENTIFIER]
+		}|${src[t.NUMERICIDENTIFIER]})`);
+
+		createToken('PRERELEASEIDENTIFIERLOOSE', `(?:${src[t.NONNUMERICIDENTIFIER]
+		}|${src[t.NUMERICIDENTIFIERLOOSE]})`);
+
+		// ## Pre-release Version
+		// Hyphen, followed by one or more dot-separated pre-release version
+		// identifiers.
+
+		createToken('PRERELEASE', `(?:-(${src[t.PRERELEASEIDENTIFIER]
+		}(?:\\.${src[t.PRERELEASEIDENTIFIER]})*))`);
+
+		createToken('PRERELEASELOOSE', `(?:-?(${src[t.PRERELEASEIDENTIFIERLOOSE]
+		}(?:\\.${src[t.PRERELEASEIDENTIFIERLOOSE]})*))`);
+
+		// ## Build Metadata Identifier
+		// Any combination of digits, letters, or hyphens.
+
+		createToken('BUILDIDENTIFIER', `${LETTERDASHNUMBER}+`);
+
+		// ## Build Metadata
+		// Plus sign, followed by one or more period-separated build metadata
+		// identifiers.
+
+		createToken('BUILD', `(?:\\+(${src[t.BUILDIDENTIFIER]
+		}(?:\\.${src[t.BUILDIDENTIFIER]})*))`);
+
+		// ## Full Version String
+		// A main version, followed optionally by a pre-release version and
+		// build metadata.
+
+		// Note that the only major, minor, patch, and pre-release sections of
+		// the version string are capturing groups.  The build metadata is not a
+		// capturing group, because it should not ever be used in version
+		// comparison.
+
+		createToken('FULLPLAIN', `v?${src[t.MAINVERSION]
+		}${src[t.PRERELEASE]}?${
+		  src[t.BUILD]}?`);
+
+		createToken('FULL', `^${src[t.FULLPLAIN]}$`);
+
+		// like full, but allows v1.2.3 and =1.2.3, which people do sometimes.
+		// also, 1.0.0alpha1 (prerelease without the hyphen) which is pretty
+		// common in the npm registry.
+		createToken('LOOSEPLAIN', `[v=\\s]*${src[t.MAINVERSIONLOOSE]
+		}${src[t.PRERELEASELOOSE]}?${
+		  src[t.BUILD]}?`);
+
+		createToken('LOOSE', `^${src[t.LOOSEPLAIN]}$`);
+
+		createToken('GTLT', '((?:<|>)?=?)');
+
+		// Something like "2.*" or "1.2.x".
+		// Note that "x.x" is a valid xRange identifer, meaning "any version"
+		// Only the first item is strictly required.
+		createToken('XRANGEIDENTIFIERLOOSE', `${src[t.NUMERICIDENTIFIERLOOSE]}|x|X|\\*`);
+		createToken('XRANGEIDENTIFIER', `${src[t.NUMERICIDENTIFIER]}|x|X|\\*`);
+
+		createToken('XRANGEPLAIN', `[v=\\s]*(${src[t.XRANGEIDENTIFIER]})` +
+		                   `(?:\\.(${src[t.XRANGEIDENTIFIER]})` +
+		                   `(?:\\.(${src[t.XRANGEIDENTIFIER]})` +
+		                   `(?:${src[t.PRERELEASE]})?${
+		                     src[t.BUILD]}?` +
+		                   `)?)?`);
+
+		createToken('XRANGEPLAINLOOSE', `[v=\\s]*(${src[t.XRANGEIDENTIFIERLOOSE]})` +
+		                        `(?:\\.(${src[t.XRANGEIDENTIFIERLOOSE]})` +
+		                        `(?:\\.(${src[t.XRANGEIDENTIFIERLOOSE]})` +
+		                        `(?:${src[t.PRERELEASELOOSE]})?${
+		                          src[t.BUILD]}?` +
+		                        `)?)?`);
+
+		createToken('XRANGE', `^${src[t.GTLT]}\\s*${src[t.XRANGEPLAIN]}$`);
+		createToken('XRANGELOOSE', `^${src[t.GTLT]}\\s*${src[t.XRANGEPLAINLOOSE]}$`);
+
+		// Coercion.
+		// Extract anything that could conceivably be a part of a valid semver
+		createToken('COERCEPLAIN', `${'(^|[^\\d])' +
+		              '(\\d{1,'}${MAX_SAFE_COMPONENT_LENGTH}})` +
+		              `(?:\\.(\\d{1,${MAX_SAFE_COMPONENT_LENGTH}}))?` +
+		              `(?:\\.(\\d{1,${MAX_SAFE_COMPONENT_LENGTH}}))?`);
+		createToken('COERCE', `${src[t.COERCEPLAIN]}(?:$|[^\\d])`);
+		createToken('COERCEFULL', src[t.COERCEPLAIN] +
+		              `(?:${src[t.PRERELEASE]})?` +
+		              `(?:${src[t.BUILD]})?` +
+		              `(?:$|[^\\d])`);
+		createToken('COERCERTL', src[t.COERCE], true);
+		createToken('COERCERTLFULL', src[t.COERCEFULL], true);
+
+		// Tilde ranges.
+		// Meaning is "reasonably at or greater than"
+		createToken('LONETILDE', '(?:~>?)');
+
+		createToken('TILDETRIM', `(\\s*)${src[t.LONETILDE]}\\s+`, true);
+		exports.tildeTrimReplace = '$1~';
+
+		createToken('TILDE', `^${src[t.LONETILDE]}${src[t.XRANGEPLAIN]}$`);
+		createToken('TILDELOOSE', `^${src[t.LONETILDE]}${src[t.XRANGEPLAINLOOSE]}$`);
+
+		// Caret ranges.
+		// Meaning is "at least and backwards compatible with"
+		createToken('LONECARET', '(?:\\^)');
+
+		createToken('CARETTRIM', `(\\s*)${src[t.LONECARET]}\\s+`, true);
+		exports.caretTrimReplace = '$1^';
+
+		createToken('CARET', `^${src[t.LONECARET]}${src[t.XRANGEPLAIN]}$`);
+		createToken('CARETLOOSE', `^${src[t.LONECARET]}${src[t.XRANGEPLAINLOOSE]}$`);
+
+		// A simple gt/lt/eq thing, or just "" to indicate "any version"
+		createToken('COMPARATORLOOSE', `^${src[t.GTLT]}\\s*(${src[t.LOOSEPLAIN]})$|^$`);
+		createToken('COMPARATOR', `^${src[t.GTLT]}\\s*(${src[t.FULLPLAIN]})$|^$`);
+
+		// An expression to strip any whitespace between the gtlt and the thing
+		// it modifies, so that `> 1.2.3` ==> `>1.2.3`
+		createToken('COMPARATORTRIM', `(\\s*)${src[t.GTLT]
+		}\\s*(${src[t.LOOSEPLAIN]}|${src[t.XRANGEPLAIN]})`, true);
+		exports.comparatorTrimReplace = '$1$2$3';
+
+		// Something like `1.2.3 - 1.2.4`
+		// Note that these all use the loose form, because they'll be
+		// checked against either the strict or loose comparator form
+		// later.
+		createToken('HYPHENRANGE', `^\\s*(${src[t.XRANGEPLAIN]})` +
+		                   `\\s+-\\s+` +
+		                   `(${src[t.XRANGEPLAIN]})` +
+		                   `\\s*$`);
+
+		createToken('HYPHENRANGELOOSE', `^\\s*(${src[t.XRANGEPLAINLOOSE]})` +
+		                        `\\s+-\\s+` +
+		                        `(${src[t.XRANGEPLAINLOOSE]})` +
+		                        `\\s*$`);
+
+		// Star ranges basically just allow anything at all.
+		createToken('STAR', '(<|>)?=?\\s*\\*');
+		// >=0.0.0 is like a star
+		createToken('GTE0', '^\\s*>=\\s*0\\.0\\.0\\s*$');
+		createToken('GTE0PRE', '^\\s*>=\\s*0\\.0\\.0-0\\s*$'); 
+	} (re, re.exports));
+	return re.exports;
+}
+
+var parseOptions_1;
+var hasRequiredParseOptions;
+
+function requireParseOptions () {
+	if (hasRequiredParseOptions) return parseOptions_1;
+	hasRequiredParseOptions = 1;
+
+	// parse out just the options we care about
+	const looseOption = Object.freeze({ loose: true });
+	const emptyOpts = Object.freeze({ });
+	const parseOptions = options => {
+	  if (!options) {
+	    return emptyOpts
+	  }
+
+	  if (typeof options !== 'object') {
+	    return looseOption
+	  }
+
+	  return options
+	};
+	parseOptions_1 = parseOptions;
+	return parseOptions_1;
+}
+
+var identifiers;
+var hasRequiredIdentifiers;
+
+function requireIdentifiers () {
+	if (hasRequiredIdentifiers) return identifiers;
+	hasRequiredIdentifiers = 1;
+
+	const numeric = /^[0-9]+$/;
+	const compareIdentifiers = (a, b) => {
+	  if (typeof a === 'number' && typeof b === 'number') {
+	    return a === b ? 0 : a < b ? -1 : 1
+	  }
+
+	  const anum = numeric.test(a);
+	  const bnum = numeric.test(b);
+
+	  if (anum && bnum) {
+	    a = +a;
+	    b = +b;
+	  }
+
+	  return a === b ? 0
+	    : (anum && !bnum) ? -1
+	    : (bnum && !anum) ? 1
+	    : a < b ? -1
+	    : 1
+	};
+
+	const rcompareIdentifiers = (a, b) => compareIdentifiers(b, a);
+
+	identifiers = {
+	  compareIdentifiers,
+	  rcompareIdentifiers,
+	};
+	return identifiers;
+}
+
+var semver$1;
+var hasRequiredSemver$1;
+
+function requireSemver$1 () {
+	if (hasRequiredSemver$1) return semver$1;
+	hasRequiredSemver$1 = 1;
+
+	const debug = requireDebug();
+	const { MAX_LENGTH, MAX_SAFE_INTEGER } = requireConstants$1();
+	const { safeRe: re, t } = requireRe();
+
+	const parseOptions = requireParseOptions();
+	const { compareIdentifiers } = requireIdentifiers();
+	class SemVer {
+	  constructor (version, options) {
+	    options = parseOptions(options);
+
+	    if (version instanceof SemVer) {
+	      if (version.loose === !!options.loose &&
+	        version.includePrerelease === !!options.includePrerelease) {
+	        return version
+	      } else {
+	        version = version.version;
+	      }
+	    } else if (typeof version !== 'string') {
+	      throw new TypeError(`Invalid version. Must be a string. Got type "${typeof version}".`)
+	    }
+
+	    if (version.length > MAX_LENGTH) {
+	      throw new TypeError(
+	        `version is longer than ${MAX_LENGTH} characters`
+	      )
+	    }
+
+	    debug('SemVer', version, options);
+	    this.options = options;
+	    this.loose = !!options.loose;
+	    // this isn't actually relevant for versions, but keep it so that we
+	    // don't run into trouble passing this.options around.
+	    this.includePrerelease = !!options.includePrerelease;
+
+	    const m = version.trim().match(options.loose ? re[t.LOOSE] : re[t.FULL]);
+
+	    if (!m) {
+	      throw new TypeError(`Invalid Version: ${version}`)
+	    }
+
+	    this.raw = version;
+
+	    // these are actually numbers
+	    this.major = +m[1];
+	    this.minor = +m[2];
+	    this.patch = +m[3];
+
+	    if (this.major > MAX_SAFE_INTEGER || this.major < 0) {
+	      throw new TypeError('Invalid major version')
+	    }
+
+	    if (this.minor > MAX_SAFE_INTEGER || this.minor < 0) {
+	      throw new TypeError('Invalid minor version')
+	    }
+
+	    if (this.patch > MAX_SAFE_INTEGER || this.patch < 0) {
+	      throw new TypeError('Invalid patch version')
+	    }
+
+	    // numberify any prerelease numeric ids
+	    if (!m[4]) {
+	      this.prerelease = [];
+	    } else {
+	      this.prerelease = m[4].split('.').map((id) => {
+	        if (/^[0-9]+$/.test(id)) {
+	          const num = +id;
+	          if (num >= 0 && num < MAX_SAFE_INTEGER) {
+	            return num
+	          }
+	        }
+	        return id
+	      });
+	    }
+
+	    this.build = m[5] ? m[5].split('.') : [];
+	    this.format();
+	  }
+
+	  format () {
+	    this.version = `${this.major}.${this.minor}.${this.patch}`;
+	    if (this.prerelease.length) {
+	      this.version += `-${this.prerelease.join('.')}`;
+	    }
+	    return this.version
+	  }
+
+	  toString () {
+	    return this.version
+	  }
+
+	  compare (other) {
+	    debug('SemVer.compare', this.version, this.options, other);
+	    if (!(other instanceof SemVer)) {
+	      if (typeof other === 'string' && other === this.version) {
+	        return 0
+	      }
+	      other = new SemVer(other, this.options);
+	    }
+
+	    if (other.version === this.version) {
+	      return 0
+	    }
+
+	    return this.compareMain(other) || this.comparePre(other)
+	  }
+
+	  compareMain (other) {
+	    if (!(other instanceof SemVer)) {
+	      other = new SemVer(other, this.options);
+	    }
+
+	    if (this.major < other.major) {
+	      return -1
+	    }
+	    if (this.major > other.major) {
+	      return 1
+	    }
+	    if (this.minor < other.minor) {
+	      return -1
+	    }
+	    if (this.minor > other.minor) {
+	      return 1
+	    }
+	    if (this.patch < other.patch) {
+	      return -1
+	    }
+	    if (this.patch > other.patch) {
+	      return 1
+	    }
+	    return 0
+	  }
+
+	  comparePre (other) {
+	    if (!(other instanceof SemVer)) {
+	      other = new SemVer(other, this.options);
+	    }
+
+	    // NOT having a prerelease is > having one
+	    if (this.prerelease.length && !other.prerelease.length) {
+	      return -1
+	    } else if (!this.prerelease.length && other.prerelease.length) {
+	      return 1
+	    } else if (!this.prerelease.length && !other.prerelease.length) {
+	      return 0
+	    }
+
+	    let i = 0;
+	    do {
+	      const a = this.prerelease[i];
+	      const b = other.prerelease[i];
+	      debug('prerelease compare', i, a, b);
+	      if (a === undefined && b === undefined) {
+	        return 0
+	      } else if (b === undefined) {
+	        return 1
+	      } else if (a === undefined) {
+	        return -1
+	      } else if (a === b) {
+	        continue
+	      } else {
+	        return compareIdentifiers(a, b)
+	      }
+	    } while (++i)
+	  }
+
+	  compareBuild (other) {
+	    if (!(other instanceof SemVer)) {
+	      other = new SemVer(other, this.options);
+	    }
+
+	    let i = 0;
+	    do {
+	      const a = this.build[i];
+	      const b = other.build[i];
+	      debug('build compare', i, a, b);
+	      if (a === undefined && b === undefined) {
+	        return 0
+	      } else if (b === undefined) {
+	        return 1
+	      } else if (a === undefined) {
+	        return -1
+	      } else if (a === b) {
+	        continue
+	      } else {
+	        return compareIdentifiers(a, b)
+	      }
+	    } while (++i)
+	  }
+
+	  // preminor will bump the version up to the next minor release, and immediately
+	  // down to pre-release. premajor and prepatch work the same way.
+	  inc (release, identifier, identifierBase) {
+	    if (release.startsWith('pre')) {
+	      if (!identifier && identifierBase === false) {
+	        throw new Error('invalid increment argument: identifier is empty')
+	      }
+	      // Avoid an invalid semver results
+	      if (identifier) {
+	        const match = `-${identifier}`.match(this.options.loose ? re[t.PRERELEASELOOSE] : re[t.PRERELEASE]);
+	        if (!match || match[1] !== identifier) {
+	          throw new Error(`invalid identifier: ${identifier}`)
+	        }
+	      }
+	    }
+
+	    switch (release) {
+	      case 'premajor':
+	        this.prerelease.length = 0;
+	        this.patch = 0;
+	        this.minor = 0;
+	        this.major++;
+	        this.inc('pre', identifier, identifierBase);
+	        break
+	      case 'preminor':
+	        this.prerelease.length = 0;
+	        this.patch = 0;
+	        this.minor++;
+	        this.inc('pre', identifier, identifierBase);
+	        break
+	      case 'prepatch':
+	        // If this is already a prerelease, it will bump to the next version
+	        // drop any prereleases that might already exist, since they are not
+	        // relevant at this point.
+	        this.prerelease.length = 0;
+	        this.inc('patch', identifier, identifierBase);
+	        this.inc('pre', identifier, identifierBase);
+	        break
+	      // If the input is a non-prerelease version, this acts the same as
+	      // prepatch.
+	      case 'prerelease':
+	        if (this.prerelease.length === 0) {
+	          this.inc('patch', identifier, identifierBase);
+	        }
+	        this.inc('pre', identifier, identifierBase);
+	        break
+	      case 'release':
+	        if (this.prerelease.length === 0) {
+	          throw new Error(`version ${this.raw} is not a prerelease`)
+	        }
+	        this.prerelease.length = 0;
+	        break
+
+	      case 'major':
+	        // If this is a pre-major version, bump up to the same major version.
+	        // Otherwise increment major.
+	        // 1.0.0-5 bumps to 1.0.0
+	        // 1.1.0 bumps to 2.0.0
+	        if (
+	          this.minor !== 0 ||
+	          this.patch !== 0 ||
+	          this.prerelease.length === 0
+	        ) {
+	          this.major++;
+	        }
+	        this.minor = 0;
+	        this.patch = 0;
+	        this.prerelease = [];
+	        break
+	      case 'minor':
+	        // If this is a pre-minor version, bump up to the same minor version.
+	        // Otherwise increment minor.
+	        // 1.2.0-5 bumps to 1.2.0
+	        // 1.2.1 bumps to 1.3.0
+	        if (this.patch !== 0 || this.prerelease.length === 0) {
+	          this.minor++;
+	        }
+	        this.patch = 0;
+	        this.prerelease = [];
+	        break
+	      case 'patch':
+	        // If this is not a pre-release version, it will increment the patch.
+	        // If it is a pre-release it will bump up to the same patch version.
+	        // 1.2.0-5 patches to 1.2.0
+	        // 1.2.0 patches to 1.2.1
+	        if (this.prerelease.length === 0) {
+	          this.patch++;
+	        }
+	        this.prerelease = [];
+	        break
+	      // This probably shouldn't be used publicly.
+	      // 1.0.0 'pre' would become 1.0.0-0 which is the wrong direction.
+	      case 'pre': {
+	        const base = Number(identifierBase) ? 1 : 0;
+
+	        if (this.prerelease.length === 0) {
+	          this.prerelease = [base];
+	        } else {
+	          let i = this.prerelease.length;
+	          while (--i >= 0) {
+	            if (typeof this.prerelease[i] === 'number') {
+	              this.prerelease[i]++;
+	              i = -2;
+	            }
+	          }
+	          if (i === -1) {
+	            // didn't increment anything
+	            if (identifier === this.prerelease.join('.') && identifierBase === false) {
+	              throw new Error('invalid increment argument: identifier already exists')
+	            }
+	            this.prerelease.push(base);
+	          }
+	        }
+	        if (identifier) {
+	          // 1.2.0-beta.1 bumps to 1.2.0-beta.2,
+	          // 1.2.0-beta.fooblz or 1.2.0-beta bumps to 1.2.0-beta.0
+	          let prerelease = [identifier, base];
+	          if (identifierBase === false) {
+	            prerelease = [identifier];
+	          }
+	          if (compareIdentifiers(this.prerelease[0], identifier) === 0) {
+	            if (isNaN(this.prerelease[1])) {
+	              this.prerelease = prerelease;
+	            }
+	          } else {
+	            this.prerelease = prerelease;
+	          }
+	        }
+	        break
+	      }
+	      default:
+	        throw new Error(`invalid increment argument: ${release}`)
+	    }
+	    this.raw = this.format();
+	    if (this.build.length) {
+	      this.raw += `+${this.build.join('.')}`;
+	    }
+	    return this
+	  }
+	}
+
+	semver$1 = SemVer;
+	return semver$1;
+}
+
+var parse_1;
+var hasRequiredParse;
+
+function requireParse () {
+	if (hasRequiredParse) return parse_1;
+	hasRequiredParse = 1;
+
+	const SemVer = requireSemver$1();
+	const parse = (version, options, throwErrors = false) => {
+	  if (version instanceof SemVer) {
+	    return version
+	  }
+	  try {
+	    return new SemVer(version, options)
+	  } catch (er) {
+	    if (!throwErrors) {
+	      return null
+	    }
+	    throw er
+	  }
+	};
+
+	parse_1 = parse;
+	return parse_1;
+}
+
+var valid_1;
+var hasRequiredValid$1;
+
+function requireValid$1 () {
+	if (hasRequiredValid$1) return valid_1;
+	hasRequiredValid$1 = 1;
+
+	const parse = requireParse();
+	const valid = (version, options) => {
+	  const v = parse(version, options);
+	  return v ? v.version : null
+	};
+	valid_1 = valid;
+	return valid_1;
+}
+
+var clean_1;
+var hasRequiredClean;
+
+function requireClean () {
+	if (hasRequiredClean) return clean_1;
+	hasRequiredClean = 1;
+
+	const parse = requireParse();
+	const clean = (version, options) => {
+	  const s = parse(version.trim().replace(/^[=v]+/, ''), options);
+	  return s ? s.version : null
+	};
+	clean_1 = clean;
+	return clean_1;
+}
+
+var inc_1;
+var hasRequiredInc;
+
+function requireInc () {
+	if (hasRequiredInc) return inc_1;
+	hasRequiredInc = 1;
+
+	const SemVer = requireSemver$1();
+
+	const inc = (version, release, options, identifier, identifierBase) => {
+	  if (typeof (options) === 'string') {
+	    identifierBase = identifier;
+	    identifier = options;
+	    options = undefined;
+	  }
+
+	  try {
+	    return new SemVer(
+	      version instanceof SemVer ? version.version : version,
+	      options
+	    ).inc(release, identifier, identifierBase).version
+	  } catch (er) {
+	    return null
+	  }
+	};
+	inc_1 = inc;
+	return inc_1;
+}
+
+var diff_1;
+var hasRequiredDiff;
+
+function requireDiff () {
+	if (hasRequiredDiff) return diff_1;
+	hasRequiredDiff = 1;
+
+	const parse = requireParse();
+
+	const diff = (version1, version2) => {
+	  const v1 = parse(version1, null, true);
+	  const v2 = parse(version2, null, true);
+	  const comparison = v1.compare(v2);
+
+	  if (comparison === 0) {
+	    return null
+	  }
+
+	  const v1Higher = comparison > 0;
+	  const highVersion = v1Higher ? v1 : v2;
+	  const lowVersion = v1Higher ? v2 : v1;
+	  const highHasPre = !!highVersion.prerelease.length;
+	  const lowHasPre = !!lowVersion.prerelease.length;
+
+	  if (lowHasPre && !highHasPre) {
+	    // Going from prerelease -> no prerelease requires some special casing
+
+	    // If the low version has only a major, then it will always be a major
+	    // Some examples:
+	    // 1.0.0-1 -> 1.0.0
+	    // 1.0.0-1 -> 1.1.1
+	    // 1.0.0-1 -> 2.0.0
+	    if (!lowVersion.patch && !lowVersion.minor) {
+	      return 'major'
+	    }
+
+	    // If the main part has no difference
+	    if (lowVersion.compareMain(highVersion) === 0) {
+	      if (lowVersion.minor && !lowVersion.patch) {
+	        return 'minor'
+	      }
+	      return 'patch'
+	    }
+	  }
+
+	  // add the `pre` prefix if we are going to a prerelease version
+	  const prefix = highHasPre ? 'pre' : '';
+
+	  if (v1.major !== v2.major) {
+	    return prefix + 'major'
+	  }
+
+	  if (v1.minor !== v2.minor) {
+	    return prefix + 'minor'
+	  }
+
+	  if (v1.patch !== v2.patch) {
+	    return prefix + 'patch'
+	  }
+
+	  // high and low are preleases
+	  return 'prerelease'
+	};
+
+	diff_1 = diff;
+	return diff_1;
+}
+
+var major_1;
+var hasRequiredMajor;
+
+function requireMajor () {
+	if (hasRequiredMajor) return major_1;
+	hasRequiredMajor = 1;
+
+	const SemVer = requireSemver$1();
+	const major = (a, loose) => new SemVer(a, loose).major;
+	major_1 = major;
+	return major_1;
+}
+
+var minor_1;
+var hasRequiredMinor;
+
+function requireMinor () {
+	if (hasRequiredMinor) return minor_1;
+	hasRequiredMinor = 1;
+
+	const SemVer = requireSemver$1();
+	const minor = (a, loose) => new SemVer(a, loose).minor;
+	minor_1 = minor;
+	return minor_1;
+}
+
+var patch_1;
+var hasRequiredPatch;
+
+function requirePatch () {
+	if (hasRequiredPatch) return patch_1;
+	hasRequiredPatch = 1;
+
+	const SemVer = requireSemver$1();
+	const patch = (a, loose) => new SemVer(a, loose).patch;
+	patch_1 = patch;
+	return patch_1;
+}
+
+var prerelease_1;
+var hasRequiredPrerelease;
+
+function requirePrerelease () {
+	if (hasRequiredPrerelease) return prerelease_1;
+	hasRequiredPrerelease = 1;
+
+	const parse = requireParse();
+	const prerelease = (version, options) => {
+	  const parsed = parse(version, options);
+	  return (parsed && parsed.prerelease.length) ? parsed.prerelease : null
+	};
+	prerelease_1 = prerelease;
+	return prerelease_1;
+}
+
+var compare_1;
+var hasRequiredCompare;
+
+function requireCompare () {
+	if (hasRequiredCompare) return compare_1;
+	hasRequiredCompare = 1;
+
+	const SemVer = requireSemver$1();
+	const compare = (a, b, loose) =>
+	  new SemVer(a, loose).compare(new SemVer(b, loose));
+
+	compare_1 = compare;
+	return compare_1;
+}
+
+var rcompare_1;
+var hasRequiredRcompare;
+
+function requireRcompare () {
+	if (hasRequiredRcompare) return rcompare_1;
+	hasRequiredRcompare = 1;
+
+	const compare = requireCompare();
+	const rcompare = (a, b, loose) => compare(b, a, loose);
+	rcompare_1 = rcompare;
+	return rcompare_1;
+}
+
+var compareLoose_1;
+var hasRequiredCompareLoose;
+
+function requireCompareLoose () {
+	if (hasRequiredCompareLoose) return compareLoose_1;
+	hasRequiredCompareLoose = 1;
+
+	const compare = requireCompare();
+	const compareLoose = (a, b) => compare(a, b, true);
+	compareLoose_1 = compareLoose;
+	return compareLoose_1;
+}
+
+var compareBuild_1;
+var hasRequiredCompareBuild;
+
+function requireCompareBuild () {
+	if (hasRequiredCompareBuild) return compareBuild_1;
+	hasRequiredCompareBuild = 1;
+
+	const SemVer = requireSemver$1();
+	const compareBuild = (a, b, loose) => {
+	  const versionA = new SemVer(a, loose);
+	  const versionB = new SemVer(b, loose);
+	  return versionA.compare(versionB) || versionA.compareBuild(versionB)
+	};
+	compareBuild_1 = compareBuild;
+	return compareBuild_1;
+}
+
+var sort_1;
+var hasRequiredSort;
+
+function requireSort () {
+	if (hasRequiredSort) return sort_1;
+	hasRequiredSort = 1;
+
+	const compareBuild = requireCompareBuild();
+	const sort = (list, loose) => list.sort((a, b) => compareBuild(a, b, loose));
+	sort_1 = sort;
+	return sort_1;
+}
+
+var rsort_1;
+var hasRequiredRsort;
+
+function requireRsort () {
+	if (hasRequiredRsort) return rsort_1;
+	hasRequiredRsort = 1;
+
+	const compareBuild = requireCompareBuild();
+	const rsort = (list, loose) => list.sort((a, b) => compareBuild(b, a, loose));
+	rsort_1 = rsort;
+	return rsort_1;
+}
+
+var gt_1;
+var hasRequiredGt;
+
+function requireGt () {
+	if (hasRequiredGt) return gt_1;
+	hasRequiredGt = 1;
+
+	const compare = requireCompare();
+	const gt = (a, b, loose) => compare(a, b, loose) > 0;
+	gt_1 = gt;
+	return gt_1;
+}
+
+var lt_1;
+var hasRequiredLt;
+
+function requireLt () {
+	if (hasRequiredLt) return lt_1;
+	hasRequiredLt = 1;
+
+	const compare = requireCompare();
+	const lt = (a, b, loose) => compare(a, b, loose) < 0;
+	lt_1 = lt;
+	return lt_1;
+}
+
+var eq_1;
+var hasRequiredEq;
+
+function requireEq () {
+	if (hasRequiredEq) return eq_1;
+	hasRequiredEq = 1;
+
+	const compare = requireCompare();
+	const eq = (a, b, loose) => compare(a, b, loose) === 0;
+	eq_1 = eq;
+	return eq_1;
+}
+
+var neq_1;
+var hasRequiredNeq;
+
+function requireNeq () {
+	if (hasRequiredNeq) return neq_1;
+	hasRequiredNeq = 1;
+
+	const compare = requireCompare();
+	const neq = (a, b, loose) => compare(a, b, loose) !== 0;
+	neq_1 = neq;
+	return neq_1;
+}
+
+var gte_1;
+var hasRequiredGte;
+
+function requireGte () {
+	if (hasRequiredGte) return gte_1;
+	hasRequiredGte = 1;
+
+	const compare = requireCompare();
+	const gte = (a, b, loose) => compare(a, b, loose) >= 0;
+	gte_1 = gte;
+	return gte_1;
+}
+
+var lte_1;
+var hasRequiredLte;
+
+function requireLte () {
+	if (hasRequiredLte) return lte_1;
+	hasRequiredLte = 1;
+
+	const compare = requireCompare();
+	const lte = (a, b, loose) => compare(a, b, loose) <= 0;
+	lte_1 = lte;
+	return lte_1;
+}
+
+var cmp_1;
+var hasRequiredCmp;
+
+function requireCmp () {
+	if (hasRequiredCmp) return cmp_1;
+	hasRequiredCmp = 1;
+
+	const eq = requireEq();
+	const neq = requireNeq();
+	const gt = requireGt();
+	const gte = requireGte();
+	const lt = requireLt();
+	const lte = requireLte();
+
+	const cmp = (a, op, b, loose) => {
+	  switch (op) {
+	    case '===':
+	      if (typeof a === 'object') {
+	        a = a.version;
+	      }
+	      if (typeof b === 'object') {
+	        b = b.version;
+	      }
+	      return a === b
+
+	    case '!==':
+	      if (typeof a === 'object') {
+	        a = a.version;
+	      }
+	      if (typeof b === 'object') {
+	        b = b.version;
+	      }
+	      return a !== b
+
+	    case '':
+	    case '=':
+	    case '==':
+	      return eq(a, b, loose)
+
+	    case '!=':
+	      return neq(a, b, loose)
+
+	    case '>':
+	      return gt(a, b, loose)
+
+	    case '>=':
+	      return gte(a, b, loose)
+
+	    case '<':
+	      return lt(a, b, loose)
+
+	    case '<=':
+	      return lte(a, b, loose)
+
+	    default:
+	      throw new TypeError(`Invalid operator: ${op}`)
+	  }
+	};
+	cmp_1 = cmp;
+	return cmp_1;
+}
+
+var coerce_1;
+var hasRequiredCoerce;
+
+function requireCoerce () {
+	if (hasRequiredCoerce) return coerce_1;
+	hasRequiredCoerce = 1;
+
+	const SemVer = requireSemver$1();
+	const parse = requireParse();
+	const { safeRe: re, t } = requireRe();
+
+	const coerce = (version, options) => {
+	  if (version instanceof SemVer) {
+	    return version
+	  }
+
+	  if (typeof version === 'number') {
+	    version = String(version);
+	  }
+
+	  if (typeof version !== 'string') {
+	    return null
+	  }
+
+	  options = options || {};
+
+	  let match = null;
+	  if (!options.rtl) {
+	    match = version.match(options.includePrerelease ? re[t.COERCEFULL] : re[t.COERCE]);
+	  } else {
+	    // Find the right-most coercible string that does not share
+	    // a terminus with a more left-ward coercible string.
+	    // Eg, '1.2.3.4' wants to coerce '2.3.4', not '3.4' or '4'
+	    // With includePrerelease option set, '1.2.3.4-rc' wants to coerce '2.3.4-rc', not '2.3.4'
+	    //
+	    // Walk through the string checking with a /g regexp
+	    // Manually set the index so as to pick up overlapping matches.
+	    // Stop when we get a match that ends at the string end, since no
+	    // coercible string can be more right-ward without the same terminus.
+	    const coerceRtlRegex = options.includePrerelease ? re[t.COERCERTLFULL] : re[t.COERCERTL];
+	    let next;
+	    while ((next = coerceRtlRegex.exec(version)) &&
+	        (!match || match.index + match[0].length !== version.length)
+	    ) {
+	      if (!match ||
+	            next.index + next[0].length !== match.index + match[0].length) {
+	        match = next;
+	      }
+	      coerceRtlRegex.lastIndex = next.index + next[1].length + next[2].length;
+	    }
+	    // leave it in a clean state
+	    coerceRtlRegex.lastIndex = -1;
+	  }
+
+	  if (match === null) {
+	    return null
+	  }
+
+	  const major = match[2];
+	  const minor = match[3] || '0';
+	  const patch = match[4] || '0';
+	  const prerelease = options.includePrerelease && match[5] ? `-${match[5]}` : '';
+	  const build = options.includePrerelease && match[6] ? `+${match[6]}` : '';
+
+	  return parse(`${major}.${minor}.${patch}${prerelease}${build}`, options)
+	};
+	coerce_1 = coerce;
+	return coerce_1;
+}
+
+var lrucache;
+var hasRequiredLrucache;
+
+function requireLrucache () {
+	if (hasRequiredLrucache) return lrucache;
+	hasRequiredLrucache = 1;
+
+	class LRUCache {
+	  constructor () {
+	    this.max = 1000;
+	    this.map = new Map();
+	  }
+
+	  get (key) {
+	    const value = this.map.get(key);
+	    if (value === undefined) {
+	      return undefined
+	    } else {
+	      // Remove the key from the map and add it to the end
+	      this.map.delete(key);
+	      this.map.set(key, value);
+	      return value
+	    }
+	  }
+
+	  delete (key) {
+	    return this.map.delete(key)
+	  }
+
+	  set (key, value) {
+	    const deleted = this.delete(key);
+
+	    if (!deleted && value !== undefined) {
+	      // If cache is full, delete the least recently used item
+	      if (this.map.size >= this.max) {
+	        const firstKey = this.map.keys().next().value;
+	        this.delete(firstKey);
+	      }
+
+	      this.map.set(key, value);
+	    }
+
+	    return this
+	  }
+	}
+
+	lrucache = LRUCache;
+	return lrucache;
+}
+
+var range;
+var hasRequiredRange;
+
+function requireRange () {
+	if (hasRequiredRange) return range;
+	hasRequiredRange = 1;
+
+	const SPACE_CHARACTERS = /\s+/g;
+
+	// hoisted class for cyclic dependency
+	class Range {
+	  constructor (range, options) {
+	    options = parseOptions(options);
+
+	    if (range instanceof Range) {
+	      if (
+	        range.loose === !!options.loose &&
+	        range.includePrerelease === !!options.includePrerelease
+	      ) {
+	        return range
+	      } else {
+	        return new Range(range.raw, options)
+	      }
+	    }
+
+	    if (range instanceof Comparator) {
+	      // just put it in the set and return
+	      this.raw = range.value;
+	      this.set = [[range]];
+	      this.formatted = undefined;
+	      return this
+	    }
+
+	    this.options = options;
+	    this.loose = !!options.loose;
+	    this.includePrerelease = !!options.includePrerelease;
+
+	    // First reduce all whitespace as much as possible so we do not have to rely
+	    // on potentially slow regexes like \s*. This is then stored and used for
+	    // future error messages as well.
+	    this.raw = range.trim().replace(SPACE_CHARACTERS, ' ');
+
+	    // First, split on ||
+	    this.set = this.raw
+	      .split('||')
+	      // map the range to a 2d array of comparators
+	      .map(r => this.parseRange(r.trim()))
+	      // throw out any comparator lists that are empty
+	      // this generally means that it was not a valid range, which is allowed
+	      // in loose mode, but will still throw if the WHOLE range is invalid.
+	      .filter(c => c.length);
+
+	    if (!this.set.length) {
+	      throw new TypeError(`Invalid SemVer Range: ${this.raw}`)
+	    }
+
+	    // if we have any that are not the null set, throw out null sets.
+	    if (this.set.length > 1) {
+	      // keep the first one, in case they're all null sets
+	      const first = this.set[0];
+	      this.set = this.set.filter(c => !isNullSet(c[0]));
+	      if (this.set.length === 0) {
+	        this.set = [first];
+	      } else if (this.set.length > 1) {
+	        // if we have any that are *, then the range is just *
+	        for (const c of this.set) {
+	          if (c.length === 1 && isAny(c[0])) {
+	            this.set = [c];
+	            break
+	          }
+	        }
+	      }
+	    }
+
+	    this.formatted = undefined;
+	  }
+
+	  get range () {
+	    if (this.formatted === undefined) {
+	      this.formatted = '';
+	      for (let i = 0; i < this.set.length; i++) {
+	        if (i > 0) {
+	          this.formatted += '||';
+	        }
+	        const comps = this.set[i];
+	        for (let k = 0; k < comps.length; k++) {
+	          if (k > 0) {
+	            this.formatted += ' ';
+	          }
+	          this.formatted += comps[k].toString().trim();
+	        }
+	      }
+	    }
+	    return this.formatted
+	  }
+
+	  format () {
+	    return this.range
+	  }
+
+	  toString () {
+	    return this.range
+	  }
+
+	  parseRange (range) {
+	    // memoize range parsing for performance.
+	    // this is a very hot path, and fully deterministic.
+	    const memoOpts =
+	      (this.options.includePrerelease && FLAG_INCLUDE_PRERELEASE) |
+	      (this.options.loose && FLAG_LOOSE);
+	    const memoKey = memoOpts + ':' + range;
+	    const cached = cache.get(memoKey);
+	    if (cached) {
+	      return cached
+	    }
+
+	    const loose = this.options.loose;
+	    // `1.2.3 - 1.2.4` => `>=1.2.3 <=1.2.4`
+	    const hr = loose ? re[t.HYPHENRANGELOOSE] : re[t.HYPHENRANGE];
+	    range = range.replace(hr, hyphenReplace(this.options.includePrerelease));
+	    debug('hyphen replace', range);
+
+	    // `> 1.2.3 < 1.2.5` => `>1.2.3 <1.2.5`
+	    range = range.replace(re[t.COMPARATORTRIM], comparatorTrimReplace);
+	    debug('comparator trim', range);
+
+	    // `~ 1.2.3` => `~1.2.3`
+	    range = range.replace(re[t.TILDETRIM], tildeTrimReplace);
+	    debug('tilde trim', range);
+
+	    // `^ 1.2.3` => `^1.2.3`
+	    range = range.replace(re[t.CARETTRIM], caretTrimReplace);
+	    debug('caret trim', range);
+
+	    // At this point, the range is completely trimmed and
+	    // ready to be split into comparators.
+
+	    let rangeList = range
+	      .split(' ')
+	      .map(comp => parseComparator(comp, this.options))
+	      .join(' ')
+	      .split(/\s+/)
+	      // >=0.0.0 is equivalent to *
+	      .map(comp => replaceGTE0(comp, this.options));
+
+	    if (loose) {
+	      // in loose mode, throw out any that are not valid comparators
+	      rangeList = rangeList.filter(comp => {
+	        debug('loose invalid filter', comp, this.options);
+	        return !!comp.match(re[t.COMPARATORLOOSE])
+	      });
+	    }
+	    debug('range list', rangeList);
+
+	    // if any comparators are the null set, then replace with JUST null set
+	    // if more than one comparator, remove any * comparators
+	    // also, don't include the same comparator more than once
+	    const rangeMap = new Map();
+	    const comparators = rangeList.map(comp => new Comparator(comp, this.options));
+	    for (const comp of comparators) {
+	      if (isNullSet(comp)) {
+	        return [comp]
+	      }
+	      rangeMap.set(comp.value, comp);
+	    }
+	    if (rangeMap.size > 1 && rangeMap.has('')) {
+	      rangeMap.delete('');
+	    }
+
+	    const result = [...rangeMap.values()];
+	    cache.set(memoKey, result);
+	    return result
+	  }
+
+	  intersects (range, options) {
+	    if (!(range instanceof Range)) {
+	      throw new TypeError('a Range is required')
+	    }
+
+	    return this.set.some((thisComparators) => {
+	      return (
+	        isSatisfiable(thisComparators, options) &&
+	        range.set.some((rangeComparators) => {
+	          return (
+	            isSatisfiable(rangeComparators, options) &&
+	            thisComparators.every((thisComparator) => {
+	              return rangeComparators.every((rangeComparator) => {
+	                return thisComparator.intersects(rangeComparator, options)
+	              })
+	            })
+	          )
+	        })
+	      )
+	    })
+	  }
+
+	  // if ANY of the sets match ALL of its comparators, then pass
+	  test (version) {
+	    if (!version) {
+	      return false
+	    }
+
+	    if (typeof version === 'string') {
+	      try {
+	        version = new SemVer(version, this.options);
+	      } catch (er) {
+	        return false
+	      }
+	    }
+
+	    for (let i = 0; i < this.set.length; i++) {
+	      if (testSet(this.set[i], version, this.options)) {
+	        return true
+	      }
+	    }
+	    return false
+	  }
+	}
+
+	range = Range;
+
+	const LRU = requireLrucache();
+	const cache = new LRU();
+
+	const parseOptions = requireParseOptions();
+	const Comparator = requireComparator();
+	const debug = requireDebug();
+	const SemVer = requireSemver$1();
+	const {
+	  safeRe: re,
+	  t,
+	  comparatorTrimReplace,
+	  tildeTrimReplace,
+	  caretTrimReplace,
+	} = requireRe();
+	const { FLAG_INCLUDE_PRERELEASE, FLAG_LOOSE } = requireConstants$1();
+
+	const isNullSet = c => c.value === '<0.0.0-0';
+	const isAny = c => c.value === '';
+
+	// take a set of comparators and determine whether there
+	// exists a version which can satisfy it
+	const isSatisfiable = (comparators, options) => {
+	  let result = true;
+	  const remainingComparators = comparators.slice();
+	  let testComparator = remainingComparators.pop();
+
+	  while (result && remainingComparators.length) {
+	    result = remainingComparators.every((otherComparator) => {
+	      return testComparator.intersects(otherComparator, options)
+	    });
+
+	    testComparator = remainingComparators.pop();
+	  }
+
+	  return result
+	};
+
+	// comprised of xranges, tildes, stars, and gtlt's at this point.
+	// already replaced the hyphen ranges
+	// turn into a set of JUST comparators.
+	const parseComparator = (comp, options) => {
+	  comp = comp.replace(re[t.BUILD], '');
+	  debug('comp', comp, options);
+	  comp = replaceCarets(comp, options);
+	  debug('caret', comp);
+	  comp = replaceTildes(comp, options);
+	  debug('tildes', comp);
+	  comp = replaceXRanges(comp, options);
+	  debug('xrange', comp);
+	  comp = replaceStars(comp, options);
+	  debug('stars', comp);
+	  return comp
+	};
+
+	const isX = id => !id || id.toLowerCase() === 'x' || id === '*';
+
+	// ~, ~> --> * (any, kinda silly)
+	// ~2, ~2.x, ~2.x.x, ~>2, ~>2.x ~>2.x.x --> >=2.0.0 <3.0.0-0
+	// ~2.0, ~2.0.x, ~>2.0, ~>2.0.x --> >=2.0.0 <2.1.0-0
+	// ~1.2, ~1.2.x, ~>1.2, ~>1.2.x --> >=1.2.0 <1.3.0-0
+	// ~1.2.3, ~>1.2.3 --> >=1.2.3 <1.3.0-0
+	// ~1.2.0, ~>1.2.0 --> >=1.2.0 <1.3.0-0
+	// ~0.0.1 --> >=0.0.1 <0.1.0-0
+	const replaceTildes = (comp, options) => {
+	  return comp
+	    .trim()
+	    .split(/\s+/)
+	    .map((c) => replaceTilde(c, options))
+	    .join(' ')
+	};
+
+	const replaceTilde = (comp, options) => {
+	  const r = options.loose ? re[t.TILDELOOSE] : re[t.TILDE];
+	  return comp.replace(r, (_, M, m, p, pr) => {
+	    debug('tilde', comp, _, M, m, p, pr);
+	    let ret;
+
+	    if (isX(M)) {
+	      ret = '';
+	    } else if (isX(m)) {
+	      ret = `>=${M}.0.0 <${+M + 1}.0.0-0`;
+	    } else if (isX(p)) {
+	      // ~1.2 == >=1.2.0 <1.3.0-0
+	      ret = `>=${M}.${m}.0 <${M}.${+m + 1}.0-0`;
+	    } else if (pr) {
+	      debug('replaceTilde pr', pr);
+	      ret = `>=${M}.${m}.${p}-${pr
+	      } <${M}.${+m + 1}.0-0`;
+	    } else {
+	      // ~1.2.3 == >=1.2.3 <1.3.0-0
+	      ret = `>=${M}.${m}.${p
+	      } <${M}.${+m + 1}.0-0`;
+	    }
+
+	    debug('tilde return', ret);
+	    return ret
+	  })
+	};
+
+	// ^ --> * (any, kinda silly)
+	// ^2, ^2.x, ^2.x.x --> >=2.0.0 <3.0.0-0
+	// ^2.0, ^2.0.x --> >=2.0.0 <3.0.0-0
+	// ^1.2, ^1.2.x --> >=1.2.0 <2.0.0-0
+	// ^1.2.3 --> >=1.2.3 <2.0.0-0
+	// ^1.2.0 --> >=1.2.0 <2.0.0-0
+	// ^0.0.1 --> >=0.0.1 <0.0.2-0
+	// ^0.1.0 --> >=0.1.0 <0.2.0-0
+	const replaceCarets = (comp, options) => {
+	  return comp
+	    .trim()
+	    .split(/\s+/)
+	    .map((c) => replaceCaret(c, options))
+	    .join(' ')
+	};
+
+	const replaceCaret = (comp, options) => {
+	  debug('caret', comp, options);
+	  const r = options.loose ? re[t.CARETLOOSE] : re[t.CARET];
+	  const z = options.includePrerelease ? '-0' : '';
+	  return comp.replace(r, (_, M, m, p, pr) => {
+	    debug('caret', comp, _, M, m, p, pr);
+	    let ret;
+
+	    if (isX(M)) {
+	      ret = '';
+	    } else if (isX(m)) {
+	      ret = `>=${M}.0.0${z} <${+M + 1}.0.0-0`;
+	    } else if (isX(p)) {
+	      if (M === '0') {
+	        ret = `>=${M}.${m}.0${z} <${M}.${+m + 1}.0-0`;
+	      } else {
+	        ret = `>=${M}.${m}.0${z} <${+M + 1}.0.0-0`;
+	      }
+	    } else if (pr) {
+	      debug('replaceCaret pr', pr);
+	      if (M === '0') {
+	        if (m === '0') {
+	          ret = `>=${M}.${m}.${p}-${pr
+	          } <${M}.${m}.${+p + 1}-0`;
+	        } else {
+	          ret = `>=${M}.${m}.${p}-${pr
+	          } <${M}.${+m + 1}.0-0`;
+	        }
+	      } else {
+	        ret = `>=${M}.${m}.${p}-${pr
+	        } <${+M + 1}.0.0-0`;
+	      }
+	    } else {
+	      debug('no pr');
+	      if (M === '0') {
+	        if (m === '0') {
+	          ret = `>=${M}.${m}.${p
+	          }${z} <${M}.${m}.${+p + 1}-0`;
+	        } else {
+	          ret = `>=${M}.${m}.${p
+	          }${z} <${M}.${+m + 1}.0-0`;
+	        }
+	      } else {
+	        ret = `>=${M}.${m}.${p
+	        } <${+M + 1}.0.0-0`;
+	      }
+	    }
+
+	    debug('caret return', ret);
+	    return ret
+	  })
+	};
+
+	const replaceXRanges = (comp, options) => {
+	  debug('replaceXRanges', comp, options);
+	  return comp
+	    .split(/\s+/)
+	    .map((c) => replaceXRange(c, options))
+	    .join(' ')
+	};
+
+	const replaceXRange = (comp, options) => {
+	  comp = comp.trim();
+	  const r = options.loose ? re[t.XRANGELOOSE] : re[t.XRANGE];
+	  return comp.replace(r, (ret, gtlt, M, m, p, pr) => {
+	    debug('xRange', comp, ret, gtlt, M, m, p, pr);
+	    const xM = isX(M);
+	    const xm = xM || isX(m);
+	    const xp = xm || isX(p);
+	    const anyX = xp;
+
+	    if (gtlt === '=' && anyX) {
+	      gtlt = '';
+	    }
+
+	    // if we're including prereleases in the match, then we need
+	    // to fix this to -0, the lowest possible prerelease value
+	    pr = options.includePrerelease ? '-0' : '';
+
+	    if (xM) {
+	      if (gtlt === '>' || gtlt === '<') {
+	        // nothing is allowed
+	        ret = '<0.0.0-0';
+	      } else {
+	        // nothing is forbidden
+	        ret = '*';
+	      }
+	    } else if (gtlt && anyX) {
+	      // we know patch is an x, because we have any x at all.
+	      // replace X with 0
+	      if (xm) {
+	        m = 0;
+	      }
+	      p = 0;
+
+	      if (gtlt === '>') {
+	        // >1 => >=2.0.0
+	        // >1.2 => >=1.3.0
+	        gtlt = '>=';
+	        if (xm) {
+	          M = +M + 1;
+	          m = 0;
+	          p = 0;
+	        } else {
+	          m = +m + 1;
+	          p = 0;
+	        }
+	      } else if (gtlt === '<=') {
+	        // <=0.7.x is actually <0.8.0, since any 0.7.x should
+	        // pass.  Similarly, <=7.x is actually <8.0.0, etc.
+	        gtlt = '<';
+	        if (xm) {
+	          M = +M + 1;
+	        } else {
+	          m = +m + 1;
+	        }
+	      }
+
+	      if (gtlt === '<') {
+	        pr = '-0';
+	      }
+
+	      ret = `${gtlt + M}.${m}.${p}${pr}`;
+	    } else if (xm) {
+	      ret = `>=${M}.0.0${pr} <${+M + 1}.0.0-0`;
+	    } else if (xp) {
+	      ret = `>=${M}.${m}.0${pr
+	      } <${M}.${+m + 1}.0-0`;
+	    }
+
+	    debug('xRange return', ret);
+
+	    return ret
+	  })
+	};
+
+	// Because * is AND-ed with everything else in the comparator,
+	// and '' means "any version", just remove the *s entirely.
+	const replaceStars = (comp, options) => {
+	  debug('replaceStars', comp, options);
+	  // Looseness is ignored here.  star is always as loose as it gets!
+	  return comp
+	    .trim()
+	    .replace(re[t.STAR], '')
+	};
+
+	const replaceGTE0 = (comp, options) => {
+	  debug('replaceGTE0', comp, options);
+	  return comp
+	    .trim()
+	    .replace(re[options.includePrerelease ? t.GTE0PRE : t.GTE0], '')
+	};
+
+	// This function is passed to string.replace(re[t.HYPHENRANGE])
+	// M, m, patch, prerelease, build
+	// 1.2 - 3.4.5 => >=1.2.0 <=3.4.5
+	// 1.2.3 - 3.4 => >=1.2.0 <3.5.0-0 Any 3.4.x will do
+	// 1.2 - 3.4 => >=1.2.0 <3.5.0-0
+	// TODO build?
+	const hyphenReplace = incPr => ($0,
+	  from, fM, fm, fp, fpr, fb,
+	  to, tM, tm, tp, tpr) => {
+	  if (isX(fM)) {
+	    from = '';
+	  } else if (isX(fm)) {
+	    from = `>=${fM}.0.0${incPr ? '-0' : ''}`;
+	  } else if (isX(fp)) {
+	    from = `>=${fM}.${fm}.0${incPr ? '-0' : ''}`;
+	  } else if (fpr) {
+	    from = `>=${from}`;
+	  } else {
+	    from = `>=${from}${incPr ? '-0' : ''}`;
+	  }
+
+	  if (isX(tM)) {
+	    to = '';
+	  } else if (isX(tm)) {
+	    to = `<${+tM + 1}.0.0-0`;
+	  } else if (isX(tp)) {
+	    to = `<${tM}.${+tm + 1}.0-0`;
+	  } else if (tpr) {
+	    to = `<=${tM}.${tm}.${tp}-${tpr}`;
+	  } else if (incPr) {
+	    to = `<${tM}.${tm}.${+tp + 1}-0`;
+	  } else {
+	    to = `<=${to}`;
+	  }
+
+	  return `${from} ${to}`.trim()
+	};
+
+	const testSet = (set, version, options) => {
+	  for (let i = 0; i < set.length; i++) {
+	    if (!set[i].test(version)) {
+	      return false
+	    }
+	  }
+
+	  if (version.prerelease.length && !options.includePrerelease) {
+	    // Find the set of versions that are allowed to have prereleases
+	    // For example, ^1.2.3-pr.1 desugars to >=1.2.3-pr.1 <2.0.0
+	    // That should allow `1.2.3-pr.2` to pass.
+	    // However, `1.2.4-alpha.notready` should NOT be allowed,
+	    // even though it's within the range set by the comparators.
+	    for (let i = 0; i < set.length; i++) {
+	      debug(set[i].semver);
+	      if (set[i].semver === Comparator.ANY) {
+	        continue
+	      }
+
+	      if (set[i].semver.prerelease.length > 0) {
+	        const allowed = set[i].semver;
+	        if (allowed.major === version.major &&
+	            allowed.minor === version.minor &&
+	            allowed.patch === version.patch) {
+	          return true
+	        }
+	      }
+	    }
+
+	    // Version has a -pre, but it's not one of the ones we like.
+	    return false
+	  }
+
+	  return true
+	};
+	return range;
+}
+
+var comparator;
+var hasRequiredComparator;
+
+function requireComparator () {
+	if (hasRequiredComparator) return comparator;
+	hasRequiredComparator = 1;
+
+	const ANY = Symbol('SemVer ANY');
+	// hoisted class for cyclic dependency
+	class Comparator {
+	  static get ANY () {
+	    return ANY
+	  }
+
+	  constructor (comp, options) {
+	    options = parseOptions(options);
+
+	    if (comp instanceof Comparator) {
+	      if (comp.loose === !!options.loose) {
+	        return comp
+	      } else {
+	        comp = comp.value;
+	      }
+	    }
+
+	    comp = comp.trim().split(/\s+/).join(' ');
+	    debug('comparator', comp, options);
+	    this.options = options;
+	    this.loose = !!options.loose;
+	    this.parse(comp);
+
+	    if (this.semver === ANY) {
+	      this.value = '';
+	    } else {
+	      this.value = this.operator + this.semver.version;
+	    }
+
+	    debug('comp', this);
+	  }
+
+	  parse (comp) {
+	    const r = this.options.loose ? re[t.COMPARATORLOOSE] : re[t.COMPARATOR];
+	    const m = comp.match(r);
+
+	    if (!m) {
+	      throw new TypeError(`Invalid comparator: ${comp}`)
+	    }
+
+	    this.operator = m[1] !== undefined ? m[1] : '';
+	    if (this.operator === '=') {
+	      this.operator = '';
+	    }
+
+	    // if it literally is just '>' or '' then allow anything.
+	    if (!m[2]) {
+	      this.semver = ANY;
+	    } else {
+	      this.semver = new SemVer(m[2], this.options.loose);
+	    }
+	  }
+
+	  toString () {
+	    return this.value
+	  }
+
+	  test (version) {
+	    debug('Comparator.test', version, this.options.loose);
+
+	    if (this.semver === ANY || version === ANY) {
+	      return true
+	    }
+
+	    if (typeof version === 'string') {
+	      try {
+	        version = new SemVer(version, this.options);
+	      } catch (er) {
+	        return false
+	      }
+	    }
+
+	    return cmp(version, this.operator, this.semver, this.options)
+	  }
+
+	  intersects (comp, options) {
+	    if (!(comp instanceof Comparator)) {
+	      throw new TypeError('a Comparator is required')
+	    }
+
+	    if (this.operator === '') {
+	      if (this.value === '') {
+	        return true
+	      }
+	      return new Range(comp.value, options).test(this.value)
+	    } else if (comp.operator === '') {
+	      if (comp.value === '') {
+	        return true
+	      }
+	      return new Range(this.value, options).test(comp.semver)
+	    }
+
+	    options = parseOptions(options);
+
+	    // Special cases where nothing can possibly be lower
+	    if (options.includePrerelease &&
+	      (this.value === '<0.0.0-0' || comp.value === '<0.0.0-0')) {
+	      return false
+	    }
+	    if (!options.includePrerelease &&
+	      (this.value.startsWith('<0.0.0') || comp.value.startsWith('<0.0.0'))) {
+	      return false
+	    }
+
+	    // Same direction increasing (> or >=)
+	    if (this.operator.startsWith('>') && comp.operator.startsWith('>')) {
+	      return true
+	    }
+	    // Same direction decreasing (< or <=)
+	    if (this.operator.startsWith('<') && comp.operator.startsWith('<')) {
+	      return true
+	    }
+	    // same SemVer and both sides are inclusive (<= or >=)
+	    if (
+	      (this.semver.version === comp.semver.version) &&
+	      this.operator.includes('=') && comp.operator.includes('=')) {
+	      return true
+	    }
+	    // opposite directions less than
+	    if (cmp(this.semver, '<', comp.semver, options) &&
+	      this.operator.startsWith('>') && comp.operator.startsWith('<')) {
+	      return true
+	    }
+	    // opposite directions greater than
+	    if (cmp(this.semver, '>', comp.semver, options) &&
+	      this.operator.startsWith('<') && comp.operator.startsWith('>')) {
+	      return true
+	    }
+	    return false
+	  }
+	}
+
+	comparator = Comparator;
+
+	const parseOptions = requireParseOptions();
+	const { safeRe: re, t } = requireRe();
+	const cmp = requireCmp();
+	const debug = requireDebug();
+	const SemVer = requireSemver$1();
+	const Range = requireRange();
+	return comparator;
+}
+
+var satisfies_1;
+var hasRequiredSatisfies;
+
+function requireSatisfies () {
+	if (hasRequiredSatisfies) return satisfies_1;
+	hasRequiredSatisfies = 1;
+
+	const Range = requireRange();
+	const satisfies = (version, range, options) => {
+	  try {
+	    range = new Range(range, options);
+	  } catch (er) {
+	    return false
+	  }
+	  return range.test(version)
+	};
+	satisfies_1 = satisfies;
+	return satisfies_1;
+}
+
+var toComparators_1;
+var hasRequiredToComparators;
+
+function requireToComparators () {
+	if (hasRequiredToComparators) return toComparators_1;
+	hasRequiredToComparators = 1;
+
+	const Range = requireRange();
+
+	// Mostly just for testing and legacy API reasons
+	const toComparators = (range, options) =>
+	  new Range(range, options).set
+	    .map(comp => comp.map(c => c.value).join(' ').trim().split(' '));
+
+	toComparators_1 = toComparators;
+	return toComparators_1;
+}
+
+var maxSatisfying_1;
+var hasRequiredMaxSatisfying;
+
+function requireMaxSatisfying () {
+	if (hasRequiredMaxSatisfying) return maxSatisfying_1;
+	hasRequiredMaxSatisfying = 1;
+
+	const SemVer = requireSemver$1();
+	const Range = requireRange();
+
+	const maxSatisfying = (versions, range, options) => {
+	  let max = null;
+	  let maxSV = null;
+	  let rangeObj = null;
+	  try {
+	    rangeObj = new Range(range, options);
+	  } catch (er) {
+	    return null
+	  }
+	  versions.forEach((v) => {
+	    if (rangeObj.test(v)) {
+	      // satisfies(v, range, options)
+	      if (!max || maxSV.compare(v) === -1) {
+	        // compare(max, v, true)
+	        max = v;
+	        maxSV = new SemVer(max, options);
+	      }
+	    }
+	  });
+	  return max
+	};
+	maxSatisfying_1 = maxSatisfying;
+	return maxSatisfying_1;
+}
+
+var minSatisfying_1;
+var hasRequiredMinSatisfying;
+
+function requireMinSatisfying () {
+	if (hasRequiredMinSatisfying) return minSatisfying_1;
+	hasRequiredMinSatisfying = 1;
+
+	const SemVer = requireSemver$1();
+	const Range = requireRange();
+	const minSatisfying = (versions, range, options) => {
+	  let min = null;
+	  let minSV = null;
+	  let rangeObj = null;
+	  try {
+	    rangeObj = new Range(range, options);
+	  } catch (er) {
+	    return null
+	  }
+	  versions.forEach((v) => {
+	    if (rangeObj.test(v)) {
+	      // satisfies(v, range, options)
+	      if (!min || minSV.compare(v) === 1) {
+	        // compare(min, v, true)
+	        min = v;
+	        minSV = new SemVer(min, options);
+	      }
+	    }
+	  });
+	  return min
+	};
+	minSatisfying_1 = minSatisfying;
+	return minSatisfying_1;
+}
+
+var minVersion_1;
+var hasRequiredMinVersion;
+
+function requireMinVersion () {
+	if (hasRequiredMinVersion) return minVersion_1;
+	hasRequiredMinVersion = 1;
+
+	const SemVer = requireSemver$1();
+	const Range = requireRange();
+	const gt = requireGt();
+
+	const minVersion = (range, loose) => {
+	  range = new Range(range, loose);
+
+	  let minver = new SemVer('0.0.0');
+	  if (range.test(minver)) {
+	    return minver
+	  }
+
+	  minver = new SemVer('0.0.0-0');
+	  if (range.test(minver)) {
+	    return minver
+	  }
+
+	  minver = null;
+	  for (let i = 0; i < range.set.length; ++i) {
+	    const comparators = range.set[i];
+
+	    let setMin = null;
+	    comparators.forEach((comparator) => {
+	      // Clone to avoid manipulating the comparator's semver object.
+	      const compver = new SemVer(comparator.semver.version);
+	      switch (comparator.operator) {
+	        case '>':
+	          if (compver.prerelease.length === 0) {
+	            compver.patch++;
+	          } else {
+	            compver.prerelease.push(0);
+	          }
+	          compver.raw = compver.format();
+	          /* fallthrough */
+	        case '':
+	        case '>=':
+	          if (!setMin || gt(compver, setMin)) {
+	            setMin = compver;
+	          }
+	          break
+	        case '<':
+	        case '<=':
+	          /* Ignore maximum versions */
+	          break
+	        /* istanbul ignore next */
+	        default:
+	          throw new Error(`Unexpected operation: ${comparator.operator}`)
+	      }
+	    });
+	    if (setMin && (!minver || gt(minver, setMin))) {
+	      minver = setMin;
+	    }
+	  }
+
+	  if (minver && range.test(minver)) {
+	    return minver
+	  }
+
+	  return null
+	};
+	minVersion_1 = minVersion;
+	return minVersion_1;
+}
+
+var valid;
+var hasRequiredValid;
+
+function requireValid () {
+	if (hasRequiredValid) return valid;
+	hasRequiredValid = 1;
+
+	const Range = requireRange();
+	const validRange = (range, options) => {
+	  try {
+	    // Return '*' instead of '' so that truthiness works.
+	    // This will throw if it's invalid anyway
+	    return new Range(range, options).range || '*'
+	  } catch (er) {
+	    return null
+	  }
+	};
+	valid = validRange;
+	return valid;
+}
+
+var outside_1;
+var hasRequiredOutside;
+
+function requireOutside () {
+	if (hasRequiredOutside) return outside_1;
+	hasRequiredOutside = 1;
+
+	const SemVer = requireSemver$1();
+	const Comparator = requireComparator();
+	const { ANY } = Comparator;
+	const Range = requireRange();
+	const satisfies = requireSatisfies();
+	const gt = requireGt();
+	const lt = requireLt();
+	const lte = requireLte();
+	const gte = requireGte();
+
+	const outside = (version, range, hilo, options) => {
+	  version = new SemVer(version, options);
+	  range = new Range(range, options);
+
+	  let gtfn, ltefn, ltfn, comp, ecomp;
+	  switch (hilo) {
+	    case '>':
+	      gtfn = gt;
+	      ltefn = lte;
+	      ltfn = lt;
+	      comp = '>';
+	      ecomp = '>=';
+	      break
+	    case '<':
+	      gtfn = lt;
+	      ltefn = gte;
+	      ltfn = gt;
+	      comp = '<';
+	      ecomp = '<=';
+	      break
+	    default:
+	      throw new TypeError('Must provide a hilo val of "<" or ">"')
+	  }
+
+	  // If it satisfies the range it is not outside
+	  if (satisfies(version, range, options)) {
+	    return false
+	  }
+
+	  // From now on, variable terms are as if we're in "gtr" mode.
+	  // but note that everything is flipped for the "ltr" function.
+
+	  for (let i = 0; i < range.set.length; ++i) {
+	    const comparators = range.set[i];
+
+	    let high = null;
+	    let low = null;
+
+	    comparators.forEach((comparator) => {
+	      if (comparator.semver === ANY) {
+	        comparator = new Comparator('>=0.0.0');
+	      }
+	      high = high || comparator;
+	      low = low || comparator;
+	      if (gtfn(comparator.semver, high.semver, options)) {
+	        high = comparator;
+	      } else if (ltfn(comparator.semver, low.semver, options)) {
+	        low = comparator;
+	      }
+	    });
+
+	    // If the edge version comparator has a operator then our version
+	    // isn't outside it
+	    if (high.operator === comp || high.operator === ecomp) {
+	      return false
+	    }
+
+	    // If the lowest version comparator has an operator and our version
+	    // is less than it then it isn't higher than the range
+	    if ((!low.operator || low.operator === comp) &&
+	        ltefn(version, low.semver)) {
+	      return false
+	    } else if (low.operator === ecomp && ltfn(version, low.semver)) {
+	      return false
+	    }
+	  }
+	  return true
+	};
+
+	outside_1 = outside;
+	return outside_1;
+}
+
+var gtr_1;
+var hasRequiredGtr;
+
+function requireGtr () {
+	if (hasRequiredGtr) return gtr_1;
+	hasRequiredGtr = 1;
+
+	// Determine if version is greater than all the versions possible in the range.
+	const outside = requireOutside();
+	const gtr = (version, range, options) => outside(version, range, '>', options);
+	gtr_1 = gtr;
+	return gtr_1;
+}
+
+var ltr_1;
+var hasRequiredLtr;
+
+function requireLtr () {
+	if (hasRequiredLtr) return ltr_1;
+	hasRequiredLtr = 1;
+
+	const outside = requireOutside();
+	// Determine if version is less than all the versions possible in the range
+	const ltr = (version, range, options) => outside(version, range, '<', options);
+	ltr_1 = ltr;
+	return ltr_1;
+}
+
+var intersects_1;
+var hasRequiredIntersects;
+
+function requireIntersects () {
+	if (hasRequiredIntersects) return intersects_1;
+	hasRequiredIntersects = 1;
+
+	const Range = requireRange();
+	const intersects = (r1, r2, options) => {
+	  r1 = new Range(r1, options);
+	  r2 = new Range(r2, options);
+	  return r1.intersects(r2, options)
+	};
+	intersects_1 = intersects;
+	return intersects_1;
+}
+
+var simplify;
+var hasRequiredSimplify;
+
+function requireSimplify () {
+	if (hasRequiredSimplify) return simplify;
+	hasRequiredSimplify = 1;
+
+	// given a set of versions and a range, create a "simplified" range
+	// that includes the same versions that the original range does
+	// If the original range is shorter than the simplified one, return that.
+	const satisfies = requireSatisfies();
+	const compare = requireCompare();
+	simplify = (versions, range, options) => {
+	  const set = [];
+	  let first = null;
+	  let prev = null;
+	  const v = versions.sort((a, b) => compare(a, b, options));
+	  for (const version of v) {
+	    const included = satisfies(version, range, options);
+	    if (included) {
+	      prev = version;
+	      if (!first) {
+	        first = version;
+	      }
+	    } else {
+	      if (prev) {
+	        set.push([first, prev]);
+	      }
+	      prev = null;
+	      first = null;
+	    }
+	  }
+	  if (first) {
+	    set.push([first, null]);
+	  }
+
+	  const ranges = [];
+	  for (const [min, max] of set) {
+	    if (min === max) {
+	      ranges.push(min);
+	    } else if (!max && min === v[0]) {
+	      ranges.push('*');
+	    } else if (!max) {
+	      ranges.push(`>=${min}`);
+	    } else if (min === v[0]) {
+	      ranges.push(`<=${max}`);
+	    } else {
+	      ranges.push(`${min} - ${max}`);
+	    }
+	  }
+	  const simplified = ranges.join(' || ');
+	  const original = typeof range.raw === 'string' ? range.raw : String(range);
+	  return simplified.length < original.length ? simplified : range
+	};
+	return simplify;
+}
+
+var subset_1;
+var hasRequiredSubset;
+
+function requireSubset () {
+	if (hasRequiredSubset) return subset_1;
+	hasRequiredSubset = 1;
+
+	const Range = requireRange();
+	const Comparator = requireComparator();
+	const { ANY } = Comparator;
+	const satisfies = requireSatisfies();
+	const compare = requireCompare();
+
+	// Complex range `r1 || r2 || ...` is a subset of `R1 || R2 || ...` iff:
+	// - Every simple range `r1, r2, ...` is a null set, OR
+	// - Every simple range `r1, r2, ...` which is not a null set is a subset of
+	//   some `R1, R2, ...`
+	//
+	// Simple range `c1 c2 ...` is a subset of simple range `C1 C2 ...` iff:
+	// - If c is only the ANY comparator
+	//   - If C is only the ANY comparator, return true
+	//   - Else if in prerelease mode, return false
+	//   - else replace c with `[>=0.0.0]`
+	// - If C is only the ANY comparator
+	//   - if in prerelease mode, return true
+	//   - else replace C with `[>=0.0.0]`
+	// - Let EQ be the set of = comparators in c
+	// - If EQ is more than one, return true (null set)
+	// - Let GT be the highest > or >= comparator in c
+	// - Let LT be the lowest < or <= comparator in c
+	// - If GT and LT, and GT.semver > LT.semver, return true (null set)
+	// - If any C is a = range, and GT or LT are set, return false
+	// - If EQ
+	//   - If GT, and EQ does not satisfy GT, return true (null set)
+	//   - If LT, and EQ does not satisfy LT, return true (null set)
+	//   - If EQ satisfies every C, return true
+	//   - Else return false
+	// - If GT
+	//   - If GT.semver is lower than any > or >= comp in C, return false
+	//   - If GT is >=, and GT.semver does not satisfy every C, return false
+	//   - If GT.semver has a prerelease, and not in prerelease mode
+	//     - If no C has a prerelease and the GT.semver tuple, return false
+	// - If LT
+	//   - If LT.semver is greater than any < or <= comp in C, return false
+	//   - If LT is <=, and LT.semver does not satisfy every C, return false
+	//   - If GT.semver has a prerelease, and not in prerelease mode
+	//     - If no C has a prerelease and the LT.semver tuple, return false
+	// - Else return true
+
+	const subset = (sub, dom, options = {}) => {
+	  if (sub === dom) {
+	    return true
+	  }
+
+	  sub = new Range(sub, options);
+	  dom = new Range(dom, options);
+	  let sawNonNull = false;
+
+	  OUTER: for (const simpleSub of sub.set) {
+	    for (const simpleDom of dom.set) {
+	      const isSub = simpleSubset(simpleSub, simpleDom, options);
+	      sawNonNull = sawNonNull || isSub !== null;
+	      if (isSub) {
+	        continue OUTER
+	      }
+	    }
+	    // the null set is a subset of everything, but null simple ranges in
+	    // a complex range should be ignored.  so if we saw a non-null range,
+	    // then we know this isn't a subset, but if EVERY simple range was null,
+	    // then it is a subset.
+	    if (sawNonNull) {
+	      return false
+	    }
+	  }
+	  return true
+	};
+
+	const minimumVersionWithPreRelease = [new Comparator('>=0.0.0-0')];
+	const minimumVersion = [new Comparator('>=0.0.0')];
+
+	const simpleSubset = (sub, dom, options) => {
+	  if (sub === dom) {
+	    return true
+	  }
+
+	  if (sub.length === 1 && sub[0].semver === ANY) {
+	    if (dom.length === 1 && dom[0].semver === ANY) {
+	      return true
+	    } else if (options.includePrerelease) {
+	      sub = minimumVersionWithPreRelease;
+	    } else {
+	      sub = minimumVersion;
+	    }
+	  }
+
+	  if (dom.length === 1 && dom[0].semver === ANY) {
+	    if (options.includePrerelease) {
+	      return true
+	    } else {
+	      dom = minimumVersion;
+	    }
+	  }
+
+	  const eqSet = new Set();
+	  let gt, lt;
+	  for (const c of sub) {
+	    if (c.operator === '>' || c.operator === '>=') {
+	      gt = higherGT(gt, c, options);
+	    } else if (c.operator === '<' || c.operator === '<=') {
+	      lt = lowerLT(lt, c, options);
+	    } else {
+	      eqSet.add(c.semver);
+	    }
+	  }
+
+	  if (eqSet.size > 1) {
+	    return null
+	  }
+
+	  let gtltComp;
+	  if (gt && lt) {
+	    gtltComp = compare(gt.semver, lt.semver, options);
+	    if (gtltComp > 0) {
+	      return null
+	    } else if (gtltComp === 0 && (gt.operator !== '>=' || lt.operator !== '<=')) {
+	      return null
+	    }
+	  }
+
+	  // will iterate one or zero times
+	  for (const eq of eqSet) {
+	    if (gt && !satisfies(eq, String(gt), options)) {
+	      return null
+	    }
+
+	    if (lt && !satisfies(eq, String(lt), options)) {
+	      return null
+	    }
+
+	    for (const c of dom) {
+	      if (!satisfies(eq, String(c), options)) {
+	        return false
+	      }
+	    }
+
+	    return true
+	  }
+
+	  let higher, lower;
+	  let hasDomLT, hasDomGT;
+	  // if the subset has a prerelease, we need a comparator in the superset
+	  // with the same tuple and a prerelease, or it's not a subset
+	  let needDomLTPre = lt &&
+	    !options.includePrerelease &&
+	    lt.semver.prerelease.length ? lt.semver : false;
+	  let needDomGTPre = gt &&
+	    !options.includePrerelease &&
+	    gt.semver.prerelease.length ? gt.semver : false;
+	  // exception: <1.2.3-0 is the same as <1.2.3
+	  if (needDomLTPre && needDomLTPre.prerelease.length === 1 &&
+	      lt.operator === '<' && needDomLTPre.prerelease[0] === 0) {
+	    needDomLTPre = false;
+	  }
+
+	  for (const c of dom) {
+	    hasDomGT = hasDomGT || c.operator === '>' || c.operator === '>=';
+	    hasDomLT = hasDomLT || c.operator === '<' || c.operator === '<=';
+	    if (gt) {
+	      if (needDomGTPre) {
+	        if (c.semver.prerelease && c.semver.prerelease.length &&
+	            c.semver.major === needDomGTPre.major &&
+	            c.semver.minor === needDomGTPre.minor &&
+	            c.semver.patch === needDomGTPre.patch) {
+	          needDomGTPre = false;
+	        }
+	      }
+	      if (c.operator === '>' || c.operator === '>=') {
+	        higher = higherGT(gt, c, options);
+	        if (higher === c && higher !== gt) {
+	          return false
+	        }
+	      } else if (gt.operator === '>=' && !satisfies(gt.semver, String(c), options)) {
+	        return false
+	      }
+	    }
+	    if (lt) {
+	      if (needDomLTPre) {
+	        if (c.semver.prerelease && c.semver.prerelease.length &&
+	            c.semver.major === needDomLTPre.major &&
+	            c.semver.minor === needDomLTPre.minor &&
+	            c.semver.patch === needDomLTPre.patch) {
+	          needDomLTPre = false;
+	        }
+	      }
+	      if (c.operator === '<' || c.operator === '<=') {
+	        lower = lowerLT(lt, c, options);
+	        if (lower === c && lower !== lt) {
+	          return false
+	        }
+	      } else if (lt.operator === '<=' && !satisfies(lt.semver, String(c), options)) {
+	        return false
+	      }
+	    }
+	    if (!c.operator && (lt || gt) && gtltComp !== 0) {
+	      return false
+	    }
+	  }
+
+	  // if there was a < or >, and nothing in the dom, then must be false
+	  // UNLESS it was limited by another range in the other direction.
+	  // Eg, >1.0.0 <1.0.1 is still a subset of <2.0.0
+	  if (gt && hasDomLT && !lt && gtltComp !== 0) {
+	    return false
+	  }
+
+	  if (lt && hasDomGT && !gt && gtltComp !== 0) {
+	    return false
+	  }
+
+	  // we needed a prerelease range in a specific tuple, but didn't get one
+	  // then this isn't a subset.  eg >=1.2.3-pre is not a subset of >=1.0.0,
+	  // because it includes prereleases in the 1.2.3 tuple
+	  if (needDomGTPre || needDomLTPre) {
+	    return false
+	  }
+
+	  return true
+	};
+
+	// >=1.2.3 is lower than >1.2.3
+	const higherGT = (a, b, options) => {
+	  if (!a) {
+	    return b
+	  }
+	  const comp = compare(a.semver, b.semver, options);
+	  return comp > 0 ? a
+	    : comp < 0 ? b
+	    : b.operator === '>' && a.operator === '>=' ? b
+	    : a
+	};
+
+	// <=1.2.3 is higher than <1.2.3
+	const lowerLT = (a, b, options) => {
+	  if (!a) {
+	    return b
+	  }
+	  const comp = compare(a.semver, b.semver, options);
+	  return comp < 0 ? a
+	    : comp > 0 ? b
+	    : b.operator === '<' && a.operator === '<=' ? b
+	    : a
+	};
+
+	subset_1 = subset;
+	return subset_1;
+}
+
+var semver;
+var hasRequiredSemver;
+
+function requireSemver () {
+	if (hasRequiredSemver) return semver;
+	hasRequiredSemver = 1;
+
+	// just pre-load all the stuff that index.js lazily exports
+	const internalRe = requireRe();
+	const constants = requireConstants$1();
+	const SemVer = requireSemver$1();
+	const identifiers = requireIdentifiers();
+	const parse = requireParse();
+	const valid = requireValid$1();
+	const clean = requireClean();
+	const inc = requireInc();
+	const diff = requireDiff();
+	const major = requireMajor();
+	const minor = requireMinor();
+	const patch = requirePatch();
+	const prerelease = requirePrerelease();
+	const compare = requireCompare();
+	const rcompare = requireRcompare();
+	const compareLoose = requireCompareLoose();
+	const compareBuild = requireCompareBuild();
+	const sort = requireSort();
+	const rsort = requireRsort();
+	const gt = requireGt();
+	const lt = requireLt();
+	const eq = requireEq();
+	const neq = requireNeq();
+	const gte = requireGte();
+	const lte = requireLte();
+	const cmp = requireCmp();
+	const coerce = requireCoerce();
+	const Comparator = requireComparator();
+	const Range = requireRange();
+	const satisfies = requireSatisfies();
+	const toComparators = requireToComparators();
+	const maxSatisfying = requireMaxSatisfying();
+	const minSatisfying = requireMinSatisfying();
+	const minVersion = requireMinVersion();
+	const validRange = requireValid();
+	const outside = requireOutside();
+	const gtr = requireGtr();
+	const ltr = requireLtr();
+	const intersects = requireIntersects();
+	const simplifyRange = requireSimplify();
+	const subset = requireSubset();
+	semver = {
+	  parse,
+	  valid,
+	  clean,
+	  inc,
+	  diff,
+	  major,
+	  minor,
+	  patch,
+	  prerelease,
+	  compare,
+	  rcompare,
+	  compareLoose,
+	  compareBuild,
+	  sort,
+	  rsort,
+	  gt,
+	  lt,
+	  eq,
+	  neq,
+	  gte,
+	  lte,
+	  cmp,
+	  coerce,
+	  Comparator,
+	  Range,
+	  satisfies,
+	  toComparators,
+	  maxSatisfying,
+	  minSatisfying,
+	  minVersion,
+	  validRange,
+	  outside,
+	  gtr,
+	  ltr,
+	  intersects,
+	  simplifyRange,
+	  subset,
+	  SemVer,
+	  re: internalRe.re,
+	  src: internalRe.src,
+	  tokens: internalRe.t,
+	  SEMVER_SPEC_VERSION: constants.SEMVER_SPEC_VERSION,
+	  RELEASE_TYPES: constants.RELEASE_TYPES,
+	  compareIdentifiers: identifiers.compareIdentifiers,
+	  rcompareIdentifiers: identifiers.rcompareIdentifiers,
+	};
+	return semver;
+}
+
+var semverExports = requireSemver();
+
+/**
+ * Resolves action references to their full versions
+ */
+class ActionResolver {
+    octokit;
+    constructor(token) {
+        this.octokit = githubExports.getOctokit(token);
+    }
+    /**
+     * Resolves an action reference to its full version
+     */
+    async resolveAction(action) {
+        coreExports.debug(`Resolving action: ${action.owner}/${action.repo}@${action.ref}`);
+        let resolvedVersion = action.ref;
+        // Check if ref is already a full semantic version (e.g., v1.2.3)
+        if (this.isFullSemanticVersion(action.ref)) {
+            coreExports.debug(`Action already has full semantic version: ${action.ref}`);
+        }
+        // Check if ref is a SHA (40 character hex string)
+        else if (this.isSha(action.ref)) {
+            coreExports.debug(`Resolving SHA to version: ${action.ref}`);
+            resolvedVersion = await this.resolveShaToVersion(action.owner, action.repo, action.ref);
+        }
+        // Check if ref is a partial version (e.g., v1, v2)
+        else if (this.isPartialVersion(action.ref)) {
+            coreExports.debug(`Resolving partial version: ${action.ref}`);
+            resolvedVersion = await this.resolvePartialVersion(action.owner, action.repo, action.ref);
+        }
+        const packageUrl = `pkg:githubactions/${action.owner}/${action.repo}@${resolvedVersion}`;
+        return {
+            ...action,
+            resolvedVersion,
+            packageUrl
+        };
+    }
+    /**
+     * Checks if a reference is a full semantic version
+     */
+    isFullSemanticVersion(ref) {
+        // Remove leading 'v' if present
+        const version = ref.startsWith('v') ? ref.slice(1) : ref;
+        // Check if it's a valid semver with major.minor.patch
+        const parsed = semverExports.parse(version);
+        return parsed !== null && parsed.patch !== undefined;
+    }
+    /**
+     * Checks if a reference is a SHA
+     */
+    isSha(ref) {
+        return /^[0-9a-f]{40}$/i.test(ref);
+    }
+    /**
+     * Checks if a reference is a partial version
+     */
+    isPartialVersion(ref) {
+        // Matches patterns like v1, v2, v1.2, etc.
+        return /^v?\d+(\.\d+)?$/.test(ref);
+    }
+    /**
+     * Resolves a SHA to a version tag
+     */
+    async resolveShaToVersion(owner, repo, sha) {
+        try {
+            // Get all tags for the repository
+            const { data: tags } = await this.octokit.rest.repos.listTags({
+                owner,
+                repo,
+                per_page: 100
+            });
+            // Find a tag that points to this commit
+            for (const tag of tags) {
+                if (tag.commit.sha === sha) {
+                    coreExports.debug(`Found tag ${tag.name} for SHA ${sha}`);
+                    return tag.name;
+                }
+            }
+            // If no tag found, return the SHA as is
+            coreExports.warning(`No version tag found for SHA ${sha} in ${owner}/${repo}, using SHA`);
+            return sha;
+        }
+        catch (error) {
+            if (error instanceof Error) {
+                coreExports.warning(`Failed to resolve SHA ${sha}: ${error.message}`);
+            }
+            return sha;
+        }
+    }
+    /**
+     * Resolves a partial version to the latest full version
+     */
+    async resolvePartialVersion(owner, repo, partialVersion) {
+        try {
+            // Get all tags for the repository
+            const { data: tags } = await this.octokit.rest.repos.listTags({
+                owner,
+                repo,
+                per_page: 100
+            });
+            // Filter tags that match semantic versioning
+            const versionTags = tags
+                .map((tag) => tag.name)
+                .filter((name) => {
+                const version = name.startsWith('v') ? name.slice(1) : name;
+                return semverExports.valid(version) !== null;
+            });
+            if (versionTags.length === 0) {
+                coreExports.warning(`No semantic version tags found for ${owner}/${repo}, using ${partialVersion}`);
+                return partialVersion;
+            }
+            // Remove 'v' prefix for comparison
+            const cleanPartial = partialVersion.startsWith('v')
+                ? partialVersion.slice(1)
+                : partialVersion;
+            // Find the latest version that satisfies the partial version
+            const matchingVersions = versionTags.filter((tag) => {
+                const version = tag.startsWith('v') ? tag.slice(1) : tag;
+                return semverExports.satisfies(version, `^${cleanPartial}`);
+            });
+            if (matchingVersions.length === 0) {
+                coreExports.warning(`No matching versions found for ${partialVersion} in ${owner}/${repo}`);
+                return partialVersion;
+            }
+            // Sort and get the latest
+            const sortedVersions = matchingVersions.sort((a, b) => {
+                const versionA = a.startsWith('v') ? a.slice(1) : a;
+                const versionB = b.startsWith('v') ? b.slice(1) : b;
+                return semverExports.rcompare(versionA, versionB);
+            });
+            const latestVersion = sortedVersions[0];
+            coreExports.debug(`Resolved ${partialVersion} to ${latestVersion}`);
+            return latestVersion;
+        }
+        catch (error) {
+            if (error instanceof Error) {
+                coreExports.warning(`Failed to resolve partial version ${partialVersion}: ${error.message}`);
+            }
+            return partialVersion;
+        }
+    }
+}
+
+var error;
+var hasRequiredError;
+
+function requireError () {
+	if (hasRequiredError) return error;
+	hasRequiredError = 1;
+
+	function formatPurlErrorMessage(message = '') {
+	    const { length } = message;
+	    let formatted = '';
+	    if (length) {
+	        // Lower case start of message.
+	        const code0 = message.charCodeAt(0);
+	        formatted =
+	            code0 >= 65 /*'A'*/ || code0 <= 90 /*'Z'*/
+	                ? `${message[0].toLowerCase()}${message.slice(1)}`
+	                : message;
+	        // Remove period from end of message.
+	        if (
+	            length > 1 &&
+	            message.charCodeAt(length - 1) === 46 /*'.'*/ &&
+	            message.charCodeAt(length - 2) !== 46
+	        ) {
+	            formatted = formatted.slice(0, -1);
+	        }
+	    }
+	    return `Invalid purl: ${formatted}`
+	}
+
+	class PurlError extends Error {
+	    constructor(message) {
+	        super(formatPurlErrorMessage(message));
+	    }
+	}
+
+	error = {
+	    formatPurlErrorMessage,
+	    PurlError
+	};
+	return error;
+}
+
+var decode;
+var hasRequiredDecode;
+
+function requireDecode () {
+	if (hasRequiredDecode) return decode;
+	hasRequiredDecode = 1;
+
+	const { PurlError } = requireError();
+
+	const { decodeURIComponent } = globalThis;
+
+	function decodePurlComponent(comp, encodedURIComponent) {
+	    try {
+	        return decodeURIComponent(encodedURIComponent)
+	    } catch {}
+	    throw new PurlError(`unable to decode "${comp}" component`)
+	}
+
+	decode = {
+	    decodePurlComponent
+	};
+	return decode;
+}
+
+var constants;
+var hasRequiredConstants;
+
+function requireConstants () {
+	if (hasRequiredConstants) return constants;
+	hasRequiredConstants = 1;
+
+	const LOOP_SENTINEL = 1_000_000;
+
+	const REUSED_SEARCH_PARAMS = new URLSearchParams();
+
+	const REUSED_SEARCH_PARAMS_KEY = '_';
+
+	const REUSED_SEARCH_PARAMS_OFFSET = 2; // '_='.length
+
+	constants = {
+	    LOOP_SENTINEL,
+	    REUSED_SEARCH_PARAMS,
+	    REUSED_SEARCH_PARAMS_KEY,
+	    REUSED_SEARCH_PARAMS_OFFSET
+	};
+	return constants;
+}
+
+var objects;
+var hasRequiredObjects;
+
+function requireObjects () {
+	if (hasRequiredObjects) return objects;
+	hasRequiredObjects = 1;
+
+	const { LOOP_SENTINEL } = requireConstants();
+
+	function isObject(value) {
+	    return value !== null && typeof value === 'object'
+	}
+
+	function recursiveFreeze(value_) {
+	    if (
+	        value_ === null ||
+	        !(typeof value_ === 'object' || typeof value_ === 'function') ||
+	        Object.isFrozen(value_)
+	    ) {
+	        return value_
+	    }
+	    const queue = [value_];
+	    let { length: queueLength } = queue;
+	    let pos = 0;
+	    while (pos < queueLength) {
+	        if (pos === LOOP_SENTINEL) {
+	            throw new Error(
+	                'Detected infinite loop in object crawl of recursiveFreeze'
+	            )
+	        }
+	        const obj = queue[pos++];
+	        Object.freeze(obj);
+	        if (Array.isArray(obj)) {
+	            for (let i = 0, { length } = obj; i < length; i += 1) {
+	                const item = obj[i];
+	                if (
+	                    item !== null &&
+	                    (typeof item === 'object' || typeof item === 'function') &&
+	                    !Object.isFrozen(item)
+	                ) {
+	                    queue[queueLength++] = item;
+	                }
+	            }
+	        } else {
+	            const keys = Reflect.ownKeys(obj);
+	            for (let i = 0, { length } = keys; i < length; i += 1) {
+	                const propValue = obj[keys[i]];
+	                if (
+	                    propValue !== null &&
+	                    (typeof propValue === 'object' ||
+	                        typeof propValue === 'function') &&
+	                    !Object.isFrozen(propValue)
+	                ) {
+	                    queue[queueLength++] = propValue;
+	                }
+	            }
+	        }
+	    }
+	    return value_
+	}
+
+	objects = {
+	    isObject,
+	    recursiveFreeze
+	};
+	return objects;
+}
+
+var strings;
+var hasRequiredStrings;
+
+function requireStrings () {
+	if (hasRequiredStrings) return strings;
+	hasRequiredStrings = 1;
+
+	// Intl.Collator is faster than String#localeCompare
+	// https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/localeCompare:
+	// > When comparing large numbers of strings, such as in sorting large arrays,
+	// > it is better to create an Intl.Collator object and use the function provided
+	// > by its compare() method.
+	const { compare: localeCompare } = new Intl.Collator();
+
+	// This regexp is valid as of 2024-08-01.
+	// https://semver.org/#is-there-a-suggested-regular-expression-regex-to-check-a-semver-string
+	const regexSemverNumberedGroups =
+	    /^(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)(?:-((?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*)(?:\.(?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*))*))?(?:\+([0-9a-zA-Z-]+(?:\.[0-9a-zA-Z-]+)*))?$/;
+
+	function isBlank(str) {
+	    for (let i = 0, { length } = str; i < length; i += 1) {
+	        const code = str.charCodeAt(i);
+	        // prettier-ignore
+	        if (
+	            !(
+	                // Whitespace characters according to ECMAScript spec:
+	                // https://tc39.es/ecma262/#sec-white-space
+	                (
+	                    code === 0x0020 || // Space
+	                    code === 0x0009 || // Tab
+	                    code === 0x000a || // Line Feed
+	                    code === 0x000b || // Vertical Tab
+	                    code === 0x000c || // Form Feed
+	                    code === 0x000d || // Carriage Return
+	                    code === 0x00a0 || // No-Break Space
+	                    code === 0x1680 || // Ogham Space Mark
+	                    code === 0x2000 || // En Quad
+	                    code === 0x2001 || // Em Quad
+	                    code === 0x2002 || // En Space
+	                    code === 0x2003 || // Em Space
+	                    code === 0x2004 || // Three-Per-Em Space
+	                    code === 0x2005 || // Four-Per-Em Space
+	                    code === 0x2006 || // Six-Per-Em Space
+	                    code === 0x2007 || // Figure Space
+	                    code === 0x2008 || // Punctuation Space
+	                    code === 0x2009 || // Thin Space
+	                    code === 0x200a || // Hair Space
+	                    code === 0x2028 || // Line Separator
+	                    code === 0x2029 || // Paragraph Separator
+	                    code === 0x202f || // Narrow No-Break Space
+	                    code === 0x205f || // Medium Mathematical Space
+	                    code === 0x3000 || // Ideographic Space
+	                    code === 0xfeff    // Byte Order Mark
+	                )
+	            )
+	        ) {
+	            return false
+	        }
+	    }
+	    return true
+	}
+
+	function isNonEmptyString(value) {
+	    return typeof value === 'string' && value.length > 0
+	}
+
+	function isSemverString(value) {
+	    return typeof value === 'string' && regexSemverNumberedGroups.test(value)
+	}
+
+	function lowerName(purl) {
+	    purl.name = purl.name.toLowerCase();
+	}
+
+	function lowerNamespace(purl) {
+	    const { namespace } = purl;
+	    if (typeof namespace === 'string') {
+	        purl.namespace = namespace.toLowerCase();
+	    }
+	}
+
+	function lowerVersion(purl) {
+	    const { version } = purl;
+	    if (typeof version === 'string') {
+	        purl.version = version.toLowerCase();
+	    }
+	}
+
+	function replaceDashesWithUnderscores(str) {
+	    // Replace all "-" with "_"
+	    let result = '';
+	    let fromIndex = 0;
+	    let index = 0;
+	    while ((index = str.indexOf('-', fromIndex)) !== -1) {
+	        result = result + str.slice(fromIndex, index) + '_';
+	        fromIndex = index + 1;
+	    }
+	    return fromIndex ? result + str.slice(fromIndex) : str
+	}
+
+	function replaceUnderscoresWithDashes(str) {
+	    // Replace all "_" with "-"
+	    let result = '';
+	    let fromIndex = 0;
+	    let index = 0;
+	    while ((index = str.indexOf('_', fromIndex)) !== -1) {
+	        result = result + str.slice(fromIndex, index) + '-';
+	        fromIndex = index + 1;
+	    }
+	    return fromIndex ? result + str.slice(fromIndex) : str
+	}
+
+	function trimLeadingSlashes(str) {
+	    let start = 0;
+	    while (str.charCodeAt(start) === 47 /*'/'*/) {
+	        start += 1;
+	    }
+	    return start === 0 ? str : str.slice(start)
+	}
+
+	strings = {
+	    isBlank,
+	    isNonEmptyString,
+	    isSemverString,
+	    localeCompare,
+	    lowerName,
+	    lowerNamespace,
+	    lowerVersion,
+	    replaceDashesWithUnderscores,
+	    replaceUnderscoresWithDashes,
+	    trimLeadingSlashes
+	};
+	return strings;
+}
+
+var encode;
+var hasRequiredEncode;
+
+function requireEncode () {
+	if (hasRequiredEncode) return encode;
+	hasRequiredEncode = 1;
+
+	const {
+	    REUSED_SEARCH_PARAMS,
+	    REUSED_SEARCH_PARAMS_KEY,
+	    REUSED_SEARCH_PARAMS_OFFSET
+	} = requireConstants();
+	const { isObject } = requireObjects();
+	const { isNonEmptyString } = requireStrings();
+
+	const { encodeURIComponent } = globalThis;
+
+	function encodeNamespace(namespace) {
+	    return isNonEmptyString(namespace)
+	        ? encodeURIComponent(namespace)
+	              .replace(/%3A/g, ':')
+	              .replace(/%2F/g, '/')
+	        : ''
+	}
+
+	function encodeQualifierParam(param) {
+	    if (isNonEmptyString(param)) {
+	        // Param key and value are encoded with `percentEncodeSet` of
+	        // 'application/x-www-form-urlencoded' and `spaceAsPlus` of `true`.
+	        // https://url.spec.whatwg.org/#urlencoded-serializing
+	        REUSED_SEARCH_PARAMS.set(REUSED_SEARCH_PARAMS_KEY, param);
+	        return replacePlusSignWithPercentEncodedSpace(
+	            REUSED_SEARCH_PARAMS.toString().slice(REUSED_SEARCH_PARAMS_OFFSET)
+	        )
+	    }
+	    return ''
+	}
+
+	function encodeQualifiers(qualifiers) {
+	    if (isObject(qualifiers)) {
+	        // Sort this list of qualifier strings lexicographically.
+	        const qualifiersKeys = Object.keys(qualifiers).sort();
+	        const searchParams = new URLSearchParams();
+	        for (let i = 0, { length } = qualifiersKeys; i < length; i += 1) {
+	            const key = qualifiersKeys[i];
+	            searchParams.set(key, qualifiers[key]);
+	        }
+	        return replacePlusSignWithPercentEncodedSpace(searchParams.toString())
+	    }
+	    return ''
+	}
+
+	function encodeSubpath(subpath) {
+	    return isNonEmptyString(subpath)
+	        ? encodeURIComponent(subpath).replace(/%2F/g, '/')
+	        : ''
+	}
+
+	function encodeVersion(version) {
+	    return isNonEmptyString(version)
+	        ? encodeURIComponent(version).replace(/%3A/g, ':').replace(/%2B/g, '+')
+	        : ''
+	}
+
+	function replacePlusSignWithPercentEncodedSpace(str) {
+	    // Convert plus signs to %20 for better portability.
+	    return str.replace(/\+/g, '%20')
+	}
+
+	encode = {
+	    encodeNamespace,
+	    encodeVersion,
+	    encodeQualifiers,
+	    encodeQualifierParam,
+	    encodeSubpath,
+	    encodeURIComponent
+	};
+	return encode;
+}
+
+var helpers;
+var hasRequiredHelpers;
+
+function requireHelpers () {
+	if (hasRequiredHelpers) return helpers;
+	hasRequiredHelpers = 1;
+
+	function createHelpersNamespaceObject(helpers, options_ = {}) {
+	    const { comparator, ...defaults } = { __proto__: null, ...options_ };
+	    const helperNames = Object.keys(helpers).sort();
+	    const propNames = [
+	        ...new Set([...Object.values(helpers)].map(Object.keys).flat())
+	    ].sort(comparator);
+	    const nsObject = Object.create(null);
+	    for (let i = 0, { length } = propNames; i < length; i += 1) {
+	        const propName = propNames[i];
+	        const helpersForProp = Object.create(null);
+	        for (
+	            let j = 0, { length: length_j } = helperNames;
+	            j < length_j;
+	            j += 1
+	        ) {
+	            const helperName = helperNames[j];
+	            const helperValue =
+	                helpers[helperName][propName] ?? defaults[helperName];
+	            if (helperValue !== undefined) {
+	                helpersForProp[helperName] = helperValue;
+	            }
+	        }
+	        nsObject[propName] = helpersForProp;
+	    }
+	    return nsObject
+	}
+
+	helpers = {
+	    createHelpersNamespaceObject
+	};
+	return helpers;
+}
+
+var normalize;
+var hasRequiredNormalize;
+
+function requireNormalize () {
+	if (hasRequiredNormalize) return normalize;
+	hasRequiredNormalize = 1;
+
+	const { isObject } = requireObjects();
+	const { isBlank } = requireStrings();
+
+	function normalizeName(rawName) {
+	    return typeof rawName === 'string' ? rawName.trim() : undefined
+	}
+
+	function normalizeNamespace(rawNamespace) {
+	    return typeof rawNamespace === 'string'
+	        ? normalizePath(rawNamespace)
+	        : undefined
+	}
+
+	function normalizePath(pathname, callback) {
+	    let collapsed = '';
+	    let start = 0;
+	    // Leading and trailing slashes, i.e. '/', are not significant and should be
+	    // stripped in the canonical form.
+	    while (pathname.charCodeAt(start) === 47 /*'/'*/) {
+	        start += 1;
+	    }
+	    let nextIndex = pathname.indexOf('/', start);
+	    if (nextIndex === -1) {
+	        return pathname.slice(start)
+	    }
+	    // Discard any empty string segments by collapsing repeated segment
+	    // separator slashes, i.e. '/'.
+	    while (nextIndex !== -1) {
+	        const segment = pathname.slice(start, nextIndex);
+	        if (callback === undefined || callback(segment)) {
+	            collapsed =
+	                collapsed + (collapsed.length === 0 ? '' : '/') + segment;
+	        }
+	        start = nextIndex + 1;
+	        while (pathname.charCodeAt(start) === 47) {
+	            start += 1;
+	        }
+	        nextIndex = pathname.indexOf('/', start);
+	    }
+	    const lastSegment = pathname.slice(start);
+	    if (
+	        lastSegment.length !== 0 &&
+	        (callback === undefined || callback(lastSegment))
+	    ) {
+	        collapsed = collapsed + '/' + lastSegment;
+	    }
+	    return collapsed
+	}
+
+	function normalizeQualifiers(rawQualifiers) {
+	    let qualifiers;
+	    for (const { 0: key, 1: value } of qualifiersToEntries(rawQualifiers)) {
+	        const strValue = typeof value === 'string' ? value : String(value);
+	        const trimmed = strValue.trim();
+	        // A key=value pair with an empty value is the same as no key/value
+	        // at all for this key.
+	        if (trimmed.length === 0) {
+	            continue
+	        }
+	        if (qualifiers === undefined) {
+	            qualifiers = { __proto__: null };
+	        }
+	        // A key is case insensitive. The canonical form is lowercase.
+	        qualifiers[key.toLowerCase()] = trimmed;
+	    }
+	    return qualifiers
+	}
+
+	function normalizeSubpath(rawSubpath) {
+	    return typeof rawSubpath === 'string'
+	        ? normalizePath(rawSubpath, subpathFilter)
+	        : undefined
+	}
+
+	function normalizeType(rawType) {
+	    // The type must NOT be percent-encoded.
+	    // The type is case insensitive. The canonical form is lowercase.
+	    return typeof rawType === 'string'
+	        ? rawType.trim().toLowerCase()
+	        : undefined
+	}
+
+	function normalizeVersion(rawVersion) {
+	    return typeof rawVersion === 'string' ? rawVersion.trim() : undefined
+	}
+
+	function qualifiersToEntries(rawQualifiers) {
+	    if (isObject(rawQualifiers)) {
+	        return rawQualifiers instanceof URLSearchParams
+	            ? rawQualifiers.entries()
+	            : Object.entries(rawQualifiers)
+	    }
+	    return typeof rawQualifiers === 'string'
+	        ? new URLSearchParams(rawQualifiers).entries()
+	        : Object.entries({})
+	}
+
+	function subpathFilter(segment) {
+	    // When percent-decoded, a segment
+	    //   - must not be any of '.' or '..'
+	    //   - must not be empty
+	    const { length } = segment;
+	    if (length === 1 && segment.charCodeAt(0) === 46 /*'.'*/) return false
+	    if (
+	        length === 2 &&
+	        segment.charCodeAt(0) === 46 &&
+	        segment.charCodeAt(1) === 46
+	    ) {
+	        return false
+	    }
+	    return !isBlank(segment)
+	}
+
+	normalize = {
+	    normalizeName,
+	    normalizeNamespace,
+	    normalizePath,
+	    normalizeQualifiers,
+	    normalizeSubpath,
+	    normalizeType,
+	    normalizeVersion
+	};
+	return normalize;
+}
+
+var lang;
+var hasRequiredLang;
+
+function requireLang () {
+	if (hasRequiredLang) return lang;
+	hasRequiredLang = 1;
+
+	function isNullishOrEmptyString(value) {
+	    return (
+	        value === null ||
+	        value === undefined ||
+	        (typeof value === 'string' && value.length === 0)
+	    )
+	}
+
+	lang = {
+	    isNullishOrEmptyString
+	};
+	return lang;
+}
+
+var validate;
+var hasRequiredValidate;
+
+function requireValidate () {
+	if (hasRequiredValidate) return validate;
+	hasRequiredValidate = 1;
+
+	const { PurlError } = requireError();
+	const { isNullishOrEmptyString } = requireLang();
+	const { isNonEmptyString } = requireStrings();
+
+	function validateEmptyByType(type, name, value, throws) {
+	    if (!isNullishOrEmptyString(value)) {
+	        if (throws) {
+	            throw new PurlError(`${type} "${name}" component must be empty`)
+	        }
+	        return false
+	    }
+	    return true
+	}
+
+	function validateName(name, throws) {
+	    return (
+	        validateRequired('name', name, throws) &&
+	        validateStrings('name', name, throws)
+	    )
+	}
+
+	function validateNamespace(namespace, throws) {
+	    return validateStrings('namespace', namespace, throws)
+	}
+
+	function validateQualifiers(qualifiers, throws) {
+	    if (qualifiers === null || qualifiers === undefined) {
+	        return true
+	    }
+	    if (typeof qualifiers !== 'object') {
+	        if (throws) {
+	            throw new PurlError('"qualifiers" must be an object')
+	        }
+	        return false
+	    }
+	    const keysIterable =
+	        // URL searchParams have an "keys" method that returns an iterator.
+	        typeof qualifiers.keys === 'function'
+	            ? qualifiers.keys()
+	            : Object.keys(qualifiers);
+	    for (const key of keysIterable) {
+	        if (!validateQualifierKey(key, throws)) {
+	            return false
+	        }
+	    }
+	    return true
+	}
+
+	function validateQualifierKey(key, throws) {
+	    // A key cannot start with a number.
+	    if (!validateStartsWithoutNumber('qualifier', key, throws)) {
+	        return false
+	    }
+	    // The key must be composed only of ASCII letters and numbers,
+	    // '.', '-' and '_' (period, dash and underscore).
+	    for (let i = 0, { length } = key; i < length; i += 1) {
+	        const code = key.charCodeAt(i);
+	        // prettier-ignore
+	        if (
+	            !(
+	                (
+	                    (code >= 48 && code <= 57)  || // 0-9
+	                    (code >= 65 && code <= 90)  || // A-Z
+	                    (code >= 97 && code <= 122) || // a-z
+	                    code === 46 || // .
+	                    code === 45 || // -
+	                    code === 95    // _
+	                )
+	            )
+	        ) {
+	            if (throws) {
+	                throw new PurlError(
+	                    `qualifier "${key}" contains an illegal character`
+	                )
+	            }
+	            return false
+	        }
+	    }
+	    return true
+	}
+
+	function validateRequired(name, value, throws) {
+	    if (isNullishOrEmptyString(value)) {
+	        if (throws) {
+	            throw new PurlError(`"${name}" is a required component`)
+	        }
+	        return false
+	    }
+	    return true
+	}
+
+	function validateRequiredByType(type, name, value, throws) {
+	    if (isNullishOrEmptyString(value)) {
+	        if (throws) {
+	            throw new PurlError(`${type} requires a "${name}" component`)
+	        }
+	        return false
+	    }
+	    return true
+	}
+
+	function validateStartsWithoutNumber(name, value, throws) {
+	    if (isNonEmptyString(value)) {
+	        const code = value.charCodeAt(0);
+	        if (code >= 48 /*'0'*/ && code <= 57 /*'9'*/) {
+	            if (throws) {
+	                throw new PurlError(
+	                    `${name} "${value}" cannot start with a number`
+	                )
+	            }
+	            return false
+	        }
+	    }
+	    return true
+	}
+
+	function validateStrings(name, value, throws) {
+	    if (value === null || value === undefined || typeof value === 'string') {
+	        return true
+	    }
+	    if (throws) {
+	        throw new PurlError(`"'${name}" must be a string`)
+	    }
+	    return false
+	}
+
+	function validateSubpath(subpath, throws) {
+	    return validateStrings('subpath', subpath, throws)
+	}
+
+	function validateType(type, throws) {
+	    // The type cannot be nullish, an empty string, or start with a number.
+	    if (
+	        !validateRequired('type', type, throws) ||
+	        !validateStrings('type', type, throws) ||
+	        !validateStartsWithoutNumber('type', type, throws)
+	    ) {
+	        return false
+	    }
+	    // The package type is composed only of ASCII letters and numbers,
+	    // '.', '+' and '-' (period, plus, and dash)
+	    for (let i = 0, { length } = type; i < length; i += 1) {
+	        const code = type.charCodeAt(i);
+	        // prettier-ignore
+	        if (
+	            !(
+	                (
+	                    (code >= 48 && code <= 57)  || // 0-9
+	                    (code >= 65 && code <= 90)  || // A-Z
+	                    (code >= 97 && code <= 122) || // a-z
+	                    code === 46 || // .
+	                    code === 43 || // +
+	                    code === 45    // -
+	                )
+	            )
+	        ) {
+	            if (throws) {
+	                throw new PurlError(
+	                    `type "${type}" contains an illegal character`
+	                )
+	            }
+	            return false
+	        }
+	    }
+	    return true
+	}
+
+	function validateVersion(version, throws) {
+	    return validateStrings('version', version, throws)
+	}
+
+	validate = {
+	    validateEmptyByType,
+	    validateName,
+	    validateNamespace,
+	    validateQualifiers,
+	    validateQualifierKey,
+	    validateRequired,
+	    validateRequiredByType,
+	    validateStartsWithoutNumber,
+	    validateStrings,
+	    validateSubpath,
+	    validateType,
+	    validateVersion
+	};
+	return validate;
+}
+
+var purlComponent;
+var hasRequiredPurlComponent;
+
+function requirePurlComponent () {
+	if (hasRequiredPurlComponent) return purlComponent;
+	hasRequiredPurlComponent = 1;
+
+	const {
+	    encodeNamespace,
+	    encodeVersion,
+	    encodeQualifiers,
+	    encodeQualifierParam,
+	    encodeSubpath,
+	    encodeURIComponent
+	} = requireEncode();
+
+	const { createHelpersNamespaceObject } = requireHelpers();
+
+	const {
+	    normalizeType,
+	    normalizeNamespace,
+	    normalizeName,
+	    normalizeVersion,
+	    normalizeQualifiers,
+	    normalizeSubpath
+	} = requireNormalize();
+
+	const { localeCompare, isNonEmptyString } = requireStrings();
+
+	const {
+	    validateType,
+	    validateNamespace,
+	    validateName,
+	    validateVersion,
+	    validateQualifiers,
+	    validateQualifierKey,
+	    validateSubpath
+	} = requireValidate();
+
+	const PurlComponentEncoder = (comp) =>
+	    isNonEmptyString(comp) ? encodeURIComponent(comp) : '';
+
+	const PurlComponentStringNormalizer = (comp) =>
+	    typeof comp === 'string' ? comp : undefined;
+
+	const PurlComponentValidator = (_comp, _throws) => true;
+
+	const componentSortOrderLookup = {
+	    __proto__: null,
+	    type: 0,
+	    namespace: 1,
+	    name: 2,
+	    version: 3,
+	    qualifiers: 4,
+	    qualifierKey: 5,
+	    qualifierValue: 6,
+	    subpath: 7
+	};
+
+	function componentSortOrder(comp) {
+	    return componentSortOrderLookup[comp] ?? comp
+	}
+
+	function componentComparator(compA, compB) {
+	    return localeCompare(componentSortOrder(compA), componentSortOrder(compB))
+	}
+
+	purlComponent = {
+	    // Rules for each purl component:
+	    // https://github.com/package-url/purl-spec/blob/master/PURL-SPECIFICATION.rst#rules-for-each-purl-component
+	    PurlComponent: createHelpersNamespaceObject(
+	        {
+	            encode: {
+	                namespace: encodeNamespace,
+	                version: encodeVersion,
+	                qualifiers: encodeQualifiers,
+	                qualifierKey: encodeQualifierParam,
+	                qualifierValue: encodeQualifierParam,
+	                subpath: encodeSubpath
+	            },
+	            normalize: {
+	                type: normalizeType,
+	                namespace: normalizeNamespace,
+	                name: normalizeName,
+	                version: normalizeVersion,
+	                qualifiers: normalizeQualifiers,
+	                subpath: normalizeSubpath
+	            },
+	            validate: {
+	                type: validateType,
+	                namespace: validateNamespace,
+	                name: validateName,
+	                version: validateVersion,
+	                qualifierKey: validateQualifierKey,
+	                qualifiers: validateQualifiers,
+	                subpath: validateSubpath
+	            }
+	        },
+	        {
+	            comparator: componentComparator,
+	            encode: PurlComponentEncoder,
+	            normalize: PurlComponentStringNormalizer,
+	            validate: PurlComponentValidator
+	        }
+	    )
+	};
+	return purlComponent;
+}
+
+var purlQualifierNames;
+var hasRequiredPurlQualifierNames;
+
+function requirePurlQualifierNames () {
+	if (hasRequiredPurlQualifierNames) return purlQualifierNames;
+	hasRequiredPurlQualifierNames = 1;
+
+	purlQualifierNames = {
+	    // Known qualifiers:
+	    // https://github.com/package-url/purl-spec/blob/master/PURL-SPECIFICATION.rst#known-qualifiers-keyvalue-pairs
+	    PurlQualifierNames: {
+	        __proto__: null,
+	        RepositoryUrl: 'repository_url',
+	        DownloadUrl: 'download_url',
+	        VcsUrl: 'vcs_url',
+	        FileName: 'file_name',
+	        Checksum: 'checksum'
+	    }
+	};
+	return purlQualifierNames;
+}
+
+var purlType;
+var hasRequiredPurlType;
+
+function requirePurlType () {
+	if (hasRequiredPurlType) return purlType;
+	hasRequiredPurlType = 1;
+
+	const { isNullishOrEmptyString } = requireLang();
+
+	const { createHelpersNamespaceObject } = requireHelpers();
+
+	const {
+	    isSemverString,
+	    lowerName,
+	    lowerNamespace,
+	    lowerVersion,
+	    replaceDashesWithUnderscores,
+	    replaceUnderscoresWithDashes
+	} = requireStrings();
+
+	const { validateEmptyByType, validateRequiredByType } = requireValidate();
+	const { PurlError } = requireError();
+
+	const PurlTypNormalizer = (purl) => purl;
+
+	const PurlTypeValidator = (_purl, _throws) => true;
+
+	purlType = {
+	    // PURL types:
+	    // https://github.com/package-url/purl-spec/blob/master/PURL-TYPES.rst
+	    PurlType: createHelpersNamespaceObject(
+	        {
+	            normalize: {
+	                // https://github.com/package-url/purl-spec/blob/master/PURL-TYPES.rst#alpm
+	                alpm(purl) {
+	                    lowerNamespace(purl);
+	                    lowerName(purl);
+	                    return purl
+	                },
+	                // https://github.com/package-url/purl-spec/blob/master/PURL-TYPES.rst#apk
+	                apk(purl) {
+	                    lowerNamespace(purl);
+	                    lowerName(purl);
+	                    return purl
+	                },
+	                // https://github.com/package-url/purl-spec/blob/master/PURL-TYPES.rst#bitbucket
+	                bitbucket(purl) {
+	                    lowerNamespace(purl);
+	                    lowerName(purl);
+	                    return purl
+	                },
+	                // https://github.com/package-url/purl-spec/blob/master/PURL-TYPES.rst#bitnami
+	                bitnami(purl) {
+	                    lowerName(purl);
+	                    return purl
+	                },
+	                // https://github.com/package-url/purl-spec/blob/master/PURL-TYPES.rst#composer
+	                composer(purl) {
+	                    lowerNamespace(purl);
+	                    lowerName(purl);
+	                    return purl
+	                },
+	                // https://github.com/package-url/purl-spec/blob/master/PURL-TYPES.rst#deb
+	                deb(purl) {
+	                    lowerNamespace(purl);
+	                    lowerName(purl);
+	                    return purl
+	                },
+	                // https://github.com/package-url/purl-spec/blob/master/PURL-TYPES.rst#other-candidate-types-to-define
+	                gitlab(purl) {
+	                    lowerNamespace(purl);
+	                    lowerName(purl);
+	                    return purl
+	                },
+	                // https://github.com/package-url/purl-spec/blob/master/PURL-TYPES.rst#github
+	                github(purl) {
+	                    lowerNamespace(purl);
+	                    lowerName(purl);
+	                    return purl
+	                },
+	                // https://github.com/package-url/purl-spec/blob/master/PURL-TYPES.rst#golang
+	                // golang(purl) {
+	                //     // Ignore case-insensitive rule because go.mod are case-sensitive.
+	                //     // Pending spec change: https://github.com/package-url/purl-spec/pull/196
+	                //     lowerNamespace(purl)
+	                //     lowerName(purl)
+	                //     return purl
+	                // },
+	                // https://github.com/package-url/purl-spec/blob/master/PURL-TYPES.rst#hex
+	                hex(purl) {
+	                    lowerNamespace(purl);
+	                    lowerName(purl);
+	                    return purl
+	                },
+	                // https://github.com/package-url/purl-spec/blob/master/PURL-TYPES.rst#huggingface
+	                huggingface(purl) {
+	                    lowerVersion(purl);
+	                    return purl
+	                },
+	                // https://github.com/package-url/purl-spec/blob/master/PURL-TYPES.rst#mlflow
+	                mlflow(purl) {
+	                    if (
+	                        purl.qualifiers?.repository_url?.includes('databricks')
+	                    ) {
+	                        lowerName(purl);
+	                    }
+	                    return purl
+	                },
+	                // https://github.com/package-url/purl-spec/blob/master/PURL-TYPES.rst#npm
+	                npm(purl) {
+	                    lowerNamespace(purl);
+	                    lowerName(purl);
+	                    return purl
+	                },
+	                // https://github.com/package-url/purl-spec/blob/master/PURL-TYPES.rst#luarocks
+	                luarocks(purl) {
+	                    lowerVersion(purl);
+	                    return purl
+	                },
+	                // https://github.com/package-url/purl-spec/blob/master/PURL-TYPES.rst#oci
+	                oci(purl) {
+	                    lowerName(purl);
+	                    return purl
+	                },
+	                // https://github.com/package-url/purl-spec/blob/master/PURL-TYPES.rst#pub
+	                pub(purl) {
+	                    lowerName(purl);
+	                    purl.name = replaceDashesWithUnderscores(purl.name);
+	                    return purl
+	                },
+	                // https://github.com/package-url/purl-spec/blob/master/PURL-TYPES.rst#pypi
+	                pypi(purl) {
+	                    lowerNamespace(purl);
+	                    lowerName(purl);
+	                    purl.name = replaceUnderscoresWithDashes(purl.name);
+	                    return purl
+	                },
+	                // https://github.com/package-url/purl-spec/blob/master/PURL-TYPES.rst#qpkg
+	                qpkg(purl) {
+	                    lowerNamespace(purl);
+	                    return purl
+	                },
+	                // https://github.com/package-url/purl-spec/blob/master/PURL-TYPES.rst#rpm
+	                rpm(purl) {
+	                    lowerNamespace(purl);
+	                    return purl
+	                }
+	            },
+	            validate: {
+	                // TODO: cocoapods name validation
+	                // TODO: cpan namespace validation
+	                // TODO: swid qualifier validation
+	                // https://github.com/package-url/purl-spec/blob/master/PURL-TYPES.rst#conan
+	                conan(purl, throws) {
+	                    if (isNullishOrEmptyString(purl.namespace)) {
+	                        if (purl.qualifiers?.channel) {
+	                            if (throws) {
+	                                throw new PurlError(
+	                                    'conan requires a "namespace" component when a "channel" qualifier is present'
+	                                )
+	                            }
+	                            return false
+	                        }
+	                    } else if (isNullishOrEmptyString(purl.qualifiers)) {
+	                        if (throws) {
+	                            throw new PurlError(
+	                                'conan requires a "qualifiers" component when a namespace is present'
+	                            )
+	                        }
+	                        return false
+	                    }
+	                    return true
+	                },
+	                // https://github.com/package-url/purl-spec/blob/master/PURL-TYPES.rst#cran
+	                cran(purl, throws) {
+	                    return validateRequiredByType(
+	                        'cran',
+	                        'version',
+	                        purl.version,
+	                        throws
+	                    )
+	                },
+	                // https://github.com/package-url/purl-spec/blob/master/PURL-TYPES.rst#golang
+	                golang(purl) {
+	                    // Still being lenient here since the standard changes aren't official.
+	                    // Pending spec change: https://github.com/package-url/purl-spec/pull/196
+	                    const { version } = purl;
+	                    const length =
+	                        typeof version === 'string' ? version.length : 0;
+	                    // If the version starts with a "v" then ensure its a valid semver version.
+	                    // This, by semver semantics, also supports pseudo-version number.
+	                    // https://go.dev/doc/modules/version-numbers#pseudo-version-number
+	                    if (
+	                        length &&
+	                        version.charCodeAt(0) === 118 /*'v'*/ &&
+	                        !isSemverString(version.slice(1))
+	                    ) {
+	                        if (throws) {
+	                            throw new PurlError(
+	                                'golang "version" component starting with a "v" must be followed by a valid semver version'
+	                            )
+	                        }
+	                        return false
+	                    }
+	                    return true
+	                },
+	                // https://github.com/package-url/purl-spec/blob/master/PURL-TYPES.rst#maven
+	                maven(purl, throws) {
+	                    return validateRequiredByType(
+	                        'maven',
+	                        'namespace',
+	                        purl.namespace,
+	                        throws
+	                    )
+	                },
+	                // https://github.com/package-url/purl-spec/blob/master/PURL-TYPES.rst#mlflow
+	                mlflow(purl, throws) {
+	                    return validateEmptyByType(
+	                        'mlflow',
+	                        'namespace',
+	                        purl.namespace,
+	                        throws
+	                    )
+	                },
+	                // https://github.com/package-url/purl-spec/blob/master/PURL-TYPES.rst#oci
+	                oci(purl, throws) {
+	                    return validateEmptyByType(
+	                        'oci',
+	                        'namespace',
+	                        purl.namespace,
+	                        throws
+	                    )
+	                },
+	                // https://github.com/package-url/purl-spec/blob/master/PURL-TYPES.rst#pub
+	                pub(purl, throws) {
+	                    const { name } = purl;
+	                    for (let i = 0, { length } = name; i < length; i += 1) {
+	                        const code = name.charCodeAt(i);
+	                        // prettier-ignore
+	                        if (
+	                  !(
+	                      (
+	                          (code >= 48 && code <= 57)  || // 0-9
+	                          (code >= 97 && code <= 122) || // a-z
+	                          code === 95 // _
+	                      )
+	                  )
+	              ) {
+	                  if (throws) {
+	                      throw new PurlError(
+	                          'pub "name" component may only contain [a-z0-9_] characters'
+	                      )
+	                  }
+	                  return false
+	              }
+	                    }
+	                    return true
+	                },
+	                // https://github.com/package-url/purl-spec/blob/master/PURL-TYPES.rst#swift
+	                swift(purl, throws) {
+	                    return (
+	                        validateRequiredByType(
+	                            'swift',
+	                            'namespace',
+	                            purl.namespace,
+	                            throws
+	                        ) &&
+	                        validateRequiredByType(
+	                            'swift',
+	                            'version',
+	                            purl.version,
+	                            throws
+	                        )
+	                    )
+	                }
+	            }
+	        },
+	        {
+	            normalize: PurlTypNormalizer,
+	            validate: PurlTypeValidator
+	        }
+	    )
+	};
+	return purlType;
+}
+
+/*!
+Copyright (c) the purl authors
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+*/
+
+var packageUrl;
+var hasRequiredPackageUrl;
+
+function requirePackageUrl () {
+	if (hasRequiredPackageUrl) return packageUrl;
+	hasRequiredPackageUrl = 1;
+
+	const { decodePurlComponent } = requireDecode();
+	const { isObject, recursiveFreeze } = requireObjects();
+	const { isBlank, isNonEmptyString, trimLeadingSlashes } = requireStrings();
+
+	const { PurlComponent } = requirePurlComponent();
+	const { PurlQualifierNames } = requirePurlQualifierNames();
+	const { PurlType } = requirePurlType();
+	const { PurlError } = requireError();
+
+	class PackageURL {
+	    static Component = recursiveFreeze(PurlComponent)
+	    static KnownQualifierNames = recursiveFreeze(PurlQualifierNames)
+	    static Type = recursiveFreeze(PurlType)
+
+	    constructor(
+	        rawType,
+	        rawNamespace,
+	        rawName,
+	        rawVersion,
+	        rawQualifiers,
+	        rawSubpath
+	    ) {
+	        const type = isNonEmptyString(rawType)
+	            ? PurlComponent.type.normalize(rawType)
+	            : rawType;
+	        PurlComponent.type.validate(type, true);
+
+	        const namespace = isNonEmptyString(rawNamespace)
+	            ? PurlComponent.namespace.normalize(rawNamespace)
+	            : rawNamespace;
+	        PurlComponent.namespace.validate(namespace, true);
+
+	        const name = isNonEmptyString(rawName)
+	            ? PurlComponent.name.normalize(rawName)
+	            : rawName;
+	        PurlComponent.name.validate(name, true);
+
+	        const version = isNonEmptyString(rawVersion)
+	            ? PurlComponent.version.normalize(rawVersion)
+	            : rawVersion;
+	        PurlComponent.version.validate(version, true);
+
+	        const qualifiers =
+	            typeof rawQualifiers === 'string' || isObject(rawQualifiers)
+	                ? PurlComponent.qualifiers.normalize(rawQualifiers)
+	                : rawQualifiers;
+	        PurlComponent.qualifiers.validate(qualifiers, true);
+
+	        const subpath = isNonEmptyString(rawSubpath)
+	            ? PurlComponent.subpath.normalize(rawSubpath)
+	            : rawSubpath;
+	        PurlComponent.subpath.validate(subpath, true);
+
+	        this.type = type;
+	        this.name = name;
+	        this.namespace = namespace ?? undefined;
+	        this.version = version ?? undefined;
+	        this.qualifiers = qualifiers ?? undefined;
+	        this.subpath = subpath ?? undefined;
+
+	        const typeHelpers = PurlType[type];
+	        if (typeHelpers) {
+	            typeHelpers.normalize(this);
+	            typeHelpers.validate(this, true);
+	        }
+	    }
+
+	    toString() {
+	        const { namespace, name, version, qualifiers, subpath, type } = this;
+	        let purlStr = `pkg:${PurlComponent.type.encode(type)}/`;
+	        if (namespace) {
+	            purlStr = `${purlStr}${PurlComponent.namespace.encode(namespace)}/`;
+	        }
+	        purlStr = `${purlStr}${PurlComponent.name.encode(name)}`;
+	        if (version) {
+	            purlStr = `${purlStr}@${PurlComponent.version.encode(version)}`;
+	        }
+	        if (qualifiers) {
+	            purlStr = `${purlStr}?${PurlComponent.qualifiers.encode(qualifiers)}`;
+	        }
+	        if (subpath) {
+	            purlStr = `${purlStr}#${PurlComponent.subpath.encode(subpath)}`;
+	        }
+	        return purlStr
+	    }
+
+	    static fromString(purlStr) {
+	        return new PackageURL(...PackageURL.parseString(purlStr))
+	    }
+
+	    static parseString(purlStr) {
+	        // https://github.com/package-url/purl-spec/blob/master/PURL-SPECIFICATION.rst#how-to-parse-a-purl-string-in-its-components
+	        if (typeof purlStr !== 'string') {
+	            throw new Error('A purl string argument is required.')
+	        }
+	        if (isBlank(purlStr)) {
+	            return [
+	                undefined,
+	                undefined,
+	                undefined,
+	                undefined,
+	                undefined,
+	                undefined
+	            ]
+	        }
+
+	        // Split the remainder once from left on ':'.
+	        const colonIndex = purlStr.indexOf(':');
+	        // Use WHATWG URL to split up the purl string.
+	        //   - Split the purl string once from right on '#'
+	        //   - Split the remainder once from right on '?'
+	        //   - Split the remainder once from left on ':'
+	        let url;
+	        let maybeUrlWithAuth;
+	        if (colonIndex !== -1) {
+	            try {
+	                // Since a purl never contains a URL Authority, its scheme
+	                // must not be suffixed with double slash as in 'pkg://'
+	                // and should use instead 'pkg:'. Purl parsers must accept
+	                // URLs such as 'pkg://' and must ignore the '//'
+	                const beforeColon = purlStr.slice(0, colonIndex);
+	                const afterColon = purlStr.slice(colonIndex + 1);
+	                const trimmedAfterColon = trimLeadingSlashes(afterColon);
+	                url = new URL(`${beforeColon}:${trimmedAfterColon}`);
+	                maybeUrlWithAuth =
+	                    afterColon.length === trimmedAfterColon.length
+	                        ? url
+	                        : new URL(purlStr);
+	            } catch (e) {
+	                throw new PurlError('failed to parse as URL', {
+	                    cause: e
+	                })
+	            }
+	        }
+	        // The scheme is a constant with the value "pkg".
+	        if (url?.protocol !== 'pkg:') {
+	            throw new PurlError('missing required "pkg" scheme component')
+	        }
+	        // A purl must NOT contain a URL Authority i.e. there is no support for
+	        // username, password, host and port components.
+	        if (
+	            maybeUrlWithAuth.username !== '' ||
+	            maybeUrlWithAuth.password !== ''
+	        ) {
+	            throw new PurlError('cannot contain a "user:pass@host:port"')
+	        }
+
+	        const { pathname } = url;
+	        const firstSlashIndex = pathname.indexOf('/');
+	        const rawType = decodePurlComponent(
+	            'type',
+	            firstSlashIndex === -1
+	                ? pathname
+	                : pathname.slice(0, firstSlashIndex)
+	        );
+	        if (firstSlashIndex < 1) {
+	            return [
+	                rawType,
+	                undefined,
+	                undefined,
+	                undefined,
+	                undefined,
+	                undefined
+	            ]
+	        }
+
+	        let rawVersion;
+	        let atSignIndex = pathname.lastIndexOf('@');
+	        // Handle unencoded leading '@' characters. This is a small break from
+	        // the specification to make parsing more forgiving so that users don't
+	        // have to deal with it.
+	        if (
+	            atSignIndex !== -1 &&
+	            pathname.charCodeAt(atSignIndex - 1) === 47 /*'/'*/
+	        ) {
+	            atSignIndex = -1;
+	        }
+	        const beforeVersion = pathname.slice(
+	            rawType.length + 1,
+	            atSignIndex === -1 ? pathname.length : atSignIndex
+	        );
+	        if (atSignIndex !== -1) {
+	            // Split the remainder once from right on '@'.
+	            rawVersion = decodePurlComponent(
+	                'version',
+	                pathname.slice(atSignIndex + 1)
+	            );
+	        }
+
+	        let rawNamespace;
+	        let rawName;
+	        const lastSlashIndex = beforeVersion.lastIndexOf('/');
+	        if (lastSlashIndex === -1) {
+	            // Split the remainder once from right on '/'.
+	            rawName = decodePurlComponent('name', beforeVersion);
+	        } else {
+	            // Split the remainder once from right on '/'.
+	            rawName = decodePurlComponent(
+	                'name',
+	                beforeVersion.slice(lastSlashIndex + 1)
+	            );
+	            // Split the remainder on '/'.
+	            rawNamespace = decodePurlComponent(
+	                'namespace',
+	                beforeVersion.slice(0, lastSlashIndex)
+	            );
+	        }
+
+	        let rawQualifiers;
+	        const { searchParams } = url;
+	        if (searchParams.size !== 0) {
+	            searchParams.forEach((value) =>
+	                decodePurlComponent('qualifiers', value)
+	            );
+	            // Split the remainder once from right on '?'.
+	            rawQualifiers = searchParams;
+	        }
+
+	        let rawSubpath;
+	        const { hash } = url;
+	        if (hash.length !== 0) {
+	            // Split the purl string once from right on '#'.
+	            rawSubpath = decodePurlComponent('subpath', hash.slice(1));
+	        }
+
+	        return [
+	            rawType,
+	            rawNamespace,
+	            rawName,
+	            rawVersion,
+	            rawQualifiers,
+	            rawSubpath
+	        ]
+	    }
+	}
+
+	for (const staticProp of ['Component', 'KnownQualifierNames', 'Type']) {
+	    Reflect.defineProperty(PackageURL, staticProp, {
+	        ...Reflect.getOwnPropertyDescriptor(PackageURL, staticProp),
+	        writable: false
+	    });
+	}
+
+	Reflect.setPrototypeOf(PackageURL.prototype, null);
+
+	packageUrl = {
+	    PackageURL,
+	    PurlComponent,
+	    PurlQualifierNames,
+	    PurlType
+	};
+	return packageUrl;
+}
+
+/*!
+Copyright (c) the purl authors
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+*/
+
+var packageurlJs;
+var hasRequiredPackageurlJs;
+
+function requirePackageurlJs () {
+	if (hasRequiredPackageurlJs) return packageurlJs;
+	hasRequiredPackageurlJs = 1;
+
+	const {
+	  PackageURL,
+	  PurlComponent,
+	  PurlQualifierNames,
+	  PurlType
+	} = requirePackageUrl();
+
+	packageurlJs = {
+	  PackageURL,
+	  PurlComponent,
+	  PurlQualifierNames,
+	  PurlType
+	};
+	return packageurlJs;
+}
+
+var packageurlJsExports = requirePackageurlJs();
+
+/**
+ * Builds dependency manifests from resolved actions
+ */
+class DependencyBuilder {
+    /**
+     * Creates a manifest from resolved actions
+     */
+    createManifest(actions, workflowPath) {
+        coreExports.info(`Creating manifest with ${actions.length} dependencies`);
+        const manifest = new g('github-actions-dependencies', workflowPath);
+        const packageCache = new h();
+        // Add dependencies for each action
+        for (const action of actions) {
+            try {
+                // Create package URL in PURL format for GitHub Actions
+                // See: https://github.com/package-url/purl-spec
+                const purl = new packageurlJsExports.PackageURL('githubactions', action.owner, action.repo, action.resolvedVersion, null, null);
+                // Add package to cache
+                const pkg = packageCache.package(purl);
+                // Add as direct dependency since actions are directly referenced in workflows
+                manifest.addDirectDependency(pkg);
+                coreExports.debug(`Added dependency: ${action.owner}/${action.repo}@${action.resolvedVersion}`);
+            }
+            catch (error) {
+                if (error instanceof Error) {
+                    coreExports.warning(`Failed to add dependency for ${action.fullReference}: ${error.message}`);
+                }
+            }
+        }
+        return manifest;
+    }
 }
 
 /**
@@ -27274,20 +42930,56 @@ async function wait(milliseconds) {
  */
 async function run() {
     try {
-        const ms = coreExports.getInput('milliseconds');
-        // Debug logs are only output if the `ACTIONS_STEP_DEBUG` secret is true
-        coreExports.debug(`Waiting ${ms} milliseconds ...`);
-        // Log the current timestamp, wait, then log the new timestamp
-        coreExports.debug(new Date().toTimeString());
-        await wait(parseInt(ms, 10));
-        coreExports.debug(new Date().toTimeString());
-        // Set outputs for other workflow steps to use
-        coreExports.setOutput('time', new Date().toTimeString());
+        coreExports.startGroup('📘 Reading input values');
+        const token = coreExports.getInput('token', { required: true });
+        const workflowPath = coreExports.getInput('workflow-path') || '.github/workflows';
+        coreExports.info(`Workflow path: ${workflowPath}`);
+        coreExports.endGroup();
+        // Scan workflow files for action references
+        coreExports.startGroup('🔍 Scanning workflow files');
+        const scanner = new WorkflowScanner(workflowPath);
+        const actions = await scanner.scanWorkflows();
+        coreExports.info(`Found ${actions.length} GitHub Actions references`);
+        // Remove duplicates
+        const uniqueActions = Array.from(new Map(actions.map((a) => [a.fullReference, a])).values());
+        coreExports.info(`Found ${uniqueActions.length} unique GitHub Actions references`);
+        coreExports.endGroup();
+        if (uniqueActions.length === 0) {
+            coreExports.warning('No GitHub Actions found in workflow files');
+            return;
+        }
+        // Resolve action versions
+        coreExports.startGroup('🔧 Resolving action versions');
+        const resolver = new ActionResolver(token);
+        const resolvedActions = await Promise.all(uniqueActions.map((action) => resolver.resolveAction(action)));
+        coreExports.info(`Resolved ${resolvedActions.length} actions`);
+        coreExports.endGroup();
+        // Build dependency manifest
+        coreExports.startGroup('📦 Building dependency manifest');
+        const builder = new DependencyBuilder();
+        const manifest = builder.createManifest(resolvedActions, workflowPath);
+        coreExports.endGroup();
+        // Submit to Dependency Submission API
+        coreExports.startGroup('📤 Submitting to Dependency Submission API');
+        const snapshot = new l({
+            name: 'actions-dependency-submission',
+            url: 'https://github.com/jessehouwing/actions-dependency-submission',
+            version: '1.0.0'
+        }, githubExports.context, {
+            correlator: `${githubExports.context.job}-github-actions`,
+            id: githubExports.context.runId.toString()
+        });
+        snapshot.addManifest(manifest);
+        await L(snapshot);
+        coreExports.info('✅ Successfully submitted dependency snapshot');
+        coreExports.setOutput('snapshot-id', githubExports.context.runId.toString());
+        coreExports.endGroup();
     }
     catch (error) {
         // Fail the workflow run if an error occurs
-        if (error instanceof Error)
+        if (error instanceof Error) {
             coreExports.setFailed(error.message);
+        }
     }
 }
 

@@ -1,76 +1,80 @@
-# Create a GitHub Action Using TypeScript
+# GitHub Actions Dependency Submission
 
-![Linter](https://github.com/actions/typescript-action/actions/workflows/linter.yml/badge.svg)
-![CI](https://github.com/actions/typescript-action/actions/workflows/ci.yml/badge.svg)
-![Check dist/](https://github.com/actions/typescript-action/actions/workflows/check-dist.yml/badge.svg)
-![CodeQL](https://github.com/actions/typescript-action/actions/workflows/codeql-analysis.yml/badge.svg)
-![Coverage](./badges/coverage.svg)
+A GitHub Action that scans your repository's workflow files and submits GitHub Actions dependencies to the Dependency Submission API. This action helps you track and manage dependencies on GitHub Actions used in your workflows, enabling Dependabot alerts and security scanning for action versions.
 
-Use this template to bootstrap the creation of a TypeScript action. :rocket:
+## Features
 
-This template includes compilation support, tests, a validation workflow,
-publishing, and versioning guidance.
+- 🔍 Scans `.github/workflows` directory for workflow files
+- 🔧 Resolves GitHub Actions to their full semantic versions
+- 📦 Handles partial versions (e.g., `v1` → `v1.2.3`)
+- 🔐 Resolves SHA references to version tags when available
+- 📤 Submits dependencies via GitHub's Dependency Submission API
+- ✅ Enables Dependabot alerts for outdated or vulnerable actions
 
-If you are new, there's also a simpler introduction in the
-[Hello world JavaScript action repository](https://github.com/actions/hello-world-javascript-action).
+## Usage
 
-## Create Your Own Action
+Add this action to your workflow to automatically submit GitHub Actions dependencies:
 
-To create your own action, you can use this repository as a template! Just
-follow the below instructions:
+```yaml
+name: Submit Dependencies
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
 
-1. Click the **Use this template** button at the top of the repository
-1. Select **Create a new repository**
-1. Select an owner and name for your new repository
-1. Click **Create repository**
-1. Clone your new repository
+permissions:
+  contents: write # Required for Dependency Submission API
 
-> [!IMPORTANT]
->
-> Make sure to remove or update the [`CODEOWNERS`](./CODEOWNERS) file! For
-> details on how to use this file, see
-> [About code owners](https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/customizing-your-repository/about-code-owners).
+jobs:
+  submit-dependencies:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
-## Initial Setup
+      - name: Submit GitHub Actions dependencies
+        uses: jessehouwing/actions-dependency-submission@v1
+        with:
+          token: ${{ github.token }}
+```
 
-After you've cloned the repository to your local machine or codespace, you'll
-need to perform some initial setup steps before you can develop your action.
+## Inputs
 
-> [!NOTE]
->
-> You'll need to have a reasonably modern version of
-> [Node.js](https://nodejs.org) handy (20.x or later should work!). If you are
-> using a version manager like [`nodenv`](https://github.com/nodenv/nodenv) or
-> [`fnm`](https://github.com/Schniz/fnm), this template has a `.node-version`
-> file at the root of the repository that can be used to automatically switch to
-> the correct version when you `cd` into the repository. Additionally, this
-> `.node-version` file is used by GitHub Actions in any `actions/setup-node`
-> actions.
+| Input | Description | Required | Default |
+|-------|-------------|----------|---------|
+| `token` | GitHub Personal Access Token (PAT). Defaults to PAT provided by Action runner | No | `${{ github.token }}` |
+| `workflow-path` | Path to the .github/workflows directory | No | `.github/workflows` |
 
-1. :hammer_and_wrench: Install the dependencies
+## Outputs
 
-   ```bash
-   npm install
-   ```
+| Output | Description |
+|--------|-------------|
+| `snapshot-id` | The ID of the submitted dependency snapshot |
 
-1. :building_construction: Package the TypeScript for distribution
+## How It Works
 
-   ```bash
-   npm run bundle
-   ```
+1. **Scans Workflow Files**: The action reads all `.yml` and `.yaml` files in your `.github/workflows` directory
+2. **Extracts Action References**: Parses each workflow file to find `uses:` statements that reference GitHub Actions
+3. **Resolves Versions**: 
+   - Full semantic versions (e.g., `v1.2.3`) are used as-is
+   - Partial versions (e.g., `v1`, `v2.1`) are resolved to the latest matching full version
+   - SHA references are resolved to version tags when available
+4. **Builds Manifest**: Creates a dependency manifest using the Package URL (PURL) format
+5. **Submits to API**: Sends the manifest to GitHub's Dependency Submission API
 
-1. :white_check_mark: Run the tests
+## Supported Action Reference Formats
 
-   ```bash
-   $ npm test
+- `owner/repo@v1.2.3` - Full semantic version (used as-is)
+- `owner/repo@v1` - Partial version (resolved to latest v1.x.x)
+- `owner/repo@abc123...` - SHA (resolved to version tag if available)
 
-   PASS  ./index.test.js
-     ✓ throws invalid number (3ms)
-     ✓ wait 500 ms (504ms)
-     ✓ test runs (95ms)
+## Benefits
 
-   ...
-   ```
+- 📊 **Dependency Graph**: View all GitHub Actions dependencies in your repository's Insights → Dependency graph
+- 🔔 **Dependabot Alerts**: Receive alerts when actions you depend on have security vulnerabilities
+- 🔄 **Automated Updates**: Enable Dependabot to automatically create PRs for action updates
+- 🔒 **Security**: Track which versions of actions are being used across your workflows
 
 ## Update the Action Metadata
 

@@ -1,23 +1,32 @@
-name: The name of your action here
-description: Provide a description here
-author: Your name or organization here
+name: GitHub Actions Dependency Submission
+description:
+  Submits GitHub Actions dependencies from workflow files to the Dependency
+  Submission API
+author: Jesse Houwing
 
 # Add your action's branding here. This will appear on the GitHub Marketplace.
 branding:
-  icon: heart
-  color: red
+  icon: check-circle
+  color: blue
 
 # Define your inputs here.
 inputs:
-  milliseconds:
-    description: Your input description here
-    required: true
-    default: '1000'
+  token:
+    description:
+      'GitHub Personal Access Token (PAT). Defaults to PAT provided by Action
+      runner'
+    required: false
+    default: ${{ github.token }}
+  workflow-path:
+    description:
+      'Path to the .github/workflows directory. Defaults to .github/workflows'
+    required: false
+    default: '.github/workflows'
 
 # Define your outputs here.
 outputs:
-  time:
-    description: Your output description here
+  snapshot-id:
+    description: 'The ID of the submitted dependency snapshot'
 
 runs:
   using: node24
