@@ -41304,8 +41304,8 @@ class ActionResolver {
      */
     async resolveShaToVersion(owner, repo, sha) {
         try {
-            // Get all tags for the repository
-            const { data: tags } = await this.octokit.rest.repos.listTags({
+            // Get all tags for the repository with pagination
+            const tags = await this.octokit.paginate(this.octokit.rest.repos.listTags, {
                 owner,
                 repo,
                 per_page: 100
@@ -41333,8 +41333,8 @@ class ActionResolver {
      */
     async resolvePartialVersion(owner, repo, partialVersion) {
         try {
-            // Get all tags for the repository
-            const { data: tags } = await this.octokit.rest.repos.listTags({
+            // Get all tags for the repository with pagination
+            const tags = await this.octokit.paginate(this.octokit.rest.repos.listTags, {
                 owner,
                 repo,
                 per_page: 100

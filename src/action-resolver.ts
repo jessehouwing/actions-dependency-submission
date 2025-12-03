@@ -93,12 +93,15 @@ export class ActionResolver {
     sha: string
   ): Promise<string> {
     try {
-      // Get all tags for the repository
-      const { data: tags } = await this.octokit.rest.repos.listTags({
-        owner,
-        repo,
-        per_page: 100
-      })
+      // Get all tags for the repository with pagination
+      const tags = await this.octokit.paginate(
+        this.octokit.rest.repos.listTags,
+        {
+          owner,
+          repo,
+          per_page: 100
+        }
+      )
 
       // Find a tag that points to this commit
       for (const tag of tags) {
@@ -130,12 +133,15 @@ export class ActionResolver {
     partialVersion: string
   ): Promise<string> {
     try {
-      // Get all tags for the repository
-      const { data: tags } = await this.octokit.rest.repos.listTags({
-        owner,
-        repo,
-        per_page: 100
-      })
+      // Get all tags for the repository with pagination
+      const tags = await this.octokit.paginate(
+        this.octokit.rest.repos.listTags,
+        {
+          owner,
+          repo,
+          per_page: 100
+        }
+      )
 
       // Filter tags that match semantic versioning
       const versionTags = tags
