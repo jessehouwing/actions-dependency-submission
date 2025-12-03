@@ -49,7 +49,9 @@ describe('DependencySubmitter', () => {
       expect(call.sha).toBe('abc123')
       expect(call.ref).toBe('refs/heads/main')
 
-      const manifests = call.manifests['github-actions.yml'].resolved
+      const manifest = call.manifests['github-actions.yml']
+      expect(manifest.ecosystem).toBe('github-actions')
+      const manifests = manifest.resolved
       expect(Object.keys(manifests)).toContain('pkg:github/actions/checkout@v4')
     })
 
@@ -87,7 +89,9 @@ describe('DependencySubmitter', () => {
       const call =
         github.mockOctokit.rest.dependencyGraph.createRepositorySnapshot.mock
           .calls[0][0]
-      const manifests = call.manifests['github-actions.yml'].resolved
+      const manifest = call.manifests['github-actions.yml']
+      expect(manifest.ecosystem).toBe('github-actions')
+      const manifests = manifest.resolved
 
       expect(Object.keys(manifests)).toContain('pkg:github/myorg/checkout@v4')
       expect(Object.keys(manifests)).toContain('pkg:github/actions/checkout@v4')
@@ -143,7 +147,9 @@ describe('DependencySubmitter', () => {
       const call =
         github.mockOctokit.rest.dependencyGraph.createRepositorySnapshot.mock
           .calls[0][0]
-      const manifests = call.manifests['github-actions.yml'].resolved
+      const manifest = call.manifests['github-actions.yml']
+      expect(manifest.ecosystem).toBe('github-actions')
+      const manifests = manifest.resolved
 
       expect(Object.keys(manifests)).toContain(
         'pkg:github/actions/checkout@v4.1.0'

@@ -96,7 +96,9 @@ export class DependencySubmitter {
         manifests: {
           'github-actions.yml': {
             name: 'github-actions.yml',
-            resolved: manifests
+            resolved: manifests,
+            // @ts-expect-error - ecosystem is supported by the API but not yet in Octokit types
+            ecosystem: 'github-actions'
           }
         }
       })
