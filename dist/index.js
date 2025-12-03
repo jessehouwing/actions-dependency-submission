@@ -38468,9 +38468,11 @@ class ForkResolver {
     async resolveDependency(dependency) {
         // Resolve SHA to version if applicable
         let resolvedRef = dependency.ref;
+        let originalSha;
         if (this.isShaReference(dependency.ref)) {
             const versionTag = await this.resolveShaToBestVersion(dependency.owner, dependency.repo, dependency.ref);
             if (versionTag) {
+                originalSha = dependency.ref;
                 resolvedRef = versionTag;
                 coreExports.info(`Resolved SHA ${dependency.ref} to version ${versionTag} for ${dependency.owner}/${dependency.repo}`);
             }
@@ -38479,7 +38481,8 @@ class ForkResolver {
             owner: dependency.owner,
             repo: dependency.repo,
             ref: resolvedRef,
-            sourcePath: dependency.sourcePath
+            sourcePath: dependency.sourcePath,
+            originalSha
         };
         // Check if this dependency is from a fork organization
         if (!this.forkOrganizations.has(dependency.owner)) {
@@ -38765,23 +38768,69 @@ class DependencySubmitter {
                 dependenciesBySource.set(sourcePath, []);
             }
             const sourceManifests = dependenciesBySource.get(sourcePath);
-            // Add the forked repository
-            const forkedPurl = this.createPackageUrl(dep.owner, dep.repo, dep.ref);
-            sourceManifests.push({
-                package_url: forkedPurl,
-                relationship: 'direct',
-                scope: 'runtime'
-            });
-            dependencyCount++;
-            // Also add the original repository if it exists
-            if (dep.original) {
-                const originalPurl = this.createPackageUrl(dep.original.owner, dep.original.repo, dep.ref);
+            // When a SHA was resolved to a version, report both:
+            // - The SHA as a direct dependency
+            // - The version as an indirect dependency
+            if (dep.originalSha) {
+                // Add SHA as direct
+                const shaPurl = this.createPackageUrl(dep.owner, dep.repo, dep.originalSha);
                 sourceManifests.push({
-                    package_url: originalPurl,
+                    package_url: shaPurl,
                     relationship: 'direct',
                     scope: 'runtime'
                 });
                 dependencyCount++;
+                // Add version as indirect
+                const versionPurl = this.createPackageUrl(dep.owner, dep.repo, dep.ref);
+                sourceManifests.push({
+                    package_url: versionPurl,
+                    relationship: 'indirect',
+                    scope: 'runtime'
+                });
+                dependencyCount++;
+                coreExports.info(`Resolved SHA ${dep.originalSha} to version ${dep.ref} for ${dep.owner}/${dep.repo} - reporting both`);
+            }
+            else {
+                // No SHA resolution - add the dependency as direct
+                const purl = this.createPackageUrl(dep.owner, dep.repo, dep.ref);
+                sourceManifests.push({
+                    package_url: purl,
+                    relationship: 'direct',
+                    scope: 'runtime'
+                });
+                dependencyCount++;
+            }
+            // Also add the original repository if it exists
+            if (dep.original) {
+                // If we have an originalSha, add both SHA and version for the original too
+                if (dep.originalSha) {
+                    // Add SHA as direct
+                    const originalShaPurl = this.createPackageUrl(dep.original.owner, dep.original.repo, dep.originalSha);
+                    sourceManifests.push({
+                        package_url: originalShaPurl,
+                        relationship: 'direct',
+                        scope: 'runtime'
+                    });
+                    dependencyCount++;
+                    // Add version as indirect
+                    const originalVersionPurl = this.createPackageUrl(dep.original.owner, dep.original.repo, dep.ref);
+                    sourceManifests.push({
+                        package_url: originalVersionPurl,
+                        relationship: 'indirect',
+                        scope: 'runtime'
+                    });
+                    dependencyCount++;
+                }
+                else {
+                    // No SHA resolution - just add the original as direct
+                    const originalPurl = this.createPackageUrl(dep.original.owner, dep.original.repo, dep.ref);
+                    sourceManifests.push({
+                        package_url: originalPurl,
+                        relationship: 'direct',
+                        scope: 'runtime'
+                    });
+                    dependencyCount++;
+                }
                 coreExports.info(`Submitting both ${dep.owner}/${dep.repo} and original ${dep.original.owner}/${dep.original.repo}`);
             }
         }

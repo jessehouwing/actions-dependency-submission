@@ -10,6 +10,7 @@ export interface ResolvedDependency {
   repo: string
   ref: string
   sourcePath?: string
+  originalSha?: string
   original?: {
     owner: string
     repo: string
@@ -70,6 +71,7 @@ export class ForkResolver {
   ): Promise<ResolvedDependency> {
     // Resolve SHA to version if applicable
     let resolvedRef = dependency.ref
+    let originalSha: string | undefined
     if (this.isShaReference(dependency.ref)) {
       const versionTag = await this.resolveShaToBestVersion(
         dependency.owner,
@@ -77,6 +79,7 @@ export class ForkResolver {
         dependency.ref
       )
       if (versionTag) {
+        originalSha = dependency.ref
         resolvedRef = versionTag
         core.info(
           `Resolved SHA ${dependency.ref} to version ${versionTag} for ${dependency.owner}/${dependency.repo}`
@@ -88,7 +91,8 @@ export class ForkResolver {
       owner: dependency.owner,
       repo: dependency.repo,
       ref: resolvedRef,
-      sourcePath: dependency.sourcePath
+      sourcePath: dependency.sourcePath,
+      originalSha
     }
 
     // Check if this dependency is from a fork organization
