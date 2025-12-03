@@ -68,7 +68,7 @@ export class WorkflowScanner {
    * Extracts action references from a parsed workflow object
    */
   private extractActionsFromWorkflow(
-    workflow: any,
+    workflow: Record<string, unknown>,
     workflowFile: string
   ): ActionReference[] {
     const actions: ActionReference[] = []
@@ -79,10 +79,14 @@ export class WorkflowScanner {
 
     for (const [, job] of Object.entries(workflow.jobs)) {
       if (typeof job === 'object' && job !== null && 'steps' in job) {
-        const jobSteps = (job as any).steps
+        const jobSteps = (
+          job as Record<string, unknown> & {
+            steps: Array<Record<string, unknown>>
+          }
+        ).steps
         if (Array.isArray(jobSteps)) {
           for (const step of jobSteps) {
-            if (step && step.uses) {
+            if (step && step.uses && typeof step.uses === 'string') {
               const actionRef = this.parseActionReference(
                 step.uses,
                 workflowFile

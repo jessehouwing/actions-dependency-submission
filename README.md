@@ -1,6 +1,9 @@
 # GitHub Actions Dependency Submission
 
-A GitHub Action that scans your repository's workflow files and submits GitHub Actions dependencies to the Dependency Submission API. This action helps you track and manage dependencies on GitHub Actions used in your workflows, enabling Dependabot alerts and security scanning for action versions.
+A GitHub Action that scans your repository's workflow files and submits GitHub
+Actions dependencies to the Dependency Submission API. This action helps you
+track and manage dependencies on GitHub Actions used in your workflows, enabling
+Dependabot alerts and security scanning for action versions.
 
 ## Features
 
@@ -13,7 +16,8 @@ A GitHub Action that scans your repository's workflow files and submits GitHub A
 
 ## Usage
 
-Add this action to your workflow to automatically submit GitHub Actions dependencies:
+Add this action to your workflow to automatically submit GitHub Actions
+dependencies:
 
 ```yaml
 name: Submit Dependencies
@@ -41,26 +45,30 @@ jobs:
 
 ## Inputs
 
-| Input | Description | Required | Default |
-|-------|-------------|----------|---------|
-| `token` | GitHub Personal Access Token (PAT). Defaults to PAT provided by Action runner | No | `${{ github.token }}` |
-| `workflow-path` | Path to the .github/workflows directory | No | `.github/workflows` |
+| Input           | Description                                                                   | Required | Default               |
+| --------------- | ----------------------------------------------------------------------------- | -------- | --------------------- |
+| `token`         | GitHub Personal Access Token (PAT). Defaults to PAT provided by Action runner | No       | `${{ github.token }}` |
+| `workflow-path` | Path to the .github/workflows directory                                       | No       | `.github/workflows`   |
 
 ## Outputs
 
-| Output | Description |
-|--------|-------------|
+| Output        | Description                                 |
+| ------------- | ------------------------------------------- |
 | `snapshot-id` | The ID of the submitted dependency snapshot |
 
 ## How It Works
 
-1. **Scans Workflow Files**: The action reads all `.yml` and `.yaml` files in your `.github/workflows` directory
-2. **Extracts Action References**: Parses each workflow file to find `uses:` statements that reference GitHub Actions
-3. **Resolves Versions**: 
+1. **Scans Workflow Files**: The action reads all `.yml` and `.yaml` files in
+   your `.github/workflows` directory
+2. **Extracts Action References**: Parses each workflow file to find `uses:`
+   statements that reference GitHub Actions
+3. **Resolves Versions**:
    - Full semantic versions (e.g., `v1.2.3`) are used as-is
-   - Partial versions (e.g., `v1`, `v2.1`) are resolved to the latest matching full version
+   - Partial versions (e.g., `v1`, `v2.1`) are resolved to the latest matching
+     full version
    - SHA references are resolved to version tags when available
-4. **Builds Manifest**: Creates a dependency manifest using the Package URL (PURL) format
+4. **Builds Manifest**: Creates a dependency manifest using the Package URL
+   (PURL) format
 5. **Submits to API**: Sends the manifest to GitHub's Dependency Submission API
 
 ## Supported Action Reference Formats
@@ -71,12 +79,87 @@ jobs:
 
 ## Benefits
 
-- 📊 **Dependency Graph**: View all GitHub Actions dependencies in your repository's Insights → Dependency graph
-- 🔔 **Dependabot Alerts**: Receive alerts when actions you depend on have security vulnerabilities
-- 🔄 **Automated Updates**: Enable Dependabot to automatically create PRs for action updates
-- 🔒 **Security**: Track which versions of actions are being used across your workflows
+- 📊 **Dependency Graph**: View all GitHub Actions dependencies in your
+  repository's Insights → Dependency graph
+- 🔔 **Dependabot Alerts**: Receive alerts when actions you depend on have
+  security vulnerabilities
+- 🔄 **Automated Updates**: Enable Dependabot to automatically create PRs for
+  action updates
+- 🔒 **Security**: Track which versions of actions are being used across your
+  workflows
 
-## Update the Action Metadata
+## Example: Complete Workflow
+
+Here's a complete example workflow that runs on push to main and can be manually
+triggered:
+
+```yaml
+name: Submit Dependencies
+on:
+  push:
+    branches:
+      - main
+  schedule:
+    - cron: '0 0 * * 0' # Weekly on Sunday
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  submit-dependencies:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Submit GitHub Actions dependencies
+        uses: jessehouwing/actions-dependency-submission@v1
+```
+
+## Development
+
+### Prerequisites
+
+- Node.js 20.x or later
+- npm
+
+### Setup
+
+```bash
+# Install dependencies
+npm install
+
+# Run tests
+npm test
+
+# Format code
+npm run format:write
+
+# Lint code
+npm run lint
+
+# Build and package
+npm run bundle
+```
+
+## Contributing
+
+Contributions are welcome! Please feel free to submit a Pull Request.
+
+## License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
+for details.
+
+## Acknowledgments
+
+- Inspired by
+  [gradle-dependency-submission](https://github.com/mikepenz/gradle-dependency-submission)
+- Built with
+  [@github/dependency-submission-toolkit](https://github.com/github/dependency-submission-toolkit)
+
+## Update the Action Metadata (For Developers)
 
 The [`action.yml`](action.yml) file defines metadata about your action, such as
 input(s) and output(s). For details about this file, see

@@ -38478,7 +38478,7 @@ class WorkflowScanner {
                 const jobSteps = job.steps;
                 if (Array.isArray(jobSteps)) {
                     for (const step of jobSteps) {
-                        if (step && step.uses) {
+                        if (step && step.uses && typeof step.uses === 'string') {
                             const actionRef = this.parseActionReference(step.uses, workflowFile);
                             if (actionRef) {
                                 actions.push(actionRef);
