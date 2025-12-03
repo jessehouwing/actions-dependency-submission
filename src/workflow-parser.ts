@@ -80,7 +80,7 @@ export class WorkflowParser {
           }
         }
       }
-    } catch (error) {
+    } catch {
       // Skip files that can't be parsed
     }
 
