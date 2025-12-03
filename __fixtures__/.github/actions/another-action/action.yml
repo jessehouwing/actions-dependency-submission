@@ -1,0 +1,9 @@
+name: Another Composite Action
+description: Another test composite action
+
+runs:
+  using: composite
+  steps:
+    - uses: github/codeql-action/init@v2
+    - shell: bash
+      run: echo "Another action"

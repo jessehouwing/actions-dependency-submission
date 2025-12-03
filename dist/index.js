@@ -2,12 +2,12 @@ import require$$0 from 'os';
 import require$$0$1 from 'crypto';
 import * as fs from 'fs';
 import fs__default from 'fs';
-import * as require$$1 from 'path';
-import require$$1__default from 'path';
+import * as path from 'path';
+import path__default from 'path';
 import require$$2$1 from 'http';
 import require$$3$1 from 'https';
 import require$$0$4 from 'net';
-import require$$1$1 from 'tls';
+import require$$1 from 'tls';
 import require$$4$1 from 'events';
 import require$$0$3 from 'assert';
 import require$$0$2 from 'util';
@@ -20,8 +20,8 @@ import require$$0$6 from 'worker_threads';
 import require$$2$2 from 'perf_hooks';
 import require$$5 from 'util/types';
 import require$$4$2 from 'async_hooks';
-import require$$1$2 from 'console';
-import require$$1$3 from 'url';
+import require$$1$1 from 'console';
+import require$$1$2 from 'url';
 import require$$3$2 from 'zlib';
 import require$$6 from 'string_decoder';
 import require$$0$7 from 'diagnostics_channel';
@@ -405,7 +405,7 @@ var hasRequiredTunnel$1;
 function requireTunnel$1 () {
 	if (hasRequiredTunnel$1) return tunnel$1;
 	hasRequiredTunnel$1 = 1;
-	var tls = require$$1$1;
+	var tls = require$$1;
 	var http = require$$2$1;
 	var https = require$$3$1;
 	var events = require$$4$1;
@@ -8126,7 +8126,7 @@ function requireConnect () {
 	    let socket;
 	    if (protocol === 'https:') {
 	      if (!tls) {
-	        tls = require$$1$1;
+	        tls = require$$1;
 	      }
 	      servername = servername || options.servername || util.getServerName(host) || null;
 
@@ -14150,7 +14150,7 @@ function requirePendingInterceptorsFormatter () {
 	hasRequiredPendingInterceptorsFormatter = 1;
 
 	const { Transform } = require$$0$5;
-	const { Console } = require$$1$2;
+	const { Console } = require$$1$1;
 
 	/**
 	 * Gets the output of `console.table(…)` as a string.
@@ -14377,7 +14377,7 @@ function requireProxyAgent () {
 	hasRequiredProxyAgent = 1;
 
 	const { kProxy, kClose, kDestroy, kInterceptors } = requireSymbols$4();
-	const { URL } = require$$1$3;
+	const { URL } = require$$1$2;
 	const Agent = requireAgent();
 	const Pool = requirePool();
 	const DispatcherBase = requireDispatcherBase();
@@ -25548,7 +25548,7 @@ function requirePathUtils () {
 	};
 	Object.defineProperty(pathUtils, "__esModule", { value: true });
 	pathUtils.toPlatformPath = pathUtils.toWin32Path = pathUtils.toPosixPath = void 0;
-	const path = __importStar(require$$1__default);
+	const path = __importStar(path__default);
 	/**
 	 * toPosixPath converts the given path to the posix form. On Windows, \\ will be
 	 * replaced with /.
@@ -25635,7 +25635,7 @@ function requireIoUtil () {
 		Object.defineProperty(exports, "__esModule", { value: true });
 		exports.getCmdPath = exports.tryGetExecutablePath = exports.isRooted = exports.isDirectory = exports.exists = exports.READONLY = exports.UV_FS_O_EXLOCK = exports.IS_WINDOWS = exports.unlink = exports.symlink = exports.stat = exports.rmdir = exports.rm = exports.rename = exports.readlink = exports.readdir = exports.open = exports.mkdir = exports.lstat = exports.copyFile = exports.chmod = void 0;
 		const fs = __importStar(fs__default);
-		const path = __importStar(require$$1__default);
+		const path = __importStar(path__default);
 		_a = fs.promises
 		// export const {open} = 'fs'
 		, exports.chmod = _a.chmod, exports.copyFile = _a.copyFile, exports.lstat = _a.lstat, exports.mkdir = _a.mkdir, exports.open = _a.open, exports.readdir = _a.readdir, exports.readlink = _a.readlink, exports.rename = _a.rename, exports.rm = _a.rm, exports.rmdir = _a.rmdir, exports.stat = _a.stat, exports.symlink = _a.symlink, exports.unlink = _a.unlink;
@@ -25825,7 +25825,7 @@ function requireIo () {
 	Object.defineProperty(io, "__esModule", { value: true });
 	io.findInPath = io.which = io.mkdirP = io.rmRF = io.mv = io.cp = void 0;
 	const assert_1 = require$$0$3;
-	const path = __importStar(require$$1__default);
+	const path = __importStar(path__default);
 	const ioUtil = __importStar(requireIoUtil());
 	/**
 	 * Copies a file or folder.
@@ -26133,7 +26133,7 @@ function requireToolrunner () {
 	const os = __importStar(require$$0);
 	const events = __importStar(require$$4$1);
 	const child = __importStar(require$$2$3);
-	const path = __importStar(require$$1__default);
+	const path = __importStar(path__default);
 	const io = __importStar(requireIo());
 	const ioUtil = __importStar(requireIoUtil());
 	const timers_1 = require$$6$1;
@@ -26977,7 +26977,7 @@ function requireCore () {
 		const file_command_1 = requireFileCommand();
 		const utils_1 = requireUtils$3();
 		const os = __importStar(require$$0);
-		const path = __importStar(require$$1__default);
+		const path = __importStar(path__default);
 		const oidc_utils_1 = requireOidcUtils();
 		/**
 		 * The code to exit an action
@@ -38122,19 +38122,90 @@ class WorkflowParser {
      * Scans a directory for workflow files and extracts all action dependencies
      *
      * @param workflowDir Directory containing workflow files
+     * @param additionalPaths Additional paths to scan for composite actions
+     * @param repoRoot Root directory of the repository (required for additional paths and recursion)
      * @returns Array of action dependencies
      */
-    async parseWorkflowDirectory(workflowDir) {
+    async parseWorkflowDirectory(workflowDir, additionalPaths = [], repoRoot) {
         const dependencies = [];
-        if (!fs.existsSync(workflowDir)) {
-            return dependencies;
+        const processedFiles = new Set();
+        const filesToProcess = [];
+        // Process main workflow directory
+        if (fs.existsSync(workflowDir)) {
+            const files = fs.readdirSync(workflowDir);
+            const workflowFiles = files.filter((file) => file.endsWith('.yml') || file.endsWith('.yaml'));
+            for (const file of workflowFiles) {
+                const filePath = path.join(workflowDir, file);
+                filesToProcess.push(filePath);
+            }
         }
-        const files = fs.readdirSync(workflowDir);
-        const workflowFiles = files.filter((file) => file.endsWith('.yml') || file.endsWith('.yaml'));
-        for (const file of workflowFiles) {
-            const filePath = require$$1.join(workflowDir, file);
-            const deps = await this.parseWorkflowFile(filePath);
-            dependencies.push(...deps);
+        // Process all files in queue (including discovered local actions and callable workflows)
+        while (filesToProcess.length > 0) {
+            const filePath = filesToProcess.shift();
+            if (!filePath || processedFiles.has(filePath)) {
+                continue;
+            }
+            processedFiles.add(filePath);
+            const result = await this.parseWorkflowFile(filePath);
+            dependencies.push(...result.dependencies);
+            // Add local actions to processing queue if repoRoot is provided
+            if (repoRoot) {
+                for (const localAction of result.localActions) {
+                    const resolvedPath = this.resolveLocalPath(filePath, localAction, repoRoot);
+                    if (resolvedPath) {
+                        const actionYml = this.findActionYml(resolvedPath);
+                        if (actionYml &&
+                            !processedFiles.has(actionYml) &&
+                            this.isCompositeAction(actionYml)) {
+                            filesToProcess.push(actionYml);
+                        }
+                    }
+                }
+                // Add callable workflows to processing queue
+                for (const callableWorkflow of result.callableWorkflows) {
+                    const resolvedPath = this.resolveLocalPath(filePath, callableWorkflow, repoRoot);
+                    if (resolvedPath && !processedFiles.has(resolvedPath)) {
+                        filesToProcess.push(resolvedPath);
+                    }
+                }
+            }
+        }
+        // Scan additional paths for composite actions
+        if (repoRoot && additionalPaths.length > 0) {
+            for (const additionalPath of additionalPaths) {
+                const fullPath = path.join(repoRoot, additionalPath);
+                const files = this.findWorkflowFiles(fullPath);
+                for (const file of files) {
+                    if (processedFiles.has(file) || !this.isCompositeAction(file)) {
+                        continue;
+                    }
+                    processedFiles.add(file);
+                    const result = await this.parseWorkflowFile(file);
+                    dependencies.push(...result.dependencies);
+                    // Process nested local actions
+                    for (const localAction of result.localActions) {
+                        const resolvedPath = this.resolveLocalPath(file, localAction, repoRoot);
+                        if (resolvedPath) {
+                            const actionYml = this.findActionYml(resolvedPath);
+                            if (actionYml &&
+                                !processedFiles.has(actionYml) &&
+                                this.isCompositeAction(actionYml)) {
+                                filesToProcess.push(actionYml);
+                            }
+                        }
+                    }
+                }
+            }
+            // Continue processing any newly discovered files
+            while (filesToProcess.length > 0) {
+                const filePath = filesToProcess.shift();
+                if (!filePath || processedFiles.has(filePath)) {
+                    continue;
+                }
+                processedFiles.add(filePath);
+                const result = await this.parseWorkflowFile(filePath);
+                dependencies.push(...result.dependencies);
+            }
         }
         return dependencies;
     }
@@ -38142,58 +38213,208 @@ class WorkflowParser {
      * Parses a single workflow file to extract action dependencies
      *
      * @param filePath Path to workflow file
-     * @returns Array of action dependencies
+     * @returns Object with dependencies, local actions, and callable workflows
      */
     async parseWorkflowFile(filePath) {
         const dependencies = [];
+        const localActions = [];
+        const callableWorkflows = [];
         try {
             const content = fs.readFileSync(filePath, 'utf8');
             const workflow = parse(content);
-            if (workflow?.jobs) {
-                for (const job of Object.values(workflow.jobs)) {
-                    if (typeof job === 'object' && job !== null && 'steps' in job) {
-                        const steps = job.steps;
-                        if (Array.isArray(steps)) {
-                            for (const step of steps) {
-                                if (typeof step === 'object' &&
-                                    step !== null &&
-                                    'uses' in step) {
-                                    const uses = step.uses;
-                                    const dep = this.parseUsesString(uses);
-                                    if (dep) {
-                                        dependencies.push(dep);
-                                    }
-                                }
+            if (!workflow) {
+                return { dependencies, localActions, callableWorkflows };
+            }
+            // Check if this is a composite action
+            if (workflow.runs && workflow.runs.using === 'composite') {
+                this.extractFromCompositeAction(workflow, dependencies, localActions);
+            }
+            // Check if this is a workflow (has jobs)
+            else if (workflow.jobs) {
+                this.extractFromWorkflow(workflow, dependencies, localActions, callableWorkflows);
+            }
+        }
+        catch {
+            // Skip files that can't be parsed
+        }
+        return { dependencies, localActions, callableWorkflows };
+    }
+    /**
+     * Extract dependencies from a composite action
+     */
+    extractFromCompositeAction(
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    action, dependencies, localActions) {
+        if (!action.runs || !action.runs.steps) {
+            return;
+        }
+        for (const step of action.runs.steps) {
+            if (step.uses) {
+                const result = this.parseUsesString(step.uses);
+                if (result.isLocal && result.path) {
+                    localActions.push(result.path);
+                }
+                else if (result.dependency) {
+                    dependencies.push(result.dependency);
+                }
+            }
+        }
+    }
+    /**
+     * Extract dependencies from a workflow file
+     */
+    extractFromWorkflow(
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    workflow, dependencies, localActions, callableWorkflows) {
+        for (const jobName in workflow.jobs) {
+            const job = workflow.jobs[jobName];
+            // Check for callable workflows (uses at job level)
+            if (job.uses) {
+                const result = this.parseUsesString(job.uses);
+                if (result.isLocal && result.path) {
+                    callableWorkflows.push(result.path);
+                }
+                else if (result.dependency) {
+                    dependencies.push(result.dependency);
+                }
+            }
+            // Check steps for action dependencies
+            if (typeof job === 'object' && job !== null && 'steps' in job) {
+                const steps = job.steps;
+                if (Array.isArray(steps)) {
+                    for (const step of steps) {
+                        if (typeof step === 'object' && step !== null && 'uses' in step) {
+                            const uses = step.uses;
+                            const result = this.parseUsesString(uses);
+                            if (result.isLocal && result.path) {
+                                localActions.push(result.path);
+                            }
+                            else if (result.dependency) {
+                                dependencies.push(result.dependency);
                             }
                         }
                     }
                 }
             }
         }
-        catch {
-            // Skip files that can't be parsed
-        }
-        return dependencies;
     }
     /**
      * Parses a 'uses' string to extract dependency information
      *
      * @param uses The 'uses' string from a workflow step
-     * @returns Action dependency or null if not a valid GitHub Action reference
+     * @returns Object with dependency info or local path info
      */
     parseUsesString(uses) {
+        // Skip docker actions
+        if (uses.startsWith('docker://')) {
+            return {};
+        }
+        // Local action reference (starts with ./ or ../ or .\ or ..\)
+        if (uses.startsWith('./') ||
+            uses.startsWith('../') ||
+            uses.startsWith('.\\') ||
+            uses.startsWith('..\\')) {
+            return {
+                isLocal: true,
+                path: uses
+            };
+        }
         // Match pattern: owner/repo@ref or owner/repo/path@ref
         const match = uses.match(/^([^/]+)\/([^/@]+)(?:\/[^@]+)?@(.+)$/);
         if (!match) {
-            return null;
+            return {};
         }
         const [, owner, repo, ref] = match;
         return {
-            owner,
-            repo,
-            ref,
-            uses
+            dependency: {
+                owner,
+                repo,
+                ref,
+                uses
+            }
         };
+    }
+    /**
+     * Check if a file is a composite action
+     */
+    isCompositeAction(filePath) {
+        try {
+            const content = fs.readFileSync(filePath, 'utf8');
+            const parsed = parse(content);
+            return parsed?.runs?.using === 'composite';
+        }
+        catch {
+            return false;
+        }
+    }
+    /**
+     * Resolve a local path reference relative to a workflow file
+     */
+    resolveLocalPath(workflowFile, localPath, repoRoot) {
+        try {
+            const workflowDir = path.dirname(workflowFile);
+            const resolved = path.resolve(workflowDir, localPath);
+            // Ensure the path is within the repository
+            if (!resolved.startsWith(repoRoot)) {
+                return null;
+            }
+            return resolved;
+        }
+        catch {
+            return null;
+        }
+    }
+    /**
+     * Find action.yml or action.yaml in a directory
+     */
+    findActionYml(dirPath) {
+        try {
+            const stats = fs.statSync(dirPath);
+            // If it's a file and ends with .yml or .yaml, return it
+            if (stats.isFile() &&
+                (dirPath.endsWith('.yml') || dirPath.endsWith('.yaml'))) {
+                return dirPath;
+            }
+            // If it's a directory, look for action.yml or action.yaml
+            if (stats.isDirectory()) {
+                const actionYml = path.join(dirPath, 'action.yml');
+                const actionYaml = path.join(dirPath, 'action.yaml');
+                if (fs.existsSync(actionYml)) {
+                    return actionYml;
+                }
+                if (fs.existsSync(actionYaml)) {
+                    return actionYaml;
+                }
+            }
+        }
+        catch {
+            // Path doesn't exist
+        }
+        return null;
+    }
+    /**
+     * Recursively scan a directory for workflow files
+     */
+    findWorkflowFiles(dirPath) {
+        const files = [];
+        try {
+            const entries = fs.readdirSync(dirPath, { withFileTypes: true });
+            for (const entry of entries) {
+                const fullPath = path.join(dirPath, entry.name);
+                if (entry.isDirectory()) {
+                    const subFiles = this.findWorkflowFiles(fullPath);
+                    files.push(...subFiles);
+                }
+                else if (entry.isFile() &&
+                    (entry.name.endsWith('.yml') || entry.name.endsWith('.yaml'))) {
+                    files.push(fullPath);
+                }
+            }
+        }
+        catch {
+            // Directory doesn't exist or can't be read
+        }
+        return files;
     }
 }
 
@@ -38427,8 +38648,16 @@ async function run() {
         const workflowDirectory = coreExports.getInput('workflow-directory', {
             required: true
         });
+        const additionalPathsInput = coreExports.getInput('additional-paths');
         const forkOrgsInput = coreExports.getInput('fork-organizations');
         const forkRegexInput = coreExports.getInput('fork-regex');
+        // Parse additional paths (comma or newline separated)
+        const additionalPaths = additionalPathsInput
+            ? additionalPathsInput
+                .split(/[,\n]/)
+                .map((p) => p.trim())
+                .filter((p) => p.length > 0)
+            : [];
         // Parse fork organizations
         const forkOrganizations = forkOrgsInput
             ? forkOrgsInput
@@ -38453,13 +38682,18 @@ async function run() {
             }
         }
         coreExports.info(`Scanning workflow directory: ${workflowDirectory}`);
+        if (additionalPaths.length > 0) {
+            coreExports.info(`Additional paths: ${additionalPaths.join(', ')}`);
+        }
         coreExports.info(`Fork organizations: ${forkOrganizations.length > 0 ? forkOrganizations.join(', ') : 'none'}`);
         if (forkRegex) {
             coreExports.info(`Fork regex pattern: ${forkRegexInput}`);
         }
-        // Parse workflow files
+        // Get repository root for resolving local paths
+        const repoRoot = process.env.GITHUB_WORKSPACE || process.cwd();
+        // Parse workflow files (with composite actions and callable workflows support)
         const parser = new WorkflowParser();
-        const dependencies = await parser.parseWorkflowDirectory(workflowDirectory);
+        const dependencies = await parser.parseWorkflowDirectory(workflowDirectory, additionalPaths, repoRoot);
         coreExports.info(`Found ${dependencies.length} action dependencies`);
         if (dependencies.length === 0) {
             coreExports.warning('No action dependencies found in workflow files');

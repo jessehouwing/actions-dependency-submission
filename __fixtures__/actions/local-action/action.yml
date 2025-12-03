@@ -1,0 +1,13 @@
+name: Local Composite Action
+description: A test composite action
+
+runs:
+  using: composite
+  steps:
+    - uses: actions/cache@v3
+      with:
+        path: ~/.npm
+        key: npm-cache
+    - uses: ../another-action
+    - shell: bash
+      run: echo "Running composite action"

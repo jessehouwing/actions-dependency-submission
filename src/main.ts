@@ -17,8 +17,17 @@ export async function run(): Promise<void> {
     const workflowDirectory = core.getInput('workflow-directory', {
       required: true
     })
+    const additionalPathsInput = core.getInput('additional-paths')
     const forkOrgsInput = core.getInput('fork-organizations')
     const forkRegexInput = core.getInput('fork-regex')
+
+    // Parse additional paths (comma or newline separated)
+    const additionalPaths = additionalPathsInput
+      ? additionalPathsInput
+          .split(/[,\n]/)
+          .map((p) => p.trim())
+          .filter((p) => p.length > 0)
+      : []
 
     // Parse fork organizations
     const forkOrganizations = forkOrgsInput
@@ -48,6 +57,9 @@ export async function run(): Promise<void> {
     }
 
     core.info(`Scanning workflow directory: ${workflowDirectory}`)
+    if (additionalPaths.length > 0) {
+      core.info(`Additional paths: ${additionalPaths.join(', ')}`)
+    }
     core.info(
       `Fork organizations: ${forkOrganizations.length > 0 ? forkOrganizations.join(', ') : 'none'}`
     )
@@ -55,9 +67,16 @@ export async function run(): Promise<void> {
       core.info(`Fork regex pattern: ${forkRegexInput}`)
     }
 
-    // Parse workflow files
+    // Get repository root for resolving local paths
+    const repoRoot = process.env.GITHUB_WORKSPACE || process.cwd()
+
+    // Parse workflow files (with composite actions and callable workflows support)
     const parser = new WorkflowParser()
-    const dependencies = await parser.parseWorkflowDirectory(workflowDirectory)
+    const dependencies = await parser.parseWorkflowDirectory(
+      workflowDirectory,
+      additionalPaths,
+      repoRoot
+    )
     core.info(`Found ${dependencies.length} action dependencies`)
 
     if (dependencies.length === 0) {

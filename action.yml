@@ -1,7 +1,7 @@
 name: GitHub Actions Dependency Submission
 description:
   Submit GitHub Actions workflow dependencies to GitHub's Dependency Graph with
-  fork traversal support
+  support for composite actions, callable workflows, and fork traversal
 author: Jesse Houwing
 
 # Add your action's branding here. This will appear on the GitHub Marketplace.
@@ -12,7 +12,8 @@ branding:
 # Define your inputs here.
 inputs:
   token:
-    description: GitHub token for API access and dependency submission
+    description:
+      GitHub token with contents:write permission for dependency submission
     required: true
     default: ${{ github.token }}
   repository:
@@ -23,6 +24,12 @@ inputs:
     description: Directory containing workflow files to scan
     required: false
     default: .github/workflows
+  additional-paths:
+    description:
+      Additional paths to scan for composite actions and callable workflows
+      (comma-separated or newline-separated)
+    required: false
+    default: ''
   fork-organizations:
     description:
       Comma-separated list of organization names that contain forked actions

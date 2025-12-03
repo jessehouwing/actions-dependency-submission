@@ -13,6 +13,9 @@ dependencies to GitHub's Dependency Graph with fork traversal support.
 
 - 🔍 **Automatic Workflow Scanning**: Scans `.github/workflows` directory for
   GitHub Actions dependencies
+- 📦 **Composite Actions**: Recursively scans local composite actions for nested dependencies
+- 🔄 **Callable Workflows**: Detects and processes callable workflows referenced from workflows
+- 🎯 **Additional Paths**: Supports scanning custom directories for composite actions and callable workflows
 - 🔀 **Fork Traversal**: Detects forked actions and submits both the fork and
   original repository as dependencies
 - 🔗 **GitHub API Integration**: Uses GitHub's fork relationship to find
@@ -83,6 +86,26 @@ repository. In this example:
 - This is useful when forks follow a naming convention but don't have GitHub
   fork relationships
 
+### With Additional Paths for Composite Actions
+
+If you store composite actions or callable workflows in custom directories:
+
+```yaml
+- uses: jessehouwing/actions-dependency-submission@v1
+  with:
+    token: ${{ secrets.GITHUB_TOKEN }}
+    additional-paths: |
+      .github/actions
+      custom/workflows
+      shared/actions
+```
+
+This will:
+- Scan the specified directories for composite actions (identified by `runs.using: composite`)
+- Recursively extract dependencies from those composite actions
+- Include dependencies from callable workflows (identified by `on.workflow_call`)
+- Process local action references (e.g., `uses: ./local-action`) in workflows
+
 ## Inputs
 
 | Input                | Description                                                                                                   | Required | Default                    |
@@ -90,6 +113,7 @@ repository. In this example:
 | `token`              | GitHub token for API access and dependency submission                                                         | Yes      | `${{ github.token }}`      |
 | `repository`         | Repository to submit dependencies for (owner/repo format)                                                     | No       | `${{ github.repository }}` |
 | `workflow-directory` | Directory containing workflow files to scan                                                                   | No       | `.github/workflows`        |
+| `additional-paths`   | Additional paths to scan for composite actions and callable workflows (comma-separated or newline-separated)  | No       | -                          |
 | `fork-organizations` | Comma-separated list of organization names that contain forked actions                                        | No       | -                          |
 | `fork-regex`         | Regular expression pattern to transform forked repository names. Must contain named captures `org` and `repo` | No       | -                          |
 
@@ -105,15 +129,26 @@ repository. In this example:
    specified workflow directory
 2. **Dependency Extraction**: Parses each workflow file to extract `uses:`
    statements that reference GitHub Actions
-3. **Fork Detection**: For actions from organizations in the
+3. **Local Action Processing**: Detects local action references (e.g., `uses: ./local-action`):
+   - Resolves the path relative to the workflow file
+   - Checks if it's a composite action
+   - Recursively extracts dependencies from the composite action
+4. **Callable Workflow Processing**: Detects callable workflow references (e.g., `uses: ./workflow.yml` at job level):
+   - Processes the callable workflow
+   - Extracts all action dependencies from it
+5. **Additional Paths Scanning**: If specified, scans additional directories for composite actions:
+   - Finds all YAML files in the specified paths
+   - Processes composite actions found there
+   - Recursively extracts their dependencies
+6. **Fork Detection**: For actions from organizations in the
    `fork-organizations` list:
    - First tries to apply the `fork-regex` pattern if provided
    - Falls back to checking GitHub's fork relationship via the API
-4. **Dependency Submission**: Submits all dependencies to GitHub's Dependency
+7. **Dependency Submission**: Submits all dependencies to GitHub's Dependency
    Graph:
    - For forked actions, submits both the fork and original repository
    - Uses Package URL (purl) format: `pkg:github/{owner}/{repo}@{ref}`
-5. **Security Advisories**: GitHub automatically matches submitted dependencies
+8. **Security Advisories**: GitHub automatically matches submitted dependencies
    against its security advisory database
 
 ## Why Use This Action?

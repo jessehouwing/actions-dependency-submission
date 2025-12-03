@@ -1,0 +1,21 @@
+name: Test Workflow
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - uses: ./../actions/local-action
+      - run: echo "Hello World"
+
+  call-workflow:
+    uses: ./callable-workflow.yml
+    with:
+      version: v1
