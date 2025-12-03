@@ -50,7 +50,9 @@ describe('DependencySubmitter', () => {
       expect(call.ref).toBe('refs/heads/main')
 
       const manifests = call.manifests['github-actions.yml'].resolved
-      expect(Object.keys(manifests)).toContain('pkg:github/actions/checkout@v4')
+      expect(Object.keys(manifests)).toContain(
+        'pkg:githubactions/actions/checkout@v4'
+      )
     })
 
     it('Submits both fork and original repository', async () => {
@@ -89,8 +91,12 @@ describe('DependencySubmitter', () => {
           .calls[0][0]
       const manifests = call.manifests['github-actions.yml'].resolved
 
-      expect(Object.keys(manifests)).toContain('pkg:github/myorg/checkout@v4')
-      expect(Object.keys(manifests)).toContain('pkg:github/actions/checkout@v4')
+      expect(Object.keys(manifests)).toContain(
+        'pkg:githubactions/myorg/checkout@v4'
+      )
+      expect(Object.keys(manifests)).toContain(
+        'pkg:githubactions/actions/checkout@v4'
+      )
     })
 
     it('Handles submission errors', async () => {
@@ -146,7 +152,7 @@ describe('DependencySubmitter', () => {
       const manifests = call.manifests['github-actions.yml'].resolved
 
       expect(Object.keys(manifests)).toContain(
-        'pkg:github/actions/checkout@v4.1.0'
+        'pkg:githubactions/actions/checkout@v4.1.0'
       )
     })
 
