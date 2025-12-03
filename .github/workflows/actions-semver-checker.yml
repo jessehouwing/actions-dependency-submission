@@ -1,0 +1,28 @@
+name: Check SemVer
+
+on:
+  push:
+    branches: [ "main" ]
+    tags:
+      - '*'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  check-semver:
+    concurrency:
+      group: '${{ github.workflow }}'
+      cancel-in-progress: true
+      
+    runs-on: ubuntu-latest
+    
+    steps:
+      - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
+        with:
+          fetch-depth: 0
+
+      - uses: jessehouwing/actions-semver-checker@3cb8b94e8a9f14b89c86702e5c8c7c3d95559c5e # 1.0.7
+        with:
+          check-minor-version: true
