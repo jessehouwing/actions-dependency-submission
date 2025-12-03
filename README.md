@@ -13,9 +13,12 @@ dependencies to GitHub's Dependency Graph with fork traversal support.
 
 - 🔍 **Automatic Workflow Scanning**: Scans `.github/workflows` directory for
   GitHub Actions dependencies
-- 📦 **Composite Actions**: Recursively scans local composite actions for nested dependencies
-- 🔄 **Callable Workflows**: Detects and processes callable workflows referenced from workflows
-- 🎯 **Additional Paths**: Supports scanning custom directories for composite actions and callable workflows
+- 📦 **Composite Actions**: Recursively scans local composite actions for nested
+  dependencies
+- 🔄 **Callable Workflows**: Detects and processes callable workflows referenced
+  from workflows
+- 🎯 **Additional Paths**: Supports scanning custom directories for composite
+  actions and callable workflows
 - 🔀 **Fork Traversal**: Detects forked actions and submits both the fork and
   original repository as dependencies
 - 🔗 **GitHub API Integration**: Uses GitHub's fork relationship to find
@@ -101,9 +104,12 @@ If you store composite actions or callable workflows in custom directories:
 ```
 
 This will:
-- Scan the specified directories for composite actions (identified by `runs.using: composite`)
+
+- Scan the specified directories for composite actions (identified by
+  `runs.using: composite`)
 - Recursively extract dependencies from those composite actions
-- Include dependencies from callable workflows (identified by `on.workflow_call`)
+- Include dependencies from callable workflows (identified by
+  `on.workflow_call`)
 - Process local action references (e.g., `uses: ./local-action`) in workflows
 
 ## Inputs
@@ -129,14 +135,17 @@ This will:
    specified workflow directory
 2. **Dependency Extraction**: Parses each workflow file to extract `uses:`
    statements that reference GitHub Actions
-3. **Local Action Processing**: Detects local action references (e.g., `uses: ./local-action`):
+3. **Local Action Processing**: Detects local action references (e.g.,
+   `uses: ./local-action`):
    - Resolves the path relative to the workflow file
    - Checks if it's a composite action
    - Recursively extracts dependencies from the composite action
-4. **Callable Workflow Processing**: Detects callable workflow references (e.g., `uses: ./workflow.yml` at job level):
+4. **Callable Workflow Processing**: Detects callable workflow references (e.g.,
+   `uses: ./workflow.yml` at job level):
    - Processes the callable workflow
    - Extracts all action dependencies from it
-5. **Additional Paths Scanning**: If specified, scans additional directories for composite actions:
+5. **Additional Paths Scanning**: If specified, scans additional directories for
+   composite actions:
    - Finds all YAML files in the specified paths
    - Processes composite actions found there
    - Recursively extracts their dependencies

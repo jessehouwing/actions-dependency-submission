@@ -34,26 +34,36 @@ export class DependencySubmitter {
     dependencies: ResolvedDependency[]
   ): Promise<number> {
     const [owner, repo] = this.config.repository.split('/')
-    const manifests: Record<
+
+    // Group dependencies by source path
+    const dependenciesBySource = new Map<
       string,
       {
         package_url?: string
         relationship?: 'direct' | 'indirect'
         scope?: 'runtime' | 'development'
-      }
-    > = {}
+      }[]
+    >()
 
     let dependencyCount = 0
 
-    // Build dependency manifests
+    // Build dependency manifests grouped by source file
     for (const dep of dependencies) {
+      const sourcePath = dep.sourcePath || 'github-actions.yml'
+
+      if (!dependenciesBySource.has(sourcePath)) {
+        dependenciesBySource.set(sourcePath, [])
+      }
+
+      const sourceManifests = dependenciesBySource.get(sourcePath)!
+
       // Add the forked repository
       const forkedPurl = this.createPackageUrl(dep.owner, dep.repo, dep.ref)
-      manifests[forkedPurl] = {
+      sourceManifests.push({
         package_url: forkedPurl,
         relationship: 'direct',
         scope: 'runtime'
-      }
+      })
       dependencyCount++
 
       // Also add the original repository if it exists
@@ -63,15 +73,60 @@ export class DependencySubmitter {
           dep.original.repo,
           dep.ref
         )
-        manifests[originalPurl] = {
+        sourceManifests.push({
           package_url: originalPurl,
           relationship: 'direct',
           scope: 'runtime'
-        }
+        })
         dependencyCount++
         core.info(
           `Submitting both ${dep.owner}/${dep.repo} and original ${dep.original.owner}/${dep.original.repo}`
         )
+      }
+    }
+
+    // Convert grouped dependencies to manifest format
+    const manifests: Record<
+      string,
+      {
+        name: string
+        file?: {
+          source_location?: string
+        }
+        resolved: Record<
+          string,
+          {
+            package_url?: string
+            relationship?: 'direct' | 'indirect'
+            scope?: 'runtime' | 'development'
+          }
+        >
+      }
+    > = {}
+
+    for (const [sourcePath, deps] of dependenciesBySource.entries()) {
+      // Convert array to record keyed by package_url
+      const resolved: Record<
+        string,
+        {
+          package_url?: string
+          relationship?: 'direct' | 'indirect'
+          scope?: 'runtime' | 'development'
+        }
+      > = {}
+
+      for (const dep of deps) {
+        if (dep.package_url) {
+          resolved[dep.package_url] = dep
+        }
+      }
+
+      manifests[sourcePath] = {
+        name: sourcePath,
+        file: {
+          source_location: sourcePath
+        },
+        resolved
       }
     }
 
@@ -93,12 +148,7 @@ export class DependencySubmitter {
           url: 'https://github.com/jessehouwing/actions-dependency-submission'
         },
         scanned: new Date().toISOString(),
-        manifests: {
-          'github-actions.yml': {
-            name: 'github-actions.yml',
-            resolved: manifests
-          }
-        }
+        manifests
       })
       core.info('Dependencies submitted successfully')
     } catch (error) {

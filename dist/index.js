@@ -38146,7 +38146,7 @@ class WorkflowParser {
                 continue;
             }
             processedFiles.add(filePath);
-            const result = await this.parseWorkflowFile(filePath);
+            const result = await this.parseWorkflowFile(filePath, repoRoot);
             dependencies.push(...result.dependencies);
             // Add local actions to processing queue if repoRoot is provided
             if (repoRoot) {
@@ -38180,7 +38180,7 @@ class WorkflowParser {
                         continue;
                     }
                     processedFiles.add(file);
-                    const result = await this.parseWorkflowFile(file);
+                    const result = await this.parseWorkflowFile(file, repoRoot);
                     dependencies.push(...result.dependencies);
                     // Process nested local actions
                     for (const localAction of result.localActions) {
@@ -38203,7 +38203,7 @@ class WorkflowParser {
                     continue;
                 }
                 processedFiles.add(filePath);
-                const result = await this.parseWorkflowFile(filePath);
+                const result = await this.parseWorkflowFile(filePath, repoRoot);
                 dependencies.push(...result.dependencies);
             }
         }
@@ -38213,9 +38213,10 @@ class WorkflowParser {
      * Parses a single workflow file to extract action dependencies
      *
      * @param filePath Path to workflow file
+     * @param repoRoot Optional repository root for computing relative paths
      * @returns Object with dependencies, local actions, and callable workflows
      */
-    async parseWorkflowFile(filePath) {
+    async parseWorkflowFile(filePath, repoRoot) {
         const dependencies = [];
         const localActions = [];
         const callableWorkflows = [];
@@ -38225,13 +38226,17 @@ class WorkflowParser {
             if (!workflow) {
                 return { dependencies, localActions, callableWorkflows };
             }
+            // Compute relative path from repo root if available
+            const relativePath = repoRoot
+                ? path.relative(repoRoot, filePath)
+                : filePath;
             // Check if this is a composite action
             if (workflow.runs && workflow.runs.using === 'composite') {
-                this.extractFromCompositeAction(workflow, dependencies, localActions);
+                this.extractFromCompositeAction(workflow, dependencies, localActions, relativePath);
             }
             // Check if this is a workflow (has jobs)
             else if (workflow.jobs) {
-                this.extractFromWorkflow(workflow, dependencies, localActions, callableWorkflows);
+                this.extractFromWorkflow(workflow, dependencies, localActions, callableWorkflows, relativePath);
             }
         }
         catch {
@@ -38244,7 +38249,7 @@ class WorkflowParser {
      */
     extractFromCompositeAction(
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    action, dependencies, localActions) {
+    action, dependencies, localActions, sourcePath) {
         if (!action.runs || !action.runs.steps) {
             return;
         }
@@ -38255,7 +38260,10 @@ class WorkflowParser {
                     localActions.push(result.path);
                 }
                 else if (result.dependency) {
-                    dependencies.push(result.dependency);
+                    dependencies.push({
+                        ...result.dependency,
+                        sourcePath
+                    });
                 }
             }
         }
@@ -38265,7 +38273,7 @@ class WorkflowParser {
      */
     extractFromWorkflow(
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    workflow, dependencies, localActions, callableWorkflows) {
+    workflow, dependencies, localActions, callableWorkflows, sourcePath) {
         for (const jobName in workflow.jobs) {
             const job = workflow.jobs[jobName];
             // Check for callable workflows (uses at job level)
@@ -38275,7 +38283,10 @@ class WorkflowParser {
                     callableWorkflows.push(result.path);
                 }
                 else if (result.dependency) {
-                    dependencies.push(result.dependency);
+                    dependencies.push({
+                        ...result.dependency,
+                        sourcePath
+                    });
                 }
             }
             // Check steps for action dependencies
@@ -38290,7 +38301,10 @@ class WorkflowParser {
                                 localActions.push(result.path);
                             }
                             else if (result.dependency) {
-                                dependencies.push(result.dependency);
+                                dependencies.push({
+                                    ...result.dependency,
+                                    sourcePath
+                                });
                             }
                         }
                     }
@@ -38455,7 +38469,8 @@ class ForkResolver {
         const base = {
             owner: dependency.owner,
             repo: dependency.repo,
-            ref: dependency.ref
+            ref: dependency.ref,
+            sourcePath: dependency.sourcePath
         };
         // Check if this dependency is from a fork organization
         if (!this.forkOrganizations.has(dependency.owner)) {
@@ -38561,29 +38576,53 @@ class DependencySubmitter {
      */
     async submitDependencies(dependencies) {
         const [owner, repo] = this.config.repository.split('/');
-        const manifests = {};
+        // Group dependencies by source path
+        const dependenciesBySource = new Map();
         let dependencyCount = 0;
-        // Build dependency manifests
+        // Build dependency manifests grouped by source file
         for (const dep of dependencies) {
+            const sourcePath = dep.sourcePath || 'github-actions.yml';
+            if (!dependenciesBySource.has(sourcePath)) {
+                dependenciesBySource.set(sourcePath, []);
+            }
+            const sourceManifests = dependenciesBySource.get(sourcePath);
             // Add the forked repository
             const forkedPurl = this.createPackageUrl(dep.owner, dep.repo, dep.ref);
-            manifests[forkedPurl] = {
+            sourceManifests.push({
                 package_url: forkedPurl,
                 relationship: 'direct',
                 scope: 'runtime'
-            };
+            });
             dependencyCount++;
             // Also add the original repository if it exists
             if (dep.original) {
                 const originalPurl = this.createPackageUrl(dep.original.owner, dep.original.repo, dep.ref);
-                manifests[originalPurl] = {
+                sourceManifests.push({
                     package_url: originalPurl,
                     relationship: 'direct',
                     scope: 'runtime'
-                };
+                });
                 dependencyCount++;
                 coreExports.info(`Submitting both ${dep.owner}/${dep.repo} and original ${dep.original.owner}/${dep.original.repo}`);
             }
+        }
+        // Convert grouped dependencies to manifest format
+        const manifests = {};
+        for (const [sourcePath, deps] of dependenciesBySource.entries()) {
+            // Convert array to record keyed by package_url
+            const resolved = {};
+            for (const dep of deps) {
+                if (dep.package_url) {
+                    resolved[dep.package_url] = dep;
+                }
+            }
+            manifests[sourcePath] = {
+                name: sourcePath,
+                file: {
+                    source_location: sourcePath
+                },
+                resolved
+            };
         }
         try {
             coreExports.info(`Submitting ${dependencyCount} dependencies to GitHub`);
@@ -38603,12 +38642,7 @@ class DependencySubmitter {
                     url: 'https://github.com/jessehouwing/actions-dependency-submission'
                 },
                 scanned: new Date().toISOString(),
-                manifests: {
-                    'github-actions.yml': {
-                        name: 'github-actions.yml',
-                        resolved: manifests
-                    }
-                }
+                manifests
             });
             coreExports.info('Dependencies submitted successfully');
         }
@@ -38631,7 +38665,7 @@ class DependencySubmitter {
      */
     createPackageUrl(owner, repo, ref) {
         // Package URL format for GitHub Actions
-        return `pkg:github/${owner}/${repo}@${ref}`;
+        return `pkg:githubactions/${owner}/${repo}@${ref}`;
     }
 }
 

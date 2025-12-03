@@ -10,6 +10,7 @@ export interface ActionDependency {
   repo: string
   ref: string
   uses: string // Full 'uses' string from workflow
+  sourcePath?: string // Path to the workflow/action file where this dependency was found
 }
 
 /**
@@ -54,7 +55,7 @@ export class WorkflowParser {
       }
 
       processedFiles.add(filePath)
-      const result = await this.parseWorkflowFile(filePath)
+      const result = await this.parseWorkflowFile(filePath, repoRoot)
       dependencies.push(...result.dependencies)
 
       // Add local actions to processing queue if repoRoot is provided
@@ -103,7 +104,7 @@ export class WorkflowParser {
           }
 
           processedFiles.add(file)
-          const result = await this.parseWorkflowFile(file)
+          const result = await this.parseWorkflowFile(file, repoRoot)
           dependencies.push(...result.dependencies)
 
           // Process nested local actions
@@ -135,7 +136,7 @@ export class WorkflowParser {
         }
 
         processedFiles.add(filePath)
-        const result = await this.parseWorkflowFile(filePath)
+        const result = await this.parseWorkflowFile(filePath, repoRoot)
         dependencies.push(...result.dependencies)
       }
     }
@@ -147,9 +148,13 @@ export class WorkflowParser {
    * Parses a single workflow file to extract action dependencies
    *
    * @param filePath Path to workflow file
+   * @param repoRoot Optional repository root for computing relative paths
    * @returns Object with dependencies, local actions, and callable workflows
    */
-  async parseWorkflowFile(filePath: string): Promise<{
+  async parseWorkflowFile(
+    filePath: string,
+    repoRoot?: string
+  ): Promise<{
     dependencies: ActionDependency[]
     localActions: string[]
     callableWorkflows: string[]
@@ -166,9 +171,19 @@ export class WorkflowParser {
         return { dependencies, localActions, callableWorkflows }
       }
 
+      // Compute relative path from repo root if available
+      const relativePath = repoRoot
+        ? path.relative(repoRoot, filePath)
+        : filePath
+
       // Check if this is a composite action
       if (workflow.runs && workflow.runs.using === 'composite') {
-        this.extractFromCompositeAction(workflow, dependencies, localActions)
+        this.extractFromCompositeAction(
+          workflow,
+          dependencies,
+          localActions,
+          relativePath
+        )
       }
       // Check if this is a workflow (has jobs)
       else if (workflow.jobs) {
@@ -176,7 +191,8 @@ export class WorkflowParser {
           workflow,
           dependencies,
           localActions,
-          callableWorkflows
+          callableWorkflows,
+          relativePath
         )
       }
     } catch {
@@ -193,7 +209,8 @@ export class WorkflowParser {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     action: any,
     dependencies: ActionDependency[],
-    localActions: string[]
+    localActions: string[],
+    sourcePath: string
   ): void {
     if (!action.runs || !action.runs.steps) {
       return
@@ -205,7 +222,10 @@ export class WorkflowParser {
         if (result.isLocal && result.path) {
           localActions.push(result.path)
         } else if (result.dependency) {
-          dependencies.push(result.dependency)
+          dependencies.push({
+            ...result.dependency,
+            sourcePath
+          })
         }
       }
     }
@@ -219,7 +239,8 @@ export class WorkflowParser {
     workflow: any,
     dependencies: ActionDependency[],
     localActions: string[],
-    callableWorkflows: string[]
+    callableWorkflows: string[],
+    sourcePath: string
   ): void {
     for (const jobName in workflow.jobs) {
       const job = workflow.jobs[jobName]
@@ -230,7 +251,10 @@ export class WorkflowParser {
         if (result.isLocal && result.path) {
           callableWorkflows.push(result.path)
         } else if (result.dependency) {
-          dependencies.push(result.dependency)
+          dependencies.push({
+            ...result.dependency,
+            sourcePath
+          })
         }
       }
 
@@ -245,7 +269,10 @@ export class WorkflowParser {
               if (result.isLocal && result.path) {
                 localActions.push(result.path)
               } else if (result.dependency) {
-                dependencies.push(result.dependency)
+                dependencies.push({
+                  ...result.dependency,
+                  sourcePath
+                })
               }
             }
           }
