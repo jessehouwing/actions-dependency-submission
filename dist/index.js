@@ -38649,7 +38649,7 @@ class ForkResolver {
      * Selects the most specific version from matching tags
      *
      * @param tags Array of tags matching the same SHA
-     * @returns Most specific version with wildcards if needed
+     * @returns Most specific version with wildcards if needed, or undefined if no semver tags found
      */
     selectMostSpecificVersion(tags) {
         // Parse version tags (v1.2.3, v1.2, v1)
@@ -38668,8 +38668,8 @@ class ForkResolver {
         })
             .filter((v) => v !== null);
         if (versionTags.length === 0) {
-            // No semantic version tags found, return first tag name as-is
-            return tags[0].name;
+            // No semantic version tags found, return undefined to keep SHA unchanged
+            return undefined;
         }
         // Sort by specificity and version numbers
         versionTags.sort(this.compareVersionTags);

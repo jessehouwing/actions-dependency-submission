@@ -440,7 +440,7 @@ describe('ForkResolver', () => {
       expect(result[0].ref).toBe('8e8c483db84b4bee98b60c0593521ed34d9990e8')
     })
 
-    it('Returns non-semver tag name when no semver tags match SHA', async () => {
+    it('Returns SHA when no semver tags match SHA', async () => {
       github.mockOctokit.rest.repos.listTags.mockResolvedValueOnce({
         data: [
           {
@@ -471,7 +471,7 @@ describe('ForkResolver', () => {
       const result = await resolver.resolveDependencies(dependencies)
 
       expect(result).toHaveLength(1)
-      expect(result[0].ref).toBe('release-2024-01')
+      expect(result[0].ref).toBe('8e8c483db84b4bee98b60c0593521ed34d9990e8')
     })
   })
 })
