@@ -146,4 +146,58 @@ jobs:
 
     expect(core.setFailed).toHaveBeenCalledWith('Input error')
   })
+
+  it('Submits same action dependency for each workflow file that uses it', async () => {
+    // Create multiple workflow files that use the same action
+    const workflowFiles = [
+      'check-dist.yml',
+      'ci.yml',
+      'codeql-analysis.yml',
+      'licensed.yml',
+      'linter.yml'
+    ]
+
+    for (const file of workflowFiles) {
+      const workflowContent = `
+name: ${file.replace('.yml', '')}
+on: push
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+`
+      fs.writeFileSync(path.join(tempDir, file), workflowContent)
+    }
+
+    github.mockOctokit.rest.dependencyGraph.createRepositorySnapshot.mockResolvedValueOnce(
+      {}
+    )
+
+    await run()
+
+    // Should submit 5 dependencies (one for each file)
+    expect(core.setOutput).toHaveBeenCalledWith('dependency-count', 5)
+    expect(
+      github.mockOctokit.rest.dependencyGraph.createRepositorySnapshot
+    ).toHaveBeenCalledTimes(1)
+
+    // Verify that the snapshot includes separate manifests for each file
+    const call =
+      github.mockOctokit.rest.dependencyGraph.createRepositorySnapshot.mock
+        .calls[0][0]
+    const manifests = call.manifests
+
+    // Should have 5 manifests, one for each workflow file
+    expect(Object.keys(manifests)).toHaveLength(5)
+    for (const file of workflowFiles) {
+      // Find the manifest key that ends with the file name
+      const manifestKey = Object.keys(manifests).find((key) =>
+        key.endsWith(file)
+      )
+      expect(manifestKey).toBeDefined()
+      // Each manifest should have one dependency
+      expect(Object.keys(manifests[manifestKey!].resolved)).toHaveLength(1)
+    }
+  })
 })
