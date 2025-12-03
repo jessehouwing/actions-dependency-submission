@@ -85,17 +85,17 @@ describe('ForkResolver', () => {
 
     it('Resolves fork using regex pattern', async () => {
       const resolver = new ForkResolver({
-        forkOrganizations: ['myorg'],
-        forkRegex: /^(?<org>myorg)\/actions-(?<repo>.+)$/,
+        forkOrganizations: ['myenterprise'],
+        forkRegex: /^myenterprise\/(?<org>[^_]+)_(?<repo>.+)/,
         token: 'test-token'
       })
 
       const dependencies = [
         {
-          owner: 'myorg',
-          repo: 'actions-checkout',
+          owner: 'myenterprise',
+          repo: 'actions_checkout',
           ref: 'v4',
-          uses: 'myorg/actions-checkout@v4'
+          uses: 'myenterprise/actions_checkout@v4'
         }
       ]
 
@@ -103,7 +103,7 @@ describe('ForkResolver', () => {
 
       expect(result).toHaveLength(1)
       expect(result[0].original).toEqual({
-        owner: 'myorg',
+        owner: 'actions',
         repo: 'checkout'
       })
     })
@@ -222,6 +222,31 @@ describe('ForkResolver', () => {
       expect(result).toHaveLength(1)
       expect(result[0].original).toEqual({
         owner: 'enterprise',
+        repo: 'checkout'
+      })
+    })
+
+    it('Applies underscore-based naming convention regex', async () => {
+      const resolver = new ForkResolver({
+        forkOrganizations: ['myenterprise'],
+        forkRegex: /^myenterprise\/(?<org>[^_]+)_(?<repo>.+)/,
+        token: 'test-token'
+      })
+
+      const dependencies = [
+        {
+          owner: 'myenterprise',
+          repo: 'actions_checkout',
+          ref: 'v4',
+          uses: 'myenterprise/actions_checkout@v4'
+        }
+      ]
+
+      const result = await resolver.resolveDependencies(dependencies)
+
+      expect(result).toHaveLength(1)
+      expect(result[0].original).toEqual({
+        owner: 'actions',
         repo: 'checkout'
       })
     })

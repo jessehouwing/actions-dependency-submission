@@ -79,13 +79,13 @@ environments):
   with:
     token: ${{ secrets.GITHUB_TOKEN }}
     fork-organizations: 'myenterprise'
-    fork-regex: '^(?<org>myenterprise)/actions-(?<repo>.+)$'
+    fork-regex: '^myenterprise/(?<org>[^_]+)_(?<repo>.+)'
 ```
 
 The regex must contain named captures `org` and `repo` to identify the original
 repository. In this example:
 
-- `myenterprise/actions-checkout` would resolve to `myenterprise/checkout`
+- `myenterprise/actions_checkout` would resolve to `actions/checkout`
 - This is useful when forks follow a naming convention but don't have GitHub
   fork relationships
 
