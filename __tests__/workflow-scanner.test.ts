@@ -29,7 +29,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v3
-      - uses: user/custom-action@abc1234567890123456789012345678901234567
+      - uses: user/custom-action@abc1234567890123456789012345678901234567890
 `
     fs.writeFileSync(path.join(fixturesDir, 'test.yml'), workflowContent)
   })
