@@ -9,6 +9,7 @@ export interface ResolvedDependency {
   owner: string
   repo: string
   ref: string
+  sourcePath?: string
   original?: {
     owner: string
     repo: string
@@ -70,7 +71,8 @@ export class ForkResolver {
     const base: ResolvedDependency = {
       owner: dependency.owner,
       repo: dependency.repo,
-      ref: dependency.ref
+      ref: dependency.ref,
+      sourcePath: dependency.sourcePath
     }
 
     // Check if this dependency is from a fork organization

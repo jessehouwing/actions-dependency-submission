@@ -95,24 +95,27 @@ jobs:
       const result = await parser.parseWorkflowFile(workflowFile)
 
       expect(result.dependencies).toHaveLength(3)
-      expect(result.dependencies[0]).toEqual({
+      expect(result.dependencies[0]).toMatchObject({
         owner: 'actions',
         repo: 'checkout',
         ref: 'v4',
         uses: 'actions/checkout@v4'
       })
-      expect(result.dependencies[1]).toEqual({
+      expect(result.dependencies[0].sourcePath).toBeDefined()
+      expect(result.dependencies[1]).toMatchObject({
         owner: 'actions',
         repo: 'setup-node',
         ref: 'v4',
         uses: 'actions/setup-node@v4'
       })
-      expect(result.dependencies[2]).toEqual({
+      expect(result.dependencies[1].sourcePath).toBeDefined()
+      expect(result.dependencies[2]).toMatchObject({
         owner: 'myorg',
         repo: 'custom-action',
         ref: 'v1',
         uses: 'myorg/custom-action@v1'
       })
+      expect(result.dependencies[2].sourcePath).toBeDefined()
     })
 
     it('Extracts local action references', async () => {
@@ -179,12 +182,13 @@ runs:
       const result = await parser.parseWorkflowFile(actionFile)
 
       expect(result.dependencies).toHaveLength(1)
-      expect(result.dependencies[0]).toEqual({
+      expect(result.dependencies[0]).toMatchObject({
         owner: 'actions',
         repo: 'cache',
         ref: 'v3',
         uses: 'actions/cache@v3'
       })
+      expect(result.dependencies[0].sourcePath).toBeDefined()
       expect(result.localActions).toHaveLength(1)
       expect(result.localActions[0]).toBe('./another-action')
     })
@@ -229,18 +233,20 @@ jobs:
       const dependencies = await parser.parseWorkflowDirectory(tempDir)
 
       expect(dependencies).toHaveLength(2)
-      expect(dependencies[0]).toEqual({
+      expect(dependencies[0]).toMatchObject({
         owner: 'actions',
         repo: 'checkout',
         ref: 'v4',
         uses: 'actions/checkout@v4'
       })
-      expect(dependencies[1]).toEqual({
+      expect(dependencies[0].sourcePath).toBeDefined()
+      expect(dependencies[1]).toMatchObject({
         owner: 'actions',
         repo: 'setup-node',
         ref: 'v4',
         uses: 'actions/setup-node@v4'
       })
+      expect(dependencies[1].sourcePath).toBeDefined()
     })
 
     it('Handles non-existent directory', async () => {
@@ -294,12 +300,13 @@ runs:
 
       // Should find the dependency from the composite action
       expect(dependencies).toHaveLength(1)
-      expect(dependencies[0]).toEqual({
+      expect(dependencies[0]).toMatchObject({
         owner: 'actions',
         repo: 'cache',
         ref: 'v3',
         uses: 'actions/cache@v3'
       })
+      expect(dependencies[0].sourcePath).toBeDefined()
     })
 
     it('Scans additional paths for composite actions', async () => {
