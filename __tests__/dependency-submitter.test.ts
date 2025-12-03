@@ -380,5 +380,131 @@ describe('DependencySubmitter', () => {
         'pkg:githubactions/actions/checkout@main'
       )
     })
+
+    it('Submits both SHA and version when SHA is resolved to version', async () => {
+      github.mockOctokit.rest.dependencyGraph.createRepositorySnapshot.mockResolvedValueOnce(
+        {}
+      )
+
+      const submitter = new DependencySubmitter({
+        token: 'test-token',
+        repository: 'test-owner/test-repo',
+        sha: 'abc123',
+        ref: 'refs/heads/main'
+      })
+
+      const dependencies = [
+        {
+          owner: 'jessehouwing',
+          repo: 'actions-semver-checker',
+          ref: 'v1.0.7',
+          originalSha: '3cb8b94e8a9f14b89c86702e5c8c7c3d95559c5e'
+        }
+      ]
+
+      const count = await submitter.submitDependencies(dependencies)
+
+      expect(count).toBe(2)
+      expect(
+        github.mockOctokit.rest.dependencyGraph.createRepositorySnapshot
+      ).toHaveBeenCalledTimes(1)
+
+      const call =
+        github.mockOctokit.rest.dependencyGraph.createRepositorySnapshot.mock
+          .calls[0][0]
+      const manifests = call.manifests['github-actions.yml'].resolved
+
+      // Should have both SHA (direct) and version (indirect)
+      expect(Object.keys(manifests)).toContain(
+        'pkg:githubactions/jessehouwing/actions-semver-checker@3cb8b94e8a9f14b89c86702e5c8c7c3d95559c5e'
+      )
+      expect(Object.keys(manifests)).toContain(
+        'pkg:githubactions/jessehouwing/actions-semver-checker@v1.0.7'
+      )
+
+      // Check relationships
+      expect(
+        manifests[
+          'pkg:githubactions/jessehouwing/actions-semver-checker@3cb8b94e8a9f14b89c86702e5c8c7c3d95559c5e'
+        ].relationship
+      ).toBe('direct')
+      expect(
+        manifests[
+          'pkg:githubactions/jessehouwing/actions-semver-checker@v1.0.7'
+        ].relationship
+      ).toBe('indirect')
+    })
+
+    it('Submits both SHA and version for fork and original when SHA is resolved', async () => {
+      github.mockOctokit.rest.dependencyGraph.createRepositorySnapshot.mockResolvedValueOnce(
+        {}
+      )
+
+      const submitter = new DependencySubmitter({
+        token: 'test-token',
+        repository: 'test-owner/test-repo',
+        sha: 'abc123',
+        ref: 'refs/heads/main'
+      })
+
+      const dependencies = [
+        {
+          owner: 'myorg',
+          repo: 'checkout',
+          ref: 'v4.1.0',
+          originalSha: '8e8c483db84b4bee98b60c0593521ed34d9990e8',
+          original: {
+            owner: 'actions',
+            repo: 'checkout'
+          }
+        }
+      ]
+
+      const count = await submitter.submitDependencies(dependencies)
+
+      expect(count).toBe(4)
+      expect(
+        github.mockOctokit.rest.dependencyGraph.createRepositorySnapshot
+      ).toHaveBeenCalledTimes(1)
+
+      const call =
+        github.mockOctokit.rest.dependencyGraph.createRepositorySnapshot.mock
+          .calls[0][0]
+      const manifests = call.manifests['github-actions.yml'].resolved
+
+      // Should have both SHA and version for fork
+      expect(Object.keys(manifests)).toContain(
+        'pkg:githubactions/myorg/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8'
+      )
+      expect(Object.keys(manifests)).toContain(
+        'pkg:githubactions/myorg/checkout@v4.1.0'
+      )
+
+      // Should have both SHA and version for original
+      expect(Object.keys(manifests)).toContain(
+        'pkg:githubactions/actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8'
+      )
+      expect(Object.keys(manifests)).toContain(
+        'pkg:githubactions/actions/checkout@v4.1.0'
+      )
+
+      // Check relationships - SHAs should be direct, versions should be indirect
+      expect(
+        manifests[
+          'pkg:githubactions/myorg/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8'
+        ].relationship
+      ).toBe('direct')
+      expect(
+        manifests['pkg:githubactions/myorg/checkout@v4.1.0'].relationship
+      ).toBe('indirect')
+      expect(
+        manifests[
+          'pkg:githubactions/actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8'
+        ].relationship
+      ).toBe('direct')
+      expect(
+        manifests['pkg:githubactions/actions/checkout@v4.1.0'].relationship
+      ).toBe('indirect')
+    })
   })
 })

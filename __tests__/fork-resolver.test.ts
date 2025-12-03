@@ -289,6 +289,9 @@ describe('ForkResolver', () => {
 
       expect(result).toHaveLength(1)
       expect(result[0].ref).toBe('v6.0.1')
+      expect(result[0].originalSha).toBe(
+        '8e8c483db84b4bee98b60c0593521ed34d9990e8'
+      )
     })
 
     it('Returns v6.*.* when only v6 tag matches SHA', async () => {
@@ -323,6 +326,9 @@ describe('ForkResolver', () => {
 
       expect(result).toHaveLength(1)
       expect(result[0].ref).toBe('v6.*.*')
+      expect(result[0].originalSha).toBe(
+        '8e8c483db84b4bee98b60c0593521ed34d9990e8'
+      )
     })
 
     it('Returns v6.0.* when only v6.0 tag matches SHA', async () => {
@@ -357,6 +363,9 @@ describe('ForkResolver', () => {
 
       expect(result).toHaveLength(1)
       expect(result[0].ref).toBe('v6.0.*')
+      expect(result[0].originalSha).toBe(
+        '8e8c483db84b4bee98b60c0593521ed34d9990e8'
+      )
     })
 
     it('Keeps SHA unchanged when no matching tags found', async () => {
@@ -387,6 +396,7 @@ describe('ForkResolver', () => {
 
       expect(result).toHaveLength(1)
       expect(result[0].ref).toBe('8e8c483db84b4bee98b60c0593521ed34d9990e8')
+      expect(result[0].originalSha).toBeUndefined()
     })
 
     it('Resolves SHA to version from parent repo for forks', async () => {
@@ -445,6 +455,9 @@ describe('ForkResolver', () => {
 
       expect(result).toHaveLength(1)
       expect(result[0].ref).toBe('v6.0.1')
+      expect(result[0].originalSha).toBe(
+        '8e8c483db84b4bee98b60c0593521ed34d9990e8'
+      )
       expect(result[0].original).toEqual({
         owner: 'actions',
         repo: 'checkout'
