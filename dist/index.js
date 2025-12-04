@@ -38758,19 +38758,20 @@ class DependencySubmitter {
      * @param ref Version/ref
      * @param originalSha Original SHA if resolved to version
      * @param manifests Array to add dependency entries to
+     * @param isTransitive Whether this is a transitive/indirect dependency (e.g., resolved from a fork)
      * @returns Number of dependencies added
      */
-    addDependencyEntries(owner, repo, ref, originalSha, manifests) {
+    addDependencyEntries(owner, repo, ref, originalSha, manifests, isTransitive = false) {
         let count = 0;
         // When a SHA was resolved to a version, report both:
-        // - The SHA as a direct dependency
+        // - The SHA as a direct dependency (or indirect if transitive)
         // - The version as an indirect dependency
         if (originalSha) {
-            // Add SHA as direct
+            // Add SHA - direct for fork, indirect for original repo
             const shaPurl = this.createPackageUrl(owner, repo, originalSha);
             manifests.push({
                 package_url: shaPurl,
-                relationship: 'direct',
+                relationship: isTransitive ? 'indirect' : 'direct',
                 scope: 'runtime'
             });
             count++;
@@ -38784,11 +38785,11 @@ class DependencySubmitter {
             count++;
         }
         else {
-            // No SHA resolution - add the dependency as direct
+            // No SHA resolution - add the dependency as direct or indirect based on isTransitive
             const purl = this.createPackageUrl(owner, repo, ref);
             manifests.push({
                 package_url: purl,
-                relationship: 'direct',
+                relationship: isTransitive ? 'indirect' : 'direct',
                 scope: 'runtime'
             });
             count++;
@@ -38820,7 +38821,8 @@ class DependencySubmitter {
             }
             // Also add the original repository if it exists
             if (dep.original) {
-                dependencyCount += this.addDependencyEntries(dep.original.owner, dep.original.repo, dep.ref, dep.originalSha, sourceManifests);
+                dependencyCount += this.addDependencyEntries(dep.original.owner, dep.original.repo, dep.ref, dep.originalSha, sourceManifests, true // Mark original repo dependencies as transitive/indirect
+                );
                 coreExports.info(`Submitting both ${dep.owner}/${dep.repo} and original ${dep.original.owner}/${dep.original.repo}`);
             }
         }

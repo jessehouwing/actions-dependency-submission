@@ -97,6 +97,14 @@ describe('DependencySubmitter', () => {
       expect(Object.keys(manifests)).toContain(
         'pkg:githubactions/actions/checkout@v4.*.*'
       )
+
+      // Check relationships - fork should be direct, original should be indirect
+      expect(
+        manifests['pkg:githubactions/myorg/checkout@v4.*.*'].relationship
+      ).toBe('direct')
+      expect(
+        manifests['pkg:githubactions/actions/checkout@v4.*.*'].relationship
+      ).toBe('indirect')
     })
 
     it('Handles submission errors', async () => {
@@ -488,7 +496,8 @@ describe('DependencySubmitter', () => {
         'pkg:githubactions/actions/checkout@v4.1.0'
       )
 
-      // Check relationships - SHAs should be direct, versions should be indirect
+      // Check relationships - Fork SHA is direct, fork version is indirect
+      // Original repo dependencies (both SHA and version) are indirect because they're transitive
       expect(
         manifests[
           'pkg:githubactions/myorg/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8'
@@ -501,7 +510,7 @@ describe('DependencySubmitter', () => {
         manifests[
           'pkg:githubactions/actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8'
         ].relationship
-      ).toBe('direct')
+      ).toBe('indirect')
       expect(
         manifests['pkg:githubactions/actions/checkout@v4.1.0'].relationship
       ).toBe('indirect')
