@@ -515,5 +515,59 @@ describe('DependencySubmitter', () => {
         manifests['pkg:githubactions/actions/checkout@v4.1.0'].relationship
       ).toBe('indirect')
     })
+
+    it('Marks original repository as indirect when no SHA resolution occurs', async () => {
+      github.mockOctokit.rest.dependencyGraph.createRepositorySnapshot.mockResolvedValueOnce(
+        {}
+      )
+
+      const submitter = new DependencySubmitter({
+        token: 'test-token',
+        repository: 'test-owner/test-repo',
+        sha: 'abc123',
+        ref: 'refs/heads/main'
+      })
+
+      const dependencies = [
+        {
+          owner: 'enterprise',
+          repo: 'actions-checkout',
+          ref: 'v4.2.1',
+          original: {
+            owner: 'actions',
+            repo: 'checkout'
+          }
+        }
+      ]
+
+      const count = await submitter.submitDependencies(dependencies)
+
+      expect(count).toBe(2)
+      expect(
+        github.mockOctokit.rest.dependencyGraph.createRepositorySnapshot
+      ).toHaveBeenCalledTimes(1)
+
+      const call =
+        github.mockOctokit.rest.dependencyGraph.createRepositorySnapshot.mock
+          .calls[0][0]
+      const manifests = call.manifests['github-actions.yml'].resolved
+
+      // Should have both fork and original
+      expect(Object.keys(manifests)).toContain(
+        'pkg:githubactions/enterprise/actions-checkout@v4.2.1'
+      )
+      expect(Object.keys(manifests)).toContain(
+        'pkg:githubactions/actions/checkout@v4.2.1'
+      )
+
+      // Fork should be direct, original should be indirect
+      expect(
+        manifests['pkg:githubactions/enterprise/actions-checkout@v4.2.1']
+          .relationship
+      ).toBe('direct')
+      expect(
+        manifests['pkg:githubactions/actions/checkout@v4.2.1'].relationship
+      ).toBe('indirect')
+    })
   })
 })
