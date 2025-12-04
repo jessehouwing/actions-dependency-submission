@@ -38439,6 +38439,10 @@ class WorkflowParser {
 }
 
 /**
+ * Public GitHub API base URL
+ */
+const PUBLIC_GITHUB_API_URL = 'https://api.github.com';
+/**
  * Resolves forked action dependencies to their original sources
  */
 class ForkResolver {
@@ -38454,7 +38458,7 @@ class ForkResolver {
         // Create a separate Octokit instance for public GitHub if token provided
         if (config.publicGitHubToken) {
             this.publicOctokit = githubExports.getOctokit(config.publicGitHubToken, {
-                baseUrl: 'https://api.github.com'
+                baseUrl: PUBLIC_GITHUB_API_URL
             });
         }
     }
