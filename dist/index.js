@@ -38445,10 +38445,61 @@ class ForkResolver {
     forkOrganizations;
     forkRegex;
     octokit;
+    publicOctokit;
+    publicRepoCache = new Map();
     constructor(config) {
         this.forkOrganizations = new Set(config.forkOrganizations);
         this.forkRegex = config.forkRegex;
         this.octokit = githubExports.getOctokit(config.token);
+        // Create a separate Octokit instance for public GitHub if token provided
+        if (config.publicGitHubToken) {
+            this.publicOctokit = githubExports.getOctokit(config.publicGitHubToken, {
+                baseUrl: 'https://api.github.com'
+            });
+        }
+    }
+    /**
+     * Determines which Octokit instance to use for a repository
+     * Caches the decision to avoid redundant checks
+     *
+     * @param owner Repository owner
+     * @param repo Repository name
+     * @returns The appropriate Octokit instance
+     */
+    async getOctokitForRepo(owner, repo) {
+        const repoKey = `${owner}/${repo}`;
+        // Check cache first
+        if (this.publicRepoCache.has(repoKey)) {
+            const usePublic = this.publicRepoCache.get(repoKey);
+            return usePublic && this.publicOctokit ? this.publicOctokit : this.octokit;
+        }
+        // Try local instance first
+        try {
+            await this.octokit.rest.repos.get({ owner, repo });
+            // Repository exists locally
+            this.publicRepoCache.set(repoKey, false);
+            coreExports.debug(`Repository ${repoKey} found on local instance`);
+            return this.octokit;
+        }
+        catch (error) {
+            coreExports.debug(`Repository ${repoKey} not found on local instance: ${error}`);
+        }
+        // Try public GitHub if available
+        if (this.publicOctokit) {
+            try {
+                await this.publicOctokit.rest.repos.get({ owner, repo });
+                // Repository exists on public GitHub
+                this.publicRepoCache.set(repoKey, true);
+                coreExports.info(`Repository ${repoKey} found on public GitHub - will use public API for all operations`);
+                return this.publicOctokit;
+            }
+            catch (error) {
+                coreExports.debug(`Repository ${repoKey} not found on public GitHub: ${error}`);
+            }
+        }
+        // Default to local instance
+        this.publicRepoCache.set(repoKey, false);
+        return this.octokit;
     }
     /**
      * Resolves dependencies, identifying forked actions and their originals
@@ -38518,22 +38569,65 @@ class ForkResolver {
                 return regexResult;
             }
         }
-        // Then, try to get fork information from GitHub API
-        try {
-            const { data } = await this.octokit.rest.repos.get({
-                owner,
-                repo
-            });
-            if (data.fork && data.parent) {
-                return {
-                    owner: data.parent.owner.login,
-                    repo: data.parent.name
-                };
+        // Try to get fork information using the appropriate instance
+        const repoInfo = await this.getRepoInfo(owner, repo);
+        if (repoInfo?.fork && repoInfo.parent) {
+            return {
+                owner: repoInfo.parent.owner.login,
+                repo: repoInfo.parent.name
+            };
+        }
+        return undefined;
+    }
+    /**
+     * Gets repository information and determines which API to use
+     *
+     * @param owner Repository owner
+     * @param repo Repository name
+     * @returns Repository data or undefined
+     */
+    async getRepoInfo(owner, repo) {
+        const repoKey = `${owner}/${repo}`;
+        // Check cache first to see if we've already determined where this repo lives
+        if (this.publicRepoCache.has(repoKey)) {
+            const usePublic = this.publicRepoCache.get(repoKey);
+            const octokit = usePublic && this.publicOctokit ? this.publicOctokit : this.octokit;
+            try {
+                const { data } = await octokit.rest.repos.get({ owner, repo });
+                return data;
+            }
+            catch (error) {
+                coreExports.debug(`Failed to fetch repository info for ${owner}/${repo}: ${error}`);
+                return undefined;
             }
         }
-        catch (error) {
-            coreExports.debug(`Failed to fetch repository info for ${owner}/${repo}: ${error}`);
+        // Try local instance first
+        try {
+            const { data } = await this.octokit.rest.repos.get({ owner, repo });
+            this.publicRepoCache.set(repoKey, false);
+            coreExports.debug(`Repository ${repoKey} found on local instance`);
+            return data;
         }
+        catch (error) {
+            coreExports.debug(`Repository ${repoKey} not found on local instance: ${error}`);
+        }
+        // Try public GitHub if available
+        if (this.publicOctokit) {
+            try {
+                const { data } = await this.publicOctokit.rest.repos.get({
+                    owner,
+                    repo
+                });
+                this.publicRepoCache.set(repoKey, true);
+                coreExports.info(`Repository ${repoKey} found on public GitHub - will use public API for all operations`);
+                return data;
+            }
+            catch (error) {
+                coreExports.debug(`Repository ${repoKey} not found on public GitHub: ${error}`);
+            }
+        }
+        // Default to local instance for cache purposes
+        this.publicRepoCache.set(repoKey, false);
         return undefined;
     }
     /**
@@ -38577,7 +38671,7 @@ class ForkResolver {
     async resolveShaToBestVersion(owner, repo, sha) {
         try {
             coreExports.debug(`Resolving SHA ${sha} for ${owner}/${repo}`);
-            // Fetch tags from the repository
+            // Fetch tags from the repository (using the appropriate Octokit instance)
             const tags = await this.fetchRepositoryTags(owner, repo);
             // Find tags that match this SHA
             const matchingTags = tags.filter((tag) => tag.sha === sha);
@@ -38621,13 +38715,15 @@ class ForkResolver {
      * @returns Array of tags with name and SHA
      */
     async fetchRepositoryTags(owner, repo) {
+        // Get the appropriate Octokit instance for this repository
+        const octokit = await this.getOctokitForRepo(owner, repo);
         try {
             const tags = [];
             let page = 1;
             const perPage = 100;
             // Fetch tags up to MAX_TAG_PAGES
             while (page <= ForkResolver.MAX_TAG_PAGES) {
-                const { data } = await this.octokit.rest.repos.listTags({
+                const { data } = await octokit.rest.repos.listTags({
                     owner,
                     repo,
                     per_page: perPage,
@@ -38941,6 +39037,7 @@ async function run() {
         const additionalPathsInput = coreExports.getInput('additional-paths');
         const forkOrgsInput = coreExports.getInput('fork-organizations');
         const forkRegexInput = coreExports.getInput('fork-regex');
+        const publicGitHubToken = coreExports.getInput('public-github-token');
         // Parse additional paths (comma or newline separated)
         const additionalPaths = additionalPathsInput
             ? additionalPathsInput
@@ -38979,6 +39076,9 @@ async function run() {
         if (forkRegex) {
             coreExports.info(`Fork regex pattern: ${forkRegexInput}`);
         }
+        if (publicGitHubToken) {
+            coreExports.info('Public GitHub token provided for EMU/DR/GHES support');
+        }
         // Get repository root for resolving local paths
         const repoRoot = process.env.GITHUB_WORKSPACE || process.cwd();
         // Parse workflow files (with composite actions and callable workflows support)
@@ -38994,7 +39094,8 @@ async function run() {
         const resolver = new ForkResolver({
             forkOrganizations,
             forkRegex,
-            token
+            token,
+            publicGitHubToken: publicGitHubToken || undefined
         });
         const resolvedDependencies = await resolver.resolveDependencies(dependencies);
         // Submit dependencies

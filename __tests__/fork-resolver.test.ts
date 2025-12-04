@@ -627,7 +627,7 @@ describe('ForkResolver', () => {
 
     it('Uses public GitHub for tags when repository found there', async () => {
       const testSha = 'abc1234567890abcdef1234567890abcdef12345'
-      
+
       // Local instance doesn't have the repo
       github.mockOctokit.rest.repos.get.mockRejectedValueOnce(
         new Error('Not Found')
@@ -670,12 +670,14 @@ describe('ForkResolver', () => {
       expect(result).toHaveLength(1)
       expect(result[0].ref).toBe('v4.1.0')
       expect(result[0].originalSha).toBe(testSha)
-      expect(github.mockPublicOctokit.rest.repos.listTags).toHaveBeenCalledWith({
-        owner: 'actions',
-        repo: 'checkout',
-        per_page: 100,
-        page: 1
-      })
+      expect(github.mockPublicOctokit.rest.repos.listTags).toHaveBeenCalledWith(
+        {
+          owner: 'actions',
+          repo: 'checkout',
+          per_page: 100,
+          page: 1
+        }
+      )
     })
 
     it('Caches the decision to use public GitHub', async () => {
