@@ -11,6 +11,11 @@ const { ForkResolver } = await import('../src/fork-resolver.js')
 describe('ForkResolver', () => {
   beforeEach(() => {
     jest.clearAllMocks()
+    // Reset mock implementations to clear mockResolvedValueOnce state
+    github.mockOctokit.rest.repos.get.mockReset()
+    github.mockOctokit.rest.repos.listTags.mockReset()
+    github.mockPublicOctokit.rest.repos.get.mockReset()
+    github.mockPublicOctokit.rest.repos.listTags.mockReset()
   })
 
   describe('resolveDependencies', () => {
@@ -400,12 +405,19 @@ describe('ForkResolver', () => {
     })
 
     it('Resolves SHA to version from parent repo for forks', async () => {
+      // First call to repos.get to determine where myorg/checkout lives (during fetchRepositoryTags)
+      github.mockOctokit.rest.repos.get.mockResolvedValueOnce({
+        data: {
+          fork: false
+        }
+      })
+
       // First call to listTags for fork repo (no matching tags)
       github.mockOctokit.rest.repos.listTags.mockResolvedValueOnce({
         data: []
       })
 
-      // First call to repos.get for fork info (during SHA resolution)
+      // Second call to repos.get for fork info (during findOriginalRepository in SHA resolution)
       github.mockOctokit.rest.repos.get.mockResolvedValueOnce({
         data: {
           fork: true,
@@ -413,6 +425,13 @@ describe('ForkResolver', () => {
             owner: { login: 'actions' },
             name: 'checkout'
           }
+        }
+      })
+
+      // Third call to repos.get to determine where actions/checkout lives
+      github.mockOctokit.rest.repos.get.mockResolvedValueOnce({
+        data: {
+          fork: false
         }
       })
 
@@ -426,7 +445,7 @@ describe('ForkResolver', () => {
         ]
       })
 
-      // Second call to repos.get for fork info (during fork resolution)
+      // Fourth call to repos.get for fork info (during fork resolution after SHA resolution)
       github.mockOctokit.rest.repos.get.mockResolvedValueOnce({
         data: {
           fork: true,
@@ -550,6 +569,154 @@ describe('ForkResolver', () => {
 
       expect(result).toHaveLength(1)
       expect(result[0].ref).toBe('8e8c483db84b4bee98b60c0593521ed34d9990e8')
+    })
+  })
+
+  describe('EMU/DR/GHES with public GitHub fallback', () => {
+    it('Falls back to public GitHub when repository not found locally', async () => {
+      // Local instance doesn't have the repo
+      github.mockOctokit.rest.repos.get.mockRejectedValueOnce(
+        new Error('Not Found')
+      )
+
+      // Public GitHub has the repo with fork info
+      github.mockPublicOctokit.rest.repos.get.mockResolvedValueOnce({
+        data: {
+          fork: true,
+          parent: {
+            owner: { login: 'actions' },
+            name: 'checkout'
+          }
+        }
+      })
+
+      // Second call to determine where parent lives (on local instance)
+      github.mockOctokit.rest.repos.get.mockResolvedValueOnce({
+        data: {
+          fork: false
+        }
+      })
+
+      const resolver = new ForkResolver({
+        forkOrganizations: ['enterprise'],
+        token: 'test-token',
+        publicGitHubToken: 'public-token'
+      })
+
+      const dependencies = [
+        {
+          owner: 'enterprise',
+          repo: 'checkout',
+          ref: 'v4',
+          uses: 'enterprise/checkout@v4'
+        }
+      ]
+
+      const result = await resolver.resolveDependencies(dependencies)
+
+      expect(result).toHaveLength(1)
+      expect(result[0].original).toEqual({
+        owner: 'actions',
+        repo: 'checkout'
+      })
+      expect(github.mockPublicOctokit.rest.repos.get).toHaveBeenCalledWith({
+        owner: 'enterprise',
+        repo: 'checkout'
+      })
+    })
+
+    it('Uses public GitHub for tags when repository found there', async () => {
+      const testSha = 'abc1234567890abcdef1234567890abcdef12345'
+      
+      // Local instance doesn't have the repo
+      github.mockOctokit.rest.repos.get.mockRejectedValueOnce(
+        new Error('Not Found')
+      )
+
+      // Public GitHub has the repo
+      github.mockPublicOctokit.rest.repos.get.mockResolvedValueOnce({
+        data: {
+          fork: false
+        }
+      })
+
+      // Public GitHub has tags matching the SHA
+      github.mockPublicOctokit.rest.repos.listTags.mockResolvedValueOnce({
+        data: [
+          {
+            name: 'v4.1.0',
+            commit: { sha: testSha }
+          }
+        ]
+      })
+
+      const resolver = new ForkResolver({
+        forkOrganizations: [],
+        token: 'test-token',
+        publicGitHubToken: 'public-token'
+      })
+
+      const dependencies = [
+        {
+          owner: 'actions',
+          repo: 'checkout',
+          ref: testSha,
+          uses: `actions/checkout@${testSha}`
+        }
+      ]
+
+      const result = await resolver.resolveDependencies(dependencies)
+
+      expect(result).toHaveLength(1)
+      expect(result[0].ref).toBe('v4.1.0')
+      expect(result[0].originalSha).toBe(testSha)
+      expect(github.mockPublicOctokit.rest.repos.listTags).toHaveBeenCalledWith({
+        owner: 'actions',
+        repo: 'checkout',
+        per_page: 100,
+        page: 1
+      })
+    })
+
+    it('Caches the decision to use public GitHub', async () => {
+      // First call: Local instance doesn't have the repo
+      github.mockOctokit.rest.repos.get.mockRejectedValueOnce(
+        new Error('Not Found')
+      )
+
+      // First call: Public GitHub has the repo
+      github.mockPublicOctokit.rest.repos.get.mockResolvedValueOnce({
+        data: {
+          fork: false
+        }
+      })
+
+      // Public GitHub has tags (first call for SHA resolution)
+      github.mockPublicOctokit.rest.repos.listTags.mockResolvedValueOnce({
+        data: []
+      })
+
+      const resolver = new ForkResolver({
+        forkOrganizations: [],
+        token: 'test-token',
+        publicGitHubToken: 'public-token'
+      })
+
+      const dependencies = [
+        {
+          owner: 'actions',
+          repo: 'checkout',
+          ref: 'abc1234567890abcdef1234567890abcdef12345',
+          uses: 'actions/checkout@abc1234567890abcdef1234567890abcdef12345'
+        }
+      ]
+
+      await resolver.resolveDependencies(dependencies)
+
+      // Should only call local repos.get once (subsequent calls use cache)
+      expect(github.mockOctokit.rest.repos.get).toHaveBeenCalledTimes(1)
+      // Should call public repos.get once to determine location
+      expect(github.mockPublicOctokit.rest.repos.get).toHaveBeenCalledTimes(1)
     })
   })
 })

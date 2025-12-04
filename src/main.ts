@@ -20,6 +20,7 @@ export async function run(): Promise<void> {
     const additionalPathsInput = core.getInput('additional-paths')
     const forkOrgsInput = core.getInput('fork-organizations')
     const forkRegexInput = core.getInput('fork-regex')
+    const publicGitHubToken = core.getInput('public-github-token')
 
     // Parse additional paths (comma or newline separated)
     const additionalPaths = additionalPathsInput
@@ -66,6 +67,9 @@ export async function run(): Promise<void> {
     if (forkRegex) {
       core.info(`Fork regex pattern: ${forkRegexInput}`)
     }
+    if (publicGitHubToken) {
+      core.info('Public GitHub token provided for EMU/DR/GHES support')
+    }
 
     // Get repository root for resolving local paths
     const repoRoot = process.env.GITHUB_WORKSPACE || process.cwd()
@@ -89,7 +93,8 @@ export async function run(): Promise<void> {
     const resolver = new ForkResolver({
       forkOrganizations,
       forkRegex,
-      token
+      token,
+      publicGitHubToken: publicGitHubToken || undefined
     })
     const resolvedDependencies =
       await resolver.resolveDependencies(dependencies)
