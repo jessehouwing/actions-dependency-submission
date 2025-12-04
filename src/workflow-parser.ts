@@ -165,7 +165,7 @@ export class WorkflowParser {
 
     try {
       const content = fs.readFileSync(filePath, 'utf8')
-      const workflow = yaml.parse(content)
+      const workflow = yaml.parse(content, { merge: true })
 
       if (!workflow) {
         return { dependencies, localActions, callableWorkflows }
@@ -333,7 +333,7 @@ export class WorkflowParser {
   private isCompositeAction(filePath: string): boolean {
     try {
       const content = fs.readFileSync(filePath, 'utf8')
-      const parsed = yaml.parse(content)
+      const parsed = yaml.parse(content, { merge: true })
       return parsed?.runs?.using === 'composite'
     } catch {
       return false

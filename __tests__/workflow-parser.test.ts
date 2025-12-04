@@ -359,4 +359,168 @@ runs:
       ).toBeDefined()
     })
   })
+
+  describe('YAML anchors and aliases', () => {
+    it('Parses workflow with YAML anchor reference', async () => {
+      const workflowContent = `
+name: Test Anchors
+on: push
+
+jobs:
+  base-job: &base-job
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+  
+  test-job: *base-job
+`
+      const workflowFile = path.join(tempDir, 'anchor-test.yml')
+      fs.writeFileSync(workflowFile, workflowContent)
+
+      const result = await parser.parseWorkflowFile(workflowFile)
+
+      expect(result.dependencies).toHaveLength(4)
+      const checkoutDeps = result.dependencies.filter(
+        (d) => d.uses === 'actions/checkout@v4'
+      )
+      const nodeDeps = result.dependencies.filter(
+        (d) => d.uses === 'actions/setup-node@v4'
+      )
+      expect(checkoutDeps).toHaveLength(2)
+      expect(nodeDeps).toHaveLength(2)
+    })
+
+    it('Parses workflow with YAML merge key', async () => {
+      const workflowContent = `
+name: Test Merge Keys
+on: push
+
+jobs:
+  base-job: &base-job
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+  
+  extended-job:
+    <<: *base-job
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/cache@v3
+`
+      const workflowFile = path.join(tempDir, 'merge-test.yml')
+      fs.writeFileSync(workflowFile, workflowContent)
+
+      const result = await parser.parseWorkflowFile(workflowFile)
+
+      expect(result.dependencies).toHaveLength(4)
+      expect(result.dependencies[0]).toMatchObject({
+        owner: 'actions',
+        repo: 'checkout',
+        ref: 'v4'
+      })
+      expect(result.dependencies[1]).toMatchObject({
+        owner: 'actions',
+        repo: 'setup-node',
+        ref: 'v4'
+      })
+      expect(result.dependencies[2]).toMatchObject({
+        owner: 'actions',
+        repo: 'checkout',
+        ref: 'v4'
+      })
+      expect(result.dependencies[3]).toMatchObject({
+        owner: 'actions',
+        repo: 'cache',
+        ref: 'v3'
+      })
+    })
+
+    it('Parses composite action with YAML anchors', async () => {
+      const actionContent = `
+name: Test Action with Anchors
+description: Test composite action with anchors
+runs:
+  using: composite
+  steps: &common-steps
+    - uses: actions/checkout@v4
+    - uses: actions/setup-node@v4
+
+extra-steps: *common-steps
+`
+      const actionFile = path.join(tempDir, 'action-anchor.yml')
+      fs.writeFileSync(actionFile, actionContent)
+
+      const result = await parser.parseWorkflowFile(actionFile)
+
+      expect(result.dependencies).toHaveLength(2)
+      expect(result.dependencies[0]).toMatchObject({
+        owner: 'actions',
+        repo: 'checkout',
+        ref: 'v4'
+      })
+      expect(result.dependencies[1]).toMatchObject({
+        owner: 'actions',
+        repo: 'setup-node',
+        ref: 'v4'
+      })
+    })
+
+    it('Handles complex nested YAML anchors', async () => {
+      const workflowContent = `
+name: Complex Anchors
+on: push
+
+x-default-steps: &default-steps
+  - uses: actions/checkout@v4
+
+x-node-setup: &node-setup
+  - uses: actions/setup-node@v4
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - *default-steps
+      - *node-setup
+      - uses: actions/cache@v3
+`
+      const workflowFile = path.join(tempDir, 'complex-anchor.yml')
+      fs.writeFileSync(workflowFile, workflowContent)
+
+      const result = await parser.parseWorkflowFile(workflowFile)
+
+      expect(result.dependencies.length).toBeGreaterThan(0)
+      const uses = result.dependencies.map((d) => d.uses)
+      expect(uses).toContain('actions/cache@v3')
+    })
+
+    it('Parses workflow with anchored job-level uses', async () => {
+      const workflowContent = `
+name: Callable Workflow Anchors
+on: push
+
+x-common-workflow: &common-workflow
+  uses: ./workflows/reusable.yml
+
+jobs:
+  job1: *common-workflow
+  
+  job2:
+    <<: *common-workflow
+    with:
+      param: value
+`
+      const workflowFile = path.join(tempDir, 'callable-anchor.yml')
+      fs.writeFileSync(workflowFile, workflowContent)
+
+      const result = await parser.parseWorkflowFile(workflowFile)
+
+      expect(result.callableWorkflows).toHaveLength(2)
+      expect(result.callableWorkflows[0]).toBe('./workflows/reusable.yml')
+      expect(result.callableWorkflows[1]).toBe('./workflows/reusable.yml')
+    })
+  })
 })

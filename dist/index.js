@@ -38101,6 +38101,12 @@ function parseDocument(source, options = {}) {
 }
 function parse(src, reviver, options) {
     let _reviver = undefined;
+    if (typeof reviver === 'function') {
+        _reviver = reviver;
+    }
+    else if (options === undefined && reviver && typeof reviver === 'object') {
+        options = reviver;
+    }
     const doc = parseDocument(src, options);
     if (!doc)
         return null;
@@ -38222,7 +38228,7 @@ class WorkflowParser {
         const callableWorkflows = [];
         try {
             const content = fs.readFileSync(filePath, 'utf8');
-            const workflow = parse(content);
+            const workflow = parse(content, { merge: true });
             if (!workflow) {
                 return { dependencies, localActions, callableWorkflows };
             }
@@ -38354,7 +38360,7 @@ class WorkflowParser {
     isCompositeAction(filePath) {
         try {
             const content = fs.readFileSync(filePath, 'utf8');
-            const parsed = parse(content);
+            const parsed = parse(content, { merge: true });
             return parsed?.runs?.using === 'composite';
         }
         catch {
