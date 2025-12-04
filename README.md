@@ -112,16 +112,49 @@ This will:
   `on.workflow_call`)
 - Process local action references (e.g., `uses: ./local-action`) in workflows
 
+### For EMU, GitHub-DR, or GHES Environments
+
+If you're running on GitHub Enterprise Managed Users (EMU), GitHub Disaster
+Recovery (GitHub-DR), or GitHub Enterprise Server (GHES), and your workflows
+reference actions from public GitHub that aren't mirrored to your instance:
+
+```yaml
+- uses: jessehouwing/actions-dependency-submission@v1
+  with:
+    token: ${{ secrets.GITHUB_TOKEN }}
+    fork-organizations: 'myenterprise'
+    public-github-token: ${{ secrets.PUBLIC_GITHUB_TOKEN }}
+```
+
+This configuration:
+
+- Uses `token` to access your local GitHub instance and submit dependencies
+- Uses `public-github-token` to look up actions on public GitHub
+  (api.github.com) when they're not found on your local instance
+- Automatically determines whether each action lives on your local instance or
+  public GitHub
+- Caches the location decision to minimize API calls
+- Resolves fork relationships and SHA-to-version mappings from the appropriate
+  source
+
+**Note:** The `public-github-token` should be a
+[Personal Access Token (Classic)](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens#personal-access-tokens-classic)
+or
+[Fine-grained Personal Access Token](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens#fine-grained-personal-access-tokens)
+with `public_repo` (read-only) scope for accessing public repositories on
+GitHub.com.
+
 ## Inputs
 
-| Input                | Description                                                                                                   | Required | Default                    |
-| -------------------- | ------------------------------------------------------------------------------------------------------------- | -------- | -------------------------- |
-| `token`              | GitHub token for API access and dependency submission                                                         | Yes      | `${{ github.token }}`      |
-| `repository`         | Repository to submit dependencies for (owner/repo format)                                                     | No       | `${{ github.repository }}` |
-| `workflow-directory` | Directory containing workflow files to scan                                                                   | No       | `.github/workflows`        |
-| `additional-paths`   | Additional paths to scan for composite actions and callable workflows (comma-separated or newline-separated)  | No       | -                          |
-| `fork-organizations` | Comma-separated list of organization names that contain forked actions                                        | No       | -                          |
-| `fork-regex`         | Regular expression pattern to transform forked repository names. Must contain named captures `org` and `repo` | No       | -                          |
+| Input                 | Description                                                                                                                                      | Required | Default                    |
+| --------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------ | -------- | -------------------------- |
+| `token`               | GitHub token for API access and dependency submission                                                                                            | Yes      | `${{ github.token }}`      |
+| `repository`          | Repository to submit dependencies for (owner/repo format)                                                                                        | No       | `${{ github.repository }}` |
+| `workflow-directory`  | Directory containing workflow files to scan                                                                                                      | No       | `.github/workflows`        |
+| `additional-paths`    | Additional paths to scan for composite actions and callable workflows (comma-separated or newline-separated)                                     | No       | -                          |
+| `fork-organizations`  | Comma-separated list of organization names that contain forked actions                                                                           | No       | -                          |
+| `fork-regex`          | Regular expression pattern to transform forked repository names. Must contain named captures `org` and `repo`                                    | No       | -                          |
+| `public-github-token` | GitHub token for accessing public GitHub (api.github.com) when running on EMU, GitHub-DR, or GHES. Used to look up actions not on local instance | No       | -                          |
 
 ## Outputs
 
@@ -153,11 +186,19 @@ This will:
    `fork-organizations` list:
    - First tries to apply the `fork-regex` pattern if provided
    - Falls back to checking GitHub's fork relationship via the API
-7. **Dependency Submission**: Submits all dependencies to GitHub's Dependency
+7. **EMU/DR/GHES Support**: When `public-github-token` is provided:
+   - Determines whether each action repository exists on the local GitHub
+     instance or public GitHub
+   - Caches this decision to avoid redundant API calls
+   - Uses the appropriate API endpoint for all subsequent operations on that
+     repository
+   - Enables looking up fork relationships and SHA-to-version mappings from
+     public GitHub when needed
+8. **Dependency Submission**: Submits all dependencies to GitHub's Dependency
    Graph:
    - For forked actions, submits both the fork and original repository
    - Uses Package URL (purl) format: `pkg:github/{owner}/{repo}@{ref}`
-8. **Security Advisories**: GitHub automatically matches submitted dependencies
+9. **Security Advisories**: GitHub automatically matches submitted dependencies
    against its security advisory database
 
 ## Why Use This Action?

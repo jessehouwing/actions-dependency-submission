@@ -8,14 +8,28 @@ const mockCreateSnapshot = jest.fn()
 const mockPublicReposGet = jest.fn()
 const mockPublicReposListTags = jest.fn()
 
-export const getOctokit = jest.fn((token: string, options?: { baseUrl?: string }) => {
-  // Return different mock instances based on baseUrl
-  if (options?.baseUrl === 'https://api.github.com') {
+export const getOctokit = jest.fn(
+  (token: string, options?: { baseUrl?: string }) => {
+    // Return different mock instances based on baseUrl
+    if (options?.baseUrl === 'https://api.github.com') {
+      return {
+        rest: {
+          repos: {
+            get: mockPublicReposGet,
+            listTags: mockPublicReposListTags
+          },
+          dependencyGraph: {
+            createRepositorySnapshot: mockCreateSnapshot
+          }
+        }
+      }
+    }
+
     return {
       rest: {
         repos: {
-          get: mockPublicReposGet,
-          listTags: mockPublicReposListTags
+          get: mockReposGet,
+          listTags: mockReposListTags
         },
         dependencyGraph: {
           createRepositorySnapshot: mockCreateSnapshot
@@ -23,19 +37,7 @@ export const getOctokit = jest.fn((token: string, options?: { baseUrl?: string }
       }
     }
   }
-  
-  return {
-    rest: {
-      repos: {
-        get: mockReposGet,
-        listTags: mockReposListTags
-      },
-      dependencyGraph: {
-        createRepositorySnapshot: mockCreateSnapshot
-      }
-    }
-  }
-})
+)
 
 // Export the mocks so tests can access them
 export const mockOctokit = {
