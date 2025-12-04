@@ -24,7 +24,13 @@ export interface ForkResolverConfig {
   forkOrganizations: string[]
   forkRegex?: RegExp
   token: string
+  publicGitHubToken?: string
 }
+
+/**
+ * Public GitHub API base URL
+ */
+const PUBLIC_GITHUB_API_URL = 'https://api.github.com'
 
 /**
  * Resolves forked action dependencies to their original sources
@@ -33,11 +39,71 @@ export class ForkResolver {
   private forkOrganizations: Set<string>
   private forkRegex?: RegExp
   private octokit: ReturnType<typeof getOctokit>
+  private publicOctokit?: ReturnType<typeof getOctokit>
+  private publicRepoCache: Map<string, boolean> = new Map()
 
   constructor(config: ForkResolverConfig) {
     this.forkOrganizations = new Set(config.forkOrganizations)
     this.forkRegex = config.forkRegex
     this.octokit = getOctokit(config.token)
+
+    // Create a separate Octokit instance for public GitHub if token provided
+    if (config.publicGitHubToken) {
+      this.publicOctokit = getOctokit(config.publicGitHubToken, {
+        baseUrl: PUBLIC_GITHUB_API_URL
+      })
+    }
+  }
+
+  /**
+   * Determines which Octokit instance to use for a repository
+   * Caches the decision to avoid redundant checks
+   *
+   * @param owner Repository owner
+   * @param repo Repository name
+   * @returns The appropriate Octokit instance
+   */
+  private async getOctokitForRepo(
+    owner: string,
+    repo: string
+  ): Promise<ReturnType<typeof getOctokit>> {
+    const repoKey = `${owner}/${repo}`
+
+    // Check cache first
+    if (this.publicRepoCache.has(repoKey)) {
+      const usePublic = this.publicRepoCache.get(repoKey)
+      return usePublic && this.publicOctokit ? this.publicOctokit : this.octokit
+    }
+
+    // Try local instance first
+    try {
+      await this.octokit.rest.repos.get({ owner, repo })
+      // Repository exists locally
+      this.publicRepoCache.set(repoKey, false)
+      core.debug(`Repository ${repoKey} found on local instance`)
+      return this.octokit
+    } catch (error) {
+      core.debug(`Repository ${repoKey} not found on local instance: ${error}`)
+    }
+
+    // Try public GitHub if available
+    if (this.publicOctokit) {
+      try {
+        await this.publicOctokit.rest.repos.get({ owner, repo })
+        // Repository exists on public GitHub
+        this.publicRepoCache.set(repoKey, true)
+        core.info(
+          `Repository ${repoKey} found on public GitHub - will use public API for all operations`
+        )
+        return this.publicOctokit
+      } catch (error) {
+        core.debug(`Repository ${repoKey} not found on public GitHub: ${error}`)
+      }
+    }
+
+    // Default to local instance
+    this.publicRepoCache.set(repoKey, false)
+    return this.octokit
   }
 
   /**
@@ -139,25 +205,83 @@ export class ForkResolver {
       }
     }
 
-    // Then, try to get fork information from GitHub API
-    try {
-      const { data } = await this.octokit.rest.repos.get({
-        owner,
-        repo
-      })
+    // Try to get fork information using the appropriate instance
+    const repoInfo = await this.getRepoInfo(owner, repo)
 
-      if (data.fork && data.parent) {
-        return {
-          owner: data.parent.owner.login,
-          repo: data.parent.name
-        }
+    if (repoInfo?.fork && repoInfo.parent) {
+      return {
+        owner: repoInfo.parent.owner.login,
+        repo: repoInfo.parent.name
       }
-    } catch (error) {
-      core.debug(
-        `Failed to fetch repository info for ${owner}/${repo}: ${error}`
-      )
     }
 
+    return undefined
+  }
+
+  /**
+   * Gets repository information and determines which API to use
+   *
+   * @param owner Repository owner
+   * @param repo Repository name
+   * @returns Repository data or undefined
+   */
+  private async getRepoInfo(
+    owner: string,
+    repo: string
+  ): Promise<
+    | {
+        fork?: boolean
+        parent?: { owner: { login: string }; name: string }
+      }
+    | undefined
+  > {
+    const repoKey = `${owner}/${repo}`
+
+    // Check cache first to see if we've already determined where this repo lives
+    if (this.publicRepoCache.has(repoKey)) {
+      const usePublic = this.publicRepoCache.get(repoKey)
+      const octokit =
+        usePublic && this.publicOctokit ? this.publicOctokit : this.octokit
+      try {
+        const { data } = await octokit.rest.repos.get({ owner, repo })
+        return data
+      } catch (error) {
+        core.debug(
+          `Failed to fetch repository info for ${owner}/${repo}: ${error}`
+        )
+        return undefined
+      }
+    }
+
+    // Try local instance first
+    try {
+      const { data } = await this.octokit.rest.repos.get({ owner, repo })
+      this.publicRepoCache.set(repoKey, false)
+      core.debug(`Repository ${repoKey} found on local instance`)
+      return data
+    } catch (error) {
+      core.debug(`Repository ${repoKey} not found on local instance: ${error}`)
+    }
+
+    // Try public GitHub if available
+    if (this.publicOctokit) {
+      try {
+        const { data } = await this.publicOctokit.rest.repos.get({
+          owner,
+          repo
+        })
+        this.publicRepoCache.set(repoKey, true)
+        core.info(
+          `Repository ${repoKey} found on public GitHub - will use public API for all operations`
+        )
+        return data
+      } catch (error) {
+        core.debug(`Repository ${repoKey} not found on public GitHub: ${error}`)
+      }
+    }
+
+    // Default to local instance for cache purposes
+    this.publicRepoCache.set(repoKey, false)
     return undefined
   }
 
@@ -215,7 +339,7 @@ export class ForkResolver {
     try {
       core.debug(`Resolving SHA ${sha} for ${owner}/${repo}`)
 
-      // Fetch tags from the repository
+      // Fetch tags from the repository (using the appropriate Octokit instance)
       const tags = await this.fetchRepositoryTags(owner, repo)
 
       // Find tags that match this SHA
@@ -274,6 +398,9 @@ export class ForkResolver {
     owner: string,
     repo: string
   ): Promise<Array<{ name: string; sha: string }>> {
+    // Get the appropriate Octokit instance for this repository
+    const octokit = await this.getOctokitForRepo(owner, repo)
+
     try {
       const tags: Array<{ name: string; sha: string }> = []
       let page = 1
@@ -281,7 +408,7 @@ export class ForkResolver {
 
       // Fetch tags up to MAX_TAG_PAGES
       while (page <= ForkResolver.MAX_TAG_PAGES) {
-        const { data } = await this.octokit.rest.repos.listTags({
+        const { data } = await octokit.rest.repos.listTags({
           owner,
           repo,
           per_page: perPage,
