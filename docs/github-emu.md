@@ -75,7 +75,7 @@ If your workflows reference private or internal actions in other repositories,
 configure access via
 [Allowing access to components in a private repository](https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/enabling-features-for-your-repository/managing-github-actions-settings-for-a-repository#allowing-access-to-components-in-a-private-repository).
 
-The `GITHUB_TOKEN` will automatically have `contents: read` access to those
+Once configured, the `GITHUB_TOKEN` will have `contents: read` access to those
 repositories.
 
 ---

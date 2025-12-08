@@ -84,9 +84,9 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
 ```
 
-**Note**: The `GITHUB_TOKEN` will automatically have `contents: read` access to
-the private/internal action repositories that have been granted access via the
-repository settings.
+**Note**: Once you configure access to private/internal action repositories via
+the repository settings, the `GITHUB_TOKEN` will have `contents: read` access to
+those repositories.
 
 ---
 
@@ -144,8 +144,10 @@ jobs:
 
 **Note**: When accessing private/internal actions across multiple repositories,
 include all relevant repository names in the `repositories` input. The generated
-token will have `contents: read` access to all listed repositories and
-`contents: write` access to the repository where the app is installed.
+token will have the permissions configured in the GitHub App for the listed
+repositories. Ensure the app has `contents: read` permission for repositories
+containing private/internal actions and `contents: write` permission for the
+repository where dependencies are being submitted.
 
 #### Advantages
 
