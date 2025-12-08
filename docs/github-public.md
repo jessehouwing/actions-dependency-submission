@@ -268,7 +268,8 @@ because they:
 - Often have broader permissions than necessary
 - Cannot be easily audited or monitored
 
-Consider using a GitHub App token instead for better security and maintainability.
+Consider using a GitHub App token instead for better security and
+maintainability.
 
 #### Documentation
 
@@ -279,11 +280,11 @@ Consider using a GitHub App token instead for better security and maintainabilit
 
 ## Permissions Summary
 
-| Token Type      | Minimum Permissions for Current Repo | Access to Private/Internal Actions                  |
-| --------------- | ------------------------------------ | --------------------------------------------------- |
-| Workflow Token  | `contents: write`                    | Requires repository configuration + automatic read  |
-| GitHub App      | `contents: write`                    | Automatic `contents: read` where app is installed   |
-| Personal Access | `contents: write`                    | Automatic `contents: read` based on token scope     |
+| Token Type      | Minimum Permissions for Current Repo | Access to Private/Internal Actions                 |
+| --------------- | ------------------------------------ | -------------------------------------------------- |
+| Workflow Token  | `contents: write`                    | Requires repository configuration + automatic read |
+| GitHub App      | `contents: write`                    | Automatic `contents: read` where app is installed  |
+| Personal Access | `contents: write`                    | Automatic `contents: read` based on token scope    |
 
 ## Best Practices
 
@@ -291,8 +292,8 @@ Consider using a GitHub App token instead for better security and maintainabilit
    follow the principle of least privilege
 2. **Prefer the workflow token** (`GITHUB_TOKEN`) when possible for maximum
    security
-3. **Use GitHub Apps** when you need cross-repository access or organization-wide
-   automation
+3. **Use GitHub Apps** when you need cross-repository access or
+   organization-wide automation
 4. **Avoid personal access tokens** unless absolutely necessary due to security
    concerns
 5. **Regularly audit** which repositories have access to your private/internal

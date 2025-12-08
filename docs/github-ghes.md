@@ -208,8 +208,8 @@ jobs:
 - ⚠️ **Manual rotation**: Must be manually rotated
 - ⚠️ **No public GitHub access**: Cannot look up actions on public GitHub
 
-⚠️ **Security Warning**: Personal access tokens are less secure than GitHub Apps.
-Consider using a GitHub App token instead.
+⚠️ **Security Warning**: Personal access tokens are less secure than GitHub
+Apps. Consider using a GitHub App token instead.
 
 ---
 
@@ -502,11 +502,11 @@ jobs:
 
 ## Permissions Summary
 
-| Token                  | Purpose                        | Minimum Permissions               |
-| ---------------------- | ------------------------------ | --------------------------------- |
-| Primary Token          | Submit dependencies to GHES    | `contents: write`                 |
-| Primary Token          | Access private/internal actions| `contents: read` (automatic)      |
-| Public GitHub Token    | Look up actions on GitHub.com  | `contents: read` (public repos)   |
+| Token               | Purpose                         | Minimum Permissions             |
+| ------------------- | ------------------------------- | ------------------------------- |
+| Primary Token       | Submit dependencies to GHES     | `contents: write`               |
+| Primary Token       | Access private/internal actions | `contents: read` (automatic)    |
+| Public GitHub Token | Look up actions on GitHub.com   | `contents: read` (public repos) |
 
 ## Best Practices
 

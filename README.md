@@ -144,9 +144,9 @@ This configuration:
   source
 
 **Note:** The `public-github-token` requires `contents: read` permission for
-accessing public repositories on GitHub.com. See the [environment-specific
-documentation](#environment-specific-documentation) for detailed setup
-instructions for different token types.
+accessing public repositories on GitHub.com. See the
+[environment-specific documentation](#environment-specific-documentation) for
+detailed setup instructions for different token types.
 
 ## Inputs
 
@@ -256,8 +256,7 @@ jobs:
   dependencies
 - If your workflows reference **private or internal actions** in other
   repositories, you must configure repository access settings. See
-  [Allowing access to components in a private
-  repository](https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/enabling-features-for-your-repository/managing-github-actions-settings-for-a-repository#allowing-access-to-components-in-a-private-repository)
+  [Allowing access to components in a private repository](https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/enabling-features-for-your-repository/managing-github-actions-settings-for-a-repository#allowing-access-to-components-in-a-private-repository)
 - The optional `public-github-token` (for EMU/DR/GHES) requires `contents: read`
   permission for public repositories on GitHub.com
 
@@ -266,8 +265,8 @@ For detailed guidance on token permissions for different environments, see the
 
 ## Environment-Specific Documentation
 
-For detailed configuration instructions, token setup, and best practices specific
-to your environment, please refer to the appropriate guide:
+For detailed configuration instructions, token setup, and best practices
+specific to your environment, please refer to the appropriate guide:
 
 - **[GitHub Public / GitHub Enterprise Cloud](docs/github-public.md)** -
   Standard GitHub.com and GHEC environments
