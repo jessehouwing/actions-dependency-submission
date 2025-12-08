@@ -51,6 +51,14 @@ inputs:
       the local instance. See environment-specific documentation in docs/ for
       setup instructions.
     required: false
+  report-transitive-as-direct:
+    description: >
+      Whether to report transitive dependencies as direct. When true (default),
+      all dependencies are reported as direct to enable vulnerability reporting.
+      When false, transitive dependencies (from composite actions and original
+      repositories) are reported as indirect.
+    required: false
+    default: 'true'
 
 # Define your outputs here.
 outputs:

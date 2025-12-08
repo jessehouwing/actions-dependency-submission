@@ -10,6 +10,7 @@ export interface DependencySubmitterConfig {
   repository: string
   sha: string
   ref: string
+  reportTransitiveAsDirect?: boolean
 }
 
 /**
@@ -51,11 +52,17 @@ export class DependencySubmitter {
   ): number {
     let count = 0
 
+    // Determine the effective relationship based on configuration
+    const reportTransitiveAsDirect =
+      this.config.reportTransitiveAsDirect !== false
+    const effectiveRelationship =
+      isTransitive && !reportTransitiveAsDirect ? 'indirect' : 'direct'
+
     // When a SHA was resolved to a version, report both:
-    // - The SHA as a direct dependency (or indirect if transitive)
+    // - The SHA as a direct dependency (or indirect if transitive and not reporting as direct)
     // - The version as an indirect dependency
     if (originalSha) {
-      // Add SHA - direct for fork, indirect for original repo
+      // Add SHA
       const shaPurl = this.createPackageUrl(
         owner,
         repo,
@@ -64,7 +71,7 @@ export class DependencySubmitter {
       )
       manifests.push({
         package_url: shaPurl,
-        relationship: isTransitive ? 'indirect' : 'direct',
+        relationship: effectiveRelationship,
         scope: 'runtime'
       })
       count++
@@ -78,11 +85,11 @@ export class DependencySubmitter {
       })
       count++
     } else {
-      // No SHA resolution - add the dependency as direct or indirect based on isTransitive
+      // No SHA resolution - add the dependency based on configuration
       const purl = this.createPackageUrl(owner, repo, ref, actionPath)
       manifests.push({
         package_url: purl,
-        relationship: isTransitive ? 'indirect' : 'direct',
+        relationship: effectiveRelationship,
         scope: 'runtime'
       })
       count++

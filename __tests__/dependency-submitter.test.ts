@@ -98,13 +98,13 @@ describe('DependencySubmitter', () => {
         'pkg:githubactions/actions/checkout@v4.*.*'
       )
 
-      // Check relationships - fork should be direct, original should be indirect
+      // Check relationships - with default behavior, both should be direct for vulnerability reporting
       expect(
         manifests['pkg:githubactions/myorg/checkout@v4.*.*'].relationship
       ).toBe('direct')
       expect(
         manifests['pkg:githubactions/actions/checkout@v4.*.*'].relationship
-      ).toBe('indirect')
+      ).toBe('direct')
     })
 
     it('Handles submission errors', async () => {
@@ -497,7 +497,7 @@ describe('DependencySubmitter', () => {
       )
 
       // Check relationships - Fork SHA is direct, fork version is indirect
-      // Original repo dependencies (both SHA and version) are indirect because they're transitive
+      // With default behavior, original repo SHA is also direct for vulnerability reporting
       expect(
         manifests[
           'pkg:githubactions/myorg/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8'
@@ -510,13 +510,13 @@ describe('DependencySubmitter', () => {
         manifests[
           'pkg:githubactions/actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8'
         ].relationship
-      ).toBe('indirect')
+      ).toBe('direct')
       expect(
         manifests['pkg:githubactions/actions/checkout@v4.1.0'].relationship
       ).toBe('indirect')
     })
 
-    it('Marks original repository as indirect when no SHA resolution occurs', async () => {
+    it('Marks original repository as direct by default when no SHA resolution occurs', async () => {
       github.mockOctokit.rest.dependencyGraph.createRepositorySnapshot.mockResolvedValueOnce(
         {}
       )
@@ -560,14 +560,14 @@ describe('DependencySubmitter', () => {
         'pkg:githubactions/actions/checkout@v4.2.1'
       )
 
-      // Fork should be direct, original should be indirect
+      // With default behavior, both should be direct for vulnerability reporting
       expect(
         manifests['pkg:githubactions/enterprise/actions-checkout@v4.2.1']
           .relationship
       ).toBe('direct')
       expect(
         manifests['pkg:githubactions/actions/checkout@v4.2.1'].relationship
-      ).toBe('indirect')
+      ).toBe('direct')
     })
 
     it('Includes actionPath in package URL for subfolder actions', async () => {
@@ -679,6 +679,141 @@ describe('DependencySubmitter', () => {
       expect(Object.keys(manifests)).toContain(
         'pkg:githubactions/actions/checkout@v4.*.*'
       )
+    })
+
+    it('Marks original repository as indirect when reportTransitiveAsDirect is false', async () => {
+      github.mockOctokit.rest.dependencyGraph.createRepositorySnapshot.mockResolvedValueOnce(
+        {}
+      )
+
+      const submitter = new DependencySubmitter({
+        token: 'test-token',
+        repository: 'test-owner/test-repo',
+        sha: 'abc123',
+        ref: 'refs/heads/main',
+        reportTransitiveAsDirect: false
+      })
+
+      const dependencies = [
+        {
+          owner: 'myorg',
+          repo: 'checkout',
+          ref: 'v4',
+          original: {
+            owner: 'actions',
+            repo: 'checkout'
+          }
+        }
+      ]
+
+      const count = await submitter.submitDependencies(dependencies)
+
+      expect(count).toBe(2)
+
+      const call =
+        github.mockOctokit.rest.dependencyGraph.createRepositorySnapshot.mock
+          .calls[0][0]
+      const manifests = call.manifests['github-actions.yml'].resolved
+
+      // Fork should be direct, original should be indirect
+      expect(
+        manifests['pkg:githubactions/myorg/checkout@v4.*.*'].relationship
+      ).toBe('direct')
+      expect(
+        manifests['pkg:githubactions/actions/checkout@v4.*.*'].relationship
+      ).toBe('indirect')
+    })
+
+    it('Marks transitive dependencies as indirect when reportTransitiveAsDirect is false', async () => {
+      github.mockOctokit.rest.dependencyGraph.createRepositorySnapshot.mockResolvedValueOnce(
+        {}
+      )
+
+      const submitter = new DependencySubmitter({
+        token: 'test-token',
+        repository: 'test-owner/test-repo',
+        sha: 'abc123',
+        ref: 'refs/heads/main',
+        reportTransitiveAsDirect: false
+      })
+
+      const dependencies = [
+        {
+          owner: 'actions',
+          repo: 'checkout',
+          ref: 'v4',
+          isTransitive: false
+        },
+        {
+          owner: 'actions',
+          repo: 'setup-node',
+          ref: 'v3',
+          isTransitive: true
+        }
+      ]
+
+      const count = await submitter.submitDependencies(dependencies)
+
+      expect(count).toBe(2)
+
+      const call =
+        github.mockOctokit.rest.dependencyGraph.createRepositorySnapshot.mock
+          .calls[0][0]
+      const manifests = call.manifests['github-actions.yml'].resolved
+
+      // Non-transitive should be direct, transitive should be indirect
+      expect(
+        manifests['pkg:githubactions/actions/checkout@v4.*.*'].relationship
+      ).toBe('direct')
+      expect(
+        manifests['pkg:githubactions/actions/setup-node@v3.*.*'].relationship
+      ).toBe('indirect')
+    })
+
+    it('Marks all dependencies as direct when reportTransitiveAsDirect is true', async () => {
+      github.mockOctokit.rest.dependencyGraph.createRepositorySnapshot.mockResolvedValueOnce(
+        {}
+      )
+
+      const submitter = new DependencySubmitter({
+        token: 'test-token',
+        repository: 'test-owner/test-repo',
+        sha: 'abc123',
+        ref: 'refs/heads/main',
+        reportTransitiveAsDirect: true
+      })
+
+      const dependencies = [
+        {
+          owner: 'actions',
+          repo: 'checkout',
+          ref: 'v4',
+          isTransitive: false
+        },
+        {
+          owner: 'actions',
+          repo: 'setup-node',
+          ref: 'v3',
+          isTransitive: true
+        }
+      ]
+
+      const count = await submitter.submitDependencies(dependencies)
+
+      expect(count).toBe(2)
+
+      const call =
+        github.mockOctokit.rest.dependencyGraph.createRepositorySnapshot.mock
+          .calls[0][0]
+      const manifests = call.manifests['github-actions.yml'].resolved
+
+      // Both should be direct for vulnerability reporting
+      expect(
+        manifests['pkg:githubactions/actions/checkout@v4.*.*'].relationship
+      ).toBe('direct')
+      expect(
+        manifests['pkg:githubactions/actions/setup-node@v3.*.*'].relationship
+      ).toBe('direct')
     })
   })
 })

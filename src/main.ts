@@ -21,6 +21,8 @@ export async function run(): Promise<void> {
     const forkOrgsInput = core.getInput('fork-organizations')
     const forkRegexInput = core.getInput('fork-regex')
     const publicGitHubToken = core.getInput('public-github-token')
+    const reportTransitiveAsDirect =
+      core.getInput('report-transitive-as-direct') !== 'false'
 
     // Parse additional paths (comma or newline separated)
     const additionalPaths = additionalPathsInput
@@ -104,7 +106,8 @@ export async function run(): Promise<void> {
       token,
       repository,
       sha: github.context.sha,
-      ref: github.context.ref
+      ref: github.context.ref,
+      reportTransitiveAsDirect
     })
     const submittedCount =
       await submitter.submitDependencies(resolvedDependencies)
