@@ -33,6 +33,7 @@ export class DependencySubmitter {
    * @param originalSha Original SHA if resolved to version
    * @param manifests Array to add dependency entries to
    * @param isTransitive Whether this is a transitive/indirect dependency (e.g., resolved from a fork)
+   * @param actionPath Optional path within the repository (for actions in subfolders)
    * @returns Number of dependencies added
    */
   private addDependencyEntries(
@@ -45,7 +46,8 @@ export class DependencySubmitter {
       relationship?: 'direct' | 'indirect'
       scope?: 'runtime' | 'development'
     }[],
-    isTransitive: boolean = false
+    isTransitive: boolean = false,
+    actionPath?: string
   ): number {
     let count = 0
 
@@ -54,7 +56,12 @@ export class DependencySubmitter {
     // - The version as an indirect dependency
     if (originalSha) {
       // Add SHA - direct for fork, indirect for original repo
-      const shaPurl = this.createPackageUrl(owner, repo, originalSha)
+      const shaPurl = this.createPackageUrl(
+        owner,
+        repo,
+        originalSha,
+        actionPath
+      )
       manifests.push({
         package_url: shaPurl,
         relationship: isTransitive ? 'indirect' : 'direct',
@@ -63,7 +70,7 @@ export class DependencySubmitter {
       count++
 
       // Add version as indirect
-      const versionPurl = this.createPackageUrl(owner, repo, ref)
+      const versionPurl = this.createPackageUrl(owner, repo, ref, actionPath)
       manifests.push({
         package_url: versionPurl,
         relationship: 'indirect',
@@ -72,7 +79,7 @@ export class DependencySubmitter {
       count++
     } else {
       // No SHA resolution - add the dependency as direct or indirect based on isTransitive
-      const purl = this.createPackageUrl(owner, repo, ref)
+      const purl = this.createPackageUrl(owner, repo, ref, actionPath)
       manifests.push({
         package_url: purl,
         relationship: isTransitive ? 'indirect' : 'direct',
@@ -125,7 +132,8 @@ export class DependencySubmitter {
         dep.ref,
         dep.originalSha,
         sourceManifests,
-        dep.isTransitive || false
+        dep.isTransitive || false,
+        dep.actionPath
       )
 
       if (dep.originalSha) {
@@ -142,7 +150,8 @@ export class DependencySubmitter {
           dep.ref,
           dep.originalSha,
           sourceManifests,
-          true // Mark original repo dependencies as transitive/indirect
+          true, // Mark original repo dependencies as transitive/indirect
+          dep.actionPath
         )
 
         core.info(
@@ -264,12 +273,20 @@ export class DependencySubmitter {
    * @param owner Repository owner
    * @param repo Repository name
    * @param ref Version/ref
+   * @param actionPath Optional path within the repository (for actions in subfolders)
    * @returns Package URL string
    */
-  private createPackageUrl(owner: string, repo: string, ref: string): string {
+  private createPackageUrl(
+    owner: string,
+    repo: string,
+    ref: string,
+    actionPath?: string
+  ): string {
     // Convert version to wildcard format if applicable
     const version = this.convertToWildcardVersion(ref)
+    // Build the repository path (repo or repo/path for subfolder actions)
+    const repoPath = actionPath ? `${repo}/${actionPath}` : repo
     // Package URL format for GitHub Actions
-    return `pkg:githubactions/${owner}/${repo}@${version}`
+    return `pkg:githubactions/${owner}/${repoPath}@${version}`
   }
 }

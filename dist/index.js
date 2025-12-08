@@ -38472,17 +38472,18 @@ class WorkflowParser {
             };
         }
         // Match pattern: owner/repo@ref or owner/repo/path@ref
-        const match = uses.match(/^([^/]+)\/([^/@]+)(?:\/[^@]+)?@(.+)$/);
+        const match = uses.match(/^([^/]+)\/([^/@]+)(?:\/([^@]+))?@(.+)$/);
         if (!match) {
             return {};
         }
-        const [, owner, repo, ref] = match;
+        const [, owner, repo, actionPath, ref] = match;
         return {
             dependency: {
                 owner,
                 repo,
                 ref,
-                uses
+                uses,
+                actionPath
             }
         };
     }
@@ -38581,7 +38582,7 @@ class WorkflowParser {
         }
         try {
             // Try to fetch action.yml or action.yaml from the remote repository
-            const actionContent = await this.fetchRemoteActionFile(dependency.owner, dependency.repo, dependency.ref);
+            const actionContent = await this.fetchRemoteActionFile(dependency.owner, dependency.repo, dependency.ref, dependency.actionPath);
             if (!actionContent) {
                 return [];
             }
@@ -38709,16 +38710,19 @@ class WorkflowParser {
      * @param owner Repository owner
      * @param repo Repository name
      * @param ref Git ref
+     * @param actionPath Optional path within the repository (for actions in subfolders)
      * @returns Action file content or null if not found
      */
-    async fetchRemoteActionFile(owner, repo, ref) {
+    async fetchRemoteActionFile(owner, repo, ref, actionPath) {
+        // Build the base path (subfolder or root)
+        const basePath = actionPath ? `${actionPath}/` : '';
         // Try action.yml first
-        let content = await this.fetchRemoteFile(owner, repo, 'action.yml', ref);
+        let content = await this.fetchRemoteFile(owner, repo, `${basePath}action.yml`, ref);
         if (content) {
             return content;
         }
         // Try action.yaml
-        content = await this.fetchRemoteFile(owner, repo, 'action.yaml', ref);
+        content = await this.fetchRemoteFile(owner, repo, `${basePath}action.yaml`, ref);
         return content;
     }
     /**
@@ -38809,7 +38813,8 @@ class ForkResolver {
             ref: resolvedRef,
             sourcePath: dependency.sourcePath,
             originalSha,
-            isTransitive: dependency.isTransitive
+            isTransitive: dependency.isTransitive,
+            actionPath: dependency.actionPath
         };
         // Check if this dependency is from a fork organization
         if (!this.forkOrganizations.has(dependency.owner)) {
@@ -39080,16 +39085,17 @@ class DependencySubmitter {
      * @param originalSha Original SHA if resolved to version
      * @param manifests Array to add dependency entries to
      * @param isTransitive Whether this is a transitive/indirect dependency (e.g., resolved from a fork)
+     * @param actionPath Optional path within the repository (for actions in subfolders)
      * @returns Number of dependencies added
      */
-    addDependencyEntries(owner, repo, ref, originalSha, manifests, isTransitive = false) {
+    addDependencyEntries(owner, repo, ref, originalSha, manifests, isTransitive = false, actionPath) {
         let count = 0;
         // When a SHA was resolved to a version, report both:
         // - The SHA as a direct dependency (or indirect if transitive)
         // - The version as an indirect dependency
         if (originalSha) {
             // Add SHA - direct for fork, indirect for original repo
-            const shaPurl = this.createPackageUrl(owner, repo, originalSha);
+            const shaPurl = this.createPackageUrl(owner, repo, originalSha, actionPath);
             manifests.push({
                 package_url: shaPurl,
                 relationship: isTransitive ? 'indirect' : 'direct',
@@ -39097,7 +39103,7 @@ class DependencySubmitter {
             });
             count++;
             // Add version as indirect
-            const versionPurl = this.createPackageUrl(owner, repo, ref);
+            const versionPurl = this.createPackageUrl(owner, repo, ref, actionPath);
             manifests.push({
                 package_url: versionPurl,
                 relationship: 'indirect',
@@ -39107,7 +39113,7 @@ class DependencySubmitter {
         }
         else {
             // No SHA resolution - add the dependency as direct or indirect based on isTransitive
-            const purl = this.createPackageUrl(owner, repo, ref);
+            const purl = this.createPackageUrl(owner, repo, ref, actionPath);
             manifests.push({
                 package_url: purl,
                 relationship: isTransitive ? 'indirect' : 'direct',
@@ -39137,14 +39143,14 @@ class DependencySubmitter {
             const sourceManifests = dependenciesBySource.get(sourcePath);
             // Add dependency entries for the forked repository
             // Use isTransitive flag if set, otherwise default to false (direct)
-            dependencyCount += this.addDependencyEntries(dep.owner, dep.repo, dep.ref, dep.originalSha, sourceManifests, dep.isTransitive || false);
+            dependencyCount += this.addDependencyEntries(dep.owner, dep.repo, dep.ref, dep.originalSha, sourceManifests, dep.isTransitive || false, dep.actionPath);
             if (dep.originalSha) {
                 coreExports.info(`Resolved SHA ${dep.originalSha} to version ${dep.ref} for ${dep.owner}/${dep.repo} - reporting both`);
             }
             // Also add the original repository if it exists
             if (dep.original) {
-                dependencyCount += this.addDependencyEntries(dep.original.owner, dep.original.repo, dep.ref, dep.originalSha, sourceManifests, true // Mark original repo dependencies as transitive/indirect
-                );
+                dependencyCount += this.addDependencyEntries(dep.original.owner, dep.original.repo, dep.ref, dep.originalSha, sourceManifests, true, // Mark original repo dependencies as transitive/indirect
+                dep.actionPath);
                 coreExports.info(`Submitting both ${dep.owner}/${dep.repo} and original ${dep.original.owner}/${dep.original.repo}`);
             }
         }
@@ -39231,13 +39237,16 @@ class DependencySubmitter {
      * @param owner Repository owner
      * @param repo Repository name
      * @param ref Version/ref
+     * @param actionPath Optional path within the repository (for actions in subfolders)
      * @returns Package URL string
      */
-    createPackageUrl(owner, repo, ref) {
+    createPackageUrl(owner, repo, ref, actionPath) {
         // Convert version to wildcard format if applicable
         const version = this.convertToWildcardVersion(ref);
+        // Build the repository path (repo or repo/path for subfolder actions)
+        const repoPath = actionPath ? `${repo}/${actionPath}` : repo;
         // Package URL format for GitHub Actions
-        return `pkg:githubactions/${owner}/${repo}@${version}`;
+        return `pkg:githubactions/${owner}/${repoPath}@${version}`;
     }
 }
 

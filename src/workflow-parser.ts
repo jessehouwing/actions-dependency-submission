@@ -14,6 +14,7 @@ export interface ActionDependency {
   uses: string // Full 'uses' string from workflow
   sourcePath?: string // Path to the workflow/action file where this dependency was found
   isTransitive?: boolean // Whether this is a transitive/indirect dependency
+  actionPath?: string // Path within the repository for actions in subfolders (e.g., 'subfolder' for owner/repo/subfolder@ref)
 }
 
 /**
@@ -347,18 +348,19 @@ export class WorkflowParser {
     }
 
     // Match pattern: owner/repo@ref or owner/repo/path@ref
-    const match = uses.match(/^([^/]+)\/([^/@]+)(?:\/[^@]+)?@(.+)$/)
+    const match = uses.match(/^([^/]+)\/([^/@]+)(?:\/([^@]+))?@(.+)$/)
     if (!match) {
       return {}
     }
 
-    const [, owner, repo, ref] = match
+    const [, owner, repo, actionPath, ref] = match
     return {
       dependency: {
         owner,
         repo,
         ref,
-        uses
+        uses,
+        actionPath
       }
     }
   }
@@ -482,7 +484,8 @@ export class WorkflowParser {
       const actionContent = await this.fetchRemoteActionFile(
         dependency.owner,
         dependency.repo,
-        dependency.ref
+        dependency.ref,
+        dependency.actionPath
       )
 
       if (!actionContent) {
@@ -656,21 +659,36 @@ export class WorkflowParser {
    * @param owner Repository owner
    * @param repo Repository name
    * @param ref Git ref
+   * @param actionPath Optional path within the repository (for actions in subfolders)
    * @returns Action file content or null if not found
    */
   private async fetchRemoteActionFile(
     owner: string,
     repo: string,
-    ref: string
+    ref: string,
+    actionPath?: string
   ): Promise<string | null> {
+    // Build the base path (subfolder or root)
+    const basePath = actionPath ? `${actionPath}/` : ''
+
     // Try action.yml first
-    let content = await this.fetchRemoteFile(owner, repo, 'action.yml', ref)
+    let content = await this.fetchRemoteFile(
+      owner,
+      repo,
+      `${basePath}action.yml`,
+      ref
+    )
     if (content) {
       return content
     }
 
     // Try action.yaml
-    content = await this.fetchRemoteFile(owner, repo, 'action.yaml', ref)
+    content = await this.fetchRemoteFile(
+      owner,
+      repo,
+      `${basePath}action.yaml`,
+      ref
+    )
     return content
   }
 
