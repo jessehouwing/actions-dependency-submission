@@ -59,7 +59,7 @@ jobs:
 
       - name: Check Licenses
         id: check-licenses
-        continue-on-error: true
+        continue-on-error: ${{ github.event_name == 'workflow_dispatch' }}
         run: licensed status
 
   update-licenses:
