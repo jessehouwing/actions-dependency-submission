@@ -1,8 +1,8 @@
 import * as fs from 'fs'
 import * as path from 'path'
 import * as yaml from 'yaml'
-import { getOctokit } from '@actions/github'
 import * as core from '@actions/core'
+import { OctokitProvider } from './octokit-provider.js'
 
 /**
  * Represents a GitHub Action dependency
@@ -20,12 +20,15 @@ export interface ActionDependency {
  * Parses workflow files to extract action dependencies
  */
 export class WorkflowParser {
-  private octokit?: ReturnType<typeof getOctokit>
+  private octokitProvider?: OctokitProvider
   private processedRemoteActions: Set<string> = new Set()
 
-  constructor(token?: string) {
+  constructor(token?: string, publicGitHubToken?: string) {
     if (token) {
-      this.octokit = getOctokit(token)
+      this.octokitProvider = new OctokitProvider({
+        token,
+        publicGitHubToken
+      })
     }
   }
 
@@ -104,7 +107,7 @@ export class WorkflowParser {
       }
 
       // Process remote composite actions and callable workflows if octokit is available
-      if (this.octokit) {
+      if (this.octokitProvider) {
         // Get relative path for source tracking
         const relativePath = repoRoot
           ? path.relative(repoRoot, filePath)
@@ -470,7 +473,7 @@ export class WorkflowParser {
     dependency: ActionDependency,
     callingWorkflowPath: string
   ): Promise<ActionDependency[]> {
-    if (!this.octokit) {
+    if (!this.octokitProvider) {
       return []
     }
 
@@ -552,7 +555,7 @@ export class WorkflowParser {
     dependency: ActionDependency,
     callingWorkflowPath: string
   ): Promise<ActionDependency[]> {
-    if (!this.octokit) {
+    if (!this.octokitProvider) {
       return []
     }
 
@@ -687,12 +690,13 @@ export class WorkflowParser {
     filePath: string,
     ref: string
   ): Promise<string | null> {
-    if (!this.octokit) {
+    if (!this.octokitProvider) {
       return null
     }
 
     try {
-      const { data } = await this.octokit.rest.repos.getContent({
+      const octokit = await this.octokitProvider.getOctokitForRepo(owner, repo)
+      const { data } = await octokit.rest.repos.getContent({
         owner,
         repo,
         path: filePath,

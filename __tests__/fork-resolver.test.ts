@@ -37,15 +37,23 @@ describe('ForkResolver', () => {
       const result = await resolver.resolveDependencies(dependencies)
 
       expect(result).toHaveLength(1)
-      expect(result[0]).toEqual({
+      expect(result[0]).toMatchObject({
         owner: 'actions',
         repo: 'checkout',
-        ref: 'v4',
-        original: undefined
+        ref: 'v4'
       })
+      expect(result[0].original).toBeUndefined()
     })
 
     it('Resolves fork using GitHub API', async () => {
+      // First call for getOctokitForRepo check
+      github.mockOctokit.rest.repos.get.mockResolvedValueOnce({
+        data: {
+          fork: false
+        }
+      })
+
+      // Second call for getRepoInfo to get fork info
       github.mockOctokit.rest.repos.get.mockResolvedValueOnce({
         data: {
           fork: true,
@@ -73,7 +81,7 @@ describe('ForkResolver', () => {
       const result = await resolver.resolveDependencies(dependencies)
 
       expect(result).toHaveLength(1)
-      expect(result[0]).toEqual({
+      expect(result[0]).toMatchObject({
         owner: 'myorg',
         repo: 'checkout',
         ref: 'v4',
@@ -574,12 +582,19 @@ describe('ForkResolver', () => {
 
   describe('EMU/DR/GHES with public GitHub fallback', () => {
     it('Falls back to public GitHub when repository not found locally', async () => {
-      // Local instance doesn't have the repo
+      // Local instance doesn't have the repo (for getOctokitForRepo)
       github.mockOctokit.rest.repos.get.mockRejectedValueOnce(
         new Error('Not Found')
       )
 
-      // Public GitHub has the repo with fork info
+      // Public GitHub has the repo for getOctokitForRepo check
+      github.mockPublicOctokit.rest.repos.get.mockResolvedValueOnce({
+        data: {
+          fork: false
+        }
+      })
+
+      // Public GitHub has the repo with fork info (for getRepoInfo)
       github.mockPublicOctokit.rest.repos.get.mockResolvedValueOnce({
         data: {
           fork: true,
@@ -587,13 +602,6 @@ describe('ForkResolver', () => {
             owner: { login: 'actions' },
             name: 'checkout'
           }
-        }
-      })
-
-      // Second call to determine where parent lives (on local instance)
-      github.mockOctokit.rest.repos.get.mockResolvedValueOnce({
-        data: {
-          fork: false
         }
       })
 

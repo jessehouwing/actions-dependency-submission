@@ -582,7 +582,13 @@ runs:
       // Create a parser with mocked octokit
       const parserWithToken = new WorkflowParser('fake-token')
       // @ts-expect-error - Replacing private property for testing
-      parserWithToken.octokit = mockOctokit
+      parserWithToken.octokitProvider = {
+        getOctokitForRepo: jest.fn().mockResolvedValue(mockOctokit),
+        getOctokit: jest.fn().mockReturnValue(mockOctokit),
+        getPublicOctokit: jest.fn().mockReturnValue(undefined),
+        getRepoInfo: jest.fn().mockResolvedValue(undefined),
+        repoExists: jest.fn().mockResolvedValue(true)
+      }
 
       const workflowContent = `
 name: Test Workflow
@@ -662,7 +668,7 @@ jobs:
       // Create a parser with mocked octokit
       const parserWithToken = new WorkflowParser('fake-token')
       // @ts-expect-error - Replacing private property for testing
-      parserWithToken.octokit = mockOctokit
+      parserWithToken.octokitProvider = { getOctokitForRepo: jest.fn().mockResolvedValue(mockOctokit), getOctokit: jest.fn().mockReturnValue(mockOctokit), getPublicOctokit: jest.fn().mockReturnValue(undefined), getRepoInfo: jest.fn().mockResolvedValue(undefined), repoExists: jest.fn().mockResolvedValue(true) }
 
       const workflowContent = `
 name: Test Workflow
@@ -734,7 +740,7 @@ runs:
       // Create a parser with mocked octokit
       const parserWithToken = new WorkflowParser('fake-token')
       // @ts-expect-error - Replacing private property for testing
-      parserWithToken.octokit = mockOctokit
+      parserWithToken.octokitProvider = { getOctokitForRepo: jest.fn().mockResolvedValue(mockOctokit), getOctokit: jest.fn().mockReturnValue(mockOctokit), getPublicOctokit: jest.fn().mockReturnValue(undefined), getRepoInfo: jest.fn().mockResolvedValue(undefined), repoExists: jest.fn().mockResolvedValue(true) }
 
       const workflowContent = `
 name: Test Workflow
@@ -777,7 +783,7 @@ jobs:
       // Create a parser with mocked octokit
       const parserWithToken = new WorkflowParser('fake-token')
       // @ts-expect-error - Replacing private property for testing
-      parserWithToken.octokit = mockOctokit
+      parserWithToken.octokitProvider = { getOctokitForRepo: jest.fn().mockResolvedValue(mockOctokit), getOctokit: jest.fn().mockReturnValue(mockOctokit), getPublicOctokit: jest.fn().mockReturnValue(undefined), getRepoInfo: jest.fn().mockResolvedValue(undefined), repoExists: jest.fn().mockResolvedValue(true) }
 
       const workflowContent = `
 name: Test Workflow
@@ -835,7 +841,7 @@ runs:
       // Create a parser with mocked octokit
       const parserWithToken = new WorkflowParser('fake-token')
       // @ts-expect-error - Replacing private property for testing
-      parserWithToken.octokit = mockOctokit
+      parserWithToken.octokitProvider = { getOctokitForRepo: jest.fn().mockResolvedValue(mockOctokit), getOctokit: jest.fn().mockReturnValue(mockOctokit), getPublicOctokit: jest.fn().mockReturnValue(undefined), getRepoInfo: jest.fn().mockResolvedValue(undefined), repoExists: jest.fn().mockResolvedValue(true) }
 
       // Create two workflows that use the same remote action
       const workflow1 = `
@@ -903,7 +909,7 @@ runs:
       // Create a parser with mocked octokit
       const parserWithToken = new WorkflowParser('fake-token')
       // @ts-expect-error - Replacing private property for testing
-      parserWithToken.octokit = mockOctokit
+      parserWithToken.octokitProvider = { getOctokitForRepo: jest.fn().mockResolvedValue(mockOctokit), getOctokit: jest.fn().mockReturnValue(mockOctokit), getPublicOctokit: jest.fn().mockReturnValue(undefined), getRepoInfo: jest.fn().mockResolvedValue(undefined), repoExists: jest.fn().mockResolvedValue(true) }
 
       const workflowContent = `
 name: Test Workflow

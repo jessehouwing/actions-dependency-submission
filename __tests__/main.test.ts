@@ -98,6 +98,22 @@ jobs:
 `
     fs.writeFileSync(path.join(tempDir, 'test.yml'), workflowContent)
 
+    // WorkflowParser's OctokitProvider will try to fetch remote actions
+    // Mock the call for checking myorg/checkout (from WorkflowParser trying to fetch remote action)
+    github.mockOctokit.rest.repos.get.mockResolvedValueOnce({
+      data: {
+        fork: false
+      }
+    })
+
+    // ForkResolver's OctokitProvider getOctokitForRepo check for myorg/checkout
+    github.mockOctokit.rest.repos.get.mockResolvedValueOnce({
+      data: {
+        fork: false
+      }
+    })
+
+    // ForkResolver getRepoInfo call to get fork info for myorg/checkout
     github.mockOctokit.rest.repos.get.mockResolvedValueOnce({
       data: {
         fork: true,
