@@ -76,7 +76,7 @@ If your workflows reference private or internal actions in other repositories,
 configure access via
 [Allowing access to components in a private repository](https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/enabling-features-for-your-repository/managing-github-actions-settings-for-a-repository#allowing-access-to-components-in-a-private-repository).
 
-The `GITHUB_TOKEN` will automatically have `contents: read` access to those
+Once configured, the `GITHUB_TOKEN` will have `contents: read` access to those
 repositories.
 
 ---
@@ -541,8 +541,9 @@ jobs:
 
 - Dependency Submission API requires GHES 3.6 or later
 - Fine-grained Personal Access Tokens require GHES 3.12 or later
-- GitHub Apps are available on all supported GHES versions
-- Check your GHES version for feature availability
+- GitHub Apps are supported on GHES 3.0 and later
+- Check your specific GHES version documentation for feature availability and
+  any version-specific requirements
 
 ### Action Mirroring
 
