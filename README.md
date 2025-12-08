@@ -148,17 +148,44 @@ accessing public repositories on GitHub.com. See the
 [environment-specific documentation](#environment-specific-documentation) for
 detailed setup instructions for different token types.
 
+### Configuring Transitive Dependency Reporting
+
+By default, all dependencies (including transitive dependencies from composite
+actions and original repositories from forks) are reported as "direct"
+dependencies. This ensures that GitHub's Dependency Graph will report
+vulnerabilities for all dependencies.
+
+If you want to distinguish between direct and transitive dependencies:
+
+```yaml
+- uses: jessehouwing/actions-dependency-submission@v1
+  with:
+    token: ${{ secrets.GITHUB_TOKEN }}
+    report-transitive-as-direct: false
+```
+
+With `report-transitive-as-direct: false`:
+
+- Dependencies directly referenced in your workflows are marked as "direct"
+- Dependencies from composite actions are marked as "indirect"
+- Original repositories (when using forked actions) are marked as "indirect"
+
+**Note:** GitHub's Dependency Graph only reports vulnerabilities for "direct"
+dependencies. Setting this to `false` means you won't receive vulnerability
+alerts for transitive dependencies and original repositories.
+
 ## Inputs
 
-| Input                 | Description                                                                                                                                      | Required | Default                    |
-| --------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------ | -------- | -------------------------- |
-| `token`               | GitHub token for API access and dependency submission                                                                                            | Yes      | `${{ github.token }}`      |
-| `repository`          | Repository to submit dependencies for (owner/repository format)                                                                                  | No       | `${{ github.repository }}` |
-| `workflow-directory`  | Directory containing workflow files to scan                                                                                                      | No       | `.github/workflows`        |
-| `additional-paths`    | Additional paths to scan for composite actions and callable workflows (comma-separated or newline-separated)                                     | No       | -                          |
-| `fork-organizations`  | Comma-separated list of organization names that contain forked actions                                                                           | No       | -                          |
-| `fork-regex`          | Regular expression pattern to transform forked repository names. Must contain named captures `org` and `repo`                                    | No       | -                          |
-| `public-github-token` | GitHub token for accessing public GitHub (api.github.com) when running on EMU, GitHub-DR, or GHES. Used to look up actions not on local instance | No       | -                          |
+| Input                         | Description                                                                                                                                                                                                | Required | Default                    |
+| ----------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------- | -------------------------- |
+| `token`                       | GitHub token for API access and dependency submission                                                                                                                                                      | Yes      | `${{ github.token }}`      |
+| `repository`                  | Repository to submit dependencies for (owner/repository format)                                                                                                                                            | No       | `${{ github.repository }}` |
+| `workflow-directory`          | Directory containing workflow files to scan                                                                                                                                                                | No       | `.github/workflows`        |
+| `additional-paths`            | Additional paths to scan for composite actions and callable workflows (comma-separated or newline-separated)                                                                                               | No       | -                          |
+| `fork-organizations`          | Comma-separated list of organization names that contain forked actions                                                                                                                                     | No       | -                          |
+| `fork-regex`                  | Regular expression pattern to transform forked repository names. Must contain named captures `org` and `repo`                                                                                              | No       | -                          |
+| `public-github-token`         | GitHub token for accessing public GitHub (api.github.com) when running on EMU, GitHub-DR, or GHES. Used to look up actions not on local instance                                                           | No       | -                          |
+| `report-transitive-as-direct` | Whether to report transitive dependencies as direct. When `true` (default), all dependencies are reported as direct to enable vulnerability reporting. When `false`, transitive dependencies are indirect. | No       | `true`                     |
 
 ## Outputs
 

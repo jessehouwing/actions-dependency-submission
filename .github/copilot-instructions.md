@@ -95,17 +95,18 @@ npm run bundle
 
 ### Linting
 
-Multiple linting tools are configured for the repository. Ensure that all reported 
-issues are resolved when completing a change.
+Multiple linting tools are configured for the repository. Ensure that all
+reported issues are resolved when completing a change.
 
- * YamlLint
- * MarkdownLint
- * EsLint
- * ActionLint
- * Prettier
+- YamlLint
+- MarkdownLint
+- EsLint
+- ActionLint
+- Prettier
 
-When linters conflict, ask the user how to resolve and optionally suppress the issue.
-When suppressing, always try to suppress the exact line over ignoring the whole file.
+When linters conflict, ask the user how to resolve and optionally suppress the
+issue. When suppressing, always try to suppress the exact line over ignoring the
+whole file.
 
 ### Versioning
 

@@ -65,7 +65,9 @@ jobs:
   update-licenses:
     name: Update Licenses
     runs-on: ubuntu-latest
-    if: ${{ github.event_name == 'workflow_dispatch' && needs.check-licenses.outputs.needs_update == 'true' }}
+    if:
+      ${{ github.event_name == 'workflow_dispatch' &&
+      needs.check-licenses.outputs.needs_update == 'true' }}
     needs: check-licenses
     permissions:
       contents: write
