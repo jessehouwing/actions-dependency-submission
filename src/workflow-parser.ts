@@ -213,6 +213,8 @@ export class WorkflowParser {
         ? path.relative(repoRoot, filePath)
         : filePath
 
+      core.debug(`Parsing file: ${relativePath}`)
+
       // Check if this is a composite action
       if (workflow.runs && workflow.runs.using === 'composite') {
         this.extractFromCompositeAction(
@@ -230,6 +232,23 @@ export class WorkflowParser {
           localActions,
           callableWorkflows,
           relativePath
+        )
+      }
+
+      // Log what was found in this file
+      if (dependencies.length > 0) {
+        core.debug(
+          `Found ${dependencies.length} action(s) in ${relativePath}: ${dependencies.map((d) => `${d.owner}/${d.repo}@${d.ref}`).join(', ')}`
+        )
+      }
+      if (localActions.length > 0) {
+        core.debug(
+          `Found ${localActions.length} local action reference(s) in ${relativePath}: ${localActions.join(', ')}`
+        )
+      }
+      if (callableWorkflows.length > 0) {
+        core.debug(
+          `Found ${callableWorkflows.length} callable workflow(s) in ${relativePath}: ${callableWorkflows.join(', ')}`
         )
       }
     } catch {

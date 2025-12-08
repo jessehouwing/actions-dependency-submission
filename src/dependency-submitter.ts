@@ -214,6 +214,22 @@ export class DependencySubmitter {
 
     try {
       core.info(`Submitting ${dependencyCount} dependencies to GitHub`)
+
+      // Log all dependencies being submitted when debug logging is enabled
+      if (core.isDebug()) {
+        core.debug('Dependencies being submitted:')
+        for (const [sourcePath, deps] of dependenciesBySource.entries()) {
+          core.debug(`  From ${sourcePath}:`)
+          for (const dep of deps) {
+            if (dep.package_url) {
+              core.debug(
+                `    - ${dep.package_url} (${dep.relationship || 'direct'}, ${dep.scope || 'runtime'})`
+              )
+            }
+          }
+        }
+      }
+
       await this.octokit.rest.dependencyGraph.createRepositorySnapshot({
         owner,
         repo,

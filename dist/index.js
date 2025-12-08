@@ -38368,6 +38368,7 @@ class WorkflowParser {
             const relativePath = repoRoot
                 ? path.relative(repoRoot, filePath)
                 : filePath;
+            coreExports.debug(`Parsing file: ${relativePath}`);
             // Check if this is a composite action
             if (workflow.runs && workflow.runs.using === 'composite') {
                 this.extractFromCompositeAction(workflow, dependencies, localActions, relativePath);
@@ -38375,6 +38376,16 @@ class WorkflowParser {
             // Check if this is a workflow (has jobs)
             else if (workflow.jobs) {
                 this.extractFromWorkflow(workflow, dependencies, localActions, callableWorkflows, relativePath);
+            }
+            // Log what was found in this file
+            if (dependencies.length > 0) {
+                coreExports.debug(`Found ${dependencies.length} action(s) in ${relativePath}: ${dependencies.map((d) => `${d.owner}/${d.repo}@${d.ref}`).join(', ')}`);
+            }
+            if (localActions.length > 0) {
+                coreExports.debug(`Found ${localActions.length} local action reference(s) in ${relativePath}: ${localActions.join(', ')}`);
+            }
+            if (callableWorkflows.length > 0) {
+                coreExports.debug(`Found ${callableWorkflows.length} callable workflow(s) in ${relativePath}: ${callableWorkflows.join(', ')}`);
             }
         }
         catch {
@@ -39177,6 +39188,18 @@ class DependencySubmitter {
         }
         try {
             coreExports.info(`Submitting ${dependencyCount} dependencies to GitHub`);
+            // Log all dependencies being submitted when debug logging is enabled
+            if (coreExports.isDebug()) {
+                coreExports.debug('Dependencies being submitted:');
+                for (const [sourcePath, deps] of dependenciesBySource.entries()) {
+                    coreExports.debug(`  From ${sourcePath}:`);
+                    for (const dep of deps) {
+                        if (dep.package_url) {
+                            coreExports.debug(`    - ${dep.package_url} (${dep.relationship || 'direct'}, ${dep.scope || 'runtime'})`);
+                        }
+                    }
+                }
+            }
             await this.octokit.rest.dependencyGraph.createRepositorySnapshot({
                 owner,
                 repo,
