@@ -1,4 +1,4 @@
-name:  VULNERABLE WORKFLOW
+name: VULNERABLE WORKFLOW
 
 on:
   workflow_dispatch:
