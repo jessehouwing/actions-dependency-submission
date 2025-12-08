@@ -1,7 +1,14 @@
 /**
  * Unit tests for src/workflow-parser.ts
  */
-import { describe, it, expect, beforeEach, afterEach } from '@jest/globals'
+import {
+  describe,
+  it,
+  expect,
+  beforeEach,
+  afterEach,
+  jest
+} from '@jest/globals'
 import { WorkflowParser } from '../src/workflow-parser.js'
 import * as fs from 'fs'
 import * as os from 'os'
@@ -521,6 +528,409 @@ jobs:
       expect(result.callableWorkflows).toHaveLength(2)
       expect(result.callableWorkflows[0]).toBe('./workflows/reusable.yml')
       expect(result.callableWorkflows[1]).toBe('./workflows/reusable.yml')
+    })
+  })
+
+  describe('Remote composite actions and callable workflows', () => {
+    it('Does not fetch remote actions when no token provided', async () => {
+      const workflowContent = `
+name: Test Workflow
+on: push
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+`
+      const workflowFile = path.join(tempDir, 'test.yml')
+      fs.writeFileSync(workflowFile, workflowContent)
+
+      const parserNoToken = new WorkflowParser()
+      const dependencies = await parserNoToken.parseWorkflowDirectory(tempDir)
+
+      expect(dependencies).toHaveLength(1)
+      expect(dependencies[0]).toMatchObject({
+        owner: 'actions',
+        repo: 'checkout',
+        ref: 'v4'
+      })
+      expect(dependencies[0].isTransitive).toBeUndefined()
+    })
+
+    it('Marks dependencies from remote composite actions as transitive', async () => {
+      // Mock Octokit for fetching remote files
+      const mockOctokit = {
+        rest: {
+          repos: {
+            getContent: jest.fn().mockResolvedValue({
+              data: {
+                content: Buffer.from(`
+name: My Remote Action
+description: A remote composite action
+runs:
+  using: composite
+  steps:
+    - uses: actions/setup-node@v4
+    - uses: actions/cache@v3
+`).toString('base64')
+              }
+            })
+          }
+        }
+      }
+
+      // Create a parser with mocked octokit
+      const parserWithToken = new WorkflowParser('fake-token')
+      // @ts-expect-error - Replacing private property for testing
+      parserWithToken.octokit = mockOctokit
+
+      const workflowContent = `
+name: Test Workflow
+on: push
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: remote-org/my-composite-action@v1
+`
+      const workflowFile = path.join(tempDir, 'test.yml')
+      fs.writeFileSync(workflowFile, workflowContent)
+
+      const dependencies = await parserWithToken.parseWorkflowDirectory(
+        tempDir,
+        [],
+        tempDir
+      )
+
+      // Should have the direct dependency plus transitive dependencies
+      expect(dependencies.length).toBeGreaterThanOrEqual(1)
+
+      // Find the direct dependency
+      const directDep = dependencies.find(
+        (d) => d.owner === 'remote-org' && d.repo === 'my-composite-action'
+      )
+      expect(directDep).toBeDefined()
+      expect(directDep?.isTransitive).toBeUndefined()
+
+      // Find the transitive dependencies
+      const transitiveDeps = dependencies.filter((d) => d.isTransitive === true)
+      expect(transitiveDeps.length).toBeGreaterThanOrEqual(2)
+
+      const setupNodeDep = transitiveDeps.find(
+        (d) => d.owner === 'actions' && d.repo === 'setup-node'
+      )
+      expect(setupNodeDep).toBeDefined()
+      expect(setupNodeDep?.isTransitive).toBe(true)
+      expect(setupNodeDep?.ref).toBe('v4')
+
+      const cacheDep = transitiveDeps.find(
+        (d) => d.owner === 'actions' && d.repo === 'cache'
+      )
+      expect(cacheDep).toBeDefined()
+      expect(cacheDep?.isTransitive).toBe(true)
+      expect(cacheDep?.ref).toBe('v3')
+    })
+
+    it('Marks dependencies from remote callable workflows as transitive', async () => {
+      // Mock Octokit for fetching remote files
+      const mockOctokit = {
+        rest: {
+          repos: {
+            getContent: jest.fn().mockResolvedValue({
+              data: {
+                content: Buffer.from(`
+name: Reusable Workflow
+on:
+  workflow_call:
+    inputs:
+      param:
+        required: false
+        type: string
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+`).toString('base64')
+              }
+            })
+          }
+        }
+      }
+
+      // Create a parser with mocked octokit
+      const parserWithToken = new WorkflowParser('fake-token')
+      // @ts-expect-error - Replacing private property for testing
+      parserWithToken.octokit = mockOctokit
+
+      const workflowContent = `
+name: Test Workflow
+on: push
+jobs:
+  call-workflow:
+    uses: remote-org/my-repo/.github/workflows/reusable.yml@v1
+    with:
+      param: value
+`
+      const workflowFile = path.join(tempDir, 'test.yml')
+      fs.writeFileSync(workflowFile, workflowContent)
+
+      const dependencies = await parserWithToken.parseWorkflowDirectory(
+        tempDir,
+        [],
+        tempDir
+      )
+
+      // Should have the direct dependency plus transitive dependencies
+      expect(dependencies.length).toBeGreaterThanOrEqual(1)
+
+      // Find the direct dependency
+      const directDep = dependencies.find(
+        (d) => d.owner === 'remote-org' && d.repo === 'my-repo'
+      )
+      expect(directDep).toBeDefined()
+      expect(directDep?.isTransitive).toBeUndefined()
+
+      // Find the transitive dependencies
+      const transitiveDeps = dependencies.filter((d) => d.isTransitive === true)
+      expect(transitiveDeps.length).toBeGreaterThanOrEqual(2)
+
+      const checkoutDep = transitiveDeps.find(
+        (d) => d.owner === 'actions' && d.repo === 'checkout'
+      )
+      expect(checkoutDep).toBeDefined()
+      expect(checkoutDep?.isTransitive).toBe(true)
+      expect(checkoutDep?.ref).toBe('v4')
+
+      const setupPythonDep = transitiveDeps.find(
+        (d) => d.owner === 'actions' && d.repo === 'setup-python'
+      )
+      expect(setupPythonDep).toBeDefined()
+      expect(setupPythonDep?.isTransitive).toBe(true)
+      expect(setupPythonDep?.ref).toBe('v5')
+    })
+
+    it('Handles remote actions that are not composite', async () => {
+      // Mock Octokit for fetching remote files - returns a non-composite action
+      const mockOctokit = {
+        rest: {
+          repos: {
+            getContent: jest.fn().mockResolvedValue({
+              data: {
+                content: Buffer.from(`
+name: My Docker Action
+description: A Docker action
+runs:
+  using: docker
+  image: Dockerfile
+`).toString('base64')
+              }
+            })
+          }
+        }
+      }
+
+      // Create a parser with mocked octokit
+      const parserWithToken = new WorkflowParser('fake-token')
+      // @ts-expect-error - Replacing private property for testing
+      parserWithToken.octokit = mockOctokit
+
+      const workflowContent = `
+name: Test Workflow
+on: push
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: remote-org/my-docker-action@v1
+`
+      const workflowFile = path.join(tempDir, 'test.yml')
+      fs.writeFileSync(workflowFile, workflowContent)
+
+      const dependencies = await parserWithToken.parseWorkflowDirectory(
+        tempDir,
+        [],
+        tempDir
+      )
+
+      // Should only have the direct dependency, no transitive
+      expect(dependencies).toHaveLength(1)
+      expect(dependencies[0]).toMatchObject({
+        owner: 'remote-org',
+        repo: 'my-docker-action',
+        ref: 'v1'
+      })
+      expect(dependencies[0].isTransitive).toBeUndefined()
+    })
+
+    it('Handles errors when fetching remote actions gracefully', async () => {
+      // Mock Octokit for fetching remote files - returns an error
+      const mockOctokit = {
+        rest: {
+          repos: {
+            getContent: jest.fn().mockRejectedValue(new Error('Not found'))
+          }
+        }
+      }
+
+      // Create a parser with mocked octokit
+      const parserWithToken = new WorkflowParser('fake-token')
+      // @ts-expect-error - Replacing private property for testing
+      parserWithToken.octokit = mockOctokit
+
+      const workflowContent = `
+name: Test Workflow
+on: push
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: remote-org/nonexistent-action@v1
+`
+      const workflowFile = path.join(tempDir, 'test.yml')
+      fs.writeFileSync(workflowFile, workflowContent)
+
+      const dependencies = await parserWithToken.parseWorkflowDirectory(
+        tempDir,
+        [],
+        tempDir
+      )
+
+      // Should only have the direct dependency, no transitive
+      expect(dependencies).toHaveLength(1)
+      expect(dependencies[0]).toMatchObject({
+        owner: 'remote-org',
+        repo: 'nonexistent-action',
+        ref: 'v1'
+      })
+      expect(dependencies[0].isTransitive).toBeUndefined()
+    })
+
+    it('Does not process same remote action multiple times', async () => {
+      let fetchCount = 0
+      // Mock Octokit for fetching remote files
+      const mockOctokit = {
+        rest: {
+          repos: {
+            getContent: jest.fn().mockImplementation(() => {
+              fetchCount++
+              return Promise.resolve({
+                data: {
+                  content: Buffer.from(`
+name: My Remote Action
+description: A remote composite action
+runs:
+  using: composite
+  steps:
+    - uses: actions/setup-node@v4
+`).toString('base64')
+                }
+              })
+            })
+          }
+        }
+      }
+
+      // Create a parser with mocked octokit
+      const parserWithToken = new WorkflowParser('fake-token')
+      // @ts-expect-error - Replacing private property for testing
+      parserWithToken.octokit = mockOctokit
+
+      // Create two workflows that use the same remote action
+      const workflow1 = `
+name: Test Workflow 1
+on: push
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: remote-org/my-composite-action@v1
+`
+      const workflow2 = `
+name: Test Workflow 2
+on: push
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: remote-org/my-composite-action@v1
+`
+      fs.writeFileSync(path.join(tempDir, 'workflow1.yml'), workflow1)
+      fs.writeFileSync(path.join(tempDir, 'workflow2.yml'), workflow2)
+
+      const dependencies = await parserWithToken.parseWorkflowDirectory(
+        tempDir,
+        [],
+        tempDir
+      )
+
+      // Should fetch the remote action only once
+      expect(fetchCount).toBe(1)
+
+      // Should have two direct dependencies (one per workflow) plus transitive dependencies
+      const directDeps = dependencies.filter(
+        (d) => d.owner === 'remote-org' && d.repo === 'my-composite-action'
+      )
+      expect(directDeps).toHaveLength(2)
+
+      // Should have transitive dependencies
+      const transitiveDeps = dependencies.filter((d) => d.isTransitive === true)
+      expect(transitiveDeps.length).toBeGreaterThanOrEqual(1)
+    })
+
+    it('Transitive dependencies reference the calling workflow as manifest', async () => {
+      // Mock Octokit for fetching remote files
+      const mockOctokit = {
+        rest: {
+          repos: {
+            getContent: jest.fn().mockResolvedValue({
+              data: {
+                content: Buffer.from(`
+name: My Remote Action
+description: A remote composite action
+runs:
+  using: composite
+  steps:
+    - uses: actions/setup-node@v4
+`).toString('base64')
+              }
+            })
+          }
+        }
+      }
+
+      // Create a parser with mocked octokit
+      const parserWithToken = new WorkflowParser('fake-token')
+      // @ts-expect-error - Replacing private property for testing
+      parserWithToken.octokit = mockOctokit
+
+      const workflowContent = `
+name: Test Workflow
+on: push
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: remote-org/my-composite-action@v1
+`
+      const workflowFile = path.join(tempDir, 'test.yml')
+      fs.writeFileSync(workflowFile, workflowContent)
+
+      const dependencies = await parserWithToken.parseWorkflowDirectory(
+        tempDir,
+        [],
+        tempDir
+      )
+
+      // Find the transitive dependencies
+      const transitiveDeps = dependencies.filter((d) => d.isTransitive === true)
+      expect(transitiveDeps.length).toBeGreaterThanOrEqual(1)
+
+      // All transitive dependencies should reference the calling workflow
+      for (const dep of transitiveDeps) {
+        expect(dep.sourcePath).toBe('test.yml')
+      }
     })
   })
 })

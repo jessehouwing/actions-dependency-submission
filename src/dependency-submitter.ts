@@ -118,12 +118,14 @@ export class DependencySubmitter {
       const sourceManifests = dependenciesBySource.get(sourcePath)!
 
       // Add dependency entries for the forked repository
+      // Use isTransitive flag if set, otherwise default to false (direct)
       dependencyCount += this.addDependencyEntries(
         dep.owner,
         dep.repo,
         dep.ref,
         dep.originalSha,
-        sourceManifests
+        sourceManifests,
+        dep.isTransitive || false
       )
 
       if (dep.originalSha) {
