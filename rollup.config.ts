@@ -10,9 +10,17 @@ const config = {
     esModule: true,
     file: 'dist/index.js',
     format: 'es',
-    sourcemap: true
+    sourcemap: true,
+    exports: 'named'
   },
-  plugins: [typescript(), nodeResolve({ preferBuiltins: true }), commonjs()]
+  plugins: [
+    typescript(),
+    nodeResolve({ preferBuiltins: true }),
+    commonjs({
+      strictRequires: true,
+      sourceMap: true
+    })
+  ]
 }
 
 export default config
