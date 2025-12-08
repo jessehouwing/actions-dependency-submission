@@ -12,8 +12,11 @@ branding:
 # Define your inputs here.
 inputs:
   token:
-    description:
-      GitHub token with contents:write permission for dependency submission
+    description: >
+      GitHub token with contents:write permission for dependency submission. If
+      workflows reference private or internal actions in other repositories,
+      ensure those repositories are configured to allow access. The token will
+      automatically have contents:read access to allowed repositories.
     required: true
     default: ${{ github.token }}
   repository:
@@ -42,9 +45,11 @@ inputs:
     required: false
   public-github-token:
     description: >
-      GitHub token for accessing public GitHub (api.github.com) when running on
-      EMU, GitHub-DR, or GHES instances. Used to look up original actions from
-      public GitHub when they are not found on the local instance.
+      GitHub token with contents:read permission for accessing public GitHub
+      (api.github.com) when running on EMU, GitHub-DR, or GHES instances. Used
+      to look up original actions from public GitHub when they are not found on
+      the local instance. See environment-specific documentation in docs/ for
+      setup instructions.
     required: false
 
 # Define your outputs here.

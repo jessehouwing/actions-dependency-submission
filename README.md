@@ -44,8 +44,7 @@ jobs:
   submit-dependencies:
     runs-on: ubuntu-latest
     permissions:
-      contents: write # Required to read workflow files
-      id-token: write # Required for dependency submission
+      contents: write # Required for dependency submission
     steps:
       - uses: actions/checkout@v4
       - uses: jessehouwing/actions-dependency-submission@v1
@@ -119,11 +118,18 @@ Recovery (GitHub-DR), or GitHub Enterprise Server (GHES), and your workflows
 reference actions from public GitHub that aren't mirrored to your instance:
 
 ```yaml
-- uses: jessehouwing/actions-dependency-submission@v1
-  with:
-    token: ${{ secrets.GITHUB_TOKEN }}
-    fork-organizations: 'myenterprise'
-    public-github-token: ${{ secrets.PUBLIC_GITHUB_TOKEN }}
+jobs:
+  submit-dependencies:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write # Required for dependency submission
+    steps:
+      - uses: actions/checkout@v4
+      - uses: jessehouwing/actions-dependency-submission@v1
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          fork-organizations: 'myenterprise'
+          public-github-token: ${{ secrets.PUBLIC_GITHUB_TOKEN }}
 ```
 
 This configuration:
@@ -137,12 +143,10 @@ This configuration:
 - Resolves fork relationships and SHA-to-version mappings from the appropriate
   source
 
-**Note:** The `public-github-token` should be a
-[Personal Access Token (Classic)](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens#personal-access-tokens-classic)
-or
-[Fine-grained Personal Access Token](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens#fine-grained-personal-access-tokens)
-with `public_repo` (read-only) scope for accessing public repositories on
-GitHub.com.
+**Note:** The `public-github-token` requires `contents: read` permission for
+accessing public repositories on GitHub.com. See the [environment-specific
+documentation](#environment-specific-documentation) for detailed setup
+instructions for different token types.
 
 ## Inputs
 
@@ -235,10 +239,55 @@ advisories for both:
 The action requires the following permissions:
 
 ```yaml
-permissions:
-  contents: read # To read workflow files
-  id-token: write # For dependency submission API
+jobs:
+  submit-dependencies:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write # Required for dependency submission
+    steps:
+      # ... your steps
 ```
+
+**Important Notes:**
+
+- Always define permissions at the **job level**, not at the workflow level, to
+  follow the principle of least privilege
+- The primary `token` requires `contents: write` permission to submit
+  dependencies
+- If your workflows reference **private or internal actions** in other
+  repositories, you must configure repository access settings. See
+  [Allowing access to components in a private
+  repository](https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/enabling-features-for-your-repository/managing-github-actions-settings-for-a-repository#allowing-access-to-components-in-a-private-repository)
+- The optional `public-github-token` (for EMU/DR/GHES) requires `contents: read`
+  permission for public repositories on GitHub.com
+
+For detailed guidance on token permissions for different environments, see the
+[Environment-Specific Documentation](#environment-specific-documentation).
+
+## Environment-Specific Documentation
+
+For detailed configuration instructions, token setup, and best practices specific
+to your environment, please refer to the appropriate guide:
+
+- **[GitHub Public / GitHub Enterprise Cloud](docs/github-public.md)** -
+  Standard GitHub.com and GHEC environments
+- **[GitHub Enterprise Managed Users (EMU)](docs/github-emu.md)** - EMU
+  environments with forked actions
+- **[GitHub Disaster Recovery (GitHub-DR)](docs/github-dr.md)** - GitHub-DR
+  environments with action synchronization
+- **[GitHub Enterprise Server (GHES)](docs/github-ghes.md)** - Self-hosted GHES
+  instances
+
+Each guide covers:
+
+- ✅ Using workflow tokens (`GITHUB_TOKEN`)
+- ✅ Using GitHub App tokens (recommended for cross-repository access)
+- ✅ Using personal access tokens (with security warnings)
+- ✅ Required permissions for each token type
+- ✅ Handling private and internal actions
+- ✅ Complete working examples
+- ✅ Advantages and disadvantages of each approach
+- ✅ Environment-specific considerations
 
 ## Development
 
