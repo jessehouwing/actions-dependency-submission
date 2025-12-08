@@ -45,8 +45,6 @@ export class ForkResolver {
     })
   }
 
-
-
   /**
    * Resolves dependencies, identifying forked actions and their originals
    *
@@ -159,8 +157,6 @@ export class ForkResolver {
 
     return undefined
   }
-
-
 
   /**
    * Applies the fork regex pattern to extract original repository information

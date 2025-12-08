@@ -564,7 +564,8 @@ jobs:
           repos: {
             getContent: jest.fn().mockResolvedValue({
               data: {
-                content: Buffer.from(`
+                content: Buffer.from(
+                  `
 name: My Remote Action
 description: A remote composite action
 runs:
@@ -572,7 +573,8 @@ runs:
   steps:
     - uses: actions/setup-node@v4
     - uses: actions/cache@v3
-`).toString('base64')
+`
+                ).toString('base64')
               }
             })
           }
@@ -644,7 +646,8 @@ jobs:
           repos: {
             getContent: jest.fn().mockResolvedValue({
               data: {
-                content: Buffer.from(`
+                content: Buffer.from(
+                  `
 name: Reusable Workflow
 on:
   workflow_call:
@@ -658,7 +661,8 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
-`).toString('base64')
+`
+                ).toString('base64')
               }
             })
           }
@@ -668,7 +672,13 @@ jobs:
       // Create a parser with mocked octokit
       const parserWithToken = new WorkflowParser('fake-token')
       // @ts-expect-error - Replacing private property for testing
-      parserWithToken.octokitProvider = { getOctokitForRepo: jest.fn().mockResolvedValue(mockOctokit), getOctokit: jest.fn().mockReturnValue(mockOctokit), getPublicOctokit: jest.fn().mockReturnValue(undefined), getRepoInfo: jest.fn().mockResolvedValue(undefined), repoExists: jest.fn().mockResolvedValue(true) }
+      parserWithToken.octokitProvider = {
+        getOctokitForRepo: jest.fn().mockResolvedValue(mockOctokit),
+        getOctokit: jest.fn().mockReturnValue(mockOctokit),
+        getPublicOctokit: jest.fn().mockReturnValue(undefined),
+        getRepoInfo: jest.fn().mockResolvedValue(undefined),
+        repoExists: jest.fn().mockResolvedValue(true)
+      }
 
       const workflowContent = `
 name: Test Workflow
@@ -724,13 +734,15 @@ jobs:
           repos: {
             getContent: jest.fn().mockResolvedValue({
               data: {
-                content: Buffer.from(`
+                content: Buffer.from(
+                  `
 name: My Docker Action
 description: A Docker action
 runs:
   using: docker
   image: Dockerfile
-`).toString('base64')
+`
+                ).toString('base64')
               }
             })
           }
@@ -740,7 +752,13 @@ runs:
       // Create a parser with mocked octokit
       const parserWithToken = new WorkflowParser('fake-token')
       // @ts-expect-error - Replacing private property for testing
-      parserWithToken.octokitProvider = { getOctokitForRepo: jest.fn().mockResolvedValue(mockOctokit), getOctokit: jest.fn().mockReturnValue(mockOctokit), getPublicOctokit: jest.fn().mockReturnValue(undefined), getRepoInfo: jest.fn().mockResolvedValue(undefined), repoExists: jest.fn().mockResolvedValue(true) }
+      parserWithToken.octokitProvider = {
+        getOctokitForRepo: jest.fn().mockResolvedValue(mockOctokit),
+        getOctokit: jest.fn().mockReturnValue(mockOctokit),
+        getPublicOctokit: jest.fn().mockReturnValue(undefined),
+        getRepoInfo: jest.fn().mockResolvedValue(undefined),
+        repoExists: jest.fn().mockResolvedValue(true)
+      }
 
       const workflowContent = `
 name: Test Workflow
@@ -783,7 +801,13 @@ jobs:
       // Create a parser with mocked octokit
       const parserWithToken = new WorkflowParser('fake-token')
       // @ts-expect-error - Replacing private property for testing
-      parserWithToken.octokitProvider = { getOctokitForRepo: jest.fn().mockResolvedValue(mockOctokit), getOctokit: jest.fn().mockReturnValue(mockOctokit), getPublicOctokit: jest.fn().mockReturnValue(undefined), getRepoInfo: jest.fn().mockResolvedValue(undefined), repoExists: jest.fn().mockResolvedValue(true) }
+      parserWithToken.octokitProvider = {
+        getOctokitForRepo: jest.fn().mockResolvedValue(mockOctokit),
+        getOctokit: jest.fn().mockReturnValue(mockOctokit),
+        getPublicOctokit: jest.fn().mockReturnValue(undefined),
+        getRepoInfo: jest.fn().mockResolvedValue(undefined),
+        repoExists: jest.fn().mockResolvedValue(true)
+      }
 
       const workflowContent = `
 name: Test Workflow
@@ -823,14 +847,16 @@ jobs:
               fetchCount++
               return Promise.resolve({
                 data: {
-                  content: Buffer.from(`
+                  content: Buffer.from(
+                    `
 name: My Remote Action
 description: A remote composite action
 runs:
   using: composite
   steps:
     - uses: actions/setup-node@v4
-`).toString('base64')
+`
+                  ).toString('base64')
                 }
               })
             })
@@ -841,7 +867,13 @@ runs:
       // Create a parser with mocked octokit
       const parserWithToken = new WorkflowParser('fake-token')
       // @ts-expect-error - Replacing private property for testing
-      parserWithToken.octokitProvider = { getOctokitForRepo: jest.fn().mockResolvedValue(mockOctokit), getOctokit: jest.fn().mockReturnValue(mockOctokit), getPublicOctokit: jest.fn().mockReturnValue(undefined), getRepoInfo: jest.fn().mockResolvedValue(undefined), repoExists: jest.fn().mockResolvedValue(true) }
+      parserWithToken.octokitProvider = {
+        getOctokitForRepo: jest.fn().mockResolvedValue(mockOctokit),
+        getOctokit: jest.fn().mockReturnValue(mockOctokit),
+        getPublicOctokit: jest.fn().mockReturnValue(undefined),
+        getRepoInfo: jest.fn().mockResolvedValue(undefined),
+        repoExists: jest.fn().mockResolvedValue(true)
+      }
 
       // Create two workflows that use the same remote action
       const workflow1 = `
@@ -892,14 +924,16 @@ jobs:
           repos: {
             getContent: jest.fn().mockResolvedValue({
               data: {
-                content: Buffer.from(`
+                content: Buffer.from(
+                  `
 name: My Remote Action
 description: A remote composite action
 runs:
   using: composite
   steps:
     - uses: actions/setup-node@v4
-`).toString('base64')
+`
+                ).toString('base64')
               }
             })
           }
@@ -909,7 +943,13 @@ runs:
       // Create a parser with mocked octokit
       const parserWithToken = new WorkflowParser('fake-token')
       // @ts-expect-error - Replacing private property for testing
-      parserWithToken.octokitProvider = { getOctokitForRepo: jest.fn().mockResolvedValue(mockOctokit), getOctokit: jest.fn().mockReturnValue(mockOctokit), getPublicOctokit: jest.fn().mockReturnValue(undefined), getRepoInfo: jest.fn().mockResolvedValue(undefined), repoExists: jest.fn().mockResolvedValue(true) }
+      parserWithToken.octokitProvider = {
+        getOctokitForRepo: jest.fn().mockResolvedValue(mockOctokit),
+        getOctokit: jest.fn().mockReturnValue(mockOctokit),
+        getPublicOctokit: jest.fn().mockReturnValue(undefined),
+        getRepoInfo: jest.fn().mockResolvedValue(undefined),
+        repoExists: jest.fn().mockResolvedValue(true)
+      }
 
       const workflowContent = `
 name: Test Workflow
@@ -937,6 +977,178 @@ jobs:
       for (const dep of transitiveDeps) {
         expect(dep.sourcePath).toBe('test.yml')
       }
+    })
+
+    it('Uses the correct ref when fetching remote composite actions', async () => {
+      // Mock Octokit to track calls
+      const mockGetContent = jest.fn().mockResolvedValue({
+        data: {
+          content: Buffer.from(`
+name: My Remote Action
+description: A remote composite action
+runs:
+  using: composite
+  steps:
+    - uses: actions/setup-node@v4
+`).toString('base64')
+        }
+      })
+
+      const mockOctokit = {
+        rest: {
+          repos: {
+            getContent: mockGetContent
+          }
+        }
+      }
+
+      // Create a parser with mocked octokit
+      const parserWithToken = new WorkflowParser('fake-token')
+      // @ts-expect-error - Replacing private property for testing
+      parserWithToken.octokitProvider = {
+        getOctokitForRepo: jest.fn().mockResolvedValue(mockOctokit),
+        getOctokit: jest.fn().mockReturnValue(mockOctokit),
+        getPublicOctokit: jest.fn().mockReturnValue(undefined),
+        getRepoInfo: jest.fn().mockResolvedValue(undefined),
+        repoExists: jest.fn().mockResolvedValue(true)
+      }
+
+      const workflowContent = `
+name: Test Workflow
+on: push
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: remote-org/my-composite-action@v2.1.0
+`
+      const workflowFile = path.join(tempDir, 'test.yml')
+      fs.writeFileSync(workflowFile, workflowContent)
+
+      await parserWithToken.parseWorkflowDirectory(tempDir, [], tempDir)
+
+      // Verify getContent was called with the correct ref
+      expect(mockGetContent).toHaveBeenCalledWith({
+        owner: 'remote-org',
+        repo: 'my-composite-action',
+        path: 'action.yml',
+        ref: 'v2.1.0'
+      })
+    })
+
+    it('Uses the correct ref when fetching remote callable workflows', async () => {
+      // Mock Octokit to track calls
+      const mockGetContent = jest.fn().mockResolvedValue({
+        data: {
+          content: Buffer.from(`
+name: Reusable Workflow
+on:
+  workflow_call:
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+`).toString('base64')
+        }
+      })
+
+      const mockOctokit = {
+        rest: {
+          repos: {
+            getContent: mockGetContent
+          }
+        }
+      }
+
+      // Create a parser with mocked octokit
+      const parserWithToken = new WorkflowParser('fake-token')
+      // @ts-expect-error - Replacing private property for testing
+      parserWithToken.octokitProvider = {
+        getOctokitForRepo: jest.fn().mockResolvedValue(mockOctokit),
+        getOctokit: jest.fn().mockReturnValue(mockOctokit),
+        getPublicOctokit: jest.fn().mockReturnValue(undefined),
+        getRepoInfo: jest.fn().mockResolvedValue(undefined),
+        repoExists: jest.fn().mockResolvedValue(true)
+      }
+
+      const workflowContent = `
+name: Test Workflow
+on: push
+jobs:
+  call-workflow:
+    uses: remote-org/my-repo/.github/workflows/reusable.yml@main
+`
+      const workflowFile = path.join(tempDir, 'test.yml')
+      fs.writeFileSync(workflowFile, workflowContent)
+
+      await parserWithToken.parseWorkflowDirectory(tempDir, [], tempDir)
+
+      // Verify getContent was called with the correct ref
+      expect(mockGetContent).toHaveBeenCalledWith({
+        owner: 'remote-org',
+        repo: 'my-repo',
+        path: '.github/workflows/reusable.yml',
+        ref: 'main'
+      })
+    })
+
+    it('Uses SHA when provided as ref', async () => {
+      // Mock Octokit to track calls
+      const mockGetContent = jest.fn().mockResolvedValue({
+        data: {
+          content: Buffer.from(`
+name: My Remote Action
+description: A remote composite action
+runs:
+  using: composite
+  steps:
+    - uses: actions/setup-node@v4
+`).toString('base64')
+        }
+      })
+
+      const mockOctokit = {
+        rest: {
+          repos: {
+            getContent: mockGetContent
+          }
+        }
+      }
+
+      // Create a parser with mocked octokit
+      const parserWithToken = new WorkflowParser('fake-token')
+      // @ts-expect-error - Replacing private property for testing
+      parserWithToken.octokitProvider = {
+        getOctokitForRepo: jest.fn().mockResolvedValue(mockOctokit),
+        getOctokit: jest.fn().mockReturnValue(mockOctokit),
+        getPublicOctokit: jest.fn().mockReturnValue(undefined),
+        getRepoInfo: jest.fn().mockResolvedValue(undefined),
+        repoExists: jest.fn().mockResolvedValue(true)
+      }
+
+      const sha = 'abc123def456abc123def456abc123def456abcd'
+      const workflowContent = `
+name: Test Workflow
+on: push
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: remote-org/my-composite-action@${sha}
+`
+      const workflowFile = path.join(tempDir, 'test.yml')
+      fs.writeFileSync(workflowFile, workflowContent)
+
+      await parserWithToken.parseWorkflowDirectory(tempDir, [], tempDir)
+
+      // Verify getContent was called with the SHA
+      expect(mockGetContent).toHaveBeenCalledWith({
+        owner: 'remote-org',
+        repo: 'my-composite-action',
+        path: 'action.yml',
+        ref: sha
+      })
     })
   })
 })

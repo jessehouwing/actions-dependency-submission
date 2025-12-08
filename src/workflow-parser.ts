@@ -524,12 +524,10 @@ export class WorkflowParser {
         return transitiveDeps
       }
 
-      // Check if it's a callable workflow (uses pattern like owner/repo/.github/workflows/file.yml@ref)
-      if (
-        dependency.uses.includes('/.github/workflows/') ||
-        dependency.uses.includes('.yml@') ||
-        dependency.uses.includes('.yaml@')
-      ) {
+      // Check if it's a callable workflow (uses pattern like owner/repo/path/to/workflow.yml@ref)
+      // Callable workflows have a path component with a .yml or .yaml extension
+      const callableWorkflowPattern = /^[^/]+\/[^/]+\/.+\.ya?ml@.+$/
+      if (callableWorkflowPattern.test(dependency.uses)) {
         return await this.processRemoteCallableWorkflow(
           dependency,
           callingWorkflowPath
@@ -561,14 +559,15 @@ export class WorkflowParser {
 
     try {
       // Extract workflow path from uses string (e.g., owner/repo/.github/workflows/file.yml@ref)
+      // Pattern: owner/repo/path/to/workflow.yml@ref
       const workflowPathMatch = dependency.uses.match(
-        /^[^/]+\/[^/]+\/(.+\.ya?ml)@.+$/
+        /^[^/]+\/[^/]+\/(?<path>.+\.ya?ml)@.+$/
       )
-      if (!workflowPathMatch) {
+      if (!workflowPathMatch || !workflowPathMatch.groups?.path) {
         return []
       }
 
-      const workflowPath = workflowPathMatch[1]
+      const workflowPath = workflowPathMatch.groups.path
 
       // Fetch the remote workflow file
       const workflowContent = await this.fetchRemoteFile(

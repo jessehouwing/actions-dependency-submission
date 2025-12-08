@@ -38114,9 +38114,132 @@ function parse(src, reviver, options) {
 }
 
 /**
+ * Public GitHub API base URL
+ */
+const PUBLIC_GITHUB_API_URL = 'https://api.github.com';
+/**
+ * Provides Octokit instances with automatic fallback from local to public GitHub
+ * Caches decisions to avoid redundant API calls
+ */
+class OctokitProvider {
+    octokit;
+    publicOctokit;
+    publicRepoCache = new Map();
+    constructor(config) {
+        this.octokit = githubExports.getOctokit(config.token);
+        // Create a separate Octokit instance for public GitHub if token provided
+        if (config.publicGitHubToken) {
+            this.publicOctokit = githubExports.getOctokit(config.publicGitHubToken, {
+                baseUrl: PUBLIC_GITHUB_API_URL
+            });
+        }
+    }
+    /**
+     * Get the primary Octokit instance
+     */
+    getOctokit() {
+        return this.octokit;
+    }
+    /**
+     * Get the public GitHub Octokit instance if available
+     */
+    getPublicOctokit() {
+        return this.publicOctokit;
+    }
+    /**
+     * Determines which Octokit instance to use for a repository
+     * Caches the decision to avoid redundant checks
+     *
+     * @param owner Repository owner
+     * @param repo Repository name
+     * @returns The appropriate Octokit instance
+     */
+    async getOctokitForRepo(owner, repo) {
+        const repoKey = `${owner}/${repo}`;
+        // Check cache first
+        if (this.publicRepoCache.has(repoKey)) {
+            const usePublic = this.publicRepoCache.get(repoKey);
+            return usePublic && this.publicOctokit ? this.publicOctokit : this.octokit;
+        }
+        // Try local instance first
+        try {
+            await this.octokit.rest.repos.get({ owner, repo });
+            // Repository exists locally
+            this.publicRepoCache.set(repoKey, false);
+            coreExports.debug(`Repository ${repoKey} found on local instance`);
+            return this.octokit;
+        }
+        catch (error) {
+            coreExports.debug(`Repository ${repoKey} not found on local instance: ${error}`);
+        }
+        // Try public GitHub if available
+        if (this.publicOctokit) {
+            try {
+                await this.publicOctokit.rest.repos.get({ owner, repo });
+                // Repository exists on public GitHub
+                this.publicRepoCache.set(repoKey, true);
+                coreExports.info(`Repository ${repoKey} found on public GitHub - will use public API for all operations`);
+                return this.publicOctokit;
+            }
+            catch (error) {
+                coreExports.debug(`Repository ${repoKey} not found on public GitHub: ${error}`);
+            }
+        }
+        // Default to local instance
+        this.publicRepoCache.set(repoKey, false);
+        return this.octokit;
+    }
+    /**
+     * Gets repository information using the appropriate API
+     *
+     * @param owner Repository owner
+     * @param repo Repository name
+     * @returns Repository data or undefined if not found
+     */
+    async getRepoInfo(owner, repo) {
+        const octokit = await this.getOctokitForRepo(owner, repo);
+        try {
+            const { data } = await octokit.rest.repos.get({ owner, repo });
+            return data;
+        }
+        catch (error) {
+            coreExports.debug(`Failed to fetch repository info for ${owner}/${repo}: ${error}`);
+            return undefined;
+        }
+    }
+    /**
+     * Checks if a repository exists and determines which API to use
+     * This is a lighter-weight version that doesn't return full repo info
+     *
+     * @param owner Repository owner
+     * @param repo Repository name
+     * @returns True if repository exists, false otherwise
+     */
+    async repoExists(owner, repo) {
+        try {
+            await this.getOctokitForRepo(owner, repo);
+            return true;
+        }
+        catch {
+            return false;
+        }
+    }
+}
+
+/**
  * Parses workflow files to extract action dependencies
  */
 class WorkflowParser {
+    octokitProvider;
+    processedRemoteActions = new Set();
+    constructor(token, publicGitHubToken) {
+        if (token) {
+            this.octokitProvider = new OctokitProvider({
+                token,
+                publicGitHubToken
+            });
+        }
+    }
     /**
      * Scans a directory for workflow files and extracts all action dependencies
      *
@@ -38165,6 +38288,22 @@ class WorkflowParser {
                     const resolvedPath = this.resolveLocalPath(filePath, callableWorkflow, repoRoot);
                     if (resolvedPath && !processedFiles.has(resolvedPath)) {
                         filesToProcess.push(resolvedPath);
+                    }
+                }
+            }
+            // Process remote composite actions and callable workflows if octokit is available
+            if (this.octokitProvider) {
+                // Get relative path for source tracking
+                const relativePath = repoRoot
+                    ? path.relative(repoRoot, filePath)
+                    : filePath;
+                // Process remote composite actions
+                for (const dep of result.dependencies) {
+                    const remoteActionKey = `${dep.owner}/${dep.repo}@${dep.ref}`;
+                    if (!this.processedRemoteActions.has(remoteActionKey)) {
+                        this.processedRemoteActions.add(remoteActionKey);
+                        const remoteDeps = await this.processRemoteCompositeAction(dep, relativePath);
+                        dependencies.push(...remoteDeps);
                     }
                 }
             }
@@ -38429,74 +38568,207 @@ class WorkflowParser {
         }
         return files;
     }
+    /**
+     * Process remote composite action to extract transitive dependencies
+     *
+     * @param dependency Remote action dependency
+     * @param callingWorkflowPath Path of the workflow that references this action
+     * @returns Array of transitive dependencies from the remote action
+     */
+    async processRemoteCompositeAction(dependency, callingWorkflowPath) {
+        if (!this.octokitProvider) {
+            return [];
+        }
+        try {
+            // Try to fetch action.yml or action.yaml from the remote repository
+            const actionContent = await this.fetchRemoteActionFile(dependency.owner, dependency.repo, dependency.ref);
+            if (!actionContent) {
+                return [];
+            }
+            // Parse the action file
+            const actionYaml = parse(actionContent, { merge: true });
+            if (!actionYaml) {
+                return [];
+            }
+            // Check if it's a composite action
+            if (actionYaml.runs?.using === 'composite') {
+                coreExports.info(`Processing remote composite action: ${dependency.owner}/${dependency.repo}@${dependency.ref}`);
+                const transitiveDeps = [];
+                // Extract dependencies from composite action steps
+                if (actionYaml.runs.steps && Array.isArray(actionYaml.runs.steps)) {
+                    for (const step of actionYaml.runs.steps) {
+                        if (step.uses) {
+                            const result = this.parseUsesString(step.uses);
+                            if (result.dependency) {
+                                // Mark as transitive and reference the calling workflow as manifest
+                                transitiveDeps.push({
+                                    ...result.dependency,
+                                    sourcePath: callingWorkflowPath,
+                                    isTransitive: true
+                                });
+                            }
+                        }
+                    }
+                }
+                return transitiveDeps;
+            }
+            // Check if it's a callable workflow (uses pattern like owner/repo/path/to/workflow.yml@ref)
+            // Callable workflows have a path component with a .yml or .yaml extension
+            const callableWorkflowPattern = /^[^/]+\/[^/]+\/.+\.ya?ml@.+$/;
+            if (callableWorkflowPattern.test(dependency.uses)) {
+                return await this.processRemoteCallableWorkflow(dependency, callingWorkflowPath);
+            }
+        }
+        catch (error) {
+            coreExports.debug(`Failed to process remote action ${dependency.owner}/${dependency.repo}@${dependency.ref}: ${error}`);
+        }
+        return [];
+    }
+    /**
+     * Process remote callable workflow to extract transitive dependencies
+     *
+     * @param dependency Remote workflow dependency
+     * @param callingWorkflowPath Path of the workflow that references this callable workflow
+     * @returns Array of transitive dependencies from the remote workflow
+     */
+    async processRemoteCallableWorkflow(dependency, callingWorkflowPath) {
+        if (!this.octokitProvider) {
+            return [];
+        }
+        try {
+            // Extract workflow path from uses string (e.g., owner/repo/.github/workflows/file.yml@ref)
+            // Pattern: owner/repo/path/to/workflow.yml@ref
+            const workflowPathMatch = dependency.uses.match(/^[^/]+\/[^/]+\/(?<path>.+\.ya?ml)@.+$/);
+            if (!workflowPathMatch || !workflowPathMatch.groups?.path) {
+                return [];
+            }
+            const workflowPath = workflowPathMatch.groups.path;
+            // Fetch the remote workflow file
+            const workflowContent = await this.fetchRemoteFile(dependency.owner, dependency.repo, workflowPath, dependency.ref);
+            if (!workflowContent) {
+                return [];
+            }
+            // Parse the workflow file
+            const workflowYaml = parse(workflowContent, { merge: true });
+            if (!workflowYaml) {
+                return [];
+            }
+            // Check if it's a callable workflow
+            if (workflowYaml.on?.workflow_call) {
+                coreExports.info(`Processing remote callable workflow: ${dependency.owner}/${dependency.repo}/${workflowPath}@${dependency.ref}`);
+                const transitiveDeps = [];
+                // Extract dependencies from workflow jobs
+                if (workflowYaml.jobs) {
+                    for (const jobName in workflowYaml.jobs) {
+                        const job = workflowYaml.jobs[jobName];
+                        // Check for callable workflows at job level
+                        if (job.uses) {
+                            const result = this.parseUsesString(job.uses);
+                            if (result.dependency) {
+                                transitiveDeps.push({
+                                    ...result.dependency,
+                                    sourcePath: callingWorkflowPath,
+                                    isTransitive: true
+                                });
+                            }
+                        }
+                        // Check steps for action dependencies
+                        if (typeof job === 'object' && job !== null && 'steps' in job) {
+                            const steps = job.steps;
+                            if (Array.isArray(steps)) {
+                                for (const step of steps) {
+                                    if (typeof step === 'object' &&
+                                        step !== null &&
+                                        'uses' in step) {
+                                        const uses = step.uses;
+                                        const result = this.parseUsesString(uses);
+                                        if (result.dependency) {
+                                            transitiveDeps.push({
+                                                ...result.dependency,
+                                                sourcePath: callingWorkflowPath,
+                                                isTransitive: true
+                                            });
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+                return transitiveDeps;
+            }
+        }
+        catch (error) {
+            coreExports.debug(`Failed to process remote callable workflow ${dependency.owner}/${dependency.repo}: ${error}`);
+        }
+        return [];
+    }
+    /**
+     * Fetch action.yml or action.yaml from a remote repository
+     *
+     * @param owner Repository owner
+     * @param repo Repository name
+     * @param ref Git ref
+     * @returns Action file content or null if not found
+     */
+    async fetchRemoteActionFile(owner, repo, ref) {
+        // Try action.yml first
+        let content = await this.fetchRemoteFile(owner, repo, 'action.yml', ref);
+        if (content) {
+            return content;
+        }
+        // Try action.yaml
+        content = await this.fetchRemoteFile(owner, repo, 'action.yaml', ref);
+        return content;
+    }
+    /**
+     * Fetch a file from a remote repository
+     *
+     * @param owner Repository owner
+     * @param repo Repository name
+     * @param path File path
+     * @param ref Git ref
+     * @returns File content or null if not found
+     */
+    async fetchRemoteFile(owner, repo, filePath, ref) {
+        if (!this.octokitProvider) {
+            return null;
+        }
+        try {
+            const octokit = await this.octokitProvider.getOctokitForRepo(owner, repo);
+            const { data } = await octokit.rest.repos.getContent({
+                owner,
+                repo,
+                path: filePath,
+                ref
+            });
+            // Check if it's a file (not a directory or submodule)
+            if ('content' in data && typeof data.content === 'string') {
+                // Content is base64 encoded
+                return Buffer.from(data.content, 'base64').toString('utf-8');
+            }
+        }
+        catch (error) {
+            coreExports.debug(`Failed to fetch ${filePath} from ${owner}/${repo}@${ref}: ${error}`);
+        }
+        return null;
+    }
 }
 
-/**
- * Public GitHub API base URL
- */
-const PUBLIC_GITHUB_API_URL = 'https://api.github.com';
 /**
  * Resolves forked action dependencies to their original sources
  */
 class ForkResolver {
     forkOrganizations;
     forkRegex;
-    octokit;
-    publicOctokit;
-    publicRepoCache = new Map();
+    octokitProvider;
     constructor(config) {
         this.forkOrganizations = new Set(config.forkOrganizations);
         this.forkRegex = config.forkRegex;
-        this.octokit = githubExports.getOctokit(config.token);
-        // Create a separate Octokit instance for public GitHub if token provided
-        if (config.publicGitHubToken) {
-            this.publicOctokit = githubExports.getOctokit(config.publicGitHubToken, {
-                baseUrl: PUBLIC_GITHUB_API_URL
-            });
-        }
-    }
-    /**
-     * Determines which Octokit instance to use for a repository
-     * Caches the decision to avoid redundant checks
-     *
-     * @param owner Repository owner
-     * @param repo Repository name
-     * @returns The appropriate Octokit instance
-     */
-    async getOctokitForRepo(owner, repo) {
-        const repoKey = `${owner}/${repo}`;
-        // Check cache first
-        if (this.publicRepoCache.has(repoKey)) {
-            const usePublic = this.publicRepoCache.get(repoKey);
-            return usePublic && this.publicOctokit ? this.publicOctokit : this.octokit;
-        }
-        // Try local instance first
-        try {
-            await this.octokit.rest.repos.get({ owner, repo });
-            // Repository exists locally
-            this.publicRepoCache.set(repoKey, false);
-            coreExports.debug(`Repository ${repoKey} found on local instance`);
-            return this.octokit;
-        }
-        catch (error) {
-            coreExports.debug(`Repository ${repoKey} not found on local instance: ${error}`);
-        }
-        // Try public GitHub if available
-        if (this.publicOctokit) {
-            try {
-                await this.publicOctokit.rest.repos.get({ owner, repo });
-                // Repository exists on public GitHub
-                this.publicRepoCache.set(repoKey, true);
-                coreExports.info(`Repository ${repoKey} found on public GitHub - will use public API for all operations`);
-                return this.publicOctokit;
-            }
-            catch (error) {
-                coreExports.debug(`Repository ${repoKey} not found on public GitHub: ${error}`);
-            }
-        }
-        // Default to local instance
-        this.publicRepoCache.set(repoKey, false);
-        return this.octokit;
+        this.octokitProvider = new OctokitProvider({
+            token: config.token,
+            publicGitHubToken: config.publicGitHubToken
+        });
     }
     /**
      * Resolves dependencies, identifying forked actions and their originals
@@ -38536,7 +38808,8 @@ class ForkResolver {
             repo: dependency.repo,
             ref: resolvedRef,
             sourcePath: dependency.sourcePath,
-            originalSha
+            originalSha,
+            isTransitive: dependency.isTransitive
         };
         // Check if this dependency is from a fork organization
         if (!this.forkOrganizations.has(dependency.owner)) {
@@ -38567,64 +38840,13 @@ class ForkResolver {
             }
         }
         // Try to get fork information using the appropriate instance
-        const repoInfo = await this.getRepoInfo(owner, repo);
+        const repoInfo = await this.octokitProvider.getRepoInfo(owner, repo);
         if (repoInfo?.fork && repoInfo.parent) {
             return {
                 owner: repoInfo.parent.owner.login,
                 repo: repoInfo.parent.name
             };
         }
-        return undefined;
-    }
-    /**
-     * Gets repository information and determines which API to use
-     *
-     * @param owner Repository owner
-     * @param repo Repository name
-     * @returns Repository data or undefined
-     */
-    async getRepoInfo(owner, repo) {
-        const repoKey = `${owner}/${repo}`;
-        // Check cache first to see if we've already determined where this repo lives
-        if (this.publicRepoCache.has(repoKey)) {
-            const usePublic = this.publicRepoCache.get(repoKey);
-            const octokit = usePublic && this.publicOctokit ? this.publicOctokit : this.octokit;
-            try {
-                const { data } = await octokit.rest.repos.get({ owner, repo });
-                return data;
-            }
-            catch (error) {
-                coreExports.debug(`Failed to fetch repository info for ${owner}/${repo}: ${error}`);
-                return undefined;
-            }
-        }
-        // Try local instance first
-        try {
-            const { data } = await this.octokit.rest.repos.get({ owner, repo });
-            this.publicRepoCache.set(repoKey, false);
-            coreExports.debug(`Repository ${repoKey} found on local instance`);
-            return data;
-        }
-        catch (error) {
-            coreExports.debug(`Repository ${repoKey} not found on local instance: ${error}`);
-        }
-        // Try public GitHub if available
-        if (this.publicOctokit) {
-            try {
-                const { data } = await this.publicOctokit.rest.repos.get({
-                    owner,
-                    repo
-                });
-                this.publicRepoCache.set(repoKey, true);
-                coreExports.info(`Repository ${repoKey} found on public GitHub - will use public API for all operations`);
-                return data;
-            }
-            catch (error) {
-                coreExports.debug(`Repository ${repoKey} not found on public GitHub: ${error}`);
-            }
-        }
-        // Default to local instance for cache purposes
-        this.publicRepoCache.set(repoKey, false);
         return undefined;
     }
     /**
@@ -38713,7 +38935,7 @@ class ForkResolver {
      */
     async fetchRepositoryTags(owner, repo) {
         // Get the appropriate Octokit instance for this repository
-        const octokit = await this.getOctokitForRepo(owner, repo);
+        const octokit = await this.octokitProvider.getOctokitForRepo(owner, repo);
         try {
             const tags = [];
             let page = 1;
@@ -38914,7 +39136,8 @@ class DependencySubmitter {
             }
             const sourceManifests = dependenciesBySource.get(sourcePath);
             // Add dependency entries for the forked repository
-            dependencyCount += this.addDependencyEntries(dep.owner, dep.repo, dep.ref, dep.originalSha, sourceManifests);
+            // Use isTransitive flag if set, otherwise default to false (direct)
+            dependencyCount += this.addDependencyEntries(dep.owner, dep.repo, dep.ref, dep.originalSha, sourceManifests, dep.isTransitive || false);
             if (dep.originalSha) {
                 coreExports.info(`Resolved SHA ${dep.originalSha} to version ${dep.ref} for ${dep.owner}/${dep.repo} - reporting both`);
             }
@@ -39079,7 +39302,7 @@ async function run() {
         // Get repository root for resolving local paths
         const repoRoot = process.env.GITHUB_WORKSPACE || process.cwd();
         // Parse workflow files (with composite actions and callable workflows support)
-        const parser = new WorkflowParser();
+        const parser = new WorkflowParser(token, publicGitHubToken || undefined);
         const dependencies = await parser.parseWorkflowDirectory(workflowDirectory, additionalPaths, repoRoot);
         coreExports.info(`Found ${dependencies.length} action dependencies`);
         if (dependencies.length === 0) {
