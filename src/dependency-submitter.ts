@@ -73,8 +73,8 @@ export class DependencySubmitter {
         : DEPENDENCY_RELATIONSHIP.DIRECT
 
     // When a SHA was resolved to a version, report both:
-    // - The SHA as a direct dependency (or indirect if transitive and not reporting as direct)
-    // - The version as an indirect dependency
+    // - The SHA with the effective relationship (direct or indirect based on configuration)
+    // - The version with the same relationship when reportTransitiveAsDirect is true, otherwise indirect
     if (originalSha) {
       // Add SHA
       const shaPurl = this.createPackageUrl(
@@ -90,11 +90,13 @@ export class DependencySubmitter {
       })
       count++
 
-      // Add version as indirect
+      // Add version - use same relationship as SHA when reporting transitive as direct
       const versionPurl = this.createPackageUrl(owner, repo, ref, actionPath)
       manifests.push({
         package_url: versionPurl,
-        relationship: DEPENDENCY_RELATIONSHIP.INDIRECT,
+        relationship: reportTransitiveAsDirect
+          ? effectiveRelationship
+          : DEPENDENCY_RELATIONSHIP.INDIRECT,
         scope: DEPENDENCY_SCOPE.RUNTIME
       })
       count++
