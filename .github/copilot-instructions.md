@@ -95,7 +95,7 @@ npm run bundle
 
 ### Linting
 
-Multiple linting tools are confugured for the repository. Ensure that all reported 
+Multiple linting tools are configured for the repository. Ensure that all reported 
 issues are resolved when completing a change.
 
  * YamlLint
