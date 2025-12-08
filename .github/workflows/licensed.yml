@@ -15,6 +15,7 @@ on:
 
 permissions:
   contents: write
+  pull-requests: write
 
 jobs:
   licensed:
@@ -54,16 +55,34 @@ jobs:
         id: update-licenses
         run: licensed cache
 
-      # Then, commit the updated licenses to the repository.
+      # Then, create a new branch, commit the updated licenses, and create a PR.
       - if: ${{ github.event_name == 'workflow_dispatch' }}
-        name: Commit Licenses
+        name: Create Branch and Commit Licenses
         id: commit-licenses
         run: |
           git config --local user.email "licensed-ci@users.noreply.github.com"
           git config --local user.name "licensed-ci"
+
+          # Delete remote branch if it exists
+          git push origin --delete licensed/update || true
+
+          # Create and switch to new branch
+          git checkout -b licensed/update
           git add .
           git commit -m "Auto-update license files"
-          git push
+          git push -u origin licensed/update
+
+      - if: ${{ github.event_name == 'workflow_dispatch' }}
+        name: Create Pull Request
+        id: create-pr
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh pr create \
+            --title "Auto-update license files" \
+            --body "Automated license cache update by Licensed tool." \
+            --base main \
+            --head licensed/update || echo "PR might already exist"
 
       # Last, check the status of the cached licenses.
       - name: Check Licenses
