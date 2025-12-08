@@ -38379,7 +38379,10 @@ class WorkflowParser {
             }
             // Log what was found in this file
             if (dependencies.length > 0) {
-                coreExports.debug(`Found ${dependencies.length} action(s) in ${relativePath}: ${dependencies.map((d) => `${d.owner}/${d.repo}@${d.ref}`).join(', ')}`);
+                const actionList = dependencies
+                    .map((d) => `${d.owner}/${d.repo}@${d.ref}`)
+                    .join(', ');
+                coreExports.debug(`Found ${dependencies.length} action(s) in ${relativePath}: ${actionList}`);
             }
             if (localActions.length > 0) {
                 coreExports.debug(`Found ${localActions.length} local action reference(s) in ${relativePath}: ${localActions.join(', ')}`);
@@ -39078,6 +39081,16 @@ class ForkResolver {
 }
 
 /**
+ * Constants for dependency relationships and scopes
+ */
+const DEPENDENCY_RELATIONSHIP = {
+    DIRECT: 'direct',
+    INDIRECT: 'indirect'
+};
+const DEPENDENCY_SCOPE = {
+    RUNTIME: 'runtime'
+};
+/**
  * Submits dependencies to GitHub's Dependency Graph
  */
 class DependencySubmitter {
@@ -39103,7 +39116,9 @@ class DependencySubmitter {
         let count = 0;
         // Determine the effective relationship based on configuration
         const reportTransitiveAsDirect = this.config.reportTransitiveAsDirect !== false;
-        const effectiveRelationship = isTransitive && !reportTransitiveAsDirect ? 'indirect' : 'direct';
+        const effectiveRelationship = isTransitive && !reportTransitiveAsDirect
+            ? DEPENDENCY_RELATIONSHIP.INDIRECT
+            : DEPENDENCY_RELATIONSHIP.DIRECT;
         // When a SHA was resolved to a version, report both:
         // - The SHA as a direct dependency (or indirect if transitive and not reporting as direct)
         // - The version as an indirect dependency
@@ -39113,15 +39128,15 @@ class DependencySubmitter {
             manifests.push({
                 package_url: shaPurl,
                 relationship: effectiveRelationship,
-                scope: 'runtime'
+                scope: DEPENDENCY_SCOPE.RUNTIME
             });
             count++;
             // Add version as indirect
             const versionPurl = this.createPackageUrl(owner, repo, ref, actionPath);
             manifests.push({
                 package_url: versionPurl,
-                relationship: 'indirect',
-                scope: 'runtime'
+                relationship: DEPENDENCY_RELATIONSHIP.INDIRECT,
+                scope: DEPENDENCY_SCOPE.RUNTIME
             });
             count++;
         }
@@ -39131,7 +39146,7 @@ class DependencySubmitter {
             manifests.push({
                 package_url: purl,
                 relationship: effectiveRelationship,
-                scope: 'runtime'
+                scope: DEPENDENCY_SCOPE.RUNTIME
             });
             count++;
         }
@@ -39195,7 +39210,7 @@ class DependencySubmitter {
                     coreExports.debug(`  From ${sourcePath}:`);
                     for (const dep of deps) {
                         if (dep.package_url) {
-                            coreExports.debug(`    - ${dep.package_url} (${dep.relationship || 'direct'}, ${dep.scope || 'runtime'})`);
+                            coreExports.debug(`    - ${dep.package_url} (${dep.relationship || DEPENDENCY_RELATIONSHIP.DIRECT}, ${dep.scope || DEPENDENCY_SCOPE.RUNTIME})`);
                         }
                     }
                 }

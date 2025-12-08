@@ -237,8 +237,11 @@ export class WorkflowParser {
 
       // Log what was found in this file
       if (dependencies.length > 0) {
+        const actionList = dependencies
+          .map((d) => `${d.owner}/${d.repo}@${d.ref}`)
+          .join(', ')
         core.debug(
-          `Found ${dependencies.length} action(s) in ${relativePath}: ${dependencies.map((d) => `${d.owner}/${d.repo}@${d.ref}`).join(', ')}`
+          `Found ${dependencies.length} action(s) in ${relativePath}: ${actionList}`
         )
       }
       if (localActions.length > 0) {
