@@ -1,6 +1,4 @@
 name: VULNERABLE WORKFLOW
-permissions:
-  contents: read
 
 on:
   workflow_dispatch:
