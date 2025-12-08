@@ -93,6 +93,20 @@ npm run bundle
 - Use the `@actions/core` package for logging over `console` to ensure
   compatibility with GitHub Actions logging features
 
+### Linting
+
+Multiple linting tools are confugured for the repository. Ensure that all reported 
+issues are resolved when completing a change.
+
+ * YamlLint
+ * MarkdownLint
+ * EsLint
+ * ActionLint
+ * Prittier
+
+When linters conflict, ask the user how to resolve and optionally suppress the issue.
+When suppressing, always try to suppress the exact line over ignoring the whole file.
+
 ### Versioning
 
 GitHub Actions are versioned using branch and tag names. Please ensure the
