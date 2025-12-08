@@ -1,8 +1,9 @@
-# This workflow will lint the entire codebase using the
-# `super-linter/super-linter` action.
+# This workflow lints specific file types using dedicated linters:
+# - actionlint for GitHub Actions workflows
+# - markdownlint for Markdown files
+# - yamllint for YAML files
 #
-# For more information, see the super-linter repository:
-#     https://github.com/super-linter/super-linter
+# Note: Prettier and ESLint are run separately in the CI workflow
 name: Lint Codebase
 
 on:
@@ -15,46 +16,52 @@ on:
 
 permissions:
   contents: read
-  packages: read
-  statuses: write
 
 jobs:
-  lint:
-    name: Lint Codebase
+  actionlint:
+    name: Lint GitHub Actions
     runs-on: ubuntu-latest
 
     steps:
       - name: Checkout
         id: checkout
         uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 #v6.0.1
+
+      - name: Run actionlint
+        id: actionlint
+        uses: raven-actions/actionlint@3a24062651993d40fed1019b58ac6fbdfbf276cc #v2.0.1
         with:
-          fetch-depth: 0
+          matcher: true
 
-      - name: Setup Node.js
-        id: setup-node
-        uses: actions/setup-node@395ad3262231945c25e8478fd5baf05154b1d79f #v6.1.0
+  markdownlint:
+    name: Lint Markdown
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        id: checkout
+        uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 #v6.0.1
+
+      - name: Run markdownlint
+        id: markdownlint
+        uses: DavidAnson/markdownlint-cli2-action@30a0e04f1870d58f8d717450cc6134995f993c63 #v21.0.0
         with:
-          node-version-file: .node-version
-          cache: npm
+          config: .markdown-lint.yml
+          globs: '**/*.md'
 
-      - name: Install Dependencies
-        id: install
-        run: npm ci
+  yamllint:
+    name: Lint YAML
+    runs-on: ubuntu-latest
 
-      - name: Lint Codebase
-        id: super-linter
-        uses: super-linter/super-linter/slim@502f4fe48a81a392756e173e39a861f8c8efe056 #v8.3.0
-        env:
-          CHECKOV_FILE_NAME: .checkov.yml
-          DEFAULT_BRANCH: main
-          FILTER_REGEX_EXCLUDE: dist/**/*
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          LINTER_RULES_PATH: .
-          VALIDATE_ALL_CODEBASE: true
-          VALIDATE_BIOME_FORMAT: false
-          VALIDATE_BIOME_LINT: false
-          VALIDATE_GITHUB_ACTIONS_ZIZMOR: false
-          VALIDATE_JAVASCRIPT_ES: false
-          VALIDATE_JSCPD: false
-          VALIDATE_TYPESCRIPT_ES: false
-          VALIDATE_JSON: false
+    steps:
+      - name: Checkout
+        id: checkout
+        uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 #v6.0.1
+
+      - name: Run yamllint
+        id: yamllint
+        uses: ibiqlik/action-yamllint@2576378a8e339169678f9939646ee3ee325e845c #v3.1.1
+        with:
+          config_file: .yaml-lint.yml
+          file_or_dir: .
+          strict: true
