@@ -3,7 +3,7 @@
 ![Linter](https://github.com/jessehouwing/actions-dependency-submission/actions/workflows/linter.yml/badge.svg)
 ![CI](https://github.com/jessehouwing/actions-dependency-submission/actions/workflows/ci.yml/badge.svg)
 ![Check dist/](https://github.com/jessehouwing/actions-dependency-submission/actions/workflows/check-dist.yml/badge.svg)
-![CodeQL](https://github.com/jessehouwing/actions-dependency-submission/actions/workflows/codeql-analysis.yml/badge.svg)
+![CodeQL](https://github.com/jessehouwing/actions-dependency-submission/actions/workflows/github-code-scanning/codeql/badge.svg)
 ![Coverage](./badges/coverage.svg)
 
 A GitHub Action that scans your repository's workflow files and submits action
