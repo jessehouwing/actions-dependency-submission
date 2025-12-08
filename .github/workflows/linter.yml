@@ -62,7 +62,7 @@ jobs:
     name: Lint Markdown
     runs-on: ubuntu-latest
     if: false
-    
+
     steps:
       - name: Checkout
         id: checkout
