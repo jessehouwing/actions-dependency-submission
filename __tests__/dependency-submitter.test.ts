@@ -422,7 +422,7 @@ describe('DependencySubmitter', () => {
           .calls[0][0]
       const manifests = call.manifests['github-actions.yml'].resolved
 
-      // Should have both SHA (direct) and version (indirect)
+      // Should have both SHA (direct) and version (direct by default for vulnerability reporting)
       expect(Object.keys(manifests)).toContain(
         'pkg:githubactions/jessehouwing/actions-semver-checker@3cb8b94e8a9f14b89c86702e5c8c7c3d95559c5e'
       )
@@ -430,7 +430,7 @@ describe('DependencySubmitter', () => {
         'pkg:githubactions/jessehouwing/actions-semver-checker@v1.0.7'
       )
 
-      // Check relationships
+      // Check relationships - both are direct by default (reportTransitiveAsDirect: true)
       expect(
         manifests[
           'pkg:githubactions/jessehouwing/actions-semver-checker@3cb8b94e8a9f14b89c86702e5c8c7c3d95559c5e'
@@ -440,7 +440,7 @@ describe('DependencySubmitter', () => {
         manifests[
           'pkg:githubactions/jessehouwing/actions-semver-checker@v1.0.7'
         ].relationship
-      ).toBe('indirect')
+      ).toBe('direct')
     })
 
     it('Submits both SHA and version for fork and original when SHA is resolved', async () => {
@@ -496,8 +496,8 @@ describe('DependencySubmitter', () => {
         'pkg:githubactions/actions/checkout@v4.1.0'
       )
 
-      // Check relationships - Fork SHA is direct, fork version is indirect
-      // With default behavior, original repo SHA is also direct for vulnerability reporting
+      // Check relationships - With default behavior (reportTransitiveAsDirect: true),
+      // all dependencies are direct for vulnerability reporting
       expect(
         manifests[
           'pkg:githubactions/myorg/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8'
@@ -505,7 +505,7 @@ describe('DependencySubmitter', () => {
       ).toBe('direct')
       expect(
         manifests['pkg:githubactions/myorg/checkout@v4.1.0'].relationship
-      ).toBe('indirect')
+      ).toBe('direct')
       expect(
         manifests[
           'pkg:githubactions/actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8'
@@ -513,7 +513,7 @@ describe('DependencySubmitter', () => {
       ).toBe('direct')
       expect(
         manifests['pkg:githubactions/actions/checkout@v4.1.0'].relationship
-      ).toBe('indirect')
+      ).toBe('direct')
     })
 
     it('Marks original repository as direct by default when no SHA resolution occurs', async () => {
@@ -814,6 +814,48 @@ describe('DependencySubmitter', () => {
       expect(
         manifests['pkg:githubactions/actions/setup-node@v3.*.*'].relationship
       ).toBe('direct')
+    })
+
+    it('Marks SHA-resolved versions as indirect when reportTransitiveAsDirect is false', async () => {
+      github.mockOctokit.rest.dependencyGraph.createRepositorySnapshot.mockResolvedValueOnce(
+        {}
+      )
+
+      const submitter = new DependencySubmitter({
+        token: 'test-token',
+        repository: 'test-owner/test-repo',
+        sha: 'abc123',
+        ref: 'refs/heads/main',
+        reportTransitiveAsDirect: false
+      })
+
+      const dependencies = [
+        {
+          owner: 'actions',
+          repo: 'checkout',
+          ref: 'v4.1.0',
+          originalSha: '8e8c483db84b4bee98b60c0593521ed34d9990e8'
+        }
+      ]
+
+      const count = await submitter.submitDependencies(dependencies)
+
+      expect(count).toBe(2)
+
+      const call =
+        github.mockOctokit.rest.dependencyGraph.createRepositorySnapshot.mock
+          .calls[0][0]
+      const manifests = call.manifests['github-actions.yml'].resolved
+
+      // SHA should be direct (not transitive), version should be indirect
+      expect(
+        manifests[
+          'pkg:githubactions/actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8'
+        ].relationship
+      ).toBe('direct')
+      expect(
+        manifests['pkg:githubactions/actions/checkout@v4.1.0'].relationship
+      ).toBe('indirect')
     })
   })
 })
