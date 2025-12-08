@@ -17,8 +17,7 @@ const config = {
     typescript(),
     nodeResolve({ preferBuiltins: true }),
     commonjs({
-      strictRequires: true,
-      sourceMap: true
+      strictRequires: true
     })
   ]
 }
