@@ -10,9 +10,9 @@ GitHub-DR environments typically have forked actions from public GitHub
 
 1. A token with `contents: write` permission to submit dependencies to your
    GitHub-DR instance
-2. Optionally, a token with `contents: read` permission to public GitHub to look
+1. Optionally, a token with `contents: read` permission to public GitHub to look
    up original repositories for forked actions
-3. If your workflows reference private or internal actions, the primary token
+1. If your workflows reference private or internal actions, the primary token
    needs `contents: read` permission on those repositories
 
 ## Token Options
@@ -26,7 +26,7 @@ instance.
 
 The built-in `GITHUB_TOKEN` is the simplest and most secure option.
 
-##### Example
+##### Workflow Token Example
 
 ```yaml
 name: Submit Dependencies
@@ -49,20 +49,20 @@ jobs:
           fork-organizations: 'myorg-dr'
 ```
 
-##### Advantages
+##### Workflow Token Advantages
 
 - ✅ **Automatic**: No setup required, automatically available
 - ✅ **Secure**: Token is scoped to the workflow run and expires automatically
 - ✅ **No maintenance**: No need to rotate or manage credentials
 - ✅ **Audit trail**: Actions are attributed to the GitHub Actions bot
 
-##### Disadvantages
+##### Workflow Token Disadvantages
 
 - ❌ **Repository scoped**: Cannot access private/internal actions in other
   repositories by default
 - ❌ **No public GitHub access**: Cannot look up actions on public GitHub
 
-##### When to Use
+##### When to Use Workflow Token
 
 Use the workflow token when:
 
@@ -88,19 +88,19 @@ repositories.
 A GitHub App provides flexibility for accessing multiple repositories and better
 audit trails.
 
-##### Setup
+##### GitHub App Setup
 
 1. [Create a GitHub App](https://docs.github.com/en/apps/creating-github-apps/about-creating-github-apps/about-creating-github-apps)
    in your GitHub-DR organization
-2. Configure the app with these permissions:
+1. Configure the app with these permissions:
    - **Repository permissions**:
      - Contents: Read and Write
-3. Install the app on:
+1. Install the app on:
    - The repository where you're submitting dependencies
    - Any repositories containing private/internal actions you reference
-4. Note the App ID and generate a private key
+1. Note the App ID and generate a private key
 
-##### Example
+##### GitHub App Example
 
 ```yaml
 name: Submit Dependencies
@@ -134,7 +134,7 @@ jobs:
           fork-organizations: 'myorg-dr'
 ```
 
-##### Advantages
+##### GitHub App Advantages
 
 - ✅ **Organization-wide**: Can be installed across multiple repositories
 - ✅ **Fine-grained permissions**: Limit access to specific repositories
@@ -142,13 +142,13 @@ jobs:
 - ✅ **No user account dependency**: Not tied to a specific user
 - ✅ **Cross-repository access**: Can access private/internal actions
 
-##### Disadvantages
+##### GitHub App Disadvantages
 
 - ⚠️ **Setup complexity**: Requires creating and configuring a GitHub App
 - ⚠️ **Key management**: Need to securely store app private key
 - ⚠️ **No public GitHub access**: Cannot look up actions on public GitHub
 
-##### When to Use
+##### When to Use GitHub App
 
 Use a GitHub App token when:
 
@@ -163,18 +163,18 @@ Use a GitHub App token when:
 
 A personal access token can be used when GitHub Apps are not an option.
 
-##### Setup
+##### PAT Setup
 
 1. Create a
    [Fine-grained Personal Access Token](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens#creating-a-fine-grained-personal-access-token)
    (recommended)
-2. Configure with:
+1. Configure with:
    - Repository access: Select repositories or all repositories
    - Permissions:
      - Contents: Read and Write
-3. Store as a repository secret (e.g., `DEPENDENCY_SUBMISSION_TOKEN`)
+1. Store as a repository secret (e.g., `DEPENDENCY_SUBMISSION_TOKEN`)
 
-##### Example
+##### PAT Example
 
 ```yaml
 name: Submit Dependencies
@@ -197,13 +197,13 @@ jobs:
           fork-organizations: 'myorg-dr'
 ```
 
-##### Advantages
+##### PAT Advantages
 
 - ✅ **Simple setup**: Easy to create and configure
 - ✅ **Flexible**: Can access multiple repositories
 - ✅ **Cross-repository access**: Can access private/internal actions
 
-##### Disadvantages
+##### PAT Disadvantages
 
 - ⚠️ **Security risk**: Long-lived, doesn't expire automatically
 - ⚠️ **User-dependent**: Tied to a specific user account
@@ -228,17 +228,17 @@ GitHub (github.com).
 Create a separate GitHub App on public GitHub (github.com) for looking up action
 repositories.
 
-###### Setup
+###### Public GitHub App Setup
 
 1. Create a GitHub App on public GitHub (github.com)
-2. Configure with minimal permissions:
+1. Configure with minimal permissions:
    - **Repository permissions**:
      - Contents: Read (for public repositories)
      - Metadata: Read (automatically included)
-3. Install the app on public repositories you need to access (or make it public)
-4. Store the App ID and private key as secrets
+1. Install the app on public repositories you need to access (or make it public)
+1. Store the App ID and private key as secrets
 
-###### Example
+###### Public GitHub App Example
 
 ```yaml
 name: Submit Dependencies
@@ -272,14 +272,14 @@ jobs:
           public-github-token: ${{ steps.generate-public-token.outputs.token }}
 ```
 
-###### Advantages
+###### Public GitHub App Advantages
 
 - ✅ **Secure**: Short-lived tokens that auto-expire
 - ✅ **Fine-grained**: Only needs read access to public repositories
 - ✅ **Better audit trail**: Actions attributed to the app
 - ✅ **Automatic rotation**: Tokens are generated on-demand
 
-###### Disadvantages
+###### Public GitHub App Disadvantages
 
 - ⚠️ **Setup complexity**: Requires creating an app on public GitHub
 - ⚠️ **Key management**: Need to securely store app private key
@@ -292,19 +292,19 @@ jobs:
 Create a personal access token on public GitHub (github.com) for read-only
 access to public repositories.
 
-###### Setup
+###### Public GitHub PAT Setup
 
 1. Create a
    [Fine-grained Personal Access Token](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens#creating-a-fine-grained-personal-access-token)
    on public GitHub (github.com)
-2. Configure with:
+1. Configure with:
    - Repository access: Public Repositories (read-only)
    - Permissions:
      - Contents: Read
      - Metadata: Read
-3. Store as a repository secret (e.g., `PUBLIC_GITHUB_TOKEN`)
+1. Store as a repository secret (e.g., `PUBLIC_GITHUB_TOKEN`)
 
-###### Example
+###### Public GitHub PAT Example
 
 ```yaml
 name: Submit Dependencies
@@ -328,12 +328,12 @@ jobs:
           public-github-token: ${{ secrets.PUBLIC_GITHUB_TOKEN }}
 ```
 
-###### Advantages
+###### Public GitHub PAT Advantages
 
 - ✅ **Simple setup**: Easy to create
 - ✅ **Read-only access**: Limited to reading public repositories
 
-###### Disadvantages
+###### Public GitHub PAT Disadvantages
 
 - ⚠️ **Security risk**: Long-lived token that doesn't expire automatically
 - ⚠️ **User-dependent**: Tied to a personal GitHub.com account
@@ -353,7 +353,7 @@ jobs:
 
 ## Complete Examples
 
-### Example 1: GitHub-DR with Workflow Token and Regex Pattern
+### Example 1: GitHub-DR with Workflow Token and Regular Expression Pattern
 
 Best for when forked actions follow a naming convention and you don't need to
 look up actions on public GitHub.
@@ -382,7 +382,7 @@ jobs:
 
 In this example:
 
-- `myorg-dr/actions_checkout` resolves to `actions/checkout` using the regex
+- `myorg-dr/actions_checkout` resolves to `actions/checkout` using the regular expression
   pattern
 - This simplifies repository name resolution but still requires a public GitHub
   token to look up tags from commit SHAs on the parent repository
@@ -481,15 +481,15 @@ jobs:
 ## Best Practices
 
 1. **Always define permissions at the job level** for least privilege
-2. **Use GitHub Apps** for both tokens when possible for maximum security
-3. **Use regex patterns** to simplify repository name resolution (note: a public
+1. **Use GitHub Apps** for both tokens when possible for maximum security
+1. **Use regular expression patterns** to simplify repository name resolution (note: a public
    GitHub token is still required to look up tags from commit SHAs)
-4. **Regularly audit** public GitHub token usage and permissions
-5. **Document** your fork naming conventions if using regex patterns
-6. **Monitor** for actions that cannot be resolved and may need manual mapping
-7. **Test failover scenarios** to ensure dependency submission works during DR
+1. **Regularly audit** public GitHub token usage and permissions
+1. **Document** your fork naming conventions if using regular expression patterns
+1. **Monitor** for actions that cannot be resolved and may need manual mapping
+1. **Test failover scenarios** to ensure dependency submission works during DR
    events
-8. **Configure access** to private/internal action repositories via repository
+1. **Configure access** to private/internal action repositories via repository
    settings
 
 ## GitHub-DR Specific Considerations
