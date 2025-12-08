@@ -1,17 +1,17 @@
 {
-  "name": "typescript-action",
-  "description": "GitHub Actions TypeScript template",
-  "version": "0.0.0",
+  "name": "jessehouwing.actions-dependency-submission",
+  "description": "GitHub Action to submit dependency information to GitHub's dependency graph",
+  "version": "1.0.0",
   "author": "",
   "type": "module",
   "private": true,
-  "homepage": "https://github.com/actions/typescript-action",
+  "homepage": "https://github.com/jessehouwing/actions-dependency-submission",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/actions/typescript-action.git"
+    "url": "git+https://github.com/jessehouwing/actions-dependency-submission.git"
   },
   "bugs": {
-    "url": "https://github.com/actions/typescript-action/issues"
+    "url": "https://github.com/jessehouwing/actions-dependency-submission/issues"
   },
   "keywords": [
     "actions"
