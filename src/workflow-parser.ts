@@ -1,6 +1,8 @@
 import * as fs from 'fs'
 import * as path from 'path'
 import * as yaml from 'yaml'
+import { getOctokit } from '@actions/github'
+import * as core from '@actions/core'
 
 /**
  * Represents a GitHub Action dependency
@@ -11,12 +13,22 @@ export interface ActionDependency {
   ref: string
   uses: string // Full 'uses' string from workflow
   sourcePath?: string // Path to the workflow/action file where this dependency was found
+  isTransitive?: boolean // Whether this is a transitive/indirect dependency
 }
 
 /**
  * Parses workflow files to extract action dependencies
  */
 export class WorkflowParser {
+  private octokit?: ReturnType<typeof getOctokit>
+  private processedRemoteActions: Set<string> = new Set()
+
+  constructor(token?: string) {
+    if (token) {
+      this.octokit = getOctokit(token)
+    }
+  }
+
   /**
    * Scans a directory for workflow files and extracts all action dependencies
    *
@@ -87,6 +99,27 @@ export class WorkflowParser {
           )
           if (resolvedPath && !processedFiles.has(resolvedPath)) {
             filesToProcess.push(resolvedPath)
+          }
+        }
+      }
+
+      // Process remote composite actions and callable workflows if octokit is available
+      if (this.octokit) {
+        // Get relative path for source tracking
+        const relativePath = repoRoot
+          ? path.relative(repoRoot, filePath)
+          : filePath
+
+        // Process remote composite actions
+        for (const dep of result.dependencies) {
+          const remoteActionKey = `${dep.owner}/${dep.repo}@${dep.ref}`
+          if (!this.processedRemoteActions.has(remoteActionKey)) {
+            this.processedRemoteActions.add(remoteActionKey)
+            const remoteDeps = await this.processRemoteCompositeAction(
+              dep,
+              relativePath
+            )
+            dependencies.push(...remoteDeps)
           }
         }
       }
@@ -424,5 +457,259 @@ export class WorkflowParser {
     }
 
     return files
+  }
+
+  /**
+   * Process remote composite action to extract transitive dependencies
+   *
+   * @param dependency Remote action dependency
+   * @param callingWorkflowPath Path of the workflow that references this action
+   * @returns Array of transitive dependencies from the remote action
+   */
+  private async processRemoteCompositeAction(
+    dependency: ActionDependency,
+    callingWorkflowPath: string
+  ): Promise<ActionDependency[]> {
+    if (!this.octokit) {
+      return []
+    }
+
+    try {
+      // Try to fetch action.yml or action.yaml from the remote repository
+      const actionContent = await this.fetchRemoteActionFile(
+        dependency.owner,
+        dependency.repo,
+        dependency.ref
+      )
+
+      if (!actionContent) {
+        return []
+      }
+
+      // Parse the action file
+      const actionYaml = yaml.parse(actionContent, { merge: true })
+
+      if (!actionYaml) {
+        return []
+      }
+
+      // Check if it's a composite action
+      if (actionYaml.runs?.using === 'composite') {
+        core.info(
+          `Processing remote composite action: ${dependency.owner}/${dependency.repo}@${dependency.ref}`
+        )
+
+        const transitiveDeps: ActionDependency[] = []
+
+        // Extract dependencies from composite action steps
+        if (actionYaml.runs.steps && Array.isArray(actionYaml.runs.steps)) {
+          for (const step of actionYaml.runs.steps) {
+            if (step.uses) {
+              const result = this.parseUsesString(step.uses)
+              if (result.dependency) {
+                // Mark as transitive and reference the calling workflow as manifest
+                transitiveDeps.push({
+                  ...result.dependency,
+                  sourcePath: callingWorkflowPath,
+                  isTransitive: true
+                })
+              }
+            }
+          }
+        }
+
+        return transitiveDeps
+      }
+
+      // Check if it's a callable workflow (uses pattern like owner/repo/.github/workflows/file.yml@ref)
+      if (
+        dependency.uses.includes('/.github/workflows/') ||
+        dependency.uses.includes('.yml@') ||
+        dependency.uses.includes('.yaml@')
+      ) {
+        return await this.processRemoteCallableWorkflow(
+          dependency,
+          callingWorkflowPath
+        )
+      }
+    } catch (error) {
+      core.debug(
+        `Failed to process remote action ${dependency.owner}/${dependency.repo}@${dependency.ref}: ${error}`
+      )
+    }
+
+    return []
+  }
+
+  /**
+   * Process remote callable workflow to extract transitive dependencies
+   *
+   * @param dependency Remote workflow dependency
+   * @param callingWorkflowPath Path of the workflow that references this callable workflow
+   * @returns Array of transitive dependencies from the remote workflow
+   */
+  private async processRemoteCallableWorkflow(
+    dependency: ActionDependency,
+    callingWorkflowPath: string
+  ): Promise<ActionDependency[]> {
+    if (!this.octokit) {
+      return []
+    }
+
+    try {
+      // Extract workflow path from uses string (e.g., owner/repo/.github/workflows/file.yml@ref)
+      const workflowPathMatch = dependency.uses.match(
+        /^[^/]+\/[^/]+\/(.+\.ya?ml)@.+$/
+      )
+      if (!workflowPathMatch) {
+        return []
+      }
+
+      const workflowPath = workflowPathMatch[1]
+
+      // Fetch the remote workflow file
+      const workflowContent = await this.fetchRemoteFile(
+        dependency.owner,
+        dependency.repo,
+        workflowPath,
+        dependency.ref
+      )
+
+      if (!workflowContent) {
+        return []
+      }
+
+      // Parse the workflow file
+      const workflowYaml = yaml.parse(workflowContent, { merge: true })
+
+      if (!workflowYaml) {
+        return []
+      }
+
+      // Check if it's a callable workflow
+      if (workflowYaml.on?.workflow_call) {
+        core.info(
+          `Processing remote callable workflow: ${dependency.owner}/${dependency.repo}/${workflowPath}@${dependency.ref}`
+        )
+
+        const transitiveDeps: ActionDependency[] = []
+
+        // Extract dependencies from workflow jobs
+        if (workflowYaml.jobs) {
+          for (const jobName in workflowYaml.jobs) {
+            const job = workflowYaml.jobs[jobName]
+
+            // Check for callable workflows at job level
+            if (job.uses) {
+              const result = this.parseUsesString(job.uses)
+              if (result.dependency) {
+                transitiveDeps.push({
+                  ...result.dependency,
+                  sourcePath: callingWorkflowPath,
+                  isTransitive: true
+                })
+              }
+            }
+
+            // Check steps for action dependencies
+            if (typeof job === 'object' && job !== null && 'steps' in job) {
+              const steps = (job as { steps?: unknown[] }).steps
+              if (Array.isArray(steps)) {
+                for (const step of steps) {
+                  if (
+                    typeof step === 'object' &&
+                    step !== null &&
+                    'uses' in step
+                  ) {
+                    const uses = (step as { uses: string }).uses
+                    const result = this.parseUsesString(uses)
+                    if (result.dependency) {
+                      transitiveDeps.push({
+                        ...result.dependency,
+                        sourcePath: callingWorkflowPath,
+                        isTransitive: true
+                      })
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+
+        return transitiveDeps
+      }
+    } catch (error) {
+      core.debug(
+        `Failed to process remote callable workflow ${dependency.owner}/${dependency.repo}: ${error}`
+      )
+    }
+
+    return []
+  }
+
+  /**
+   * Fetch action.yml or action.yaml from a remote repository
+   *
+   * @param owner Repository owner
+   * @param repo Repository name
+   * @param ref Git ref
+   * @returns Action file content or null if not found
+   */
+  private async fetchRemoteActionFile(
+    owner: string,
+    repo: string,
+    ref: string
+  ): Promise<string | null> {
+    // Try action.yml first
+    let content = await this.fetchRemoteFile(owner, repo, 'action.yml', ref)
+    if (content) {
+      return content
+    }
+
+    // Try action.yaml
+    content = await this.fetchRemoteFile(owner, repo, 'action.yaml', ref)
+    return content
+  }
+
+  /**
+   * Fetch a file from a remote repository
+   *
+   * @param owner Repository owner
+   * @param repo Repository name
+   * @param path File path
+   * @param ref Git ref
+   * @returns File content or null if not found
+   */
+  private async fetchRemoteFile(
+    owner: string,
+    repo: string,
+    filePath: string,
+    ref: string
+  ): Promise<string | null> {
+    if (!this.octokit) {
+      return null
+    }
+
+    try {
+      const { data } = await this.octokit.rest.repos.getContent({
+        owner,
+        repo,
+        path: filePath,
+        ref
+      })
+
+      // Check if it's a file (not a directory or submodule)
+      if ('content' in data && typeof data.content === 'string') {
+        // Content is base64 encoded
+        return Buffer.from(data.content, 'base64').toString('utf-8')
+      }
+    } catch (error) {
+      core.debug(
+        `Failed to fetch ${filePath} from ${owner}/${repo}@${ref}: ${error}`
+      )
+    }
+
+    return null
   }
 }

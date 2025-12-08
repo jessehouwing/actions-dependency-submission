@@ -11,6 +11,7 @@ export interface ResolvedDependency {
   ref: string
   sourcePath?: string
   originalSha?: string
+  isTransitive?: boolean
   original?: {
     owner: string
     repo: string
@@ -158,7 +159,8 @@ export class ForkResolver {
       repo: dependency.repo,
       ref: resolvedRef,
       sourcePath: dependency.sourcePath,
-      originalSha
+      originalSha,
+      isTransitive: dependency.isTransitive
     }
 
     // Check if this dependency is from a fork organization

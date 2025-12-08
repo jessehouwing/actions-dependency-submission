@@ -75,7 +75,7 @@ export async function run(): Promise<void> {
     const repoRoot = process.env.GITHUB_WORKSPACE || process.cwd()
 
     // Parse workflow files (with composite actions and callable workflows support)
-    const parser = new WorkflowParser()
+    const parser = new WorkflowParser(token)
     const dependencies = await parser.parseWorkflowDirectory(
       workflowDirectory,
       additionalPaths,
