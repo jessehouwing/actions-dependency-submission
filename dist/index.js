@@ -39084,6 +39084,7 @@ class ForkResolver {
  * Constants for dependency relationships and scopes
  */
 const DEPENDENCY_RELATIONSHIP = {
+    NONE: undefined,
     DIRECT: 'direct',
     INDIRECT: 'indirect'
 };
@@ -39115,10 +39116,11 @@ class DependencySubmitter {
     addDependencyEntries(owner, repo, ref, originalSha, manifests, isTransitive = false, actionPath) {
         let count = 0;
         // Determine the effective relationship based on configuration
-        const reportTransitiveAsDirect = this.config.reportTransitiveAsDirect !== false;
-        const effectiveRelationship = isTransitive && !reportTransitiveAsDirect
-            ? DEPENDENCY_RELATIONSHIP.INDIRECT
-            : DEPENDENCY_RELATIONSHIP.DIRECT;
+        this.config.reportTransitiveAsDirect !== false;
+        const effectiveRelationship = DEPENDENCY_RELATIONSHIP.NONE;
+        //      isTransitive && !reportTransitiveAsDirect
+        //        ? DEPENDENCY_RELATIONSHIP.INDIRECT
+        //        : DEPENDENCY_RELATIONSHIP.DIRECT
         // When a SHA was resolved to a version, report both:
         // - The SHA with the effective relationship (direct or indirect based on configuration)
         // - The version with the same relationship when reportTransitiveAsDirect is true, otherwise indirect
@@ -39135,9 +39137,10 @@ class DependencySubmitter {
             const versionPurl = this.createPackageUrl(owner, repo, ref, actionPath);
             manifests.push({
                 package_url: versionPurl,
-                relationship: reportTransitiveAsDirect
-                    ? effectiveRelationship
-                    : DEPENDENCY_RELATIONSHIP.INDIRECT,
+                relationship: DEPENDENCY_RELATIONSHIP.NONE,
+                //          reportTransitiveAsDirect
+                //          ? effectiveRelationship
+                //          : DEPENDENCY_RELATIONSHIP.INDIRECT,
                 scope: DEPENDENCY_SCOPE.RUNTIME
             });
             count++;
@@ -39147,7 +39150,10 @@ class DependencySubmitter {
             const purl = this.createPackageUrl(owner, repo, ref, actionPath);
             manifests.push({
                 package_url: purl,
-                relationship: effectiveRelationship,
+                relationship: DEPENDENCY_RELATIONSHIP.NONE,
+                //          effectiveRelationship,
+                //          ? effectiveRelationship
+                //          : DEPENDENCY_RELATIONSHIP.INDIRECT,
                 scope: DEPENDENCY_SCOPE.RUNTIME
             });
             count++;
