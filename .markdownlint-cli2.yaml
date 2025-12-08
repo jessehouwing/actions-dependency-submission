@@ -5,9 +5,7 @@ MD004:
   style: dash
 
 # Disable line length
-# MD013: false
-line-length: false
-
+MD013: false
 # Ordered list item prefix
 MD029:
   style: one
