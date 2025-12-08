@@ -1,9 +1,10 @@
 # This workflow lints specific file types using dedicated linters:
 # - actionlint for GitHub Actions workflows
+# - ESLint for JavaScript/TypeScript files
 # - markdownlint for Markdown files
 # - yamllint for YAML files
 #
-# Note: Prettier and ESLint are run separately in the CI workflow
+# Note: Prettier is run separately in the CI workflow
 name: Lint Codebase
 
 on:
@@ -18,6 +19,30 @@ permissions:
   contents: read
 
 jobs:
+  eslint:
+    name: Lint JavaScript/TypeScript
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        id: checkout
+        uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 #v6.0.1
+
+      - name: Setup Node.js
+        id: setup-node
+        uses: actions/setup-node@395ad3262231945c25e8478fd5baf05154b1d79f #v6.1.0
+        with:
+          node-version-file: .node-version
+          cache: npm
+
+      - name: Install Dependencies
+        id: npm-ci
+        run: npm ci
+
+      - name: Lint
+        id: npm-lint
+        run: npm run lint
+
   actionlint:
     name: Lint GitHub Actions
     runs-on: ubuntu-latest
@@ -46,7 +71,6 @@ jobs:
         id: markdownlint
         uses: DavidAnson/markdownlint-cli2-action@30a0e04f1870d58f8d717450cc6134995f993c63 #v21.0.0
         with:
-          config: .markdown-lint.yml
           globs: '**/*.md'
 
   yamllint:
