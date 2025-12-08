@@ -23,7 +23,7 @@ dependencies to GitHub's Dependency Graph with fork traversal support.
   original repository as dependencies
 - 🔗 **GitHub API Integration**: Uses GitHub's fork relationship to find
   original repositories
-- 🎯 **Regex Pattern Matching**: Supports custom regex patterns for repositories
+- 🎯 **Regular Expression Pattern Matching**: Supports custom regular expression patterns for repositories
   without fork relationships (e.g., EMU or GitHub-DR)
 - 📊 **Dependency Graph Integration**: Submits dependencies to GitHub's
   Dependency Graph for security advisory tracking
@@ -68,7 +68,7 @@ This will submit both `myenterprise/actions-checkout` and the original
 `actions/checkout` as dependencies, ensuring security advisories for the
 original repository also apply to your fork.
 
-### With Custom Regex Pattern
+### With Custom Regular Expression Pattern
 
 For cases where fork relationships don't exist (e.g., EMU or GitHub-DR
 environments):
@@ -81,7 +81,7 @@ environments):
     fork-regex: '^myenterprise/(?<org>[^_]+)_(?<repo>.+)'
 ```
 
-The regex must contain named captures `org` and `repo` to identify the original
+The regular expression must contain named captures `org` and `repo` to identify the original
 repository. In this example:
 
 - `myenterprise/actions_checkout` would resolve to `actions/checkout`
@@ -153,7 +153,7 @@ detailed setup instructions for different token types.
 | Input                 | Description                                                                                                                                      | Required | Default                    |
 | --------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------ | -------- | -------------------------- |
 | `token`               | GitHub token for API access and dependency submission                                                                                            | Yes      | `${{ github.token }}`      |
-| `repository`          | Repository to submit dependencies for (owner/repo format)                                                                                        | No       | `${{ github.repository }}` |
+| `repository`          | Repository to submit dependencies for (owner/repository format)                                                                                  | No       | `${{ github.repository }}` |
 | `workflow-directory`  | Directory containing workflow files to scan                                                                                                      | No       | `.github/workflows`        |
 | `additional-paths`    | Additional paths to scan for composite actions and callable workflows (comma-separated or newline-separated)                                     | No       | -                          |
 | `fork-organizations`  | Comma-separated list of organization names that contain forked actions                                                                           | No       | -                          |
@@ -170,27 +170,27 @@ detailed setup instructions for different token types.
 
 1. **Workflow Scanning**: The action scans all `.yml` and `.yaml` files in the
    specified workflow directory
-2. **Dependency Extraction**: Parses each workflow file to extract `uses:`
+1. **Dependency Extraction**: Parses each workflow file to extract `uses:`
    statements that reference GitHub Actions
-3. **Local Action Processing**: Detects local action references (e.g.,
+1. **Local Action Processing**: Detects local action references (e.g.,
    `uses: ./local-action`):
    - Resolves the path relative to the workflow file
    - Checks if it's a composite action
    - Recursively extracts dependencies from the composite action
-4. **Callable Workflow Processing**: Detects callable workflow references (e.g.,
+1. **Callable Workflow Processing**: Detects callable workflow references (e.g.,
    `uses: ./workflow.yml` at job level):
    - Processes the callable workflow
    - Extracts all action dependencies from it
-5. **Additional Paths Scanning**: If specified, scans additional directories for
+1. **Additional Paths Scanning**: If specified, scans additional directories for
    composite actions:
    - Finds all YAML files in the specified paths
    - Processes composite actions found there
    - Recursively extracts their dependencies
-6. **Fork Detection**: For actions from organizations in the
+1. **Fork Detection**: For actions from organizations in the
    `fork-organizations` list:
    - First tries to apply the `fork-regex` pattern if provided
    - Falls back to checking GitHub's fork relationship via the API
-7. **EMU/DR/GHES Support**: When `public-github-token` is provided:
+1. **EMU/DR/GHES Support**: When `public-github-token` is provided:
    - Determines whether each action repository exists on the local GitHub
      instance or public GitHub
    - Caches this decision to avoid redundant API calls
@@ -198,11 +198,11 @@ detailed setup instructions for different token types.
      repository
    - Enables looking up fork relationships and SHA-to-version mappings from
      public GitHub when needed
-8. **Dependency Submission**: Submits all dependencies to GitHub's Dependency
+1. **Dependency Submission**: Submits all dependencies to GitHub's Dependency
    Graph:
    - For forked actions, submits both the fork and original repository
    - Uses Package URL (purl) format: `pkg:github/{owner}/{repo}@{ref}`
-9. **Security Advisories**: GitHub automatically matches submitted dependencies
+1. **Security Advisories**: GitHub automatically matches submitted dependencies
    against its security advisory database
 
 ## Why Use This Action?
@@ -298,13 +298,14 @@ Each guide covers:
    npm install
    ```
 
-2. Run tests:
+1. Run tests:
 
    ```bash
    npm test
    ```
 
-3. Bundle the action:
+1. Bundle the action:
+
    ```bash
    npm run bundle
    ```
@@ -315,7 +316,7 @@ The action includes comprehensive unit tests for:
 
 - Workflow file parsing
 - Fork resolution via GitHub API
-- Regex pattern matching
+- Regular expression pattern matching
 - Dependency submission
 
 Run tests with coverage:
