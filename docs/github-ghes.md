@@ -387,8 +387,8 @@ jobs:
 
 In this example:
 
-- `mycompany/actions_checkout` resolves to `actions/checkout` using the regular expression
-  pattern
+- `mycompany/actions_checkout` resolves to `actions/checkout` using the regular
+  expression pattern
 - This simplifies repository name resolution but still requires a public GitHub
   token to look up tags from commit SHAs on the parent repository
 
@@ -516,8 +516,9 @@ jobs:
 
 1. **Always define permissions at the job level** for least privilege
 1. **Use GitHub Apps** for both tokens when possible for maximum security
-1. **Use regular expression patterns** to simplify repository name resolution (note: a public
-   GitHub token is still required to look up tags from commit SHAs)
+1. **Use regular expression patterns** to simplify repository name resolution
+   (note: a public GitHub token is still required to look up tags from commit
+   SHAs)
 1. **Consider GitHub Connect** for simpler public action access
 1. **Regularly audit** public GitHub token usage and permissions
 1. **Document** your action mirroring/naming conventions
@@ -539,7 +540,8 @@ jobs:
 
 - GHES instances may have restricted internet access
 - Verify connectivity to api.github.com if using public GitHub tokens
-- Consider using regular expression patterns if public GitHub access is restricted
+- Consider using regular expression patterns if public GitHub access is
+  restricted
 - Work with your GHES administrators to ensure proper network configuration
 
 ### Version Compatibility

@@ -283,10 +283,10 @@ maintainability.
 ## Permissions Summary
 
 | Token Type      | Minimum Permissions for Current Repository | Access to Private/Internal Actions                 |
-| --------------- | ------------------------------------------- | -------------------------------------------------- |
-| Workflow Token  | `contents: write`                           | Requires repository configuration + automatic read |
-| GitHub App      | `contents: write`                    | Automatic `contents: read` where app is installed  |
-| Personal Access | `contents: write`                    | Automatic `contents: read` based on token scope    |
+| --------------- | ------------------------------------------ | -------------------------------------------------- |
+| Workflow Token  | `contents: write`                          | Requires repository configuration + automatic read |
+| GitHub App      | `contents: write`                          | Automatic `contents: read` where app is installed  |
+| Personal Access | `contents: write`                          | Automatic `contents: read` based on token scope    |
 
 ## Best Practices
 

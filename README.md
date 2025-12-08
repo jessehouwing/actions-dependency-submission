@@ -23,8 +23,8 @@ dependencies to GitHub's Dependency Graph with fork traversal support.
   original repository as dependencies
 - 🔗 **GitHub API Integration**: Uses GitHub's fork relationship to find
   original repositories
-- 🎯 **Regular Expression Pattern Matching**: Supports custom regular expression patterns for repositories
-  without fork relationships (e.g., EMU or GitHub-DR)
+- 🎯 **Regular Expression Pattern Matching**: Supports custom regular expression
+  patterns for repositories without fork relationships (e.g., EMU or GitHub-DR)
 - 📊 **Dependency Graph Integration**: Submits dependencies to GitHub's
   Dependency Graph for security advisory tracking
 
@@ -81,8 +81,8 @@ environments):
     fork-regex: '^myenterprise/(?<org>[^_]+)_(?<repo>.+)'
 ```
 
-The regular expression must contain named captures `org` and `repo` to identify the original
-repository. In this example:
+The regular expression must contain named captures `org` and `repo` to identify
+the original repository. In this example:
 
 - `myenterprise/actions_checkout` would resolve to `actions/checkout`
 - This is useful when forks follow a naming convention but don't have GitHub

@@ -382,8 +382,8 @@ jobs:
 
 In this example:
 
-- `myorg-dr/actions_checkout` resolves to `actions/checkout` using the regular expression
-  pattern
+- `myorg-dr/actions_checkout` resolves to `actions/checkout` using the regular
+  expression pattern
 - This simplifies repository name resolution but still requires a public GitHub
   token to look up tags from commit SHAs on the parent repository
 
@@ -482,10 +482,12 @@ jobs:
 
 1. **Always define permissions at the job level** for least privilege
 1. **Use GitHub Apps** for both tokens when possible for maximum security
-1. **Use regular expression patterns** to simplify repository name resolution (note: a public
-   GitHub token is still required to look up tags from commit SHAs)
+1. **Use regular expression patterns** to simplify repository name resolution
+   (note: a public GitHub token is still required to look up tags from commit
+   SHAs)
 1. **Regularly audit** public GitHub token usage and permissions
-1. **Document** your fork naming conventions if using regular expression patterns
+1. **Document** your fork naming conventions if using regular expression
+   patterns
 1. **Monitor** for actions that cannot be resolved and may need manual mapping
 1. **Test failover scenarios** to ensure dependency submission works during DR
    events
