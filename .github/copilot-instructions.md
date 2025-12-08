@@ -102,7 +102,7 @@ issues are resolved when completing a change.
  * MarkdownLint
  * EsLint
  * ActionLint
- * Prittier
+ * Prettier
 
 When linters conflict, ask the user how to resolve and optionally suppress the issue.
 When suppressing, always try to suppress the exact line over ignoring the whole file.
