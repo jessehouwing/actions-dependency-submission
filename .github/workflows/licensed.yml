@@ -13,14 +13,60 @@ on:
       - main
   workflow_dispatch:
 
-permissions:
-  contents: write
-  pull-requests: write
+permissions: {}
 
 jobs:
-  licensed:
+  check-licenses:
     name: Check Licenses
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    outputs:
+      needs_update: ${{ steps.check-licenses.outcome == 'failure' }}
+
+    steps:
+      - name: Checkout
+        id: checkout
+        uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 #v6.0.1
+        with:
+          fetch-depth: 1
+
+      - name: Setup Node.js
+        id: setup-node
+        uses: actions/setup-node@395ad3262231945c25e8478fd5baf05154b1d79f #v6.1.0
+        with:
+          node-version-file: .node-version
+          cache: npm
+
+      - name: Install Dependencies
+        id: npm-ci
+        run: npm ci
+
+      - name: Setup Ruby
+        id: setup-ruby
+        uses: ruby/setup-ruby@d697be2f83c6234b20877c3b5eac7a7f342f0d0c #v1.269.0
+        with:
+          ruby-version: ruby
+
+      - uses: licensee/setup-licensed@0d52e575b3258417672be0dff2f115d7db8771d8 #v1.3.2
+        with:
+          version: 5.x
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Check Licenses
+        id: check-licenses
+        continue-on-error: true
+        run: licensed status
+
+  update-licenses:
+    name: Update Licenses
+    runs-on: ubuntu-latest
+    if: ${{ github.event_name == 'workflow_dispatch' && needs.check-licenses.outputs.needs_update == 'true' }}
+    needs: check-licenses
+    permissions:
+      contents: write
+      pull-requests: write
+    environment: licensed-updates
 
     steps:
       - name: Checkout
@@ -49,15 +95,11 @@ jobs:
           version: 5.x
           github_token: ${{ secrets.GITHUB_TOKEN }}
 
-      # If this is a workflow_dispatch event, update the cached licenses.
-      - if: ${{ github.event_name == 'workflow_dispatch' }}
-        name: Update Licenses
+      - name: Update Licenses
         id: update-licenses
         run: licensed cache
 
-      # Then, create a new branch, commit the updated licenses, and create a PR.
-      - if: ${{ github.event_name == 'workflow_dispatch' }}
-        name: Create Branch and Commit Licenses
+      - name: Create Branch and Commit Licenses
         id: commit-licenses
         run: |
           git config --local user.email "licensed-ci@users.noreply.github.com"
@@ -78,7 +120,7 @@ jobs:
           fi
 
       # prettier-ignore
-      - if: ${{ github.event_name == 'workflow_dispatch' && steps.commit-licenses.outputs.has_changes == 'true' }}
+      - if: ${{ steps.commit-licenses.outputs.has_changes == 'true' }}
         name: Create Pull Request
         id: create-pr
         env:
@@ -89,8 +131,3 @@ jobs:
             --body "Automated license cache update by Licensed tool." \
             --base main \
             --head licensed/update || echo "PR might already exist"
-
-      # Last, check the status of the cached licenses.
-      - name: Check Licenses
-        id: check-licenses
-        run: licensed status
