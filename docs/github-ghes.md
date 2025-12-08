@@ -65,10 +65,12 @@ jobs:
 
 Use the workflow token when:
 
-- Your mirrored actions follow a naming convention (use `fork-regex`)
-- You only use actions available on your GHES instance
+- You only use actions available on your GHES instance (no public GitHub lookups
+  needed)
 - Your workflows only use local composite actions within the same repository
-- You use GitHub Connect for public actions
+- You have `fork-regex` configured and all forked actions exist locally on your
+  GHES instance
+- You use GitHub Connect for public actions (which handles access transparently)
 
 ##### Additional Configuration for Private/Internal Actions
 
@@ -385,8 +387,10 @@ jobs:
 
 In this example:
 
-- `mycompany/actions_checkout` resolves to `actions/checkout`
-- No public GitHub token needed because the regex pattern handles resolution
+- `mycompany/actions_checkout` resolves to `actions/checkout` using the regex
+  pattern
+- This simplifies repository name resolution but still requires a public GitHub
+  token to look up tags from commit SHAs on the parent repository
 
 ---
 
@@ -512,7 +516,8 @@ jobs:
 
 1. **Always define permissions at the job level** for least privilege
 2. **Use GitHub Apps** for both tokens when possible for maximum security
-3. **Use regex patterns** when available to avoid needing a public GitHub token
+3. **Use regex patterns** to simplify repository name resolution (note: a public
+   GitHub token is still required to look up tags from commit SHAs)
 4. **Consider GitHub Connect** for simpler public action access
 5. **Regularly audit** public GitHub token usage and permissions
 6. **Document** your action mirroring/naming conventions

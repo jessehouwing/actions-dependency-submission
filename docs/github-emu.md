@@ -65,9 +65,11 @@ jobs:
 
 Use the workflow token when:
 
-- Your forked actions follow a naming convention (use `fork-regex`)
-- You only use actions mirrored to your EMU instance
+- You only use actions mirrored to your EMU instance (no public GitHub lookups
+  needed)
 - Your workflows only use local composite actions within the same repository
+- You have `fork-regex` configured and all forked actions exist locally on your
+  EMU instance
 
 ##### Additional Configuration for Private/Internal Actions
 
@@ -379,8 +381,10 @@ jobs:
 
 In this example:
 
-- `myenterprise/actions_checkout` resolves to `actions/checkout`
-- No public GitHub token needed because the regex pattern handles resolution
+- `myenterprise/actions_checkout` resolves to `actions/checkout` using the regex
+  pattern
+- This simplifies repository name resolution but still requires a public GitHub
+  token to look up tags from commit SHAs on the parent repository
 
 ---
 
@@ -477,7 +481,8 @@ jobs:
 
 1. **Always define permissions at the job level** for least privilege
 2. **Use GitHub Apps** for both tokens when possible for maximum security
-3. **Use regex patterns** when available to avoid needing a public GitHub token
+3. **Use regex patterns** to simplify repository name resolution (note: a public
+   GitHub token is still required to look up tags from commit SHAs)
 4. **Regularly audit** public GitHub token usage and permissions
 5. **Document** your fork naming conventions if using regex patterns
 6. **Monitor** for actions that cannot be resolved and may need manual mapping
