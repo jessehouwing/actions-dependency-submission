@@ -1,0 +1,11 @@
+name:  VULNERABLE WORKFLOW
+
+on:
+  workflow_dispatch:
+
+jobs:
+  vulnerable:
+    runs-on: ubuntu-latest
+    if: false
+    steps:
+      - uses: actions/download-artifact@f44cd7b40bfd40b6aa1cc1b9b5b7bf03d3c67110 # 4.1.0
