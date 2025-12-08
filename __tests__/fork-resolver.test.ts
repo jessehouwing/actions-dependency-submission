@@ -11,7 +11,7 @@ const { ForkResolver } = await import('../src/fork-resolver.js')
 describe('ForkResolver', () => {
   beforeEach(() => {
     jest.clearAllMocks()
-    // Reset mock implementations to clear mockResolvedValueOnce state
+    // Reset all mock implementations and clear all mock state (including mockResolvedValueOnce and default implementations)
     github.mockOctokit.rest.repos.get.mockReset()
     github.mockOctokit.rest.repos.listTags.mockReset()
     github.mockPublicOctokit.rest.repos.get.mockReset()
