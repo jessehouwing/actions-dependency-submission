@@ -24,36 +24,31 @@ jobs:
     outputs:
       needs_update: ${{ steps.check-licenses.outcome == 'failure' }}
 
-    steps:
-      - &checkout-shallow
-        name: Checkout
+    steps: &licensed-setup
+      - name: Checkout
         id: checkout
         uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 #v6.0.1
         with:
           fetch-depth: 1
 
-      - &setup-node
-        name: Setup Node.js
+      - name: Setup Node.js
         id: setup-node
         uses: actions/setup-node@395ad3262231945c25e8478fd5baf05154b1d79f #v6.1.0
         with:
           node-version-file: .node-version
           cache: npm
 
-      - &npm-ci
-        name: Install Dependencies
+      - name: Install Dependencies
         id: npm-ci
         run: npm ci
 
-      - &setup-ruby
-        name: Setup Ruby
+      - name: Setup Ruby
         id: setup-ruby
         uses: ruby/setup-ruby@d697be2f83c6234b20877c3b5eac7a7f342f0d0c #v1.269.0
         with:
           ruby-version: ruby
 
-      - &setup-licensed
-        uses: licensee/setup-licensed@0d52e575b3258417672be0dff2f115d7db8771d8 #v1.3.2
+      - uses: licensee/setup-licensed@0d52e575b3258417672be0dff2f115d7db8771d8 #v1.3.2
         with:
           version: 5.x
           github_token: ${{ secrets.GITHUB_TOKEN }}
@@ -74,17 +69,12 @@ jobs:
     environment: licensed-updates
 
     steps:
-      - <<: *checkout-shallow
-        with:
-          fetch-depth: 0
-
-      - *setup-node
-
-      - *npm-ci
-
-      - *setup-ruby
-
-      - *setup-licensed
+      - <<: *licensed-setup
+        - name: Checkout
+          id: checkout
+          uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 #v6.0.1
+          with:
+            fetch-depth: 0
 
       - name: Update Licenses
         id: update-licenses
