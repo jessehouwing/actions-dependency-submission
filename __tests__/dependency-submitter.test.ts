@@ -569,5 +569,116 @@ describe('DependencySubmitter', () => {
         manifests['pkg:githubactions/actions/checkout@v4.2.1'].relationship
       ).toBe('indirect')
     })
+
+    it('Includes actionPath in package URL for subfolder actions', async () => {
+      github.mockOctokit.rest.dependencyGraph.createRepositorySnapshot.mockResolvedValueOnce(
+        {}
+      )
+
+      const submitter = new DependencySubmitter({
+        token: 'test-token',
+        repository: 'test-owner/test-repo',
+        sha: 'abc123',
+        ref: 'refs/heads/main'
+      })
+
+      const dependencies = [
+        {
+          owner: 'actions',
+          repo: 'aws',
+          ref: 'v1.0.0',
+          actionPath: 'ec2'
+        }
+      ]
+
+      const count = await submitter.submitDependencies(dependencies)
+
+      expect(count).toBe(1)
+
+      const call =
+        github.mockOctokit.rest.dependencyGraph.createRepositorySnapshot.mock
+          .calls[0][0]
+      const manifests = call.manifests['github-actions.yml'].resolved
+
+      // Package URL should include the path
+      expect(Object.keys(manifests)).toContain(
+        'pkg:githubactions/actions/aws/ec2@v1.0.0'
+      )
+      expect(
+        manifests['pkg:githubactions/actions/aws/ec2@v1.0.0'].relationship
+      ).toBe('direct')
+    })
+
+    it('Includes actionPath in package URL for nested subfolder actions', async () => {
+      github.mockOctokit.rest.dependencyGraph.createRepositorySnapshot.mockResolvedValueOnce(
+        {}
+      )
+
+      const submitter = new DependencySubmitter({
+        token: 'test-token',
+        repository: 'test-owner/test-repo',
+        sha: 'abc123',
+        ref: 'refs/heads/main'
+      })
+
+      const dependencies = [
+        {
+          owner: 'myorg',
+          repo: 'actions',
+          ref: 'v2',
+          actionPath: 'folder/subfolder'
+        }
+      ]
+
+      const count = await submitter.submitDependencies(dependencies)
+
+      expect(count).toBe(1)
+
+      const call =
+        github.mockOctokit.rest.dependencyGraph.createRepositorySnapshot.mock
+          .calls[0][0]
+      const manifests = call.manifests['github-actions.yml'].resolved
+
+      // Package URL should include the nested path
+      expect(Object.keys(manifests)).toContain(
+        'pkg:githubactions/myorg/actions/folder/subfolder@v2.*.*'
+      )
+    })
+
+    it('Works correctly for actions without actionPath', async () => {
+      github.mockOctokit.rest.dependencyGraph.createRepositorySnapshot.mockResolvedValueOnce(
+        {}
+      )
+
+      const submitter = new DependencySubmitter({
+        token: 'test-token',
+        repository: 'test-owner/test-repo',
+        sha: 'abc123',
+        ref: 'refs/heads/main'
+      })
+
+      const dependencies = [
+        {
+          owner: 'actions',
+          repo: 'checkout',
+          ref: 'v4',
+          actionPath: undefined
+        }
+      ]
+
+      const count = await submitter.submitDependencies(dependencies)
+
+      expect(count).toBe(1)
+
+      const call =
+        github.mockOctokit.rest.dependencyGraph.createRepositorySnapshot.mock
+          .calls[0][0]
+      const manifests = call.manifests['github-actions.yml'].resolved
+
+      // Package URL should not include path when undefined
+      expect(Object.keys(manifests)).toContain(
+        'pkg:githubactions/actions/checkout@v4.*.*'
+      )
+    })
   })
 })

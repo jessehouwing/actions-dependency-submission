@@ -49,7 +49,8 @@ describe('WorkflowParser', () => {
         owner: 'actions',
         repo: 'checkout',
         ref: 'v4',
-        uses: 'actions/checkout/path@v4'
+        uses: 'actions/checkout/path@v4',
+        actionPath: 'path'
       })
     })
 
@@ -983,14 +984,16 @@ jobs:
       // Mock Octokit to track calls
       const mockGetContent = jest.fn().mockResolvedValue({
         data: {
-          content: Buffer.from(`
+          content: Buffer.from(
+            `
 name: My Remote Action
 description: A remote composite action
 runs:
   using: composite
   steps:
     - uses: actions/setup-node@v4
-`).toString('base64')
+`
+          ).toString('base64')
         }
       })
 
@@ -1040,7 +1043,8 @@ jobs:
       // Mock Octokit to track calls
       const mockGetContent = jest.fn().mockResolvedValue({
         data: {
-          content: Buffer.from(`
+          content: Buffer.from(
+            `
 name: Reusable Workflow
 on:
   workflow_call:
@@ -1049,7 +1053,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-`).toString('base64')
+`
+          ).toString('base64')
         }
       })
 
@@ -1097,14 +1102,16 @@ jobs:
       // Mock Octokit to track calls
       const mockGetContent = jest.fn().mockResolvedValue({
         data: {
-          content: Buffer.from(`
+          content: Buffer.from(
+            `
 name: My Remote Action
 description: A remote composite action
 runs:
   using: composite
   steps:
     - uses: actions/setup-node@v4
-`).toString('base64')
+`
+          ).toString('base64')
         }
       })
 
@@ -1148,6 +1155,183 @@ jobs:
         repo: 'my-composite-action',
         path: 'action.yml',
         ref: sha
+      })
+    })
+
+    it('Fetches composite actions from subfolders correctly', async () => {
+      // Mock Octokit to track calls
+      const mockGetContent = jest.fn().mockResolvedValue({
+        data: {
+          content: Buffer.from(
+            `
+name: Subfolder Action
+description: A remote composite action in a subfolder
+runs:
+  using: composite
+  steps:
+    - uses: actions/setup-node@v4
+`
+          ).toString('base64')
+        }
+      })
+
+      const mockOctokit = {
+        rest: {
+          repos: {
+            getContent: mockGetContent
+          }
+        }
+      }
+
+      // Create a parser with mocked octokit
+      const parserWithToken = new WorkflowParser('fake-token')
+      // @ts-expect-error - Replacing private property for testing
+      parserWithToken.octokitProvider = {
+        getOctokitForRepo: jest.fn().mockResolvedValue(mockOctokit),
+        getOctokit: jest.fn().mockReturnValue(mockOctokit),
+        getPublicOctokit: jest.fn().mockReturnValue(undefined),
+        getRepoInfo: jest.fn().mockResolvedValue(undefined),
+        repoExists: jest.fn().mockResolvedValue(true)
+      }
+
+      const workflowContent = `
+name: Test Workflow
+on: push
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: remote-org/my-repo/subfolder@v1
+`
+      const workflowFile = path.join(tempDir, 'test.yml')
+      fs.writeFileSync(workflowFile, workflowContent)
+
+      const dependencies = await parserWithToken.parseWorkflowDirectory(
+        tempDir,
+        [],
+        tempDir
+      )
+
+      // Verify getContent was called with the correct path
+      expect(mockGetContent).toHaveBeenCalledWith({
+        owner: 'remote-org',
+        repo: 'my-repo',
+        path: 'subfolder/action.yml',
+        ref: 'v1'
+      })
+
+      // Should have the direct dependency plus transitive dependencies
+      expect(dependencies.length).toBeGreaterThanOrEqual(1)
+
+      // Find the direct dependency
+      const directDep = dependencies.find(
+        (d) => d.owner === 'remote-org' && d.repo === 'my-repo'
+      )
+      expect(directDep).toBeDefined()
+      expect(directDep?.actionPath).toBe('subfolder')
+      expect(directDep?.isTransitive).toBeUndefined()
+
+      // Find the transitive dependency
+      const transitiveDeps = dependencies.filter((d) => d.isTransitive === true)
+      expect(transitiveDeps.length).toBeGreaterThanOrEqual(1)
+      const setupNodeDep = transitiveDeps.find(
+        (d) => d.owner === 'actions' && d.repo === 'setup-node'
+      )
+      expect(setupNodeDep).toBeDefined()
+    })
+
+    it('Handles nested subfolder paths for composite actions', async () => {
+      // Mock Octokit to track calls
+      const mockGetContent = jest.fn().mockResolvedValue({
+        data: {
+          content: Buffer.from(
+            `
+name: Nested Subfolder Action
+description: A composite action in a nested subfolder
+runs:
+  using: composite
+  steps:
+    - uses: actions/cache@v3
+`
+          ).toString('base64')
+        }
+      })
+
+      const mockOctokit = {
+        rest: {
+          repos: {
+            getContent: mockGetContent
+          }
+        }
+      }
+
+      // Create a parser with mocked octokit
+      const parserWithToken = new WorkflowParser('fake-token')
+      // @ts-expect-error - Replacing private property for testing
+      parserWithToken.octokitProvider = {
+        getOctokitForRepo: jest.fn().mockResolvedValue(mockOctokit),
+        getOctokit: jest.fn().mockReturnValue(mockOctokit),
+        getPublicOctokit: jest.fn().mockReturnValue(undefined),
+        getRepoInfo: jest.fn().mockResolvedValue(undefined),
+        repoExists: jest.fn().mockResolvedValue(true)
+      }
+
+      const workflowContent = `
+name: Test Workflow
+on: push
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: remote-org/my-repo/folder/subfolder@v2.0.0
+`
+      const workflowFile = path.join(tempDir, 'test.yml')
+      fs.writeFileSync(workflowFile, workflowContent)
+
+      await parserWithToken.parseWorkflowDirectory(tempDir, [], tempDir)
+
+      // Verify getContent was called with the correct nested path
+      expect(mockGetContent).toHaveBeenCalledWith({
+        owner: 'remote-org',
+        repo: 'my-repo',
+        path: 'folder/subfolder/action.yml',
+        ref: 'v2.0.0'
+      })
+    })
+
+    it('Parses subfolder actions correctly in parseUsesString', () => {
+      const parserInstance = new WorkflowParser()
+
+      // Test single level subfolder
+      const result1 = parserInstance.parseUsesString('owner/repo/subfolder@v1')
+      expect(result1.dependency).toEqual({
+        owner: 'owner',
+        repo: 'repo',
+        ref: 'v1',
+        uses: 'owner/repo/subfolder@v1',
+        actionPath: 'subfolder'
+      })
+
+      // Test nested subfolder
+      const result2 = parserInstance.parseUsesString(
+        'owner/repo/folder/subfolder@v2'
+      )
+      expect(result2.dependency).toEqual({
+        owner: 'owner',
+        repo: 'repo',
+        ref: 'v2',
+        uses: 'owner/repo/folder/subfolder@v2',
+        actionPath: 'folder/subfolder'
+      })
+
+      // Test without subfolder
+      const result3 = parserInstance.parseUsesString('owner/repo@v3')
+      expect(result3.dependency).toEqual({
+        owner: 'owner',
+        repo: 'repo',
+        ref: 'v3',
+        uses: 'owner/repo@v3',
+        actionPath: undefined
       })
     })
   })
