@@ -58,22 +58,21 @@ jobs:
         with:
           matcher: true
 
-  markdownlint:
-    name: Lint Markdown
-    runs-on: ubuntu-latest
-    if: false
-
-    steps:
-      - name: Checkout
-        id: checkout
-        uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 #v6.0.1
-
-      - name: Run markdownlint
-        id: markdownlint
-        uses: DavidAnson/markdownlint-cli2-action@30a0e04f1870d58f8d717450cc6134995f993c63 #v21.0.0
-        with:
-          config: .markdownlint-cli2.yaml
-          globs: '**/*.md'
+#  markdownlint:
+#    name: Lint Markdown
+#    runs-on: ubuntu-latest
+#
+#    steps:
+#      - name: Checkout
+#        id: checkout
+#        uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 #v6.0.1
+#
+#      - name: Run markdownlint
+#        id: markdownlint
+#        uses: DavidAnson/markdownlint-cli2-action@30a0e04f1870d58f8d717450cc6134995f993c63 #v21.0.0
+#        with:
+#          config: .markdownlint-cli2.yaml
+#          globs: '**/*.md'
 
   yamllint:
     name: Lint YAML
