@@ -366,6 +366,190 @@ runs:
         dependencies.find((d) => d.uses === 'actions/cache@v3')
       ).toBeDefined()
     })
+
+    it('Scans root action.yml file if it is a composite action', async () => {
+      // Create workflow directory with a workflow
+      fs.mkdirSync(path.join(tempDir, '.github', 'workflows'), {
+        recursive: true
+      })
+      fs.writeFileSync(
+        path.join(tempDir, '.github', 'workflows', 'test.yml'),
+        `
+name: Test
+on: push
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+`
+      )
+
+      // Create root action.yml (composite action)
+      fs.writeFileSync(
+        path.join(tempDir, 'action.yml'),
+        `
+name: Root Action
+description: Root composite action
+runs:
+  using: composite
+  steps:
+    - uses: actions/setup-node@v4
+    - uses: actions/cache@v3
+`
+      )
+
+      const dependencies = await parser.parseWorkflowDirectory(
+        path.join(tempDir, '.github', 'workflows'),
+        [],
+        tempDir
+      )
+
+      // Should find dependencies from both workflow and root action.yml
+      expect(dependencies).toHaveLength(3)
+      expect(
+        dependencies.find((d) => d.uses === 'actions/checkout@v4')
+      ).toBeDefined()
+      expect(
+        dependencies.find((d) => d.uses === 'actions/setup-node@v4')
+      ).toBeDefined()
+      expect(
+        dependencies.find((d) => d.uses === 'actions/cache@v3')
+      ).toBeDefined()
+    })
+
+    it('Scans root action.yaml file if it exists', async () => {
+      // Create workflow directory
+      fs.mkdirSync(path.join(tempDir, '.github', 'workflows'), {
+        recursive: true
+      })
+      fs.writeFileSync(
+        path.join(tempDir, '.github', 'workflows', 'test.yml'),
+        `
+name: Test
+on: push
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+`
+      )
+
+      // Create root action.yaml (composite action)
+      fs.writeFileSync(
+        path.join(tempDir, 'action.yaml'),
+        `
+name: Root Action
+description: Root composite action
+runs:
+  using: composite
+  steps:
+    - uses: github/codeql-action/init@v2
+`
+      )
+
+      const dependencies = await parser.parseWorkflowDirectory(
+        path.join(tempDir, '.github', 'workflows'),
+        [],
+        tempDir
+      )
+
+      // Should find dependencies from both workflow and root action.yaml
+      expect(dependencies).toHaveLength(2)
+      expect(
+        dependencies.find((d) => d.uses === 'actions/checkout@v4')
+      ).toBeDefined()
+      expect(
+        dependencies.find((d) => d.uses === 'github/codeql-action/init@v2')
+      ).toBeDefined()
+    })
+
+    it('Does not scan root action.yml if it is not a composite action', async () => {
+      // Create workflow directory
+      fs.mkdirSync(path.join(tempDir, '.github', 'workflows'), {
+        recursive: true
+      })
+      fs.writeFileSync(
+        path.join(tempDir, '.github', 'workflows', 'test.yml'),
+        `
+name: Test
+on: push
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+`
+      )
+
+      // Create root action.yml (Docker action, not composite)
+      fs.writeFileSync(
+        path.join(tempDir, 'action.yml'),
+        `
+name: Root Action
+description: Root Docker action
+runs:
+  using: docker
+  image: Dockerfile
+`
+      )
+
+      const dependencies = await parser.parseWorkflowDirectory(
+        path.join(tempDir, '.github', 'workflows'),
+        [],
+        tempDir
+      )
+
+      // Should only find dependency from workflow, not from root action.yml
+      expect(dependencies).toHaveLength(1)
+      expect(
+        dependencies.find((d) => d.uses === 'actions/checkout@v4')
+      ).toBeDefined()
+    })
+
+    it('Does not scan root action.yml if repoRoot is not provided', async () => {
+      // Create root action.yml (composite action)
+      fs.writeFileSync(
+        path.join(tempDir, 'action.yml'),
+        `
+name: Root Action
+description: Root composite action
+runs:
+  using: composite
+  steps:
+    - uses: actions/cache@v3
+`
+      )
+
+      // Create workflow directory
+      fs.mkdirSync(path.join(tempDir, '.github', 'workflows'), {
+        recursive: true
+      })
+      fs.writeFileSync(
+        path.join(tempDir, '.github', 'workflows', 'test.yml'),
+        `
+name: Test
+on: push
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+`
+      )
+
+      // Parse without repoRoot
+      const dependencies = await parser.parseWorkflowDirectory(
+        path.join(tempDir, '.github', 'workflows')
+      )
+
+      // Should only find dependency from workflow
+      expect(dependencies).toHaveLength(1)
+      expect(
+        dependencies.find((d) => d.uses === 'actions/checkout@v4')
+      ).toBeDefined()
+    })
   })
 
   describe('YAML anchors and aliases', () => {

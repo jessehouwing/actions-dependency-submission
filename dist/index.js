@@ -38252,6 +38252,13 @@ class WorkflowParser {
         const dependencies = [];
         const processedFiles = new Set();
         const filesToProcess = [];
+        // Process root action.yml or action.yaml if it exists (for repositories authoring GitHub Actions)
+        if (repoRoot) {
+            const rootActionYml = this.findActionYml(repoRoot);
+            if (rootActionYml && this.isCompositeAction(rootActionYml)) {
+                filesToProcess.push(rootActionYml);
+            }
+        }
         // Process main workflow directory
         if (fs.existsSync(workflowDir)) {
             const files = fs.readdirSync(workflowDir);
