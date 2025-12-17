@@ -23,6 +23,6 @@ jobs:
         with:
           fetch-depth: 0
 
-      - uses: jessehouwing-actions/actions-semver-checker@3cb8b94e8a9f14b89c86702e5c8c7c3d95559c5e # 1.0.7
+      - uses: jessehouwing-actions/actions-semver-checker@05fccd40824d7367e4b990273c1c6c535c9b0b13 # 1.0.8
         with:
           check-minor-version: true
