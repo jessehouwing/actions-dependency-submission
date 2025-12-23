@@ -51,7 +51,7 @@ describe('DependencySubmitter', () => {
 
       const manifests = call.manifests['github-actions.yml'].resolved
       expect(Object.keys(manifests)).toContain(
-        'pkg:githubactions/actions/checkout@v4.*.*'
+        'pkg:githubactions/actions/checkout@4.*.*'
       )
     })
 
@@ -92,18 +92,18 @@ describe('DependencySubmitter', () => {
       const manifests = call.manifests['github-actions.yml'].resolved
 
       expect(Object.keys(manifests)).toContain(
-        'pkg:githubactions/myorg/checkout@v4.*.*'
+        'pkg:githubactions/myorg/checkout@4.*.*'
       )
       expect(Object.keys(manifests)).toContain(
-        'pkg:githubactions/actions/checkout@v4.*.*'
+        'pkg:githubactions/actions/checkout@4.*.*'
       )
 
       // Check relationships - with default behavior, both should be direct for vulnerability reporting
       expect(
-        manifests['pkg:githubactions/myorg/checkout@v4.*.*'].relationship
+        manifests['pkg:githubactions/myorg/checkout@4.*.*'].relationship
       ).toBe('direct')
       expect(
-        manifests['pkg:githubactions/actions/checkout@v4.*.*'].relationship
+        manifests['pkg:githubactions/actions/checkout@4.*.*'].relationship
       ).toBe('direct')
     })
 
@@ -160,7 +160,7 @@ describe('DependencySubmitter', () => {
       const manifests = call.manifests['github-actions.yml'].resolved
 
       expect(Object.keys(manifests)).toContain(
-        'pkg:githubactions/actions/checkout@v4.1.0'
+        'pkg:githubactions/actions/checkout@4.1.0'
       )
     })
 
@@ -257,7 +257,7 @@ describe('DependencySubmitter', () => {
       const manifests = call.manifests['github-actions.yml'].resolved
 
       expect(Object.keys(manifests)).toContain(
-        'pkg:githubactions/actions/checkout@v1.*.*'
+        'pkg:githubactions/actions/checkout@1.*.*'
       )
     })
 
@@ -289,7 +289,7 @@ describe('DependencySubmitter', () => {
       const manifests = call.manifests['github-actions.yml'].resolved
 
       expect(Object.keys(manifests)).toContain(
-        'pkg:githubactions/actions/setup-node@v1.2.*'
+        'pkg:githubactions/actions/setup-node@1.2.*'
       )
     })
 
@@ -321,7 +321,7 @@ describe('DependencySubmitter', () => {
       const manifests = call.manifests['github-actions.yml'].resolved
 
       expect(Object.keys(manifests)).toContain(
-        'pkg:githubactions/actions/cache@v1.2.3'
+        'pkg:githubactions/actions/cache@1.2.3'
       )
     })
 
@@ -427,7 +427,7 @@ describe('DependencySubmitter', () => {
         'pkg:githubactions/jessehouwing/actions-semver-checker@3cb8b94e8a9f14b89c86702e5c8c7c3d95559c5e'
       )
       expect(Object.keys(manifests)).toContain(
-        'pkg:githubactions/jessehouwing/actions-semver-checker@v1.0.7'
+        'pkg:githubactions/jessehouwing/actions-semver-checker@1.0.7'
       )
 
       // Check relationships - both are direct by default (reportTransitiveAsDirect: true)
@@ -437,9 +437,8 @@ describe('DependencySubmitter', () => {
         ].relationship
       ).toBe('direct')
       expect(
-        manifests[
-          'pkg:githubactions/jessehouwing/actions-semver-checker@v1.0.7'
-        ].relationship
+        manifests['pkg:githubactions/jessehouwing/actions-semver-checker@1.0.7']
+          .relationship
       ).toBe('direct')
     })
 
@@ -485,7 +484,7 @@ describe('DependencySubmitter', () => {
         'pkg:githubactions/myorg/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8'
       )
       expect(Object.keys(manifests)).toContain(
-        'pkg:githubactions/myorg/checkout@v4.1.0'
+        'pkg:githubactions/myorg/checkout@4.1.0'
       )
 
       // Should have both SHA and version for original
@@ -493,7 +492,7 @@ describe('DependencySubmitter', () => {
         'pkg:githubactions/actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8'
       )
       expect(Object.keys(manifests)).toContain(
-        'pkg:githubactions/actions/checkout@v4.1.0'
+        'pkg:githubactions/actions/checkout@4.1.0'
       )
 
       // Check relationships - With default behavior (reportTransitiveAsDirect: true),
@@ -504,7 +503,7 @@ describe('DependencySubmitter', () => {
         ].relationship
       ).toBe('direct')
       expect(
-        manifests['pkg:githubactions/myorg/checkout@v4.1.0'].relationship
+        manifests['pkg:githubactions/myorg/checkout@4.1.0'].relationship
       ).toBe('direct')
       expect(
         manifests[
@@ -512,7 +511,7 @@ describe('DependencySubmitter', () => {
         ].relationship
       ).toBe('direct')
       expect(
-        manifests['pkg:githubactions/actions/checkout@v4.1.0'].relationship
+        manifests['pkg:githubactions/actions/checkout@4.1.0'].relationship
       ).toBe('direct')
     })
 
@@ -554,19 +553,19 @@ describe('DependencySubmitter', () => {
 
       // Should have both fork and original
       expect(Object.keys(manifests)).toContain(
-        'pkg:githubactions/enterprise/actions-checkout@v4.2.1'
+        'pkg:githubactions/enterprise/actions-checkout@4.2.1'
       )
       expect(Object.keys(manifests)).toContain(
-        'pkg:githubactions/actions/checkout@v4.2.1'
+        'pkg:githubactions/actions/checkout@4.2.1'
       )
 
       // With default behavior, both should be direct for vulnerability reporting
       expect(
-        manifests['pkg:githubactions/enterprise/actions-checkout@v4.2.1']
+        manifests['pkg:githubactions/enterprise/actions-checkout@4.2.1']
           .relationship
       ).toBe('direct')
       expect(
-        manifests['pkg:githubactions/actions/checkout@v4.2.1'].relationship
+        manifests['pkg:githubactions/actions/checkout@4.2.1'].relationship
       ).toBe('direct')
     })
 
@@ -602,10 +601,10 @@ describe('DependencySubmitter', () => {
 
       // Package URL should include the path
       expect(Object.keys(manifests)).toContain(
-        'pkg:githubactions/actions/aws/ec2@v1.0.0'
+        'pkg:githubactions/actions/aws/ec2@1.0.0'
       )
       expect(
-        manifests['pkg:githubactions/actions/aws/ec2@v1.0.0'].relationship
+        manifests['pkg:githubactions/actions/aws/ec2@1.0.0'].relationship
       ).toBe('direct')
     })
 
@@ -641,7 +640,7 @@ describe('DependencySubmitter', () => {
 
       // Package URL should include the nested path
       expect(Object.keys(manifests)).toContain(
-        'pkg:githubactions/myorg/actions/folder/subfolder@v2.*.*'
+        'pkg:githubactions/myorg/actions/folder/subfolder@2.*.*'
       )
     })
 
@@ -677,7 +676,7 @@ describe('DependencySubmitter', () => {
 
       // Package URL should not include path when undefined
       expect(Object.keys(manifests)).toContain(
-        'pkg:githubactions/actions/checkout@v4.*.*'
+        'pkg:githubactions/actions/checkout@4.*.*'
       )
     })
 
@@ -717,10 +716,10 @@ describe('DependencySubmitter', () => {
 
       // Fork should be direct, original should be indirect
       expect(
-        manifests['pkg:githubactions/myorg/checkout@v4.*.*'].relationship
+        manifests['pkg:githubactions/myorg/checkout@4.*.*'].relationship
       ).toBe('direct')
       expect(
-        manifests['pkg:githubactions/actions/checkout@v4.*.*'].relationship
+        manifests['pkg:githubactions/actions/checkout@4.*.*'].relationship
       ).toBe('indirect')
     })
 
@@ -763,10 +762,10 @@ describe('DependencySubmitter', () => {
 
       // Non-transitive should be direct, transitive should be indirect
       expect(
-        manifests['pkg:githubactions/actions/checkout@v4.*.*'].relationship
+        manifests['pkg:githubactions/actions/checkout@4.*.*'].relationship
       ).toBe('direct')
       expect(
-        manifests['pkg:githubactions/actions/setup-node@v3.*.*'].relationship
+        manifests['pkg:githubactions/actions/setup-node@3.*.*'].relationship
       ).toBe('indirect')
     })
 
@@ -809,10 +808,10 @@ describe('DependencySubmitter', () => {
 
       // Both should be direct for vulnerability reporting
       expect(
-        manifests['pkg:githubactions/actions/checkout@v4.*.*'].relationship
+        manifests['pkg:githubactions/actions/checkout@4.*.*'].relationship
       ).toBe('direct')
       expect(
-        manifests['pkg:githubactions/actions/setup-node@v3.*.*'].relationship
+        manifests['pkg:githubactions/actions/setup-node@3.*.*'].relationship
       ).toBe('direct')
     })
 
@@ -854,7 +853,7 @@ describe('DependencySubmitter', () => {
         ].relationship
       ).toBe('direct')
       expect(
-        manifests['pkg:githubactions/actions/checkout@v4.1.0'].relationship
+        manifests['pkg:githubactions/actions/checkout@4.1.0'].relationship
       ).toBe('indirect')
     })
   })

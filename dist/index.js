@@ -40260,10 +40260,10 @@ class DependencySubmitter {
         return dependencyCount;
     }
     /**
-     * Converts a version reference to wildcard format
+     * Converts a version reference to wildcard format and removes 'v' prefix
      *
      * @param ref Version/ref (e.g., v1, v1.2, v1.2.3)
-     * @returns Version with wildcards (e.g., v1.*.*, v1.2.*, v1.2.3)
+     * @returns Version with wildcards and without 'v' prefix (e.g., 1.*.*, 1.2.*, 1.2.3)
      */
     convertToWildcardVersion(ref) {
         // Match semver-like version patterns: v1, v1.2, v1.2.3
@@ -40273,18 +40273,18 @@ class DependencySubmitter {
             return ref;
         }
         const [, major, minor, patch] = versionMatch;
-        // Build version with wildcards for missing parts
+        // Build version with wildcards for missing parts (without 'v' prefix)
         if (patch !== undefined) {
             // v1.2.3 - all parts present
-            return ref;
+            return `${major}.${minor}.${patch}`;
         }
         else if (minor !== undefined) {
             // v1.2 - missing patch
-            return `v${major}.${minor}.*`;
+            return `${major}.${minor}.*`;
         }
         else {
             // v1 - missing minor and patch
-            return `v${major}.*.*`;
+            return `${major}.*.*`;
         }
     }
     /**
