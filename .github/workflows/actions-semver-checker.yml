@@ -7,11 +7,13 @@ on:
       - '*'
   workflow_dispatch:
 
-permissions:
-  contents: read
+permissions: {}
 
 jobs:
   check-semver:
+    permissions:
+      contents: read
+      
     concurrency:
       group: '${{ github.workflow }}'
       cancel-in-progress: true
@@ -23,6 +25,6 @@ jobs:
         with:
           fetch-depth: 0
 
-      - uses: jessehouwing-actions/actions-semver-checker@05fccd40824d7367e4b990273c1c6c535c9b0b13 # 1.0.8
+      - uses: jessehouwing/actions-semver-checker@05fccd40824d7367e4b990273c1c6c535c9b0b13 # 1.0.8
         with:
           check-minor-version: true
