@@ -1,7 +1,6 @@
 name: Submit and validate dependencies of GitHub Actions
 
 on:
-  push:
   pull_request:
 
 permissions: {}
