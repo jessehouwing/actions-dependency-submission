@@ -13,7 +13,7 @@ jobs:
   check-semver:
     permissions:
       contents: read
-      
+
     concurrency:
       group: '${{ github.workflow }}'
       cancel-in-progress: true

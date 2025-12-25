@@ -20,8 +20,8 @@ security coverage for your GitHub Actions dependencies.
 
 1. **Dependency Submission** (on push and pull request): The
    `actions-dependency-submission` action scans your workflows and submits
-   action dependencies to the Dependency Graph for both the base branch and
-   pull request head
+   action dependencies to the Dependency Graph for both the base branch and pull
+   request head
 2. **Dependency Review** (on pull request): The `dependency-review-action`
    compares the dependency graph between the base and head commits, flagging any
    new vulnerabilities or policy violations
@@ -34,8 +34,8 @@ dependency review action has nothing to compare against.
 
 ### Step 1: Submit Dependencies on Push and Pull Requests
 
-Ensure dependencies are submitted when changes are pushed to your default
-branch **and** on pull requests:
+Ensure dependencies are submitted when changes are pushed to your default branch
+**and** on pull requests:
 
 ```yaml
 # .github/workflows/submit-dependencies.yml
@@ -162,14 +162,14 @@ with required status checks.
 
 Your ruleset should include:
 
-| Setting                                        | Value                         |
-| ---------------------------------------------- | ----------------------------- |
-| Target branches                                | `main` (or your default)      |
-| Require status checks to pass                  | ✅ Enabled                    |
-| Required checks                                | `dependency-review`           |
-| Require branches to be up to date before merge | ✅ Enabled (recommended)      |
-| Block force pushes                             | ✅ Enabled (recommended)      |
-| Require a pull request before merging          | ✅ Enabled (recommended)      |
+| Setting                                        | Value                    |
+| ---------------------------------------------- | ------------------------ |
+| Target branches                                | `main` (or your default) |
+| Require status checks to pass                  | ✅ Enabled               |
+| Required checks                                | `dependency-review`      |
+| Require branches to be up to date before merge | ✅ Enabled (recommended) |
+| Block force pushes                             | ✅ Enabled (recommended) |
+| Require a pull request before merging          | ✅ Enabled (recommended) |
 
 ### Organization-Level Rulesets
 
@@ -267,8 +267,8 @@ original actions will be detected.
 
 If the dependency review action doesn't detect your action dependencies:
 
-1. Ensure `actions-dependency-submission` runs on **both** `push` to main **and**
-   `pull_request` events
+1. Ensure `actions-dependency-submission` runs on **both** `push` to main
+   **and** `pull_request` events
 2. Verify the submission job completes before the review job runs (use `needs:`
    if in the same workflow)
 3. Check that dependencies were submitted by viewing **Insights** → **Dependency
