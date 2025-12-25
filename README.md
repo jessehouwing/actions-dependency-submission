@@ -46,7 +46,7 @@ jobs:
     permissions:
       contents: write # Required for dependency submission
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - uses: jessehouwing/actions-dependency-submission@v1
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
@@ -124,7 +124,7 @@ jobs:
     permissions:
       contents: write # Required for dependency submission
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - uses: jessehouwing/actions-dependency-submission@v1
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
@@ -259,7 +259,70 @@ Without this action, you only get security advisories for
 advisories for both:
 
 - `myenterprise/actions-checkout@v4`
-- `actions/checkout@v4`
+- `actions/checkout@v6`
+
+## Combining with Dependency Review
+
+Once dependencies are submitted to the Dependency Graph, you can use the
+[Dependency Review Action](https://github.com/actions/dependency-review-action)
+to block pull requests that introduce vulnerable or unwanted action
+dependencies.
+
+### Quick Setup
+
+First, ensure the dependency submission action runs on both `push` and
+`pull_request` events (required for comparison):
+
+```yaml
+# .github/workflows/submit-dependencies.yml
+name: Submit Dependencies
+on:
+  push:
+    branches: [main]
+  pull_request:
+  schedule:
+    - cron: '0 0 * * 0' # Weekly
+
+jobs:
+  submit-dependencies:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v6
+      - uses: jessehouwing/actions-dependency-submission@v1
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+```
+
+Then add the dependency review workflow:
+
+```yaml
+# .github/workflows/dependency-review.yml
+name: Dependency Review
+on: pull_request
+
+jobs:
+  dependency-review:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/dependency-review-action@v4
+```
+
+### Enforcing Dependency Review
+
+To ensure all pull requests pass dependency review before merging:
+
+1. Configure a **branch ruleset** with required status checks
+2. Add the dependency review job as a required check
+
+For detailed configuration options including license policies, vulnerability
+severity thresholds, and branch protection setup, see the
+[Dependency Review Guide](docs/dependency-review.md).
 
 ## Permissions
 
@@ -303,6 +366,8 @@ specific to your environment, please refer to the appropriate guide:
   environments with action synchronization
 - **[GitHub Enterprise Server (GHES)](docs/github-ghes.md)** - Self-hosted GHES
   instances
+- **[Dependency Review Integration](docs/dependency-review.md)** - Enforce
+  security policies on pull requests
 
 Each guide covers:
 
