@@ -794,8 +794,8 @@ describe('ForkResolver', () => {
     })
   })
 
-  describe('Ref to SHA resolution with branch priority', () => {
-    it('Resolves ref to branch SHA when branch exists', async () => {
+  describe('Non-SHA ref handling', () => {
+    it('Preserves ref when it matches a branch name', async () => {
       // Mock listBranches to return a matching branch
       github.mockOctokit.rest.repos.listBranches.mockResolvedValueOnce({
         data: [
@@ -832,7 +832,7 @@ describe('ForkResolver', () => {
       expect(result[0].originalSha).toBeUndefined()
     })
 
-    it('Resolves ref to branch SHA when both branch and tag exist', async () => {
+    it('Preserves ref when it matches both a branch and tag name', async () => {
       // Mock listBranches to return a matching branch
       github.mockOctokit.rest.repos.listBranches.mockResolvedValueOnce({
         data: [
@@ -875,7 +875,7 @@ describe('ForkResolver', () => {
       expect(result[0].originalSha).toBeUndefined()
     })
 
-    it('Resolves ref to tag SHA when only tag exists (no branch)', async () => {
+    it('Preserves ref when it matches only a tag name (no branch)', async () => {
       // Mock listBranches to return no matching branch
       github.mockOctokit.rest.repos.listBranches.mockResolvedValueOnce({
         data: []

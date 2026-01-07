@@ -392,7 +392,7 @@ export class ForkResolver {
         const match = ref.name.match(ForkResolver.SEMVER_PATTERN)
         if (!match) return null
 
-        // match[0] is the full match, match[1..3] are the captured groups (major, minor, patch)
+        // match[0] is the full match, match[1], match[2], match[3] are the captured groups (major, minor, patch)
         const hasVPrefix = match[0].startsWith('v')
         const major = parseInt(match[1], 10)
         const minor = match[2] ? parseInt(match[2], 10) : undefined
