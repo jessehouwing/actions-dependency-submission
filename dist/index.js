@@ -39959,10 +39959,11 @@ class ForkResolver {
         }
     }
     /**
-     * Maximum number of pages to fetch when retrieving tags (100 tags per page)
-     * This limits the total to 500 tags, which should be sufficient for most repositories
+     * Maximum number of pages to fetch when retrieving refs (100 refs per page)
+     * This limits the total to 500 refs, which should be sufficient for most repositories
+     * Used for both tags and branches
      */
-    static MAX_TAG_PAGES = 5;
+    static MAX_REF_PAGES = 5;
     /**
      * Semantic version pattern for matching version tags/branches (e.g., v1, v1.2, v1.2.3, 1, 1.2, 1.2.3)
      * The 'v' prefix is optional
@@ -39982,8 +39983,8 @@ class ForkResolver {
             const tags = [];
             let page = 1;
             const perPage = 100;
-            // Fetch tags up to MAX_TAG_PAGES
-            while (page <= ForkResolver.MAX_TAG_PAGES) {
+            // Fetch tags up to MAX_REF_PAGES
+            while (page <= ForkResolver.MAX_REF_PAGES) {
                 const { data } = await octokit.rest.repos.listTags({
                     owner,
                     repo,
@@ -40025,8 +40026,8 @@ class ForkResolver {
             const branches = [];
             let page = 1;
             const perPage = 100;
-            // Fetch branches up to MAX_TAG_PAGES (reuse same limit for consistency)
-            while (page <= ForkResolver.MAX_TAG_PAGES) {
+            // Fetch branches up to MAX_REF_PAGES
+            while (page <= ForkResolver.MAX_REF_PAGES) {
                 const { data } = await octokit.rest.repos.listBranches({
                     owner,
                     repo,
@@ -40067,13 +40068,16 @@ class ForkResolver {
             const match = ref.name.match(ForkResolver.SEMVER_PATTERN);
             if (!match)
                 return null;
-            const [fullMatch, major, minor, patch] = match;
-            const hasVPrefix = fullMatch.startsWith('v');
+            // match[0] is the full match, match[1..3] are the captured groups (major, minor, patch)
+            const hasVPrefix = match[0].startsWith('v');
+            const major = parseInt(match[1], 10);
+            const minor = match[2] ? parseInt(match[2], 10) : undefined;
+            const patch = match[3] ? parseInt(match[3], 10) : undefined;
             return {
                 name: ref.name,
-                major: parseInt(major, 10),
-                minor: minor ? parseInt(minor, 10) : undefined,
-                patch: patch ? parseInt(patch, 10) : undefined,
+                major,
+                minor,
+                patch,
                 hasVPrefix
             };
         })
