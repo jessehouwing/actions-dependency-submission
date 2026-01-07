@@ -752,7 +752,7 @@ describe('ForkResolver', () => {
       )
     })
 
-    it('Prefers versions with v prefix over those without when both match SHA', async () => {
+    it('Prefers versions with v prefix when equally specific', async () => {
       github.mockOctokit.rest.repos.listBranches.mockResolvedValueOnce({
         data: []
       })
@@ -788,6 +788,211 @@ describe('ForkResolver', () => {
 
       expect(result).toHaveLength(1)
       expect(result[0].ref).toBe('v1.2.3')
+      expect(result[0].originalSha).toBe(
+        '8e8c483db84b4bee98b60c0593521ed34d9990e8'
+      )
+    })
+
+    it('Prefers more specific version without v over less specific with v (1.2.3 > v1.2)', async () => {
+      github.mockOctokit.rest.repos.listBranches.mockResolvedValueOnce({
+        data: []
+      })
+
+      github.mockOctokit.rest.repos.listTags.mockResolvedValueOnce({
+        data: [
+          {
+            name: 'v1.2',
+            commit: { sha: '8e8c483db84b4bee98b60c0593521ed34d9990e8' }
+          },
+          {
+            name: '1.2.3',
+            commit: { sha: '8e8c483db84b4bee98b60c0593521ed34d9990e8' }
+          }
+        ]
+      })
+
+      const resolver = new ForkResolver({
+        forkOrganizations: [],
+        token: 'test-token'
+      })
+
+      const dependencies = [
+        {
+          owner: 'actions',
+          repo: 'checkout',
+          ref: '8e8c483db84b4bee98b60c0593521ed34d9990e8',
+          uses: 'actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8'
+        }
+      ]
+
+      const result = await resolver.resolveDependencies(dependencies)
+
+      expect(result).toHaveLength(1)
+      expect(result[0].ref).toBe('1.2.3')
+      expect(result[0].originalSha).toBe(
+        '8e8c483db84b4bee98b60c0593521ed34d9990e8'
+      )
+    })
+
+    it('Prefers v1.2 when both 1.2 and v1.2 exist (equally specific)', async () => {
+      github.mockOctokit.rest.repos.listBranches.mockResolvedValueOnce({
+        data: []
+      })
+
+      github.mockOctokit.rest.repos.listTags.mockResolvedValueOnce({
+        data: [
+          {
+            name: '1.2',
+            commit: { sha: '8e8c483db84b4bee98b60c0593521ed34d9990e8' }
+          },
+          {
+            name: 'v1.2',
+            commit: { sha: '8e8c483db84b4bee98b60c0593521ed34d9990e8' }
+          }
+        ]
+      })
+
+      const resolver = new ForkResolver({
+        forkOrganizations: [],
+        token: 'test-token'
+      })
+
+      const dependencies = [
+        {
+          owner: 'actions',
+          repo: 'checkout',
+          ref: '8e8c483db84b4bee98b60c0593521ed34d9990e8',
+          uses: 'actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8'
+        }
+      ]
+
+      const result = await resolver.resolveDependencies(dependencies)
+
+      expect(result).toHaveLength(1)
+      expect(result[0].ref).toBe('v1.2.*')
+      expect(result[0].originalSha).toBe(
+        '8e8c483db84b4bee98b60c0593521ed34d9990e8'
+      )
+    })
+
+    it('Prefers 1.2.3 over 1 (more specific)', async () => {
+      github.mockOctokit.rest.repos.listBranches.mockResolvedValueOnce({
+        data: []
+      })
+
+      github.mockOctokit.rest.repos.listTags.mockResolvedValueOnce({
+        data: [
+          {
+            name: '1',
+            commit: { sha: '8e8c483db84b4bee98b60c0593521ed34d9990e8' }
+          },
+          {
+            name: '1.2.3',
+            commit: { sha: '8e8c483db84b4bee98b60c0593521ed34d9990e8' }
+          }
+        ]
+      })
+
+      const resolver = new ForkResolver({
+        forkOrganizations: [],
+        token: 'test-token'
+      })
+
+      const dependencies = [
+        {
+          owner: 'actions',
+          repo: 'checkout',
+          ref: '8e8c483db84b4bee98b60c0593521ed34d9990e8',
+          uses: 'actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8'
+        }
+      ]
+
+      const result = await resolver.resolveDependencies(dependencies)
+
+      expect(result).toHaveLength(1)
+      expect(result[0].ref).toBe('1.2.3')
+      expect(result[0].originalSha).toBe(
+        '8e8c483db84b4bee98b60c0593521ed34d9990e8'
+      )
+    })
+
+    it('Prefers 1.2.3 over v1 (more specific)', async () => {
+      github.mockOctokit.rest.repos.listBranches.mockResolvedValueOnce({
+        data: []
+      })
+
+      github.mockOctokit.rest.repos.listTags.mockResolvedValueOnce({
+        data: [
+          {
+            name: 'v1',
+            commit: { sha: '8e8c483db84b4bee98b60c0593521ed34d9990e8' }
+          },
+          {
+            name: '1.2.3',
+            commit: { sha: '8e8c483db84b4bee98b60c0593521ed34d9990e8' }
+          }
+        ]
+      })
+
+      const resolver = new ForkResolver({
+        forkOrganizations: [],
+        token: 'test-token'
+      })
+
+      const dependencies = [
+        {
+          owner: 'actions',
+          repo: 'checkout',
+          ref: '8e8c483db84b4bee98b60c0593521ed34d9990e8',
+          uses: 'actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8'
+        }
+      ]
+
+      const result = await resolver.resolveDependencies(dependencies)
+
+      expect(result).toHaveLength(1)
+      expect(result[0].ref).toBe('1.2.3')
+      expect(result[0].originalSha).toBe(
+        '8e8c483db84b4bee98b60c0593521ed34d9990e8'
+      )
+    })
+
+    it('Prefers 1.2.4 over v1.2.3 (higher version)', async () => {
+      github.mockOctokit.rest.repos.listBranches.mockResolvedValueOnce({
+        data: []
+      })
+
+      github.mockOctokit.rest.repos.listTags.mockResolvedValueOnce({
+        data: [
+          {
+            name: 'v1.2.3',
+            commit: { sha: '8e8c483db84b4bee98b60c0593521ed34d9990e8' }
+          },
+          {
+            name: '1.2.4',
+            commit: { sha: '8e8c483db84b4bee98b60c0593521ed34d9990e8' }
+          }
+        ]
+      })
+
+      const resolver = new ForkResolver({
+        forkOrganizations: [],
+        token: 'test-token'
+      })
+
+      const dependencies = [
+        {
+          owner: 'actions',
+          repo: 'checkout',
+          ref: '8e8c483db84b4bee98b60c0593521ed34d9990e8',
+          uses: 'actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8'
+        }
+      ]
+
+      const result = await resolver.resolveDependencies(dependencies)
+
+      expect(result).toHaveLength(1)
+      expect(result[0].ref).toBe('1.2.4')
       expect(result[0].originalSha).toBe(
         '8e8c483db84b4bee98b60c0593521ed34d9990e8'
       )

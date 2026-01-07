@@ -435,7 +435,8 @@ export class ForkResolver {
 
   /**
    * Compares two version tags for sorting by specificity and version numbers
-   * Prefers versions with 'v' prefix, more specific versions (patch > minor > major), then higher version numbers
+   * Prefers more specific versions (patch > minor > major), then higher version numbers,
+   * then versions with 'v' prefix
    *
    * @param a First version tag
    * @param b Second version tag
@@ -445,19 +446,15 @@ export class ForkResolver {
     a: { major: number; minor?: number; patch?: number; hasVPrefix: boolean },
     b: { major: number; minor?: number; patch?: number; hasVPrefix: boolean }
   ): number {
-    // Prefer versions with 'v' prefix
-    if (a.hasVPrefix && !b.hasVPrefix) return -1
-    if (!a.hasVPrefix && b.hasVPrefix) return 1
-
-    // Prefer tags with patch version
+    // First, prefer tags with patch version (most specific)
     if (a.patch !== undefined && b.patch === undefined) return -1
     if (a.patch === undefined && b.patch !== undefined) return 1
 
-    // Prefer tags with minor version
+    // Then, prefer tags with minor version
     if (a.minor !== undefined && b.minor === undefined) return -1
     if (a.minor === undefined && b.minor !== undefined) return 1
 
-    // Compare by version numbers (descending)
+    // Compare by version numbers (descending - higher versions first)
     if (a.major !== b.major) return b.major - a.major
     if (a.minor !== b.minor) {
       return (b.minor || 0) - (a.minor || 0)
@@ -465,6 +462,10 @@ export class ForkResolver {
     if (a.patch !== b.patch) {
       return (b.patch || 0) - (a.patch || 0)
     }
+
+    // Finally, prefer versions with 'v' prefix (only when equally specific and same version)
+    if (a.hasVPrefix && !b.hasVPrefix) return -1
+    if (!a.hasVPrefix && b.hasVPrefix) return 1
 
     return 0
   }
