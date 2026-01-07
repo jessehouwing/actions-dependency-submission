@@ -269,6 +269,10 @@ describe('ForkResolver', () => {
 
   describe('SHA to version resolution', () => {
     it('Resolves SHA to most specific version tag', async () => {
+      github.mockOctokit.rest.repos.listBranches.mockResolvedValueOnce({
+        data: []
+      })
+
       github.mockOctokit.rest.repos.listTags.mockResolvedValueOnce({
         data: [
           {
@@ -310,6 +314,10 @@ describe('ForkResolver', () => {
     })
 
     it('Returns v6.*.* when only v6 tag matches SHA', async () => {
+      github.mockOctokit.rest.repos.listBranches.mockResolvedValueOnce({
+        data: []
+      })
+
       github.mockOctokit.rest.repos.listTags.mockResolvedValueOnce({
         data: [
           {
@@ -347,6 +355,10 @@ describe('ForkResolver', () => {
     })
 
     it('Returns v6.0.* when only v6.0 tag matches SHA', async () => {
+      github.mockOctokit.rest.repos.listBranches.mockResolvedValueOnce({
+        data: []
+      })
+
       github.mockOctokit.rest.repos.listTags.mockResolvedValueOnce({
         data: [
           {
@@ -384,6 +396,10 @@ describe('ForkResolver', () => {
     })
 
     it('Keeps SHA unchanged when no matching tags found', async () => {
+      github.mockOctokit.rest.repos.listBranches.mockResolvedValueOnce({
+        data: []
+      })
+
       github.mockOctokit.rest.repos.listTags.mockResolvedValueOnce({
         data: [
           {
@@ -415,11 +431,23 @@ describe('ForkResolver', () => {
     })
 
     it('Resolves SHA to version from parent repo for forks', async () => {
-      // First call to repos.get to determine where myorg/checkout lives (during fetchRepositoryTags)
+      // fetchRepositoryBranches for fork repo: repos.get
       github.mockOctokit.rest.repos.get.mockResolvedValueOnce({
         data: {
           fork: false
         }
+      })
+
+      // fetchRepositoryTags for fork repo: repos.get (concurrent call from Promise.all)
+      github.mockOctokit.rest.repos.get.mockResolvedValueOnce({
+        data: {
+          fork: false
+        }
+      })
+
+      // First call to listBranches for fork repo (no matching branches)
+      github.mockOctokit.rest.repos.listBranches.mockResolvedValueOnce({
+        data: []
       })
 
       // First call to listTags for fork repo (no matching tags)
@@ -427,7 +455,7 @@ describe('ForkResolver', () => {
         data: []
       })
 
-      // Second call to repos.get for fork info (during findOriginalRepository in SHA resolution)
+      // Call to repos.get for fork info (during findOriginalRepository in SHA resolution)
       github.mockOctokit.rest.repos.get.mockResolvedValueOnce({
         data: {
           fork: true,
@@ -438,11 +466,23 @@ describe('ForkResolver', () => {
         }
       })
 
-      // Third call to repos.get to determine where actions/checkout lives
+      // fetchRepositoryBranches for parent repo: repos.get
       github.mockOctokit.rest.repos.get.mockResolvedValueOnce({
         data: {
           fork: false
         }
+      })
+
+      // fetchRepositoryTags for parent repo: repos.get (concurrent call from Promise.all)
+      github.mockOctokit.rest.repos.get.mockResolvedValueOnce({
+        data: {
+          fork: false
+        }
+      })
+
+      // Second call to listBranches for parent repo (no matching branches)
+      github.mockOctokit.rest.repos.listBranches.mockResolvedValueOnce({
+        data: []
       })
 
       // Second call to listTags for parent repo (matching tags)
@@ -455,7 +495,7 @@ describe('ForkResolver', () => {
         ]
       })
 
-      // Fourth call to repos.get for fork info (during fork resolution after SHA resolution)
+      // Call to repos.get for fork info (during fork resolution after SHA resolution)
       github.mockOctokit.rest.repos.get.mockResolvedValueOnce({
         data: {
           fork: true,
@@ -522,6 +562,10 @@ describe('ForkResolver', () => {
     })
 
     it('Handles listTags API errors gracefully', async () => {
+      github.mockOctokit.rest.repos.listBranches.mockResolvedValueOnce({
+        data: []
+      })
+
       github.mockOctokit.rest.repos.listTags.mockRejectedValueOnce(
         new Error('API Error')
       )
@@ -548,6 +592,10 @@ describe('ForkResolver', () => {
     })
 
     it('Returns SHA when no semver tags match SHA', async () => {
+      github.mockOctokit.rest.repos.listBranches.mockResolvedValueOnce({
+        data: []
+      })
+
       github.mockOctokit.rest.repos.listTags.mockResolvedValueOnce({
         data: [
           {
@@ -582,6 +630,10 @@ describe('ForkResolver', () => {
     })
 
     it('Resolves SHA to version without v prefix', async () => {
+      github.mockOctokit.rest.repos.listBranches.mockResolvedValueOnce({
+        data: []
+      })
+
       github.mockOctokit.rest.repos.listTags.mockResolvedValueOnce({
         data: [
           {
@@ -620,6 +672,10 @@ describe('ForkResolver', () => {
     })
 
     it('Resolves SHA to version with 1.*.* pattern for major-only versions', async () => {
+      github.mockOctokit.rest.repos.listBranches.mockResolvedValueOnce({
+        data: []
+      })
+
       github.mockOctokit.rest.repos.listTags.mockResolvedValueOnce({
         data: [
           {
@@ -658,6 +714,10 @@ describe('ForkResolver', () => {
     })
 
     it('Resolves SHA to version with 1.2.* pattern for minor versions without v prefix', async () => {
+      github.mockOctokit.rest.repos.listBranches.mockResolvedValueOnce({
+        data: []
+      })
+
       github.mockOctokit.rest.repos.listTags.mockResolvedValueOnce({
         data: [
           {
@@ -696,6 +756,10 @@ describe('ForkResolver', () => {
     })
 
     it('Prefers versions with v prefix over those without when both match SHA', async () => {
+      github.mockOctokit.rest.repos.listBranches.mockResolvedValueOnce({
+        data: []
+      })
+
       github.mockOctokit.rest.repos.listTags.mockResolvedValueOnce({
         data: [
           {
@@ -1007,16 +1071,33 @@ describe('ForkResolver', () => {
     it('Uses public GitHub for tags when repository found there', async () => {
       const testSha = 'abc1234567890abcdef1234567890abcdef12345'
 
-      // Local instance doesn't have the repo
+      // fetchRepositoryBranches call: Local instance doesn't have the repo
       github.mockOctokit.rest.repos.get.mockRejectedValueOnce(
         new Error('Not Found')
       )
 
-      // Public GitHub has the repo
+      // fetchRepositoryTags call: Local instance doesn't have the repo (concurrent call from Promise.all)
+      github.mockOctokit.rest.repos.get.mockRejectedValueOnce(
+        new Error('Not Found')
+      )
+
+      // fetchRepositoryBranches call: Public GitHub has the repo
       github.mockPublicOctokit.rest.repos.get.mockResolvedValueOnce({
         data: {
           fork: false
         }
+      })
+
+      // fetchRepositoryTags call: Public GitHub has the repo (concurrent call from Promise.all)
+      github.mockPublicOctokit.rest.repos.get.mockResolvedValueOnce({
+        data: {
+          fork: false
+        }
+      })
+
+      // Public GitHub has branches (no matching branches)
+      github.mockPublicOctokit.rest.repos.listBranches.mockResolvedValueOnce({
+        data: []
       })
 
       // Public GitHub has tags matching the SHA
@@ -1060,16 +1141,33 @@ describe('ForkResolver', () => {
     })
 
     it('Caches the decision to use public GitHub', async () => {
-      // First call: Local instance doesn't have the repo
+      // fetchRepositoryBranches: Local instance doesn't have the repo
       github.mockOctokit.rest.repos.get.mockRejectedValueOnce(
         new Error('Not Found')
       )
 
-      // First call: Public GitHub has the repo
+      // fetchRepositoryTags: Local instance doesn't have the repo (concurrent call from Promise.all)
+      github.mockOctokit.rest.repos.get.mockRejectedValueOnce(
+        new Error('Not Found')
+      )
+
+      // fetchRepositoryBranches: Public GitHub has the repo
       github.mockPublicOctokit.rest.repos.get.mockResolvedValueOnce({
         data: {
           fork: false
         }
+      })
+
+      // fetchRepositoryTags: Public GitHub has the repo (concurrent call from Promise.all)
+      github.mockPublicOctokit.rest.repos.get.mockResolvedValueOnce({
+        data: {
+          fork: false
+        }
+      })
+
+      // Public GitHub has branches (first call for SHA resolution)
+      github.mockPublicOctokit.rest.repos.listBranches.mockResolvedValueOnce({
+        data: []
       })
 
       // Public GitHub has tags (first call for SHA resolution)
@@ -1094,10 +1192,10 @@ describe('ForkResolver', () => {
 
       await resolver.resolveDependencies(dependencies)
 
-      // Should only call local repos.get once (subsequent calls use cache)
-      expect(github.mockOctokit.rest.repos.get).toHaveBeenCalledTimes(1)
-      // Should call public repos.get once to determine location
-      expect(github.mockPublicOctokit.rest.repos.get).toHaveBeenCalledTimes(1)
+      // Should call local repos.get twice (once for each concurrent call from Promise.all)
+      expect(github.mockOctokit.rest.repos.get).toHaveBeenCalledTimes(2)
+      // Should call public repos.get twice (once for each concurrent call from Promise.all)
+      expect(github.mockPublicOctokit.rest.repos.get).toHaveBeenCalledTimes(2)
     })
   })
 })
