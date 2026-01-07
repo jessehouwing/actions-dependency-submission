@@ -14,8 +14,10 @@ describe('ForkResolver', () => {
     // Reset all mock implementations and clear all mock state (including mockResolvedValueOnce and default implementations)
     github.mockOctokit.rest.repos.get.mockReset()
     github.mockOctokit.rest.repos.listTags.mockReset()
+    github.mockOctokit.rest.repos.listBranches.mockReset()
     github.mockPublicOctokit.rest.repos.get.mockReset()
     github.mockPublicOctokit.rest.repos.listTags.mockReset()
+    github.mockPublicOctokit.rest.repos.listBranches.mockReset()
   })
 
   describe('resolveDependencies', () => {
@@ -577,6 +579,375 @@ describe('ForkResolver', () => {
 
       expect(result).toHaveLength(1)
       expect(result[0].ref).toBe('8e8c483db84b4bee98b60c0593521ed34d9990e8')
+    })
+
+    it('Resolves SHA to version without v prefix', async () => {
+      github.mockOctokit.rest.repos.listTags.mockResolvedValueOnce({
+        data: [
+          {
+            name: '1.2.3',
+            commit: { sha: '8e8c483db84b4bee98b60c0593521ed34d9990e8' }
+          },
+          {
+            name: '1.2.0',
+            commit: { sha: 'abc1234567890abcdef1234567890abcdef12345' }
+          }
+        ]
+      })
+
+      const resolver = new ForkResolver({
+        forkOrganizations: [],
+        token: 'test-token'
+      })
+
+      const dependencies = [
+        {
+          owner: 'gautamkrishnar',
+          repo: 'blog-post-workflow',
+          ref: '8e8c483db84b4bee98b60c0593521ed34d9990e8',
+          uses:
+            'gautamkrishnar/blog-post-workflow@8e8c483db84b4bee98b60c0593521ed34d9990e8'
+        }
+      ]
+
+      const result = await resolver.resolveDependencies(dependencies)
+
+      expect(result).toHaveLength(1)
+      expect(result[0].ref).toBe('1.2.3')
+      expect(result[0].originalSha).toBe(
+        '8e8c483db84b4bee98b60c0593521ed34d9990e8'
+      )
+    })
+
+    it('Resolves SHA to version with 1.*.* pattern for major-only versions', async () => {
+      github.mockOctokit.rest.repos.listTags.mockResolvedValueOnce({
+        data: [
+          {
+            name: '1',
+            commit: { sha: '8e8c483db84b4bee98b60c0593521ed34d9990e8' }
+          },
+          {
+            name: '2.0.0',
+            commit: { sha: 'abc1234567890abcdef1234567890abcdef12345' }
+          }
+        ]
+      })
+
+      const resolver = new ForkResolver({
+        forkOrganizations: [],
+        token: 'test-token'
+      })
+
+      const dependencies = [
+        {
+          owner: 'gautamkrishnar',
+          repo: 'blog-post-workflow',
+          ref: '8e8c483db84b4bee98b60c0593521ed34d9990e8',
+          uses:
+            'gautamkrishnar/blog-post-workflow@8e8c483db84b4bee98b60c0593521ed34d9990e8'
+        }
+      ]
+
+      const result = await resolver.resolveDependencies(dependencies)
+
+      expect(result).toHaveLength(1)
+      expect(result[0].ref).toBe('1.*.*')
+      expect(result[0].originalSha).toBe(
+        '8e8c483db84b4bee98b60c0593521ed34d9990e8'
+      )
+    })
+
+    it('Resolves SHA to version with 1.2.* pattern for minor versions without v prefix', async () => {
+      github.mockOctokit.rest.repos.listTags.mockResolvedValueOnce({
+        data: [
+          {
+            name: '1.2',
+            commit: { sha: '8e8c483db84b4bee98b60c0593521ed34d9990e8' }
+          },
+          {
+            name: '1.1.0',
+            commit: { sha: 'abc1234567890abcdef1234567890abcdef12345' }
+          }
+        ]
+      })
+
+      const resolver = new ForkResolver({
+        forkOrganizations: [],
+        token: 'test-token'
+      })
+
+      const dependencies = [
+        {
+          owner: 'gautamkrishnar',
+          repo: 'blog-post-workflow',
+          ref: '8e8c483db84b4bee98b60c0593521ed34d9990e8',
+          uses:
+            'gautamkrishnar/blog-post-workflow@8e8c483db84b4bee98b60c0593521ed34d9990e8'
+        }
+      ]
+
+      const result = await resolver.resolveDependencies(dependencies)
+
+      expect(result).toHaveLength(1)
+      expect(result[0].ref).toBe('1.2.*')
+      expect(result[0].originalSha).toBe(
+        '8e8c483db84b4bee98b60c0593521ed34d9990e8'
+      )
+    })
+
+    it('Prefers versions with v prefix over those without when both match SHA', async () => {
+      github.mockOctokit.rest.repos.listTags.mockResolvedValueOnce({
+        data: [
+          {
+            name: 'v1.2.3',
+            commit: { sha: '8e8c483db84b4bee98b60c0593521ed34d9990e8' }
+          },
+          {
+            name: '1.2.3',
+            commit: { sha: '8e8c483db84b4bee98b60c0593521ed34d9990e8' }
+          }
+        ]
+      })
+
+      const resolver = new ForkResolver({
+        forkOrganizations: [],
+        token: 'test-token'
+      })
+
+      const dependencies = [
+        {
+          owner: 'actions',
+          repo: 'checkout',
+          ref: '8e8c483db84b4bee98b60c0593521ed34d9990e8',
+          uses: 'actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8'
+        }
+      ]
+
+      const result = await resolver.resolveDependencies(dependencies)
+
+      expect(result).toHaveLength(1)
+      expect(result[0].ref).toBe('v1.2.3')
+      expect(result[0].originalSha).toBe(
+        '8e8c483db84b4bee98b60c0593521ed34d9990e8'
+      )
+    })
+  })
+
+  describe('Ref to SHA resolution with branch priority', () => {
+    it('Resolves ref to branch SHA when branch exists', async () => {
+      // Mock listBranches to return a matching branch
+      github.mockOctokit.rest.repos.listBranches.mockResolvedValueOnce({
+        data: [
+          {
+            name: 'v1',
+            commit: { sha: 'branch1234567890abcdef1234567890abcdef1234' }
+          }
+        ]
+      })
+
+      // Mock listTags to return no matching tag
+      github.mockOctokit.rest.repos.listTags.mockResolvedValueOnce({
+        data: []
+      })
+
+      const resolver = new ForkResolver({
+        forkOrganizations: [],
+        token: 'test-token'
+      })
+
+      const dependencies = [
+        {
+          owner: 'actions',
+          repo: 'checkout',
+          ref: 'v1',
+          uses: 'actions/checkout@v1'
+        }
+      ]
+
+      const result = await resolver.resolveDependencies(dependencies)
+
+      expect(result).toHaveLength(1)
+      expect(result[0].ref).toBe('v1')
+      expect(result[0].originalSha).toBeUndefined()
+    })
+
+    it('Resolves ref to branch SHA when both branch and tag exist', async () => {
+      // Mock listBranches to return a matching branch
+      github.mockOctokit.rest.repos.listBranches.mockResolvedValueOnce({
+        data: [
+          {
+            name: 'v1',
+            commit: { sha: 'branch1234567890abcdef1234567890abcdef1234' }
+          }
+        ]
+      })
+
+      // Mock listTags - should be checked after branches and find a matching tag
+      github.mockOctokit.rest.repos.listTags.mockResolvedValueOnce({
+        data: [
+          {
+            name: 'v1',
+            commit: { sha: 'tag123456789abcdef1234567890abcdef123456' }
+          }
+        ]
+      })
+
+      const resolver = new ForkResolver({
+        forkOrganizations: [],
+        token: 'test-token'
+      })
+
+      const dependencies = [
+        {
+          owner: 'actions',
+          repo: 'checkout',
+          ref: 'v1',
+          uses: 'actions/checkout@v1'
+        }
+      ]
+
+      const result = await resolver.resolveDependencies(dependencies)
+
+      expect(result).toHaveLength(1)
+      // Should use branch, not tag
+      expect(result[0].ref).toBe('v1')
+      expect(result[0].originalSha).toBeUndefined()
+    })
+
+    it('Resolves ref to tag SHA when only tag exists (no branch)', async () => {
+      // Mock listBranches to return no matching branch
+      github.mockOctokit.rest.repos.listBranches.mockResolvedValueOnce({
+        data: []
+      })
+
+      // Mock listTags to return a matching tag
+      github.mockOctokit.rest.repos.listTags.mockResolvedValueOnce({
+        data: [
+          {
+            name: 'v1',
+            commit: { sha: 'tag123456789abcdef1234567890abcdef123456' }
+          }
+        ]
+      })
+
+      const resolver = new ForkResolver({
+        forkOrganizations: [],
+        token: 'test-token'
+      })
+
+      const dependencies = [
+        {
+          owner: 'actions',
+          repo: 'checkout',
+          ref: 'v1',
+          uses: 'actions/checkout@v1'
+        }
+      ]
+
+      const result = await resolver.resolveDependencies(dependencies)
+
+      expect(result).toHaveLength(1)
+      expect(result[0].ref).toBe('v1')
+      expect(result[0].originalSha).toBeUndefined()
+    })
+  })
+
+  describe('SHA to version resolution with branches and tags', () => {
+    it('Returns highest version from both branches and tags', async () => {
+      // Mock listBranches
+      github.mockOctokit.rest.repos.listBranches.mockResolvedValueOnce({
+        data: [
+          {
+            name: 'v1',
+            commit: { sha: '8e8c483db84b4bee98b60c0593521ed34d9990e8' }
+          },
+          {
+            name: 'v1.0',
+            commit: { sha: '8e8c483db84b4bee98b60c0593521ed34d9990e8' }
+          }
+        ]
+      })
+
+      // Mock listTags
+      github.mockOctokit.rest.repos.listTags.mockResolvedValueOnce({
+        data: [
+          {
+            name: 'v1.0.1',
+            commit: { sha: '8e8c483db84b4bee98b60c0593521ed34d9990e8' }
+          }
+        ]
+      })
+
+      const resolver = new ForkResolver({
+        forkOrganizations: [],
+        token: 'test-token'
+      })
+
+      const dependencies = [
+        {
+          owner: 'actions',
+          repo: 'checkout',
+          ref: '8e8c483db84b4bee98b60c0593521ed34d9990e8',
+          uses: 'actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8'
+        }
+      ]
+
+      const result = await resolver.resolveDependencies(dependencies)
+
+      expect(result).toHaveLength(1)
+      // Should return the most specific version (v1.0.1 from tag)
+      expect(result[0].ref).toBe('v1.0.1')
+      expect(result[0].originalSha).toBe(
+        '8e8c483db84b4bee98b60c0593521ed34d9990e8'
+      )
+    })
+
+    it('Returns most specific version from branches when no tags match', async () => {
+      // Mock listBranches
+      github.mockOctokit.rest.repos.listBranches.mockResolvedValueOnce({
+        data: [
+          {
+            name: 'v1',
+            commit: { sha: '8e8c483db84b4bee98b60c0593521ed34d9990e8' }
+          },
+          {
+            name: 'v1.0',
+            commit: { sha: '8e8c483db84b4bee98b60c0593521ed34d9990e8' }
+          },
+          {
+            name: 'v1.0.1',
+            commit: { sha: '8e8c483db84b4bee98b60c0593521ed34d9990e8' }
+          }
+        ]
+      })
+
+      // Mock listTags - no matching tags
+      github.mockOctokit.rest.repos.listTags.mockResolvedValueOnce({
+        data: []
+      })
+
+      const resolver = new ForkResolver({
+        forkOrganizations: [],
+        token: 'test-token'
+      })
+
+      const dependencies = [
+        {
+          owner: 'actions',
+          repo: 'checkout',
+          ref: '8e8c483db84b4bee98b60c0593521ed34d9990e8',
+          uses: 'actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8'
+        }
+      ]
+
+      const result = await resolver.resolveDependencies(dependencies)
+
+      expect(result).toHaveLength(1)
+      // Should return the most specific version from branches
+      expect(result[0].ref).toBe('v1.0.1')
+      expect(result[0].originalSha).toBe(
+        '8e8c483db84b4bee98b60c0593521ed34d9990e8'
+      )
     })
   })
 

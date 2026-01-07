@@ -2,11 +2,13 @@ import { jest } from '@jest/globals'
 
 const mockReposGet = jest.fn()
 const mockReposListTags = jest.fn()
+const mockReposListBranches = jest.fn()
 const mockCreateSnapshot = jest.fn()
 
 // Separate mocks for public GitHub instance
 const mockPublicReposGet = jest.fn()
 const mockPublicReposListTags = jest.fn()
+const mockPublicReposListBranches = jest.fn()
 
 export const getOctokit = jest.fn(
   (token: string, options?: { baseUrl?: string }) => {
@@ -16,7 +18,8 @@ export const getOctokit = jest.fn(
         rest: {
           repos: {
             get: mockPublicReposGet,
-            listTags: mockPublicReposListTags
+            listTags: mockPublicReposListTags,
+            listBranches: mockPublicReposListBranches
           },
           dependencyGraph: {
             createRepositorySnapshot: mockCreateSnapshot
@@ -29,7 +32,8 @@ export const getOctokit = jest.fn(
       rest: {
         repos: {
           get: mockReposGet,
-          listTags: mockReposListTags
+          listTags: mockReposListTags,
+          listBranches: mockReposListBranches
         },
         dependencyGraph: {
           createRepositorySnapshot: mockCreateSnapshot
@@ -44,7 +48,8 @@ export const mockOctokit = {
   rest: {
     repos: {
       get: mockReposGet,
-      listTags: mockReposListTags
+      listTags: mockReposListTags,
+      listBranches: mockReposListBranches
     },
     dependencyGraph: {
       createRepositorySnapshot: mockCreateSnapshot
@@ -57,7 +62,8 @@ export const mockPublicOctokit = {
   rest: {
     repos: {
       get: mockPublicReposGet,
-      listTags: mockPublicReposListTags
+      listTags: mockPublicReposListTags,
+      listBranches: mockPublicReposListBranches
     }
   }
 }
