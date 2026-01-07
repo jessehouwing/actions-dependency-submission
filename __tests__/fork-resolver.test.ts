@@ -657,8 +657,7 @@ describe('ForkResolver', () => {
           owner: 'gautamkrishnar',
           repo: 'blog-post-workflow',
           ref: '8e8c483db84b4bee98b60c0593521ed34d9990e8',
-          uses:
-            'gautamkrishnar/blog-post-workflow@8e8c483db84b4bee98b60c0593521ed34d9990e8'
+          uses: 'gautamkrishnar/blog-post-workflow@8e8c483db84b4bee98b60c0593521ed34d9990e8'
         }
       ]
 
@@ -699,8 +698,7 @@ describe('ForkResolver', () => {
           owner: 'gautamkrishnar',
           repo: 'blog-post-workflow',
           ref: '8e8c483db84b4bee98b60c0593521ed34d9990e8',
-          uses:
-            'gautamkrishnar/blog-post-workflow@8e8c483db84b4bee98b60c0593521ed34d9990e8'
+          uses: 'gautamkrishnar/blog-post-workflow@8e8c483db84b4bee98b60c0593521ed34d9990e8'
         }
       ]
 
@@ -741,8 +739,7 @@ describe('ForkResolver', () => {
           owner: 'gautamkrishnar',
           repo: 'blog-post-workflow',
           ref: '8e8c483db84b4bee98b60c0593521ed34d9990e8',
-          uses:
-            'gautamkrishnar/blog-post-workflow@8e8c483db84b4bee98b60c0593521ed34d9990e8'
+          uses: 'gautamkrishnar/blog-post-workflow@8e8c483db84b4bee98b60c0593521ed34d9990e8'
         }
       ]
 

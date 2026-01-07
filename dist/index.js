@@ -39912,29 +39912,38 @@ class ForkResolver {
         return /^[0-9a-f]{40}$/i.test(ref);
     }
     /**
-     * Resolves a SHA to the most specific version tag
+     * Resolves a SHA to the most specific version tag or branch
      *
      * @param owner Repository owner
      * @param repo Repository name
      * @param sha SHA to resolve
-     * @returns Most specific version tag or undefined
+     * @returns Most specific version tag/branch or undefined
      */
     async resolveShaToBestVersion(owner, repo, sha) {
         try {
             coreExports.debug(`Resolving SHA ${sha} for ${owner}/${repo}`);
-            // Fetch tags from the repository (using the appropriate Octokit instance)
-            const tags = await this.fetchRepositoryTags(owner, repo);
-            // Find tags that match this SHA
-            const matchingTags = tags.filter((tag) => tag.sha === sha);
-            if (matchingTags.length === 0) {
-                coreExports.debug(`No tags found matching SHA ${sha}`);
+            // Fetch both branches and tags from the repository
+            const [branches, tags] = await Promise.all([
+                this.fetchRepositoryBranches(owner, repo),
+                this.fetchRepositoryTags(owner, repo)
+            ]);
+            // Combine branches and tags
+            const allRefs = [...branches, ...tags];
+            // Find refs that match this SHA
+            const matchingRefs = allRefs.filter((ref) => ref.sha === sha);
+            if (matchingRefs.length === 0) {
+                coreExports.debug(`No refs found matching SHA ${sha}`);
                 // If this is a fork organization, try the parent repository
                 if (this.forkOrganizations.has(owner)) {
                     const original = await this.findOriginalRepository(owner, repo);
                     if (original) {
                         coreExports.debug(`Trying parent repository ${original.owner}/${original.repo}`);
-                        const parentTags = await this.fetchRepositoryTags(original.owner, original.repo);
-                        const parentMatches = parentTags.filter((tag) => tag.sha === sha);
+                        const [parentBranches, parentTags] = await Promise.all([
+                            this.fetchRepositoryBranches(original.owner, original.repo),
+                            this.fetchRepositoryTags(original.owner, original.repo)
+                        ]);
+                        const parentRefs = [...parentBranches, ...parentTags];
+                        const parentMatches = parentRefs.filter((ref) => ref.sha === sha);
                         if (parentMatches.length > 0) {
                             return this.selectMostSpecificVersion(parentMatches);
                         }
@@ -39942,7 +39951,7 @@ class ForkResolver {
                 }
                 return undefined;
             }
-            return this.selectMostSpecificVersion(matchingTags);
+            return this.selectMostSpecificVersion(matchingRefs);
         }
         catch (error) {
             coreExports.debug(`Failed to resolve SHA ${sha} for ${owner}/${repo}: ${error}`);
@@ -39955,9 +39964,10 @@ class ForkResolver {
      */
     static MAX_TAG_PAGES = 5;
     /**
-     * Semantic version pattern for matching version tags (e.g., v1, v1.2, v1.2.3)
+     * Semantic version pattern for matching version tags/branches (e.g., v1, v1.2, v1.2.3, 1, 1.2, 1.2.3)
+     * The 'v' prefix is optional
      */
-    static SEMVER_PATTERN = /^v(\d+)(?:\.(\d+))?(?:\.(\d+))?$/;
+    static SEMVER_PATTERN = /^v?(\d+)(?:\.(\d+))?(?:\.(\d+))?$/;
     /**
      * Fetches tags for a repository
      *
@@ -40002,57 +40012,109 @@ class ForkResolver {
         }
     }
     /**
-     * Selects the most specific version from matching tags
+     * Fetches branches for a repository
      *
-     * @param tags Array of tags matching the same SHA
-     * @returns Most specific version with wildcards if needed, or undefined if no semver tags found
+     * @param owner Repository owner
+     * @param repo Repository name
+     * @returns Array of branches with name and SHA
      */
-    selectMostSpecificVersion(tags) {
-        // Parse version tags (v1.2.3, v1.2, v1)
-        const versionTags = tags
-            .map((tag) => {
-            const match = tag.name.match(ForkResolver.SEMVER_PATTERN);
+    async fetchRepositoryBranches(owner, repo) {
+        // Get the appropriate Octokit instance for this repository
+        const octokit = await this.octokitProvider.getOctokitForRepo(owner, repo);
+        try {
+            const branches = [];
+            let page = 1;
+            const perPage = 100;
+            // Fetch branches up to MAX_TAG_PAGES (reuse same limit for consistency)
+            while (page <= ForkResolver.MAX_TAG_PAGES) {
+                const { data } = await octokit.rest.repos.listBranches({
+                    owner,
+                    repo,
+                    per_page: perPage,
+                    page
+                });
+                if (data.length === 0) {
+                    break;
+                }
+                for (const branch of data) {
+                    branches.push({
+                        name: branch.name,
+                        sha: branch.commit.sha
+                    });
+                }
+                if (data.length < perPage) {
+                    break;
+                }
+                page++;
+            }
+            return branches;
+        }
+        catch (error) {
+            coreExports.debug(`Failed to fetch branches for ${owner}/${repo}: ${error}`);
+            return [];
+        }
+    }
+    /**
+     * Selects the most specific version from matching tags/branches
+     *
+     * @param refs Array of refs (tags/branches) matching the same SHA
+     * @returns Most specific version with wildcards if needed, or undefined if no semver refs found
+     */
+    selectMostSpecificVersion(refs) {
+        // Parse version refs (v1.2.3, v1.2, v1, 1.2.3, 1.2, 1)
+        const versionRefs = refs
+            .map((ref) => {
+            const match = ref.name.match(ForkResolver.SEMVER_PATTERN);
             if (!match)
                 return null;
-            const [, major, minor, patch] = match;
+            const [fullMatch, major, minor, patch] = match;
+            const hasVPrefix = fullMatch.startsWith('v');
             return {
-                name: tag.name,
+                name: ref.name,
                 major: parseInt(major, 10),
                 minor: minor ? parseInt(minor, 10) : undefined,
-                patch: patch ? parseInt(patch, 10) : undefined
+                patch: patch ? parseInt(patch, 10) : undefined,
+                hasVPrefix
             };
         })
             .filter((v) => v !== null);
-        if (versionTags.length === 0) {
-            // No semantic version tags found, return undefined to keep SHA unchanged
+        if (versionRefs.length === 0) {
+            // No semantic version refs found, return undefined to keep SHA unchanged
             return undefined;
         }
         // Sort by specificity and version numbers
-        versionTags.sort(this.compareVersionTags);
-        const mostSpecific = versionTags[0];
+        versionRefs.sort(this.compareVersionTags);
+        const mostSpecific = versionRefs[0];
         // Build version string with wildcards for missing parts
+        // Use the prefix from the most specific version
+        const prefix = mostSpecific.hasVPrefix ? 'v' : '';
         if (mostSpecific.patch !== undefined) {
-            // v1.2.3 - fully specific
+            // v1.2.3 or 1.2.3 - fully specific
             return mostSpecific.name;
         }
         else if (mostSpecific.minor !== undefined) {
-            // v1.2 - add wildcard for patch
-            return `v${mostSpecific.major}.${mostSpecific.minor}.*`;
+            // v1.2 or 1.2 - add wildcard for patch
+            return `${prefix}${mostSpecific.major}.${mostSpecific.minor}.*`;
         }
         else {
-            // v1 - add wildcards for minor and patch
-            return `v${mostSpecific.major}.*.*`;
+            // v1 or 1 - add wildcards for minor and patch
+            return `${prefix}${mostSpecific.major}.*.*`;
         }
     }
     /**
      * Compares two version tags for sorting by specificity and version numbers
-     * Prefers more specific versions (patch > minor > major), then higher version numbers
+     * Prefers versions with 'v' prefix, more specific versions (patch > minor > major), then higher version numbers
      *
      * @param a First version tag
      * @param b Second version tag
      * @returns Negative if a should come first, positive if b should come first, 0 if equal
      */
     compareVersionTags(a, b) {
+        // Prefer versions with 'v' prefix
+        if (a.hasVPrefix && !b.hasVPrefix)
+            return -1;
+        if (!a.hasVPrefix && b.hasVPrefix)
+            return 1;
         // Prefer tags with patch version
         if (a.patch !== undefined && b.patch === undefined)
             return -1;
