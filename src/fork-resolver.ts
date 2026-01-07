@@ -414,7 +414,7 @@ export class ForkResolver {
     }
 
     // Sort by specificity and version numbers
-    versionRefs.sort(this.compareVersionTags)
+    versionRefs.sort(this.compareVersionRefs)
 
     const mostSpecific = versionRefs[0]
 
@@ -434,23 +434,23 @@ export class ForkResolver {
   }
 
   /**
-   * Compares two version tags for sorting by specificity and version numbers
+   * Compares two version refs (tags or branches) for sorting by specificity and version numbers
    * Prefers more specific versions (patch > minor > major), then higher version numbers,
    * then versions with 'v' prefix
    *
-   * @param a First version tag
-   * @param b Second version tag
+   * @param a First version ref
+   * @param b Second version ref
    * @returns Negative if a should come first, positive if b should come first, 0 if equal
    */
-  private compareVersionTags(
+  private compareVersionRefs(
     a: { major: number; minor?: number; patch?: number; hasVPrefix: boolean },
     b: { major: number; minor?: number; patch?: number; hasVPrefix: boolean }
   ): number {
-    // First, prefer tags with patch version (most specific)
+    // First, prefer refs with patch version (most specific)
     if (a.patch !== undefined && b.patch === undefined) return -1
     if (a.patch === undefined && b.patch !== undefined) return 1
 
-    // Then, prefer tags with minor version
+    // Then, prefer refs with minor version
     if (a.minor !== undefined && b.minor === undefined) return -1
     if (a.minor === undefined && b.minor !== undefined) return 1
 
