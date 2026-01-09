@@ -1088,8 +1088,9 @@ jobs:
         tempDir
       )
 
-      // Should fetch the remote action only once
-      expect(fetchCount).toBe(1)
+      // Should fetch the remote action once, plus fetch nested actions once each
+      // remote-org/my-composite-action@v1 (1) + actions/setup-node@v4 (1) = 2 total
+      expect(fetchCount).toBe(2)
 
       // Should have two direct dependencies (one per workflow) plus transitive dependencies
       const directDeps = dependencies.filter(
@@ -1517,6 +1518,307 @@ jobs:
         uses: 'owner/repo@v3',
         actionPath: undefined
       })
+    })
+
+    it('Recursively processes nested remote composite actions', async () => {
+      // Mock Octokit to handle multiple levels of composite actions
+      const mockGetContent = jest.fn().mockImplementation(({ owner, repo, path }) => {
+        if (owner === 'top-org' && repo === 'level-1-action') {
+          // First level composite action uses another composite action
+          return Promise.resolve({
+            data: {
+              content: Buffer.from(
+                `
+name: Level 1 Composite Action
+description: A composite action that uses another composite action
+runs:
+  using: composite
+  steps:
+    - uses: nested-org/level-2-action@v1
+    - uses: actions/checkout@v4
+`
+              ).toString('base64')
+            }
+          })
+        } else if (owner === 'nested-org' && repo === 'level-2-action') {
+          // Second level composite action
+          return Promise.resolve({
+            data: {
+              content: Buffer.from(
+                `
+name: Level 2 Composite Action
+description: A nested composite action
+runs:
+  using: composite
+  steps:
+    - uses: actions/setup-node@v4
+    - uses: actions/cache@v3
+`
+              ).toString('base64')
+            }
+          })
+        } else {
+          // For actions/checkout, actions/setup-node, actions/cache - return non-composite
+          return Promise.resolve({
+            data: {
+              content: Buffer.from(
+                `
+name: Standard Action
+description: Not a composite action
+runs:
+  using: node20
+  main: dist/index.js
+`
+              ).toString('base64')
+            }
+          })
+        }
+      })
+
+      const mockOctokit = {
+        rest: {
+          repos: {
+            getContent: mockGetContent
+          }
+        }
+      }
+
+      // Create a parser with mocked octokit
+      const parserWithToken = new WorkflowParser('fake-token')
+      // @ts-expect-error - Replacing private property for testing
+      parserWithToken.octokitProvider = {
+        getOctokitForRepo: jest.fn().mockResolvedValue(mockOctokit),
+        getOctokit: jest.fn().mockReturnValue(mockOctokit),
+        getPublicOctokit: jest.fn().mockReturnValue(undefined),
+        getRepoInfo: jest.fn().mockResolvedValue(undefined),
+        repoExists: jest.fn().mockResolvedValue(true)
+      }
+
+      const workflowContent = `
+name: Test Workflow
+on: push
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: top-org/level-1-action@v1
+`
+      const workflowFile = path.join(tempDir, 'test.yml')
+      fs.writeFileSync(workflowFile, workflowContent)
+
+      const dependencies = await parserWithToken.parseWorkflowDirectory(
+        tempDir,
+        [],
+        tempDir
+      )
+
+      // Should have the top-level action
+      const topLevelDep = dependencies.find(
+        (d) => d.owner === 'top-org' && d.repo === 'level-1-action'
+      )
+      expect(topLevelDep).toBeDefined()
+      expect(topLevelDep?.isTransitive).toBeUndefined()
+
+      // Should have dependencies from level 1 (marked as transitive)
+      // This includes nested-org/level-2-action and actions/checkout, 
+      // plus any nested processing of those actions
+      const level1DirectDeps = dependencies.filter(
+        (d) =>
+          d.isTransitive === true &&
+          ((d.owner === 'nested-org' && d.repo === 'level-2-action') ||
+            (d.owner === 'actions' && d.repo === 'checkout'))
+      )
+      expect(level1DirectDeps.length).toBeGreaterThanOrEqual(2)
+
+      // Should have dependencies from level 2 (also marked as transitive)
+      const setupNodeDep = dependencies.find(
+        (d) =>
+          d.owner === 'actions' &&
+          d.repo === 'setup-node' &&
+          d.isTransitive === true
+      )
+      expect(setupNodeDep).toBeDefined()
+      expect(setupNodeDep?.ref).toBe('v4')
+
+      const cacheDep = dependencies.find(
+        (d) =>
+          d.owner === 'actions' &&
+          d.repo === 'cache' &&
+          d.isTransitive === true
+      )
+      expect(cacheDep).toBeDefined()
+      expect(cacheDep?.ref).toBe('v3')
+
+      // Verify that nested actions were fetched
+      expect(mockGetContent).toHaveBeenCalledWith(
+        expect.objectContaining({
+          owner: 'top-org',
+          repo: 'level-1-action'
+        })
+      )
+      expect(mockGetContent).toHaveBeenCalledWith(
+        expect.objectContaining({
+          owner: 'nested-org',
+          repo: 'level-2-action'
+        })
+      )
+    })
+
+    it('Recursively processes nested remote callable workflows', async () => {
+      // Mock Octokit to handle multiple levels of callable workflows
+      const mockGetContent = jest.fn().mockImplementation(({ owner, repo, path }) => {
+        if (owner === 'top-org' && repo === 'top-repo' && path === '.github/workflows/level1.yml') {
+          // First level callable workflow uses another callable workflow
+          return Promise.resolve({
+            data: {
+              content: Buffer.from(
+                `
+name: Level 1 Workflow
+on:
+  workflow_call:
+jobs:
+  call-nested:
+    uses: nested-org/nested-repo/.github/workflows/level2.yml@v1
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+`
+              ).toString('base64')
+            }
+          })
+        } else if (owner === 'nested-org' && repo === 'nested-repo' && path === '.github/workflows/level2.yml') {
+          // Second level callable workflow
+          return Promise.resolve({
+            data: {
+              content: Buffer.from(
+                `
+name: Level 2 Workflow
+on:
+  workflow_call:
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/setup-python@v5
+`
+              ).toString('base64')
+            }
+          })
+        } else if (path === 'action.yml' || path === 'action.yaml') {
+          // For actions/checkout, actions/setup-python - return non-composite
+          return Promise.resolve({
+            data: {
+              content: Buffer.from(
+                `
+name: Standard Action
+description: Not a composite action
+runs:
+  using: node20
+  main: dist/index.js
+`
+              ).toString('base64')
+            }
+          })
+        }
+        return Promise.reject(new Error('Not found'))
+      })
+
+      const mockOctokit = {
+        rest: {
+          repos: {
+            getContent: mockGetContent
+          }
+        }
+      }
+
+      // Create a parser with mocked octokit
+      const parserWithToken = new WorkflowParser('fake-token')
+      // @ts-expect-error - Replacing private property for testing
+      parserWithToken.octokitProvider = {
+        getOctokitForRepo: jest.fn().mockResolvedValue(mockOctokit),
+        getOctokit: jest.fn().mockReturnValue(mockOctokit),
+        getPublicOctokit: jest.fn().mockReturnValue(undefined),
+        getRepoInfo: jest.fn().mockResolvedValue(undefined),
+        repoExists: jest.fn().mockResolvedValue(true)
+      }
+
+      const workflowContent = `
+name: Test Workflow
+on: push
+jobs:
+  call-workflow:
+    uses: top-org/top-repo/.github/workflows/level1.yml@v1
+`
+      const workflowFile = path.join(tempDir, 'test.yml')
+      fs.writeFileSync(workflowFile, workflowContent)
+
+      const dependencies = await parserWithToken.parseWorkflowDirectory(
+        tempDir,
+        [],
+        tempDir
+      )
+
+      // Debug: print all dependencies
+      // console.log('All dependencies:', JSON.stringify(dependencies.map(d => ({
+      //   owner: d.owner,
+      //   repo: d.repo,
+      //   ref: d.ref,
+      //   isTransitive: d.isTransitive,
+      //   uses: d.uses
+      // })), null, 2))
+
+      // Should have the top-level workflow
+      const topLevelDep = dependencies.find(
+        (d) => d.owner === 'top-org' && d.repo === 'top-repo'
+      )
+      expect(topLevelDep).toBeDefined()
+      expect(topLevelDep?.isTransitive).toBeUndefined()
+
+      // Should have the nested workflow from level 1
+      const nestedWorkflowDep = dependencies.find(
+        (d) =>
+          d.owner === 'nested-org' &&
+          d.repo === 'nested-repo' &&
+          d.isTransitive === true
+      )
+      expect(nestedWorkflowDep).toBeDefined()
+
+      // Should have actions from level 1
+      const checkoutDep = dependencies.find(
+        (d) =>
+          d.owner === 'actions' &&
+          d.repo === 'checkout' &&
+          d.isTransitive === true
+      )
+      expect(checkoutDep).toBeDefined()
+      expect(checkoutDep?.ref).toBe('v4')
+
+      // Should have actions from level 2
+      const setupPythonDep = dependencies.find(
+        (d) =>
+          d.owner === 'actions' &&
+          d.repo === 'setup-python' &&
+          d.isTransitive === true
+      )
+      expect(setupPythonDep).toBeDefined()
+      expect(setupPythonDep?.ref).toBe('v5')
+
+      // Verify that nested workflows were fetched
+      expect(mockGetContent).toHaveBeenCalledWith(
+        expect.objectContaining({
+          owner: 'top-org',
+          repo: 'top-repo',
+          path: '.github/workflows/level1.yml'
+        })
+      )
+      expect(mockGetContent).toHaveBeenCalledWith(
+        expect.objectContaining({
+          owner: 'nested-org',
+          repo: 'nested-repo',
+          path: '.github/workflows/level2.yml'
+        })
+      )
     })
   })
 })
