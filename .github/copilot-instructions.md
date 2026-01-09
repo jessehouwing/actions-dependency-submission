@@ -65,14 +65,15 @@ Before committing any code changes, ensure all linting checks pass by running:
 npm run lint
 ```
 
-This will run ESLint and Prettier to check for code style and quality issues.
-If there are any issues, they can often be automatically fixed by running:
+This will run ESLint and Prettier to check for code style and quality issues. If
+there are any issues, they can often be automatically fixed by running:
 
 ```bash
 npm run format:write
 ```
 
-Always verify that linting passes before committing code or creating a pull request.
+Always verify that linting passes before committing code or creating a pull
+request.
 
 ## Bundling
 

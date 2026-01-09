@@ -2,18 +2,19 @@
 
 ## Executive Summary
 
-This document provides comprehensive research findings and a detailed implementation
-plan for adding Docker container dependency reporting to the
-`actions-dependency-submission` GitHub Action. Currently, the action reports GitHub
-Actions dependencies but skips Docker container references. This enhancement will
-enable security vulnerability tracking for Docker images used in workflows.
+This document provides comprehensive research findings and a detailed
+implementation plan for adding Docker container dependency reporting to the
+`actions-dependency-submission` GitHub Action. Currently, the action reports
+GitHub Actions dependencies but skips Docker container references. This
+enhancement will enable security vulnerability tracking for Docker images used
+in workflows.
 
 ## Current State
 
 The action currently:
 
-- ✅ Scans workflow files for GitHub Actions dependencies (`uses:
-  owner/repo@version`)
+- ✅ Scans workflow files for GitHub Actions dependencies
+  (`uses: owner/repo@version`)
 - ✅ Supports composite actions and callable workflows
 - ✅ Reports dependencies to GitHub's Dependency Graph using PURL format
   (`pkg:githubactions/owner/repo@version`)
@@ -26,9 +27,14 @@ GitHub Actions workflows can reference Docker containers in three primary ways:
 
 ### Note on Service Containers
 
-GitHub Actions also supports **service containers** via `jobs.<job_id>.services`, which run alongside the job to provide services like databases. While these are Docker containers, they serve a different purpose (providing services rather than executing workflow logic). For completeness, service containers could be considered for Phase 7 (Future Enhancements).
+GitHub Actions also supports **service containers** via
+`jobs.<job_id>.services`, which run alongside the job to provide services like
+databases. While these are Docker containers, they serve a different purpose
+(providing services rather than executing workflow logic). For completeness,
+service containers could be considered for Phase 7 (Future Enhancements).
 
 **Service Container Example:**
+
 ```yaml
 jobs:
   test:
@@ -39,12 +45,13 @@ jobs:
           POSTGRES_PASSWORD: postgres
 ```
 
-For this initial implementation, we will focus on the three main usage patterns below.
+For this initial implementation, we will focus on the three main usage patterns
+below.
 
 ### 1. Job-Level Container (`container:` syntax)
 
-Runs an entire job inside a container. Specified at the `jobs.<job_id>.container`
-level.
+Runs an entire job inside a container. Specified at the
+`jobs.<job_id>.container` level.
 
 **Syntax:**
 
@@ -77,22 +84,25 @@ jobs:
 jobs:
   <job_id>:
     container:
-      image: <string>          # Required: Docker image reference
-      credentials:             # Optional: Registry credentials
+      image: <string> # Required: Docker image reference
+      credentials: # Optional: Registry credentials
         username: <string>
         password: <string>
-      env:                     # Optional: Environment variables
+      env: # Optional: Environment variables
         <key>: <value>
-      ports:                   # Optional: Ports to expose
+      ports: # Optional: Ports to expose
         - <number>
-      volumes:                 # Optional: Volumes to mount
+      volumes: # Optional: Volumes to mount
         - <string>
-      options: <string>        # Optional: Docker run options
+      options: <string> # Optional: Docker run options
 ```
 
 **Key Points from GitHub Documentation:**
-- The `image` value can be a Docker base image name, registry path, or image with digest
-- Supports Docker Hub (default), GitHub Container Registry (ghcr.io), and other registries
+
+- The `image` value can be a Docker base image name, registry path, or image
+  with digest
+- Supports Docker Hub (default), GitHub Container Registry (ghcr.io), and other
+  registries
 - Only works on Linux runners, not Windows or macOS runners
 - Default shell inside container is `sh` (can be overridden)
 
@@ -126,30 +136,33 @@ steps:
 - `docker://gcr.io/project/image@sha256:abc123...`
 
 **Key Points from GitHub Documentation:**
+
 - Can reference public Docker images from Docker Hub or other registries
-- Uses the format `docker://<image>:<tag>` or `docker://<registry>/<image>:<tag>`
+- Uses the format `docker://<image>:<tag>` or
+  `docker://<registry>/<image>:<tag>`
 - Runs in a separate container from the runner
 - Can pass arguments using the `with.args` parameter
 
 **Examples from GitHub Docs:**
+
 ```yaml
 steps:
   # Reference a docker image published on docker hub
   - uses: docker://alpine:3.8
-  
+
   # Reference a docker public registry action
   - uses: docker://gcr.io/cloud-builders/gradle
 ```
 
 **Reference:**
-[GitHub Docs - jobs.<job_id>.steps[*].uses (Docker
-section)](https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions#jobsjob_idstepsuses)
+[GitHub Docs - jobs.<job_id>.steps[\*].uses (Docker section)](https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions#jobsjob_idstepsuses)
 
 ### 3. Composite/Docker Actions (`action.yml` with `runs.using: docker`)
 
 Custom actions that run in Docker containers, defined in `action.yml`.
 
-**Important:** Composite actions can also use `docker://` syntax in their steps, which should be parsed recursively.
+**Important:** Composite actions can also use `docker://` syntax in their steps,
+which should be parsed recursively.
 
 **Syntax in action.yml:**
 
@@ -181,28 +194,29 @@ runs:
 name: 'My Docker Action'
 description: 'Runs in a container'
 runs:
-  using: 'docker'               # Required: Must be 'docker'
-  image: 'Dockerfile'           # Required: Path to Dockerfile or docker:// image
-  
+  using: 'docker' # Required: Must be 'docker'
+  image: 'Dockerfile' # Required: Path to Dockerfile or docker:// image
+
   # Option 1: Build from local Dockerfile
   # image: 'Dockerfile'
-  
+
   # Option 2: Use pre-built image from Docker Hub
   # image: 'docker://node:18'
-  
+
   # Option 3: Use pre-built image from registry
   # image: 'docker://ghcr.io/owner/image:tag'
-  
-  pre-entrypoint: 'setup.sh'    # Optional: Script before entrypoint
-  entrypoint: 'main.sh'          # Optional: Override ENTRYPOINT
-  post-entrypoint: 'cleanup.sh'  # Optional: Cleanup script
-  args:                          # Optional: Arguments to pass
+
+  pre-entrypoint: 'setup.sh' # Optional: Script before entrypoint
+  entrypoint: 'main.sh' # Optional: Override ENTRYPOINT
+  post-entrypoint: 'cleanup.sh' # Optional: Cleanup script
+  args: # Optional: Arguments to pass
     - ${{ inputs.example }}
-  env:                           # Optional: Environment variables
+  env: # Optional: Environment variables
     MY_VAR: 'value'
 ```
 
 **Key Points from GitHub Documentation:**
+
 - `runs.using` must be set to `'docker'`
 - `runs.image` is required and can be:
   - A local `Dockerfile` (must be named exactly `Dockerfile`)
@@ -213,6 +227,7 @@ runs:
 - Can pass arguments via `runs.args` array
 
 **Examples from GitHub Docs:**
+
 ```yaml
 # Using a Dockerfile in your repository
 runs:
@@ -227,8 +242,7 @@ runs:
 
 **References:**
 
-- [GitHub Docs - runs for Docker container
-  actions](https://docs.github.com/en/actions/creating-actions/metadata-syntax-for-github-actions#runs-for-docker-container-actions)
+- [GitHub Docs - runs for Docker container actions](https://docs.github.com/en/actions/creating-actions/metadata-syntax-for-github-actions#runs-for-docker-container-actions)
 - [Example: hello-world-docker-action](https://github.com/actions/hello-world-docker-action/blob/main/action.yml)
 
 ## PURL Specification for Docker
@@ -244,14 +258,14 @@ pkg:docker/<namespace>/<name>@<version>?<qualifiers>#<subpath>
 
 ### Components
 
-| Component    | Required | Description                                                                    | Example               |
-| ------------ | -------- | ------------------------------------------------------------------------------ | --------------------- |
-| `type`       | Yes      | Always `docker` for Docker images                                              | `docker`              |
-| `namespace`  | Optional | Registry, organization, or username                                            | `library`, `owner`    |
-| `name`       | Yes      | Image name                                                                     | `node`, `alpine`      |
-| `version`    | Optional | Tag or SHA256 digest (SHA preferred for immutability)                          | `18`, `sha256:abc...` |
-| `qualifiers` | Optional | Additional identifiers (e.g., `repository_url=gcr.io`)                         | Key-value pairs       |
-| `subpath`    | Optional | Path within image (rarely used for Docker)                                     | -                     |
+| Component    | Required | Description                                            | Example               |
+| ------------ | -------- | ------------------------------------------------------ | --------------------- |
+| `type`       | Yes      | Always `docker` for Docker images                      | `docker`              |
+| `namespace`  | Optional | Registry, organization, or username                    | `library`, `owner`    |
+| `name`       | Yes      | Image name                                             | `node`, `alpine`      |
+| `version`    | Optional | Tag or SHA256 digest (SHA preferred for immutability)  | `18`, `sha256:abc...` |
+| `qualifiers` | Optional | Additional identifiers (e.g., `repository_url=gcr.io`) | Key-value pairs       |
+| `subpath`    | Optional | Path within image (rarely used for Docker)             | -                     |
 
 ### Default Repository
 
@@ -277,8 +291,7 @@ pkg:docker/actions/runner@sha256%3Aabc123...?repository_url=ghcr.io
 ```
 
 **Reference:**
-[PURL Spec - Docker
-Definition](https://github.com/package-url/purl-spec/blob/main/types-doc/docker-definition.md)
+[PURL Spec - Docker Definition](https://github.com/package-url/purl-spec/blob/main/types-doc/docker-definition.md)
 
 ## Image Reference Parsing
 
@@ -296,8 +309,8 @@ Docker image references can be complex. Here are the patterns we need to handle:
 
 ### Parsing Rules
 
-1. **Registry detection**: If reference contains `.` or `:` before first `/`, it's a
-   registry
+1. **Registry detection**: If reference contains `.` or `:` before first `/`,
+   it's a registry
 2. **Namespace extraction**: Text between registry and image name
 3. **Tag extraction**: Text after `:` (but before `@` if digest present)
 4. **Digest extraction**: Text after `@` (usually `sha256:...`)
@@ -414,7 +427,8 @@ Add methods to extract Docker images from:
 2. **Service containers**: Parse `jobs.<job_id>.services.<service_id>.image`
 3. **Step-level Docker actions**: Already handled by `parseUsesString`
 4. **Action.yml files**: Parse `runs.image` field when `runs.using === 'docker'`
-5. **Composite action steps**: Parse `docker://` references in composite action `uses`
+5. **Composite action steps**: Parse `docker://` references in composite action
+   `uses`
 
 **New method in `WorkflowParser`**:
 
@@ -431,7 +445,7 @@ private extractDockerDependencies(
 
   for (const jobName in workflow.jobs) {
     const job = workflow.jobs[jobName]
-    
+
     // Extract from job.container.image
     if (job.container?.image) {
       const dockerDep = this.parseDockerImage(job.container.image)
@@ -441,7 +455,7 @@ private extractDockerDependencies(
         dependencies.push(dockerDep)
       }
     }
-    
+
     // Extract from job.services.<service>.image
     if (job.services) {
       for (const serviceName in job.services) {
@@ -462,11 +476,14 @@ private extractDockerDependencies(
 
 #### 1.5 Parse Dockerfiles for Base Images
 
-When `runs.image` references a `Dockerfile`, parse the Dockerfile to extract base images.
+When `runs.image` references a `Dockerfile`, parse the Dockerfile to extract
+base images.
 
 **Recommended Package: `dockerfile-ast`**
 
-Use the [`dockerfile-ast`](https://github.com/rcjsuen/dockerfile-ast) npm package for robust Dockerfile parsing:
+Use the [`dockerfile-ast`](https://github.com/rcjsuen/dockerfile-ast) npm
+package for robust Dockerfile parsing:
+
 - Written in TypeScript with full type support
 - Handles multi-stage builds, escaped newlines, comments
 - Supports `ARG` and `ENV` variable resolution
@@ -474,6 +491,7 @@ Use the [`dockerfile-ast`](https://github.com/rcjsuen/dockerfile-ast) npm packag
 - License: MIT
 
 **Installation:**
+
 ```bash
 npm install dockerfile-ast
 ```
@@ -485,7 +503,7 @@ import { DockerfileParser } from 'dockerfile-ast'
 
 /**
  * Parse a Dockerfile to extract base images from FROM instructions
- * 
+ *
  * @param dockerfilePath Path to the Dockerfile
  * @param repoRoot Repository root directory
  * @returns Array of Docker dependencies from FROM instructions
@@ -495,23 +513,23 @@ private parseDockerfile(
   repoRoot: string
 ): DockerDependency[] {
   const dependencies: DockerDependency[] = []
-  
+
   try {
     const content = fs.readFileSync(dockerfilePath, 'utf8')
-    
+
     // Parse Dockerfile using dockerfile-ast
     const dockerfile = DockerfileParser.parse(content)
     const instructions = dockerfile.getInstructions()
-    
+
     for (const instruction of instructions) {
       if (instruction.getKeyword() === 'FROM') {
         const args = instruction.getArguments()
-        
+
         // args[0] is the image reference
         // args[1] might be 'AS' keyword
         // args[2] might be the stage name
         const imageRef = args[0]?.getValue() || ''
-        
+
         // Skip scratch and variable references
         if (imageRef === 'scratch' || imageRef.includes('$')) {
           if (imageRef.includes('$')) {
@@ -523,13 +541,13 @@ private parseDockerfile(
           }
           continue
         }
-        
+
         const dockerDep = this.parseDockerImage(imageRef)
         if (dockerDep) {
           dockerDep.sourcePath = path.relative(repoRoot, dockerfilePath)
           dockerDep.context = 'dockerfile'
           dependencies.push(dockerDep)
-          
+
           core.debug(
             `Extracted base image from Dockerfile: ${imageRef} ` +
             `(stage: ${args.length > 2 ? args[2]?.getValue() : 'unnamed'})`
@@ -542,7 +560,7 @@ private parseDockerfile(
       `Failed to parse Dockerfile ${path.relative(repoRoot, dockerfilePath)}: ${error}`
     )
   }
-  
+
   return dependencies
 }
 
@@ -556,18 +574,18 @@ private async extractDockerfileBaseImages(
   try {
     const content = fs.readFileSync(actionYmlPath, 'utf8')
     const action = yaml.parse(content, { merge: true })
-    
+
     if (action?.runs?.using === 'docker' && action?.runs?.image) {
       const imageRef = action.runs.image
-      
+
       // Check if it's a Dockerfile reference (not docker:// protocol)
-      if (!imageRef.startsWith('docker://') && 
+      if (!imageRef.startsWith('docker://') &&
           (imageRef === 'Dockerfile' || imageRef.endsWith('/Dockerfile'))) {
-        
+
         // Resolve Dockerfile path relative to action.yml
         const actionDir = path.dirname(actionYmlPath)
         const dockerfilePath = path.join(actionDir, imageRef)
-        
+
         if (fs.existsSync(dockerfilePath)) {
           core.info(`Parsing Dockerfile: ${path.relative(repoRoot, dockerfilePath)}`)
           return this.parseDockerfile(dockerfilePath, repoRoot)
@@ -577,22 +595,25 @@ private async extractDockerfileBaseImages(
   } catch (error) {
     core.debug(`Failed to extract Dockerfile base images from ${actionYmlPath}: ${error}`)
   }
-  
+
   return []
 }
 ```
 
 **Key Features:**
+
 - Uses `dockerfile-ast` for robust parsing (handles edge cases)
 - Parses `FROM` instructions in Dockerfiles
 - Handles multi-stage builds (multiple `FROM` statements)
 - Skips `FROM scratch` (base layer with no parent)
-- Logs warning for variable references like `FROM $BASE_IMAGE` but does not attempt to resolve
+- Logs warning for variable references like `FROM $BASE_IMAGE` but does not
+  attempt to resolve
 - Extracts platform-specific base images (`FROM --platform=...`)
 - Reports base images with context `'dockerfile'`
 - Preserves stage names from multi-stage builds for debugging
 
 **Example Dockerfile Patterns Handled:**
+
 ```dockerfile
 # Simple FROM
 FROM node:18
@@ -754,10 +775,9 @@ inputs:
   # ... existing inputs ...
   report-docker-dependencies:
     description: >
-      Whether to report Docker container image dependencies from workflows.
-      When true, Docker images referenced in job containers, step-level
-      docker:// uses, and action.yml files will be reported to the Dependency
-      Graph.
+      Whether to report Docker container image dependencies from workflows. When
+      true, Docker images referenced in job containers, step-level docker://
+      uses, and action.yml files will be reported to the Dependency Graph.
     required: false
     default: 'true'
 ```
@@ -884,14 +904,15 @@ describe('createDockerPackageUrl', () => {
 
 Add section explaining Docker dependency reporting:
 
-```markdown
+````markdown
 ## Docker Container Dependencies
 
-The action automatically detects and reports Docker container images used in your
-workflows:
+The action automatically detects and reports Docker container images used in
+your workflows:
 
 - **Job-level containers**: Images specified in `jobs.<job_id>.container.image`
-- **Step-level Docker actions**: Images referenced with `docker://` in step `uses:`
+- **Step-level Docker actions**: Images referenced with `docker://` in step
+  `uses:`
 - **Docker container actions**: Images referenced in `action.yml` files
 
 ### Example
@@ -905,6 +926,7 @@ jobs:
     steps:
       - uses: docker://alpine:latest
 ```
+````
 
 This will report:
 
@@ -922,7 +944,7 @@ If you want to report only GitHub Actions dependencies:
     report-docker-dependencies: false
 ```
 
-```
+````
 
 #### 5.2 Create Docker Dependencies Guide
 
@@ -966,13 +988,15 @@ jobs:
     steps:
       - uses: actions/checkout@v1
       - run: npm ci
-```
+````
 
 **Expected Dependencies Extracted:**
+
 - `pkg:docker/library/node@10.16-jessie` (job container)
 - `pkg:docker/library/postgres@10.8` (service container)
 
 **Parsing Notes:**
+
 - Job-level container with specific tag format (major.minor-variant)
 - Service container with environment variables
 - Health check options (parsed but not reported as dependency)
@@ -981,9 +1005,11 @@ jobs:
 
 ### Example 2: Docker Container Action with Dockerfile
 
-**Source**: [actions/hello-world-docker-action](https://github.com/actions/hello-world-docker-action)
+**Source**:
+[actions/hello-world-docker-action](https://github.com/actions/hello-world-docker-action)
 
 **action.yml:**
+
 ```yaml
 name: Hello, World!
 description: Greet someone and record the time
@@ -994,10 +1020,11 @@ inputs:
     default: World
 runs:
   using: docker
-  image: Dockerfile  # References local Dockerfile
+  image: Dockerfile # References local Dockerfile
 ```
 
 **Dockerfile:**
+
 ```dockerfile
 FROM alpine:3.22
 
@@ -1013,10 +1040,12 @@ ENTRYPOINT ["/usr/src/entrypoint.sh"]
 ```
 
 **Expected Dependencies Extracted:**
-- From action.yml: Recognizes `image: Dockerfile` 
+
+- From action.yml: Recognizes `image: Dockerfile`
 - From Dockerfile: `pkg:docker/library/alpine@3.22` (base image)
 
 **Parsing Notes:**
+
 - `runs.using: docker` with `image: Dockerfile` triggers Dockerfile parsing
 - Single `FROM` instruction with specific version tag
 - Multi-line RUN commands should not interfere with FROM extraction
@@ -1045,9 +1074,11 @@ CMD ["node", "dist/index.js"]
 ```
 
 **Expected Dependencies Extracted:**
+
 - `pkg:docker/library/node@18-alpine` (appears twice but should be deduplicated)
 
 **Parsing Notes:**
+
 - Multiple `FROM` instructions with same base image
 - Stage names (`AS build`, `AS production`) extracted for debugging
 - Should report unique base images only once
@@ -1064,9 +1095,11 @@ RUN apt-get update && apt-get install -y curl
 ```
 
 **Expected Dependencies Extracted:**
+
 - `pkg:docker/library/ubuntu@22.04`
 
 **Parsing Notes:**
+
 - `--platform` flag should be parsed but not included in dependency
 - Standard Ubuntu official image format
 
@@ -1082,10 +1115,13 @@ FROM $BASE_IMAGE
 ```
 
 **Expected Behavior:**
-- Log warning: "Dockerfile references variable in FROM: $BASE_IMAGE. Variable substitution is not supported."
+
+- Log warning: "Dockerfile references variable in FROM: $BASE_IMAGE. Variable
+  substitution is not supported."
 - Skip this FROM instruction (no dependency reported)
 
 **Parsing Notes:**
+
 - Variables starting with `$` trigger warning
 - `ARG` resolution not attempted in initial implementation
 
@@ -1102,9 +1138,11 @@ ENTRYPOINT ["/myapp"]
 ```
 
 **Expected Behavior:**
+
 - Skip `FROM scratch` (no dependency reported)
 
 **Parsing Notes:**
+
 - `scratch` is a special Docker keyword for empty base images
 - No security vulnerabilities to track for scratch
 
@@ -1125,9 +1163,11 @@ jobs:
 ```
 
 **Expected Dependencies Extracted:**
+
 - `pkg:docker/library/alpine@3.18`
 
 **Parsing Notes:**
+
 - `docker://` prefix triggers Docker image parsing
 - No Dockerfile to parse (pre-built image)
 
@@ -1146,9 +1186,11 @@ jobs:
 ```
 
 **Expected Dependencies Extracted:**
+
 - `pkg:docker/owner/myapp@v1.2.3?repository_url=ghcr.io`
 
 **Parsing Notes:**
+
 - Non-Docker Hub registry requires `repository_url` qualifier
 - Namespace extracted from path after registry
 
@@ -1159,7 +1201,7 @@ jobs:
 These real-world examples form the basis for integration tests:
 
 1. **Test Job Containers**: Parse `container.image` field
-2. **Test Service Containers**: Parse `services.<id>.image` field  
+2. **Test Service Containers**: Parse `services.<id>.image` field
 3. **Test Dockerfile Parsing**: Extract FROM instructions
 4. **Test Multi-Stage Builds**: Handle multiple FROM statements
 5. **Test Platform Flags**: Ignore --platform in FROM
@@ -1174,10 +1216,10 @@ These real-world examples form the basis for integration tests:
 ### 1. Parsing Challenges
 
 - **Complex image references**: Need robust parsing for all registry formats
-- **Dockerfile references**: When `image: Dockerfile`, parse the Dockerfile to extract
-  base images from `FROM` instructions
-- **Variable substitution**: Log a warning for cases like `image: ${{ matrix.node-version }}` 
-  but do not attempt to resolve the variable
+- **Dockerfile references**: When `image: Dockerfile`, parse the Dockerfile to
+  extract base images from `FROM` instructions
+- **Variable substitution**: Log a warning for cases like
+  `image: ${{ matrix.node-version }}` but do not attempt to resolve the variable
 
 ### 2. Registry Resolution
 
@@ -1201,7 +1243,8 @@ These real-world examples form the basis for integration tests:
 
 - Docker Hub rate limits: No API calls needed for parsing
 - Private registries: Document that credentials in workflow don't affect parsing
-- Base image tracking: Dockerfile parsing extracts base images for comprehensive dependency tracking
+- Base image tracking: Dockerfile parsing extracts base images for comprehensive
+  dependency tracking
 
 ### 6. Configuration
 
@@ -1213,8 +1256,8 @@ These real-world examples form the basis for integration tests:
 
 ### Security
 
-1. **Vulnerability tracking**: GitHub Dependency Graph will scan Docker images for
-   known vulnerabilities
+1. **Vulnerability tracking**: GitHub Dependency Graph will scan Docker images
+   for known vulnerabilities
 2. **Security advisories**: Get notified when images have security issues
 3. **Supply chain visibility**: Track all Docker images used across workflows
 
@@ -1232,30 +1275,31 @@ These real-world examples form the basis for integration tests:
 
 ## Risks and Mitigation
 
-| Risk                                     | Impact | Mitigation                                   |
-| ---------------------------------------- | ------ | -------------------------------------------- |
-| Complex parsing errors                   | Medium | Comprehensive test coverage                  |
-| False negatives (missed images)          | Medium | Log skipped references, allow user reporting |
-| False positives (incorrect parsing)      | Low    | Validate against PURL spec                   |
+| Risk                                     | Impact | Mitigation                                                   |
+| ---------------------------------------- | ------ | ------------------------------------------------------------ |
+| Complex parsing errors                   | Medium | Comprehensive test coverage                                  |
+| False negatives (missed images)          | Medium | Log skipped references, allow user reporting                 |
+| False positives (incorrect parsing)      | Low    | Validate against PURL spec                                   |
 | Performance impact                       | Low    | No additional API calls needed (Dockerfile parsing is local) |
-| Breaking changes to existing users       | High   | Make Docker reporting opt-in initially       |
-| Dynamic image references (variables/env) | Medium | Log warning, skip variable-based references  |
-| Dockerfile parsing dependency           | Low    | Use well-maintained dockerfile-ast package (MIT license) |
+| Breaking changes to existing users       | High   | Make Docker reporting opt-in initially                       |
+| Dynamic image references (variables/env) | Medium | Log warning, skip variable-based references                  |
+| Dockerfile parsing dependency            | Low    | Use well-maintained dockerfile-ast package (MIT license)     |
 
 ## Timeline Estimate
 
-| Phase            | Effort        | Duration     |
-| ---------------- | ------------- | ------------ |
-| Phase 1: Parsing (includes Dockerfile parsing) | 3-4 days | Week 1 |
-| Phase 2: PURL    | 1-2 days      | Week 1-2     |
-| Phase 3: Integration | 1 day     | Week 2       |
-| Phase 4: Testing | 2-3 days      | Week 2       |
-| Phase 5: Documentation | 1 day    | Week 2       |
-| **Total**        | **8-11 days** | **2 weeks**  |
+| Phase                                          | Effort        | Duration    |
+| ---------------------------------------------- | ------------- | ----------- |
+| Phase 1: Parsing (includes Dockerfile parsing) | 3-4 days      | Week 1      |
+| Phase 2: PURL                                  | 1-2 days      | Week 1-2    |
+| Phase 3: Integration                           | 1 day         | Week 2      |
+| Phase 4: Testing                               | 2-3 days      | Week 2      |
+| Phase 5: Documentation                         | 1 day         | Week 2      |
+| **Total**                                      | **8-11 days** | **2 weeks** |
 
 ## Success Criteria
 
-1. ✅ Parse all four Docker reference types correctly (container, step, action, service)
+1. ✅ Parse all four Docker reference types correctly (container, step, action,
+   service)
 2. ✅ Extract base images from Dockerfiles using `dockerfile-ast`
 3. ✅ Generate valid PURL format for Docker images
 4. ✅ Submit Docker dependencies to GitHub Dependency Graph
@@ -1303,7 +1347,8 @@ These real-world examples form the basis for integration tests:
 
 ### NPM Packages
 
-- [dockerfile-ast](https://github.com/rcjsuen/dockerfile-ast) - Dockerfile parser (MIT license)
+- [dockerfile-ast](https://github.com/rcjsuen/dockerfile-ast) - Dockerfile
+  parser (MIT license)
 - [dockerfile-ast on npm](https://www.npmjs.com/package/dockerfile-ast)
 
 ## Conclusion
@@ -1316,9 +1361,9 @@ This research demonstrates that adding Docker dependency reporting is:
 4. **Non-breaking**: Can be added without disrupting existing functionality
 5. **Well-scoped**: Implementation can be completed in 2 weeks
 
-The recommended approach is to implement this in phases, starting with basic Docker
-image parsing and PURL generation, then enhancing with more advanced features like
-Dockerfile parsing in future iterations.
+The recommended approach is to implement this in phases, starting with basic
+Docker image parsing and PURL generation, then enhancing with more advanced
+features like Dockerfile parsing in future iterations.
 
 ## Appendix: Example Workflow Coverage
 
@@ -1372,8 +1417,7 @@ jobs:
   secure:
     runs-on: ubuntu-latest
     steps:
-      - uses:
-          docker://alpine@sha256:abc123def456abc123def456abc123def456abc123def456abc123def456abcd
+      - uses: docker://alpine@sha256:abc123def456abc123def456abc123def456abc123def456abc123def456abcd
 ```
 
 **Expected Dependencies:**
@@ -1383,6 +1427,5 @@ jobs:
 
 ---
 
-**Document Version:** 1.0
-**Date:** 2026-01-09
-**Author:** GitHub Copilot (Research Agent)
+**Document Version:** 1.0 **Date:** 2026-01-09 **Author:** GitHub Copilot
+(Research Agent)

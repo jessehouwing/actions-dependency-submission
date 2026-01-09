@@ -39487,14 +39487,115 @@ class WorkflowParser {
         }
     }
     /**
+     * Parses a Docker image reference into components
+     *
+     * @param imageRef Docker image reference (e.g., "node:18", "ghcr.io/owner/image:tag", "docker://alpine:3.18")
+     * @returns DockerDependency object or null if parsing fails
+     */
+    parseDockerImage(imageRef) {
+        try {
+            // Remove docker:// prefix if present
+            let cleanRef = imageRef.replace(/^docker:\/\//, '');
+            // Handle empty or invalid references
+            if (!cleanRef || cleanRef.trim() === '') {
+                return null;
+            }
+            let registry = 'hub.docker.com';
+            let namespace;
+            let image;
+            let tag;
+            let digest;
+            // Check if there's a digest (@sha256:...)
+            const digestMatch = cleanRef.match(/@(sha256:[a-f0-9]+)/);
+            if (digestMatch) {
+                digest = digestMatch[1];
+                // Remove digest from the reference for further parsing
+                cleanRef = cleanRef.substring(0, digestMatch.index);
+            }
+            // Check if there's a tag (:tag)
+            // Tag is everything after the last : that's not part of a port or registry
+            const tagMatch = cleanRef.match(/:([^:/]+)$/);
+            if (tagMatch && !digestMatch) {
+                // Only extract tag if there's no digest
+                tag = tagMatch[1];
+                cleanRef = cleanRef.substring(0, tagMatch.index);
+            }
+            else if (tagMatch && digestMatch) {
+                // If both tag and digest, still extract the tag
+                tag = tagMatch[1];
+                cleanRef = cleanRef.substring(0, tagMatch.index);
+            }
+            // Parse registry, namespace, and image name
+            const parts = cleanRef.split('/');
+            if (parts.length === 1) {
+                // Just image name: "alpine" -> hub.docker.com/library/alpine
+                image = parts[0];
+                namespace = 'library';
+            }
+            else if (parts.length === 2) {
+                // Could be "owner/image" or "registry.com/image"
+                // Check if first part looks like a registry (contains . or :)
+                if (parts[0].includes('.') || parts[0].includes(':')) {
+                    // It's a registry: "registry.com/image"
+                    registry = parts[0];
+                    image = parts[1];
+                    // No namespace for single-level registry paths
+                }
+                else {
+                    // It's namespace/image: "owner/image"
+                    namespace = parts[0];
+                    image = parts[1];
+                }
+            }
+            else if (parts.length >= 3) {
+                // registry/namespace/image or registry/namespace/image/more
+                // First part is registry if it contains . or :
+                if (parts[0].includes('.') || parts[0].includes(':')) {
+                    registry = parts[0];
+                    namespace = parts.slice(1, -1).join('/');
+                    image = parts[parts.length - 1];
+                }
+                else {
+                    // No registry specified, treat first part as namespace
+                    namespace = parts[0];
+                    image = parts.slice(1).join('/');
+                }
+            }
+            else {
+                return null;
+            }
+            // Log the found dependency to console
+            const depString = `Docker image: ${registry}/${namespace || ''}${namespace ? '/' : ''}${image}${tag ? ':' + tag : ''}${digest ? '@' + digest : ''}`;
+            coreExports.info(`📦 Found ${depString}`);
+            return {
+                registry,
+                namespace,
+                image,
+                tag: tag || (digest ? undefined : 'latest'),
+                digest,
+                originalReference: imageRef
+            };
+        }
+        catch (error) {
+            coreExports.debug(`Failed to parse Docker image reference "${imageRef}": ${error}`);
+            return null;
+        }
+    }
+    /**
      * Parses a 'uses' string to extract dependency information
      *
      * @param uses The 'uses' string from a workflow step
      * @returns Object with dependency info or local path info
      */
     parseUsesString(uses) {
-        // Skip docker actions
+        // Parse docker actions
         if (uses.startsWith('docker://')) {
+            const dockerDep = this.parseDockerImage(uses);
+            if (dockerDep) {
+                return {
+                    dockerDependency: dockerDep
+                };
+            }
             return {};
         }
         // Local action reference (starts with ./ or ../ or .\ or ..\)
