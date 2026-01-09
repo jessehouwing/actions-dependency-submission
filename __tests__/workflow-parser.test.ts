@@ -1522,15 +1522,13 @@ jobs:
 
     it('Recursively processes nested remote composite actions', async () => {
       // Mock Octokit to handle multiple levels of composite actions
-      const mockGetContent = jest
-        .fn()
-        .mockImplementation(({ owner, repo, path }) => {
-          if (owner === 'top-org' && repo === 'level-1-action') {
-            // First level composite action uses another composite action
-            return Promise.resolve({
-              data: {
-                content: Buffer.from(
-                  `
+      const mockGetContent = jest.fn().mockImplementation(({ owner, repo }) => {
+        if (owner === 'top-org' && repo === 'level-1-action') {
+          // First level composite action uses another composite action
+          return Promise.resolve({
+            data: {
+              content: Buffer.from(
+                `
 name: Level 1 Composite Action
 description: A composite action that uses another composite action
 runs:
@@ -1539,15 +1537,15 @@ runs:
     - uses: nested-org/level-2-action@v1
     - uses: actions/checkout@v4
 `
-                ).toString('base64')
-              }
-            })
-          } else if (owner === 'nested-org' && repo === 'level-2-action') {
-            // Second level composite action
-            return Promise.resolve({
-              data: {
-                content: Buffer.from(
-                  `
+              ).toString('base64')
+            }
+          })
+        } else if (owner === 'nested-org' && repo === 'level-2-action') {
+          // Second level composite action
+          return Promise.resolve({
+            data: {
+              content: Buffer.from(
+                `
 name: Level 2 Composite Action
 description: A nested composite action
 runs:
@@ -1556,26 +1554,26 @@ runs:
     - uses: actions/setup-node@v4
     - uses: actions/cache@v3
 `
-                ).toString('base64')
-              }
-            })
-          } else {
-            // For actions/checkout, actions/setup-node, actions/cache - return non-composite
-            return Promise.resolve({
-              data: {
-                content: Buffer.from(
-                  `
+              ).toString('base64')
+            }
+          })
+        } else {
+          // For actions/checkout, actions/setup-node, actions/cache - return non-composite
+          return Promise.resolve({
+            data: {
+              content: Buffer.from(
+                `
 name: Standard Action
 description: Not a composite action
 runs:
   using: node20
   main: dist/index.js
 `
-                ).toString('base64')
-              }
-            })
-          }
-        })
+              ).toString('base64')
+            }
+          })
+        }
+      })
 
       const mockOctokit = {
         rest: {
