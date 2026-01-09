@@ -28,7 +28,7 @@ jobs:
 
       - name: Install Dependencies
         id: npm-install
-        run: npm install
+        run: npm ci
 
       - name: Verify Installation
         id: verify
