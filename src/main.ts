@@ -87,12 +87,15 @@ export async function run(): Promise<void> {
     const { actionDependencies, dockerDependencies } = result
 
     core.info(`Found ${actionDependencies.length} action dependencies`)
-    if (detectDocker && dockerDependencies.length > 0) {
-      core.info(`Found ${dockerDependencies.length} Docker image dependencies`)
-    } else if (dockerDependencies.length > 0) {
-      core.info(
-        `Found ${dockerDependencies.length} Docker image dependencies (skipped - enable with detect-docker: true)`
-      )
+
+    // Log Docker dependencies
+    if (dockerDependencies.length > 0) {
+      const message = `Found ${dockerDependencies.length} Docker image dependencies`
+      if (detectDocker) {
+        core.info(message)
+      } else {
+        core.info(`${message} (skipped - enable with detect-docker: true)`)
+      }
     }
 
     if (actionDependencies.length === 0) {
