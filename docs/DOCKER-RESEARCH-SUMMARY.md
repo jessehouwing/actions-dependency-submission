@@ -47,14 +47,14 @@ All patterns have been validated against official GitHub documentation:
 
 ## Implementation Plan
 
-### Estimated Timeline: 7-10 days (2 weeks)
+### Estimated Timeline: 8-11 days (2 weeks)
 
 | Phase | Tasks | Duration |
 |-------|-------|----------|
-| **Phase 1: Parser Enhancement** | Add Docker parsing logic | 2-3 days |
+| **Phase 1: Parser Enhancement** | Add Docker parsing logic + Dockerfile parsing | 3-4 days |
 | **Phase 2: PURL Generation** | Generate Docker PURLs | 1-2 days |
 | **Phase 3: Integration** | Connect to main flow | 1 day |
-| **Phase 4: Testing** | Comprehensive test coverage | 2-3 days |
+| **Phase 4: Testing** | Comprehensive test coverage + real-world validation | 2-3 days |
 | **Phase 5: Documentation** | User-facing docs | 1 day |
 
 ### Key Components to Implement
@@ -74,6 +74,14 @@ All patterns have been validated against official GitHub documentation:
 - Extract from `job.services.<service>.image`
 - Parse `docker://` in step `uses:`
 - Parse `runs.image` in action.yml files
+- **Parse Dockerfiles when `image: Dockerfile` is referenced**
+- Extract base images from `FROM` instructions using `dockerfile-ast`
+
+**4. Dockerfile Parser** (`dockerfile-ast` npm package)
+- MIT-licensed TypeScript package for robust Dockerfile parsing
+- Handles multi-stage builds (multiple FROM statements)
+- Skips `FROM scratch` and logs warnings for variables
+- Extracts platform-specific images
 
 **4. Configuration Option** (`action.yml`)
 ```yaml
@@ -83,6 +91,9 @@ inputs:
     required: false
     default: 'true'
 ```
+
+**5. Dependencies**
+- `dockerfile-ast` npm package (MIT license) - for parsing Dockerfiles
 
 ## Benefits
 

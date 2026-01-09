@@ -29,6 +29,8 @@ steps:
 → Reports: `pkg:docker/library/alpine@latest`
 
 ### 3. Docker Container Actions (action.yml with runs.image)
+
+**Option A: Pre-built image**
 ```yaml
 # action.yml
 runs:
@@ -36,6 +38,19 @@ runs:
   image: 'docker://node:18'
 ```
 → Reports: `pkg:docker/library/node@18`
+
+**Option B: Local Dockerfile**
+```yaml
+# action.yml
+runs:
+  using: 'docker'
+  image: 'Dockerfile'
+```
+```dockerfile
+# Dockerfile
+FROM alpine:3.22
+```
+→ Reports: `pkg:docker/library/alpine@3.22` (extracted from Dockerfile)
 
 ### 4. Service Containers (services at job level)
 ```yaml
@@ -61,12 +76,15 @@ jobs:
 
 ## Implementation Approach
 
-### Phase 1: Parser Enhancement (2-3 days)
+### Phase 1: Parser Enhancement (3-4 days)
 - Add `DockerDependency` interface
 - Create Docker image reference parser
 - Update `parseUsesString()` to handle `docker://`
 - Extract images from `job.container.image` fields
+- Extract images from `job.services` fields
 - Extract images from `action.yml` files
+- **Parse Dockerfiles using `dockerfile-ast` npm package**
+- Handle multi-stage builds, platform flags, variable warnings
 
 ### Phase 2: PURL Generation (1-2 days)
 - Create `createDockerPackageUrl()` method
@@ -81,8 +99,10 @@ jobs:
 
 ### Phase 4: Testing (2-3 days)
 - Unit tests for image parsing
+- Unit tests for Dockerfile parsing with `dockerfile-ast`
 - Unit tests for PURL generation
 - Integration tests with workflow fixtures
+- Validation against real-world examples (8+ workflows)
 - Test coverage for edge cases
 
 ### Phase 5: Documentation (1 day)
@@ -91,7 +111,7 @@ jobs:
 - Document configuration options
 - Add troubleshooting section
 
-**Total Estimate**: 7-10 days over 2 weeks
+**Total Estimate**: 8-11 days over 2 weeks
 
 ## Key Benefits
 
