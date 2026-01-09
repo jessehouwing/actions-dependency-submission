@@ -1,0 +1,43 @@
+name: Agent Setup
+
+# This workflow prepares the environment for GitHub Copilot Agent
+# by ensuring Node.js 24 is installed and all dependencies are available
+on:
+  workflow_dispatch: # Allow manual trigger
+  workflow_call: # Allow being called by other workflows
+
+permissions:
+  contents: read
+
+jobs:
+  setup:
+    name: Prepare Agent Environment
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        id: checkout
+        uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 #v6.0.1
+
+      - name: Setup Node.js
+        id: setup-node
+        uses: actions/setup-node@395ad3262231945c25e8478fd5baf05154b1d79f #v6.1.0
+        with:
+          node-version-file: .node-version
+          cache: npm
+
+      - name: Install Dependencies
+        id: npm-install
+        run: npm install
+
+      - name: Verify Installation
+        id: verify
+        run: |
+          echo "Node.js version:"
+          node --version
+          echo ""
+          echo "npm version:"
+          npm --version
+          echo ""
+          echo "Verifying dependencies..."
+          npm list --depth=0
