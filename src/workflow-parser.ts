@@ -122,12 +122,12 @@ export class WorkflowParser {
           ? path.relative(repoRoot, filePath)
           : filePath
 
-        // Process remote composite actions
+        // Process remote composite actions and callable workflows
         for (const dep of result.dependencies) {
           const remoteActionKey = `${dep.owner}/${dep.repo}@${dep.ref}`
           if (!this.processedRemoteActions.has(remoteActionKey)) {
             this.processedRemoteActions.add(remoteActionKey)
-            const remoteDeps = await this.processRemoteCompositeAction(
+            const remoteDeps = await this.processRemoteActionOrWorkflow(
               dep,
               relativePath
             )
@@ -495,6 +495,35 @@ export class WorkflowParser {
   }
 
   /**
+   * Process remote action or workflow to extract transitive dependencies.
+   * Determines if the dependency is a callable workflow or composite action and routes accordingly.
+   *
+   * @param dependency Remote action/workflow dependency
+   * @param callingWorkflowPath Path of the workflow that references this action/workflow
+   * @returns Array of transitive dependencies from the remote action/workflow
+   */
+  private async processRemoteActionOrWorkflow(
+    dependency: ActionDependency,
+    callingWorkflowPath: string
+  ): Promise<ActionDependency[]> {
+    // Check if it's a callable workflow first (uses pattern like owner/repo/path/to/workflow.yml@ref)
+    // Callable workflows have a path component with a .yml or .yaml extension
+    const callableWorkflowPattern = /^[^/]+\/[^/]+\/.+\.ya?ml@.+$/
+    if (callableWorkflowPattern.test(dependency.uses)) {
+      return await this.processRemoteCallableWorkflow(
+        dependency,
+        callingWorkflowPath
+      )
+    }
+
+    // Otherwise, process as a composite action
+    return await this.processRemoteCompositeAction(
+      dependency,
+      callingWorkflowPath
+    )
+  }
+
+  /**
    * Process remote composite action to extract transitive dependencies
    *
    * @param dependency Remote action dependency
@@ -510,16 +539,6 @@ export class WorkflowParser {
     }
 
     try {
-      // Check if it's a callable workflow first (uses pattern like owner/repo/path/to/workflow.yml@ref)
-      // Callable workflows have a path component with a .yml or .yaml extension
-      const callableWorkflowPattern = /^[^/]+\/[^/]+\/.+\.ya?ml@.+$/
-      if (callableWorkflowPattern.test(dependency.uses)) {
-        return await this.processRemoteCallableWorkflow(
-          dependency,
-          callingWorkflowPath
-        )
-      }
-
       // Try to fetch action.yml or action.yaml from the remote repository
       const actionContent = await this.fetchRemoteActionFile(
         dependency.owner,
@@ -565,7 +584,7 @@ export class WorkflowParser {
                 const transitiveKey = `${transitiveDep.owner}/${transitiveDep.repo}@${transitiveDep.ref}`
                 if (!this.processedRemoteActions.has(transitiveKey)) {
                   this.processedRemoteActions.add(transitiveKey)
-                  const nestedDeps = await this.processRemoteCompositeAction(
+                  const nestedDeps = await this.processRemoteActionOrWorkflow(
                     transitiveDep,
                     callingWorkflowPath
                   )
@@ -661,7 +680,7 @@ export class WorkflowParser {
                 const transitiveKey = `${transitiveDep.owner}/${transitiveDep.repo}@${transitiveDep.ref}`
                 if (!this.processedRemoteActions.has(transitiveKey)) {
                   this.processedRemoteActions.add(transitiveKey)
-                  const nestedDeps = await this.processRemoteCompositeAction(
+                  const nestedDeps = await this.processRemoteActionOrWorkflow(
                     transitiveDep,
                     callingWorkflowPath
                   )
@@ -695,7 +714,7 @@ export class WorkflowParser {
                       if (!this.processedRemoteActions.has(transitiveKey)) {
                         this.processedRemoteActions.add(transitiveKey)
                         const nestedDeps =
-                          await this.processRemoteCompositeAction(
+                          await this.processRemoteActionOrWorkflow(
                             transitiveDep,
                             callingWorkflowPath
                           )
