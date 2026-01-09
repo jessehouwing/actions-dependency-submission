@@ -39261,17 +39261,24 @@ class WorkflowParser {
      * @param workflowDir Directory containing workflow files
      * @param additionalPaths Additional paths to scan for composite actions
      * @param repoRoot Root directory of the repository (required for additional paths and recursion)
-     * @returns Array of action dependencies
+     * @returns Object with action dependencies and docker dependencies
      */
     async parseWorkflowDirectory(workflowDir, additionalPaths = [], repoRoot) {
         const dependencies = [];
+        const dockerDependencies = [];
         const processedFiles = new Set();
         const filesToProcess = [];
         // Process root action.yml or action.yaml if it exists (for repositories authoring GitHub Actions)
         if (repoRoot) {
             const rootActionYml = this.findActionYml(repoRoot);
-            if (rootActionYml && this.isCompositeAction(rootActionYml)) {
-                filesToProcess.push(rootActionYml);
+            if (rootActionYml) {
+                // Process if it's a composite or docker action
+                const content = fs.readFileSync(rootActionYml, 'utf8');
+                const parsed = parse(content, { merge: true });
+                if (parsed?.runs?.using === 'composite' ||
+                    parsed?.runs?.using === 'docker') {
+                    filesToProcess.push(rootActionYml);
+                }
             }
         }
         // Process main workflow directory
@@ -39292,6 +39299,7 @@ class WorkflowParser {
             processedFiles.add(filePath);
             const result = await this.parseWorkflowFile(filePath, repoRoot);
             dependencies.push(...result.dependencies);
+            dockerDependencies.push(...result.dockerDependencies);
             // Add local actions to processing queue if repoRoot is provided
             if (repoRoot) {
                 for (const localAction of result.localActions) {
@@ -39342,6 +39350,7 @@ class WorkflowParser {
                     processedFiles.add(file);
                     const result = await this.parseWorkflowFile(file, repoRoot);
                     dependencies.push(...result.dependencies);
+                    dockerDependencies.push(...result.dockerDependencies);
                     // Process nested local actions
                     for (const localAction of result.localActions) {
                         const resolvedPath = this.resolveLocalPath(file, localAction, repoRoot);
@@ -39365,26 +39374,33 @@ class WorkflowParser {
                 processedFiles.add(filePath);
                 const result = await this.parseWorkflowFile(filePath, repoRoot);
                 dependencies.push(...result.dependencies);
+                dockerDependencies.push(...result.dockerDependencies);
             }
         }
-        return dependencies;
+        return { actionDependencies: dependencies, dockerDependencies };
     }
     /**
      * Parses a single workflow file to extract action dependencies
      *
      * @param filePath Path to workflow file
      * @param repoRoot Optional repository root for computing relative paths
-     * @returns Object with dependencies, local actions, and callable workflows
+     * @returns Object with dependencies, local actions, callable workflows, and docker dependencies
      */
     async parseWorkflowFile(filePath, repoRoot) {
         const dependencies = [];
         const localActions = [];
         const callableWorkflows = [];
+        const dockerDependencies = [];
         try {
             const content = fs.readFileSync(filePath, 'utf8');
             const workflow = parse(content, { merge: true });
             if (!workflow) {
-                return { dependencies, localActions, callableWorkflows };
+                return {
+                    dependencies,
+                    localActions,
+                    callableWorkflows,
+                    dockerDependencies
+                };
             }
             // Compute relative path from repo root if available
             const relativePath = repoRoot
@@ -39395,9 +39411,13 @@ class WorkflowParser {
             if (workflow.runs && workflow.runs.using === 'composite') {
                 this.extractFromCompositeAction(workflow, dependencies, localActions, relativePath);
             }
+            // Check if this is a Docker action
+            else if (workflow.runs && workflow.runs.using === 'docker') {
+                this.extractFromDockerAction(workflow, dockerDependencies, relativePath);
+            }
             // Check if this is a workflow (has jobs)
             else if (workflow.jobs) {
-                this.extractFromWorkflow(workflow, dependencies, localActions, callableWorkflows, relativePath);
+                this.extractFromWorkflow(workflow, dependencies, localActions, callableWorkflows, dockerDependencies, relativePath);
             }
             // Log what was found in this file
             if (dependencies.length > 0) {
@@ -39406,6 +39426,12 @@ class WorkflowParser {
                     .join(', ');
                 coreExports.debug(`Found ${dependencies.length} action(s) in ${relativePath}: ${actionList}`);
             }
+            if (dockerDependencies.length > 0) {
+                const dockerList = dockerDependencies
+                    .map((d) => d.originalReference)
+                    .join(', ');
+                coreExports.debug(`Found ${dockerDependencies.length} Docker image(s) in ${relativePath}: ${dockerList}`);
+            }
             if (localActions.length > 0) {
                 coreExports.debug(`Found ${localActions.length} local action reference(s) in ${relativePath}: ${localActions.join(', ')}`);
             }
@@ -39413,10 +39439,10 @@ class WorkflowParser {
                 coreExports.debug(`Found ${callableWorkflows.length} callable workflow(s) in ${relativePath}: ${callableWorkflows.join(', ')}`);
             }
         }
-        catch {
-            // Skip files that can't be parsed
+        catch (error) {
+            coreExports.debug(`Error parsing ${filePath}: ${error}`);
         }
-        return { dependencies, localActions, callableWorkflows };
+        return { dependencies, localActions, callableWorkflows, dockerDependencies };
     }
     /**
      * Extract dependencies from a composite action
@@ -39443,13 +39469,59 @@ class WorkflowParser {
         }
     }
     /**
+     * Extract Docker image from a Docker-based action
+     */
+    extractFromDockerAction(
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    action, dockerDependencies, sourcePath) {
+        if (!action.runs || !action.runs.image) {
+            return;
+        }
+        const imageRef = action.runs.image;
+        // Only parse if it's a docker:// reference (not a Dockerfile path)
+        if (typeof imageRef === 'string' && imageRef.startsWith('docker://')) {
+            const dockerDep = this.parseDockerImage(imageRef);
+            if (dockerDep) {
+                dockerDep.sourcePath = sourcePath;
+                dockerDep.context = 'action';
+                dockerDependencies.push(dockerDep);
+            }
+        }
+    }
+    /**
      * Extract dependencies from a workflow file
      */
     extractFromWorkflow(
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    workflow, dependencies, localActions, callableWorkflows, sourcePath) {
+    workflow, dependencies, localActions, callableWorkflows, dockerDependencies, sourcePath) {
         for (const jobName in workflow.jobs) {
             const job = workflow.jobs[jobName];
+            // Extract from job.container.image
+            if (job.container && job.container.image) {
+                const imageRef = job.container.image;
+                if (typeof imageRef === 'string') {
+                    const dockerDep = this.parseDockerImage(imageRef);
+                    if (dockerDep) {
+                        dockerDep.sourcePath = sourcePath;
+                        dockerDep.context = 'container';
+                        dockerDependencies.push(dockerDep);
+                    }
+                }
+            }
+            // Extract from job.services.<service>.image
+            if (job.services && typeof job.services === 'object') {
+                for (const serviceName in job.services) {
+                    const service = job.services[serviceName];
+                    if (service && service.image && typeof service.image === 'string') {
+                        const dockerDep = this.parseDockerImage(service.image);
+                        if (dockerDep) {
+                            dockerDep.sourcePath = sourcePath;
+                            dockerDep.context = 'service';
+                            dockerDependencies.push(dockerDep);
+                        }
+                    }
+                }
+            }
             // Check for callable workflows (uses at job level)
             if (job.uses) {
                 const result = this.parseUsesString(job.uses);
@@ -39463,7 +39535,7 @@ class WorkflowParser {
                     });
                 }
             }
-            // Check steps for action dependencies
+            // Check steps for action dependencies and docker references
             if (typeof job === 'object' && job !== null && 'steps' in job) {
                 const steps = job.steps;
                 if (Array.isArray(steps)) {
@@ -39479,6 +39551,11 @@ class WorkflowParser {
                                     ...result.dependency,
                                     sourcePath
                                 });
+                            }
+                            else if (result.dockerDependency) {
+                                result.dockerDependency.sourcePath = sourcePath;
+                                result.dockerDependency.context = 'step';
+                                dockerDependencies.push(result.dockerDependency);
                             }
                         }
                     }
@@ -40572,9 +40649,13 @@ async function run() {
         const repoRoot = process.env.GITHUB_WORKSPACE || process.cwd();
         // Parse workflow files (with composite actions and callable workflows support)
         const parser = new WorkflowParser(token, publicGitHubToken || undefined);
-        const dependencies = await parser.parseWorkflowDirectory(workflowDirectory, additionalPaths, repoRoot);
-        coreExports.info(`Found ${dependencies.length} action dependencies`);
-        if (dependencies.length === 0) {
+        const result = await parser.parseWorkflowDirectory(workflowDirectory, additionalPaths, repoRoot);
+        const { actionDependencies, dockerDependencies } = result;
+        coreExports.info(`Found ${actionDependencies.length} action dependencies`);
+        if (dockerDependencies.length > 0) {
+            coreExports.info(`Found ${dockerDependencies.length} Docker image dependencies`);
+        }
+        if (actionDependencies.length === 0) {
             coreExports.warning('No action dependencies found in workflow files');
             coreExports.setOutput('dependency-count', 0);
             return;
@@ -40586,7 +40667,7 @@ async function run() {
             token,
             publicGitHubToken: publicGitHubToken || undefined
         });
-        const resolvedDependencies = await resolver.resolveDependencies(dependencies);
+        const resolvedDependencies = await resolver.resolveDependencies(actionDependencies);
         // Determine the correct SHA and ref to use
         // For pull_request events, github.context.sha is the merge commit SHA (refs/pull/<pr>/merge),
         // but dependency-review-action expects the snapshot to be for the PR head SHA.

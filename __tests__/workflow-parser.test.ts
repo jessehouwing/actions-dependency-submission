@@ -323,6 +323,172 @@ runs:
       expect(result.dependencies).toEqual([])
       expect(result.localActions).toEqual([])
       expect(result.callableWorkflows).toEqual([])
+      expect(result.dockerDependencies).toEqual([])
+    })
+
+    it('Extracts Docker images from job container', async () => {
+      const workflowContent = `
+name: Test Workflow
+on: push
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    container:
+      image: node:18-alpine
+    steps:
+      - uses: actions/checkout@v4
+`
+      const workflowFile = path.join(tempDir, 'test.yml')
+      fs.writeFileSync(workflowFile, workflowContent)
+
+      const result = await parser.parseWorkflowFile(workflowFile)
+
+      expect(result.dockerDependencies).toHaveLength(1)
+      expect(result.dockerDependencies[0]).toMatchObject({
+        registry: 'hub.docker.com',
+        namespace: 'library',
+        image: 'node',
+        tag: '18-alpine',
+        context: 'container'
+      })
+      expect(result.dockerDependencies[0].sourcePath).toBeDefined()
+    })
+
+    it('Extracts Docker images from service containers', async () => {
+      const workflowContent = `
+name: Test Workflow
+on: push
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:14
+      redis:
+        image: redis:7-alpine
+    steps:
+      - uses: actions/checkout@v4
+`
+      const workflowFile = path.join(tempDir, 'test.yml')
+      fs.writeFileSync(workflowFile, workflowContent)
+
+      const result = await parser.parseWorkflowFile(workflowFile)
+
+      expect(result.dockerDependencies).toHaveLength(2)
+      expect(result.dockerDependencies[0]).toMatchObject({
+        registry: 'hub.docker.com',
+        namespace: 'library',
+        image: 'postgres',
+        tag: '14',
+        context: 'service'
+      })
+      expect(result.dockerDependencies[1]).toMatchObject({
+        registry: 'hub.docker.com',
+        namespace: 'library',
+        image: 'redis',
+        tag: '7-alpine',
+        context: 'service'
+      })
+    })
+
+    it('Extracts Docker images from step uses with docker://', async () => {
+      const workflowContent = `
+name: Test Workflow
+on: push
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: docker://alpine:3.18
+      - uses: docker://ghcr.io/owner/image:v1.0.0
+`
+      const workflowFile = path.join(tempDir, 'test.yml')
+      fs.writeFileSync(workflowFile, workflowContent)
+
+      const result = await parser.parseWorkflowFile(workflowFile)
+
+      expect(result.dockerDependencies).toHaveLength(2)
+      expect(result.dockerDependencies[0]).toMatchObject({
+        registry: 'hub.docker.com',
+        namespace: 'library',
+        image: 'alpine',
+        tag: '3.18',
+        context: 'step'
+      })
+      expect(result.dockerDependencies[1]).toMatchObject({
+        registry: 'ghcr.io',
+        namespace: 'owner',
+        image: 'image',
+        tag: 'v1.0.0',
+        context: 'step'
+      })
+    })
+
+    it('Extracts Docker images from Docker-based action.yml', async () => {
+      const actionContent = `
+name: My Docker Action
+description: Test docker action
+runs:
+  using: docker
+  image: docker://node:18
+`
+      const actionFile = path.join(tempDir, 'action.yml')
+      fs.writeFileSync(actionFile, actionContent)
+
+      const result = await parser.parseWorkflowFile(actionFile)
+
+      expect(result.dockerDependencies).toHaveLength(1)
+      expect(result.dockerDependencies[0]).toMatchObject({
+        registry: 'hub.docker.com',
+        namespace: 'library',
+        image: 'node',
+        tag: '18',
+        context: 'action'
+      })
+    })
+
+    it('Skips Dockerfile paths in action.yml (not docker:// protocol)', async () => {
+      const actionContent = `
+name: My Docker Action
+description: Test docker action
+runs:
+  using: docker
+  image: Dockerfile
+`
+      const actionFile = path.join(tempDir, 'action.yml')
+      fs.writeFileSync(actionFile, actionContent)
+
+      const result = await parser.parseWorkflowFile(actionFile)
+
+      expect(result.dockerDependencies).toHaveLength(0)
+    })
+
+    it('Extracts all Docker dependencies together', async () => {
+      const workflowContent = `
+name: Test Workflow
+on: push
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    container:
+      image: node:20
+    services:
+      postgres:
+        image: postgres:15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: docker://alpine:latest
+`
+      const workflowFile = path.join(tempDir, 'test.yml')
+      fs.writeFileSync(workflowFile, workflowContent)
+
+      const result = await parser.parseWorkflowFile(workflowFile)
+
+      expect(result.dependencies).toHaveLength(1)
+      expect(result.dockerDependencies).toHaveLength(3)
+      expect(result.dockerDependencies[0].context).toBe('container')
+      expect(result.dockerDependencies[1].context).toBe('service')
+      expect(result.dockerDependencies[2].context).toBe('step')
     })
   })
 
@@ -350,30 +516,30 @@ jobs:
       fs.writeFileSync(path.join(tempDir, 'workflow1.yml'), workflow1)
       fs.writeFileSync(path.join(tempDir, 'workflow2.yml'), workflow2)
 
-      const dependencies = await parser.parseWorkflowDirectory(tempDir)
+      const result = await parser.parseWorkflowDirectory(tempDir)
 
-      expect(dependencies).toHaveLength(2)
-      expect(dependencies[0]).toMatchObject({
+      expect(result.actionDependencies).toHaveLength(2)
+      expect(result.actionDependencies[0]).toMatchObject({
         owner: 'actions',
         repo: 'checkout',
         ref: 'v4',
         uses: 'actions/checkout@v4'
       })
-      expect(dependencies[0].sourcePath).toBeDefined()
-      expect(dependencies[1]).toMatchObject({
+      expect(result.actionDependencies[0].sourcePath).toBeDefined()
+      expect(result.actionDependencies[1]).toMatchObject({
         owner: 'actions',
         repo: 'setup-node',
         ref: 'v4',
         uses: 'actions/setup-node@v4'
       })
-      expect(dependencies[1].sourcePath).toBeDefined()
+      expect(result.actionDependencies[1].sourcePath).toBeDefined()
     })
 
     it('Handles non-existent directory', async () => {
-      const dependencies =
-        await parser.parseWorkflowDirectory('/non/existent/path')
+      const result = await parser.parseWorkflowDirectory('/non/existent/path')
 
-      expect(dependencies).toEqual([])
+      expect(result.actionDependencies).toEqual([])
+      expect(result.dockerDependencies).toEqual([])
     })
 
     it('Recursively processes local composite actions when repoRoot provided', async () => {
@@ -412,21 +578,21 @@ runs:
         action
       )
 
-      const dependencies = await parser.parseWorkflowDirectory(
+      const result = await parser.parseWorkflowDirectory(
         path.join(tempDir, '.github', 'workflows'),
         [],
         tempDir
       )
 
       // Should find the dependency from the composite action
-      expect(dependencies).toHaveLength(1)
-      expect(dependencies[0]).toMatchObject({
+      expect(result.actionDependencies).toHaveLength(1)
+      expect(result.actionDependencies[0]).toMatchObject({
         owner: 'actions',
         repo: 'cache',
         ref: 'v3',
         uses: 'actions/cache@v3'
       })
-      expect(dependencies[0].sourcePath).toBeDefined()
+      expect(result.actionDependencies[0].sourcePath).toBeDefined()
     })
 
     it('Scans additional paths for composite actions', async () => {
@@ -463,19 +629,19 @@ runs:
 `
       )
 
-      const dependencies = await parser.parseWorkflowDirectory(
+      const result = await parser.parseWorkflowDirectory(
         path.join(tempDir, '.github', 'workflows'),
         ['custom/actions'],
         tempDir
       )
 
       // Should find dependencies from both workflow and additional paths
-      expect(dependencies).toHaveLength(2)
+      expect(result.actionDependencies).toHaveLength(2)
       expect(
-        dependencies.find((d) => d.uses === 'actions/checkout@v4')
+        result.actionDependencies.find((d) => d.uses === 'actions/checkout@v4')
       ).toBeDefined()
       expect(
-        dependencies.find((d) => d.uses === 'actions/cache@v3')
+        result.actionDependencies.find((d) => d.uses === 'actions/cache@v3')
       ).toBeDefined()
     })
 
@@ -511,22 +677,24 @@ runs:
 `
       )
 
-      const dependencies = await parser.parseWorkflowDirectory(
+      const result = await parser.parseWorkflowDirectory(
         path.join(tempDir, '.github', 'workflows'),
         [],
         tempDir
       )
 
       // Should find dependencies from both workflow and root action.yml
-      expect(dependencies).toHaveLength(3)
+      expect(result.actionDependencies).toHaveLength(3)
       expect(
-        dependencies.find((d) => d.uses === 'actions/checkout@v4')
+        result.actionDependencies.find((d) => d.uses === 'actions/checkout@v4')
       ).toBeDefined()
       expect(
-        dependencies.find((d) => d.uses === 'actions/setup-node@v4')
+        result.actionDependencies.find(
+          (d) => d.uses === 'actions/setup-node@v4'
+        )
       ).toBeDefined()
       expect(
-        dependencies.find((d) => d.uses === 'actions/cache@v3')
+        result.actionDependencies.find((d) => d.uses === 'actions/cache@v3')
       ).toBeDefined()
     })
 
@@ -561,19 +729,21 @@ runs:
 `
       )
 
-      const dependencies = await parser.parseWorkflowDirectory(
+      const result = await parser.parseWorkflowDirectory(
         path.join(tempDir, '.github', 'workflows'),
         [],
         tempDir
       )
 
       // Should find dependencies from both workflow and root action.yaml
-      expect(dependencies).toHaveLength(2)
+      expect(result.actionDependencies).toHaveLength(2)
       expect(
-        dependencies.find((d) => d.uses === 'actions/checkout@v4')
+        result.actionDependencies.find((d) => d.uses === 'actions/checkout@v4')
       ).toBeDefined()
       expect(
-        dependencies.find((d) => d.uses === 'github/codeql-action/init@v2')
+        result.actionDependencies.find(
+          (d) => d.uses === 'github/codeql-action/init@v2'
+        )
       ).toBeDefined()
     })
 
@@ -607,16 +777,16 @@ runs:
 `
       )
 
-      const dependencies = await parser.parseWorkflowDirectory(
+      const result = await parser.parseWorkflowDirectory(
         path.join(tempDir, '.github', 'workflows'),
         [],
         tempDir
       )
 
       // Should only find dependency from workflow, not from root action.yml
-      expect(dependencies).toHaveLength(1)
+      expect(result.actionDependencies).toHaveLength(1)
       expect(
-        dependencies.find((d) => d.uses === 'actions/checkout@v4')
+        result.actionDependencies.find((d) => d.uses === 'actions/checkout@v4')
       ).toBeDefined()
     })
 
@@ -652,14 +822,14 @@ jobs:
       )
 
       // Parse without repoRoot
-      const dependencies = await parser.parseWorkflowDirectory(
+      const result = await parser.parseWorkflowDirectory(
         path.join(tempDir, '.github', 'workflows')
       )
 
       // Should only find dependency from workflow
-      expect(dependencies).toHaveLength(1)
+      expect(result.actionDependencies).toHaveLength(1)
       expect(
-        dependencies.find((d) => d.uses === 'actions/checkout@v4')
+        result.actionDependencies.find((d) => d.uses === 'actions/checkout@v4')
       ).toBeDefined()
     })
   })
@@ -843,15 +1013,15 @@ jobs:
       fs.writeFileSync(workflowFile, workflowContent)
 
       const parserNoToken = new WorkflowParser()
-      const dependencies = await parserNoToken.parseWorkflowDirectory(tempDir)
+      const result = await parserNoToken.parseWorkflowDirectory(tempDir)
 
-      expect(dependencies).toHaveLength(1)
-      expect(dependencies[0]).toMatchObject({
+      expect(result.actionDependencies).toHaveLength(1)
+      expect(result.actionDependencies[0]).toMatchObject({
         owner: 'actions',
         repo: 'checkout',
         ref: 'v4'
       })
-      expect(dependencies[0].isTransitive).toBeUndefined()
+      expect(result.actionDependencies[0].isTransitive).toBeUndefined()
     })
 
     it('Marks dependencies from remote composite actions as transitive', async () => {
@@ -901,24 +1071,26 @@ jobs:
       const workflowFile = path.join(tempDir, 'test.yml')
       fs.writeFileSync(workflowFile, workflowContent)
 
-      const dependencies = await parserWithToken.parseWorkflowDirectory(
+      const result = await parserWithToken.parseWorkflowDirectory(
         tempDir,
         [],
         tempDir
       )
 
       // Should have the direct dependency plus transitive dependencies
-      expect(dependencies.length).toBeGreaterThanOrEqual(1)
+      expect(result.actionDependencies.length).toBeGreaterThanOrEqual(1)
 
       // Find the direct dependency
-      const directDep = dependencies.find(
+      const directDep = result.actionDependencies.find(
         (d) => d.owner === 'remote-org' && d.repo === 'my-composite-action'
       )
       expect(directDep).toBeDefined()
       expect(directDep?.isTransitive).toBeUndefined()
 
       // Find the transitive dependencies
-      const transitiveDeps = dependencies.filter((d) => d.isTransitive === true)
+      const transitiveDeps = result.actionDependencies.filter(
+        (d) => d.isTransitive === true
+      )
       expect(transitiveDeps.length).toBeGreaterThanOrEqual(2)
 
       const setupNodeDep = transitiveDeps.find(
@@ -989,24 +1161,26 @@ jobs:
       const workflowFile = path.join(tempDir, 'test.yml')
       fs.writeFileSync(workflowFile, workflowContent)
 
-      const dependencies = await parserWithToken.parseWorkflowDirectory(
+      const result = await parserWithToken.parseWorkflowDirectory(
         tempDir,
         [],
         tempDir
       )
 
       // Should have the direct dependency plus transitive dependencies
-      expect(dependencies.length).toBeGreaterThanOrEqual(1)
+      expect(result.actionDependencies.length).toBeGreaterThanOrEqual(1)
 
       // Find the direct dependency
-      const directDep = dependencies.find(
+      const directDep = result.actionDependencies.find(
         (d) => d.owner === 'remote-org' && d.repo === 'my-repo'
       )
       expect(directDep).toBeDefined()
       expect(directDep?.isTransitive).toBeUndefined()
 
       // Find the transitive dependencies
-      const transitiveDeps = dependencies.filter((d) => d.isTransitive === true)
+      const transitiveDeps = result.actionDependencies.filter(
+        (d) => d.isTransitive === true
+      )
       expect(transitiveDeps.length).toBeGreaterThanOrEqual(2)
 
       const checkoutDep = transitiveDeps.find(
@@ -1069,20 +1243,20 @@ jobs:
       const workflowFile = path.join(tempDir, 'test.yml')
       fs.writeFileSync(workflowFile, workflowContent)
 
-      const dependencies = await parserWithToken.parseWorkflowDirectory(
+      const result = await parserWithToken.parseWorkflowDirectory(
         tempDir,
         [],
         tempDir
       )
 
       // Should only have the direct dependency, no transitive
-      expect(dependencies).toHaveLength(1)
-      expect(dependencies[0]).toMatchObject({
+      expect(result.actionDependencies).toHaveLength(1)
+      expect(result.actionDependencies[0]).toMatchObject({
         owner: 'remote-org',
         repo: 'my-docker-action',
         ref: 'v1'
       })
-      expect(dependencies[0].isTransitive).toBeUndefined()
+      expect(result.actionDependencies[0].isTransitive).toBeUndefined()
     })
 
     it('Handles errors when fetching remote actions gracefully', async () => {
@@ -1118,20 +1292,20 @@ jobs:
       const workflowFile = path.join(tempDir, 'test.yml')
       fs.writeFileSync(workflowFile, workflowContent)
 
-      const dependencies = await parserWithToken.parseWorkflowDirectory(
+      const result = await parserWithToken.parseWorkflowDirectory(
         tempDir,
         [],
         tempDir
       )
 
       // Should only have the direct dependency, no transitive
-      expect(dependencies).toHaveLength(1)
-      expect(dependencies[0]).toMatchObject({
+      expect(result.actionDependencies).toHaveLength(1)
+      expect(result.actionDependencies[0]).toMatchObject({
         owner: 'remote-org',
         repo: 'nonexistent-action',
         ref: 'v1'
       })
-      expect(dependencies[0].isTransitive).toBeUndefined()
+      expect(result.actionDependencies[0].isTransitive).toBeUndefined()
     })
 
     it('Does not process same remote action multiple times', async () => {
@@ -1194,7 +1368,7 @@ jobs:
       fs.writeFileSync(path.join(tempDir, 'workflow1.yml'), workflow1)
       fs.writeFileSync(path.join(tempDir, 'workflow2.yml'), workflow2)
 
-      const dependencies = await parserWithToken.parseWorkflowDirectory(
+      const result = await parserWithToken.parseWorkflowDirectory(
         tempDir,
         [],
         tempDir
@@ -1205,13 +1379,15 @@ jobs:
       expect(fetchCount).toBe(2)
 
       // Should have two direct dependencies (one per workflow) plus transitive dependencies
-      const directDeps = dependencies.filter(
+      const directDeps = result.actionDependencies.filter(
         (d) => d.owner === 'remote-org' && d.repo === 'my-composite-action'
       )
       expect(directDeps).toHaveLength(2)
 
       // Should have transitive dependencies
-      const transitiveDeps = dependencies.filter((d) => d.isTransitive === true)
+      const transitiveDeps = result.actionDependencies.filter(
+        (d) => d.isTransitive === true
+      )
       expect(transitiveDeps.length).toBeGreaterThanOrEqual(1)
     })
 
@@ -1261,14 +1437,16 @@ jobs:
       const workflowFile = path.join(tempDir, 'test.yml')
       fs.writeFileSync(workflowFile, workflowContent)
 
-      const dependencies = await parserWithToken.parseWorkflowDirectory(
+      const result = await parserWithToken.parseWorkflowDirectory(
         tempDir,
         [],
         tempDir
       )
 
       // Find the transitive dependencies
-      const transitiveDeps = dependencies.filter((d) => d.isTransitive === true)
+      const transitiveDeps = result.actionDependencies.filter(
+        (d) => d.isTransitive === true
+      )
       expect(transitiveDeps.length).toBeGreaterThanOrEqual(1)
 
       // All transitive dependencies should reference the calling workflow
@@ -1503,7 +1681,7 @@ jobs:
       const workflowFile = path.join(tempDir, 'test.yml')
       fs.writeFileSync(workflowFile, workflowContent)
 
-      const dependencies = await parserWithToken.parseWorkflowDirectory(
+      const result = await parserWithToken.parseWorkflowDirectory(
         tempDir,
         [],
         tempDir
@@ -1518,10 +1696,10 @@ jobs:
       })
 
       // Should have the direct dependency plus transitive dependencies
-      expect(dependencies.length).toBeGreaterThanOrEqual(1)
+      expect(result.actionDependencies.length).toBeGreaterThanOrEqual(1)
 
       // Find the direct dependency
-      const directDep = dependencies.find(
+      const directDep = result.actionDependencies.find(
         (d) => d.owner === 'remote-org' && d.repo === 'my-repo'
       )
       expect(directDep).toBeDefined()
@@ -1529,7 +1707,9 @@ jobs:
       expect(directDep?.isTransitive).toBeUndefined()
 
       // Find the transitive dependency
-      const transitiveDeps = dependencies.filter((d) => d.isTransitive === true)
+      const transitiveDeps = result.actionDependencies.filter(
+        (d) => d.isTransitive === true
+      )
       expect(transitiveDeps.length).toBeGreaterThanOrEqual(1)
       const setupNodeDep = transitiveDeps.find(
         (d) => d.owner === 'actions' && d.repo === 'setup-node'
@@ -1718,14 +1898,14 @@ jobs:
       const workflowFile = path.join(tempDir, 'test.yml')
       fs.writeFileSync(workflowFile, workflowContent)
 
-      const dependencies = await parserWithToken.parseWorkflowDirectory(
+      const result = await parserWithToken.parseWorkflowDirectory(
         tempDir,
         [],
         tempDir
       )
 
       // Should have the top-level action
-      const topLevelDep = dependencies.find(
+      const topLevelDep = result.actionDependencies.find(
         (d) => d.owner === 'top-org' && d.repo === 'level-1-action'
       )
       expect(topLevelDep).toBeDefined()
@@ -1734,7 +1914,7 @@ jobs:
       // Should have dependencies from level 1 (marked as transitive)
       // This includes nested-org/level-2-action and actions/checkout,
       // plus any nested processing of those actions
-      const level1DirectDeps = dependencies.filter(
+      const level1DirectDeps = result.actionDependencies.filter(
         (d) =>
           d.isTransitive === true &&
           ((d.owner === 'nested-org' && d.repo === 'level-2-action') ||
@@ -1743,7 +1923,7 @@ jobs:
       expect(level1DirectDeps.length).toBeGreaterThanOrEqual(2)
 
       // Should have dependencies from level 2 (also marked as transitive)
-      const setupNodeDep = dependencies.find(
+      const setupNodeDep = result.actionDependencies.find(
         (d) =>
           d.owner === 'actions' &&
           d.repo === 'setup-node' &&
@@ -1752,7 +1932,7 @@ jobs:
       expect(setupNodeDep).toBeDefined()
       expect(setupNodeDep?.ref).toBe('v4')
 
-      const cacheDep = dependencies.find(
+      const cacheDep = result.actionDependencies.find(
         (d) =>
           d.owner === 'actions' && d.repo === 'cache' && d.isTransitive === true
       )
@@ -1867,21 +2047,21 @@ jobs:
       const workflowFile = path.join(tempDir, 'test.yml')
       fs.writeFileSync(workflowFile, workflowContent)
 
-      const dependencies = await parserWithToken.parseWorkflowDirectory(
+      const result = await parserWithToken.parseWorkflowDirectory(
         tempDir,
         [],
         tempDir
       )
 
       // Should have the top-level workflow
-      const topLevelDep = dependencies.find(
+      const topLevelDep = result.actionDependencies.find(
         (d) => d.owner === 'top-org' && d.repo === 'top-repo'
       )
       expect(topLevelDep).toBeDefined()
       expect(topLevelDep?.isTransitive).toBeUndefined()
 
       // Should have the nested workflow from level 1
-      const nestedWorkflowDep = dependencies.find(
+      const nestedWorkflowDep = result.actionDependencies.find(
         (d) =>
           d.owner === 'nested-org' &&
           d.repo === 'nested-repo' &&
@@ -1890,7 +2070,7 @@ jobs:
       expect(nestedWorkflowDep).toBeDefined()
 
       // Should have actions from level 1
-      const checkoutDep = dependencies.find(
+      const checkoutDep = result.actionDependencies.find(
         (d) =>
           d.owner === 'actions' &&
           d.repo === 'checkout' &&
@@ -1900,7 +2080,7 @@ jobs:
       expect(checkoutDep?.ref).toBe('v4')
 
       // Should have actions from level 2
-      const setupPythonDep = dependencies.find(
+      const setupPythonDep = result.actionDependencies.find(
         (d) =>
           d.owner === 'actions' &&
           d.repo === 'setup-python' &&

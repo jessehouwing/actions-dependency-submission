@@ -63,22 +63,34 @@ export class WorkflowParser {
    * @param workflowDir Directory containing workflow files
    * @param additionalPaths Additional paths to scan for composite actions
    * @param repoRoot Root directory of the repository (required for additional paths and recursion)
-   * @returns Array of action dependencies
+   * @returns Object with action dependencies and docker dependencies
    */
   async parseWorkflowDirectory(
     workflowDir: string,
     additionalPaths: string[] = [],
     repoRoot?: string
-  ): Promise<ActionDependency[]> {
+  ): Promise<{
+    actionDependencies: ActionDependency[]
+    dockerDependencies: DockerDependency[]
+  }> {
     const dependencies: ActionDependency[] = []
+    const dockerDependencies: DockerDependency[] = []
     const processedFiles = new Set<string>()
     const filesToProcess: string[] = []
 
     // Process root action.yml or action.yaml if it exists (for repositories authoring GitHub Actions)
     if (repoRoot) {
       const rootActionYml = this.findActionYml(repoRoot)
-      if (rootActionYml && this.isCompositeAction(rootActionYml)) {
-        filesToProcess.push(rootActionYml)
+      if (rootActionYml) {
+        // Process if it's a composite or docker action
+        const content = fs.readFileSync(rootActionYml, 'utf8')
+        const parsed = yaml.parse(content, { merge: true })
+        if (
+          parsed?.runs?.using === 'composite' ||
+          parsed?.runs?.using === 'docker'
+        ) {
+          filesToProcess.push(rootActionYml)
+        }
       }
     }
 
@@ -105,6 +117,7 @@ export class WorkflowParser {
       processedFiles.add(filePath)
       const result = await this.parseWorkflowFile(filePath, repoRoot)
       dependencies.push(...result.dependencies)
+      dockerDependencies.push(...result.dockerDependencies)
 
       // Add local actions to processing queue if repoRoot is provided
       if (repoRoot) {
@@ -175,6 +188,7 @@ export class WorkflowParser {
           processedFiles.add(file)
           const result = await this.parseWorkflowFile(file, repoRoot)
           dependencies.push(...result.dependencies)
+          dockerDependencies.push(...result.dockerDependencies)
 
           // Process nested local actions
           for (const localAction of result.localActions) {
@@ -207,10 +221,11 @@ export class WorkflowParser {
         processedFiles.add(filePath)
         const result = await this.parseWorkflowFile(filePath, repoRoot)
         dependencies.push(...result.dependencies)
+        dockerDependencies.push(...result.dockerDependencies)
       }
     }
 
-    return dependencies
+    return { actionDependencies: dependencies, dockerDependencies }
   }
 
   /**
@@ -218,7 +233,7 @@ export class WorkflowParser {
    *
    * @param filePath Path to workflow file
    * @param repoRoot Optional repository root for computing relative paths
-   * @returns Object with dependencies, local actions, and callable workflows
+   * @returns Object with dependencies, local actions, callable workflows, and docker dependencies
    */
   async parseWorkflowFile(
     filePath: string,
@@ -227,17 +242,24 @@ export class WorkflowParser {
     dependencies: ActionDependency[]
     localActions: string[]
     callableWorkflows: string[]
+    dockerDependencies: DockerDependency[]
   }> {
     const dependencies: ActionDependency[] = []
     const localActions: string[] = []
     const callableWorkflows: string[] = []
+    const dockerDependencies: DockerDependency[] = []
 
     try {
       const content = fs.readFileSync(filePath, 'utf8')
       const workflow = yaml.parse(content, { merge: true })
 
       if (!workflow) {
-        return { dependencies, localActions, callableWorkflows }
+        return {
+          dependencies,
+          localActions,
+          callableWorkflows,
+          dockerDependencies
+        }
       }
 
       // Compute relative path from repo root if available
@@ -256,6 +278,10 @@ export class WorkflowParser {
           relativePath
         )
       }
+      // Check if this is a Docker action
+      else if (workflow.runs && workflow.runs.using === 'docker') {
+        this.extractFromDockerAction(workflow, dockerDependencies, relativePath)
+      }
       // Check if this is a workflow (has jobs)
       else if (workflow.jobs) {
         this.extractFromWorkflow(
@@ -263,6 +289,7 @@ export class WorkflowParser {
           dependencies,
           localActions,
           callableWorkflows,
+          dockerDependencies,
           relativePath
         )
       }
@@ -276,6 +303,14 @@ export class WorkflowParser {
           `Found ${dependencies.length} action(s) in ${relativePath}: ${actionList}`
         )
       }
+      if (dockerDependencies.length > 0) {
+        const dockerList = dockerDependencies
+          .map((d) => d.originalReference)
+          .join(', ')
+        core.debug(
+          `Found ${dockerDependencies.length} Docker image(s) in ${relativePath}: ${dockerList}`
+        )
+      }
       if (localActions.length > 0) {
         core.debug(
           `Found ${localActions.length} local action reference(s) in ${relativePath}: ${localActions.join(', ')}`
@@ -286,11 +321,11 @@ export class WorkflowParser {
           `Found ${callableWorkflows.length} callable workflow(s) in ${relativePath}: ${callableWorkflows.join(', ')}`
         )
       }
-    } catch {
-      // Skip files that can't be parsed
+    } catch (error) {
+      core.debug(`Error parsing ${filePath}: ${error}`)
     }
 
-    return { dependencies, localActions, callableWorkflows }
+    return { dependencies, localActions, callableWorkflows, dockerDependencies }
   }
 
   /**
@@ -323,6 +358,32 @@ export class WorkflowParser {
   }
 
   /**
+   * Extract Docker image from a Docker-based action
+   */
+  private extractFromDockerAction(
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    action: any,
+    dockerDependencies: DockerDependency[],
+    sourcePath: string
+  ): void {
+    if (!action.runs || !action.runs.image) {
+      return
+    }
+
+    const imageRef = action.runs.image
+
+    // Only parse if it's a docker:// reference (not a Dockerfile path)
+    if (typeof imageRef === 'string' && imageRef.startsWith('docker://')) {
+      const dockerDep = this.parseDockerImage(imageRef)
+      if (dockerDep) {
+        dockerDep.sourcePath = sourcePath
+        dockerDep.context = 'action'
+        dockerDependencies.push(dockerDep)
+      }
+    }
+  }
+
+  /**
    * Extract dependencies from a workflow file
    */
   private extractFromWorkflow(
@@ -331,10 +392,39 @@ export class WorkflowParser {
     dependencies: ActionDependency[],
     localActions: string[],
     callableWorkflows: string[],
+    dockerDependencies: DockerDependency[],
     sourcePath: string
   ): void {
     for (const jobName in workflow.jobs) {
       const job = workflow.jobs[jobName]
+
+      // Extract from job.container.image
+      if (job.container && job.container.image) {
+        const imageRef = job.container.image
+        if (typeof imageRef === 'string') {
+          const dockerDep = this.parseDockerImage(imageRef)
+          if (dockerDep) {
+            dockerDep.sourcePath = sourcePath
+            dockerDep.context = 'container'
+            dockerDependencies.push(dockerDep)
+          }
+        }
+      }
+
+      // Extract from job.services.<service>.image
+      if (job.services && typeof job.services === 'object') {
+        for (const serviceName in job.services) {
+          const service = job.services[serviceName]
+          if (service && service.image && typeof service.image === 'string') {
+            const dockerDep = this.parseDockerImage(service.image)
+            if (dockerDep) {
+              dockerDep.sourcePath = sourcePath
+              dockerDep.context = 'service'
+              dockerDependencies.push(dockerDep)
+            }
+          }
+        }
+      }
 
       // Check for callable workflows (uses at job level)
       if (job.uses) {
@@ -349,7 +439,7 @@ export class WorkflowParser {
         }
       }
 
-      // Check steps for action dependencies
+      // Check steps for action dependencies and docker references
       if (typeof job === 'object' && job !== null && 'steps' in job) {
         const steps = (job as { steps?: unknown[] }).steps
         if (Array.isArray(steps)) {
@@ -364,6 +454,10 @@ export class WorkflowParser {
                   ...result.dependency,
                   sourcePath
                 })
+              } else if (result.dockerDependency) {
+                result.dockerDependency.sourcePath = sourcePath
+                result.dockerDependency.context = 'step'
+                dockerDependencies.push(result.dockerDependency)
               }
             }
           }
