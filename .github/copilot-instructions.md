@@ -21,6 +21,7 @@ it is generated from.
 | `.vscode/`           | Visual Studio Code Configuration                         |
 | `badges/`            | Badges for readme                                        |
 | `dist/`              | Generated JavaScript Code                                |
+| `docs/`              | Research documents and specifications                    |
 | `src/`               | TypeScript Source Code                                   |
 | `.env.example`       | Environment Variables Example for `@github/local-action` |
 | `.licensed.yml`      | Licensed Configuration                                   |
@@ -37,6 +38,33 @@ it is generated from.
 | `README.md`          | Project Documentation                                    |
 | `rollup.config.ts`   | Rollup Bundler Configuration                             |
 | `tsconfig.json`      | TypeScript Configuration                                 |
+
+## Key Features
+
+This action submits GitHub Actions and Docker image dependencies to GitHub's
+Dependency Graph.
+
+### GitHub Actions Dependencies
+
+- Parses workflow files to extract `uses:` statements
+- Resolves forked actions to their original repositories
+- Supports composite actions and callable workflows
+- Handles local action references
+
+### Docker Image Dependencies (Experimental, opt-in)
+
+- Extracts Docker images from job containers (`jobs.<job_id>.container.image`)
+- Extracts Docker images from service containers
+  (`jobs.<job_id>.services.<service>.image`)
+- Extracts Docker images from step-level docker:// references
+  (`uses: docker://image:tag`)
+- Extracts Docker images from Docker-based action.yml files
+  (`runs.using: docker`)
+- Parses Dockerfiles to extract base images from `FROM` instructions
+- Uses `dockerfile-ast` npm package for Dockerfile parsing
+- Generates PURL (Package URL) format for Docker images
+- Handles multi-stage builds, digests, and non-Docker Hub registries
+- Enabled with `detect-docker: true` input (default: false)
 
 ## Environment Setup
 

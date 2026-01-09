@@ -59,6 +59,15 @@ inputs:
       repositories) are reported as indirect.
     required: false
     default: 'true'
+  detect-docker:
+    description: >
+      Whether to detect and report Docker image dependencies from workflows,
+      actions, and Dockerfiles. When true, extracts Docker images from job
+      containers, service containers, docker:// step references, and Dockerfile
+      base images. When false (default), only GitHub Actions dependencies are
+      reported. This feature is experimental and opt-in.
+    required: false
+    default: 'false'
 
 # Define your outputs here.
 outputs:

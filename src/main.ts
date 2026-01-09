@@ -23,6 +23,7 @@ export async function run(): Promise<void> {
     const publicGitHubToken = core.getInput('public-github-token')
     const reportTransitiveAsDirect =
       core.getInput('report-transitive-as-direct') !== 'false'
+    const detectDocker = core.getInput('detect-docker') === 'true'
 
     // Parse additional paths (comma or newline separated)
     const additionalPaths = additionalPathsInput
@@ -86,8 +87,12 @@ export async function run(): Promise<void> {
     const { actionDependencies, dockerDependencies } = result
 
     core.info(`Found ${actionDependencies.length} action dependencies`)
-    if (dockerDependencies.length > 0) {
+    if (detectDocker && dockerDependencies.length > 0) {
       core.info(`Found ${dockerDependencies.length} Docker image dependencies`)
+    } else if (dockerDependencies.length > 0) {
+      core.info(
+        `Found ${dockerDependencies.length} Docker image dependencies (skipped - enable with detect-docker: true)`
+      )
     }
 
     if (actionDependencies.length === 0) {
@@ -143,7 +148,7 @@ export async function run(): Promise<void> {
     })
     const submittedCount = await submitter.submitDependencies(
       resolvedDependencies,
-      dockerDependencies
+      detectDocker ? dockerDependencies : []
     )
 
     core.info(`Successfully submitted ${submittedCount} dependencies`)
