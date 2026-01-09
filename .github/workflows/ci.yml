@@ -38,7 +38,8 @@ jobs:
 
       - name: Test
         id: npm-ci-test
-        run: npm run ci-test
+        run:
+          npm run ci-test -- --testPathIgnorePatterns=integration-docker.test.ts
 
   test-integration:
     name: Integration Tests
