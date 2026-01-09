@@ -24,6 +24,23 @@ The action currently:
 
 GitHub Actions workflows can reference Docker containers in three primary ways:
 
+### Note on Service Containers
+
+GitHub Actions also supports **service containers** via `jobs.<job_id>.services`, which run alongside the job to provide services like databases. While these are Docker containers, they serve a different purpose (providing services rather than executing workflow logic). For completeness, service containers could be considered for Phase 7 (Future Enhancements).
+
+**Service Container Example:**
+```yaml
+jobs:
+  test:
+    services:
+      postgres:
+        image: postgres:14
+        env:
+          POSTGRES_PASSWORD: postgres
+```
+
+For this initial implementation, we will focus on the three main usage patterns below.
+
 ### 1. Job-Level Container (`container:` syntax)
 
 Runs an entire job inside a container. Specified at the `jobs.<job_id>.container`
@@ -54,6 +71,31 @@ jobs:
 - With digest: `node@sha256:abc123...`
 - Combined: `node:18@sha256:abc123...`
 
+**YAML Structure:**
+
+```yaml
+jobs:
+  <job_id>:
+    container:
+      image: <string>          # Required: Docker image reference
+      credentials:             # Optional: Registry credentials
+        username: <string>
+        password: <string>
+      env:                     # Optional: Environment variables
+        <key>: <value>
+      ports:                   # Optional: Ports to expose
+        - <number>
+      volumes:                 # Optional: Volumes to mount
+        - <string>
+      options: <string>        # Optional: Docker run options
+```
+
+**Key Points from GitHub Documentation:**
+- The `image` value can be a Docker base image name, registry path, or image with digest
+- Supports Docker Hub (default), GitHub Container Registry (ghcr.io), and other registries
+- Only works on Linux runners, not Windows or macOS runners
+- Default shell inside container is `sh` (can be overridden)
+
 **Reference:**
 [GitHub Docs - jobs.<job_id>.container](https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions#jobsjob_idcontainer)
 
@@ -83,13 +125,31 @@ steps:
 - `docker://ghcr.io/owner/repo:tag`
 - `docker://gcr.io/project/image@sha256:abc123...`
 
+**Key Points from GitHub Documentation:**
+- Can reference public Docker images from Docker Hub or other registries
+- Uses the format `docker://<image>:<tag>` or `docker://<registry>/<image>:<tag>`
+- Runs in a separate container from the runner
+- Can pass arguments using the `with.args` parameter
+
+**Examples from GitHub Docs:**
+```yaml
+steps:
+  # Reference a docker image published on docker hub
+  - uses: docker://alpine:3.8
+  
+  # Reference a docker public registry action
+  - uses: docker://gcr.io/cloud-builders/gradle
+```
+
 **Reference:**
 [GitHub Docs - jobs.<job_id>.steps[*].uses (Docker
-section)](https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions#example-using-a-docker-hub-action)
+section)](https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions#jobsjob_idstepsuses)
 
 ### 3. Composite/Docker Actions (`action.yml` with `runs.using: docker`)
 
 Custom actions that run in Docker containers, defined in `action.yml`.
+
+**Important:** Composite actions can also use `docker://` syntax in their steps, which should be parsed recursively.
 
 **Syntax in action.yml:**
 
@@ -114,6 +174,56 @@ runs:
 - `Dockerfile` (relative path to Dockerfile in action repo)
 - `docker://image:tag` (pre-built image)
 - `docker://registry/owner/image:tag` (full registry path)
+
+**Syntax in action.yml:**
+
+```yaml
+name: 'My Docker Action'
+description: 'Runs in a container'
+runs:
+  using: 'docker'               # Required: Must be 'docker'
+  image: 'Dockerfile'           # Required: Path to Dockerfile or docker:// image
+  
+  # Option 1: Build from local Dockerfile
+  # image: 'Dockerfile'
+  
+  # Option 2: Use pre-built image from Docker Hub
+  # image: 'docker://node:18'
+  
+  # Option 3: Use pre-built image from registry
+  # image: 'docker://ghcr.io/owner/image:tag'
+  
+  pre-entrypoint: 'setup.sh'    # Optional: Script before entrypoint
+  entrypoint: 'main.sh'          # Optional: Override ENTRYPOINT
+  post-entrypoint: 'cleanup.sh'  # Optional: Cleanup script
+  args:                          # Optional: Arguments to pass
+    - ${{ inputs.example }}
+  env:                           # Optional: Environment variables
+    MY_VAR: 'value'
+```
+
+**Key Points from GitHub Documentation:**
+- `runs.using` must be set to `'docker'`
+- `runs.image` is required and can be:
+  - A local `Dockerfile` (must be named exactly `Dockerfile`)
+  - A Docker Hub image: `docker://debian:stretch-slim`
+  - A registry image: `docker://gcr.io/project/image:tag`
+- The `docker` application will execute this file
+- Can override the ENTRYPOINT with `runs.entrypoint`
+- Can pass arguments via `runs.args` array
+
+**Examples from GitHub Docs:**
+```yaml
+# Using a Dockerfile in your repository
+runs:
+  using: 'docker'
+  image: 'Dockerfile'
+
+# Using public Docker registry container
+runs:
+  using: 'docker'
+  image: 'docker://debian:stretch-slim'
+```
 
 **References:**
 
@@ -245,6 +355,7 @@ export interface DockerDependency {
   digest?: string // e.g., "sha256:abc123..."
   originalReference: string // Full original string
   sourcePath?: string // Where this was found
+  context?: string // Optional: "container" | "step" | "action" | "service"
 }
 ```
 
@@ -300,8 +411,10 @@ if (uses.startsWith('docker://')) {
 Add methods to extract Docker images from:
 
 1. **Job-level containers**: Parse `jobs.<job_id>.container.image`
-2. **Step-level Docker actions**: Already handled by `parseUsesString`
-3. **Action.yml files**: Parse `runs.image` field when `runs.using === 'docker'`
+2. **Service containers**: Parse `jobs.<job_id>.services.<service_id>.image`
+3. **Step-level Docker actions**: Already handled by `parseUsesString`
+4. **Action.yml files**: Parse `runs.image` field when `runs.using === 'docker'`
+5. **Composite action steps**: Parse `docker://` references in composite action `uses`
 
 **New method in `WorkflowParser`**:
 
@@ -314,15 +427,32 @@ private extractDockerDependencies(
   dependencies: DockerDependency[],
   sourcePath: string
 ): void {
-  // Extract from job.container.image
-  if (workflow.jobs) {
-    for (const jobName in workflow.jobs) {
-      const job = workflow.jobs[jobName]
-      if (job.container?.image) {
-        const dockerDep = this.parseDockerImage(job.container.image)
-        if (dockerDep) {
-          dockerDep.sourcePath = sourcePath
-          dependencies.push(dockerDep)
+  if (!workflow.jobs) return
+
+  for (const jobName in workflow.jobs) {
+    const job = workflow.jobs[jobName]
+    
+    // Extract from job.container.image
+    if (job.container?.image) {
+      const dockerDep = this.parseDockerImage(job.container.image)
+      if (dockerDep) {
+        dockerDep.sourcePath = sourcePath
+        dockerDep.context = 'container'
+        dependencies.push(dockerDep)
+      }
+    }
+    
+    // Extract from job.services.<service>.image
+    if (job.services) {
+      for (const serviceName in job.services) {
+        const service = job.services[serviceName]
+        if (service.image) {
+          const dockerDep = this.parseDockerImage(service.image)
+          if (dockerDep) {
+            dockerDep.sourcePath = sourcePath
+            dockerDep.context = 'service'
+            dependencies.push(dockerDep)
+          }
         }
       }
     }
