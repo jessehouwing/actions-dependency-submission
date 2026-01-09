@@ -46093,14 +46093,8 @@ class WorkflowParser {
         // Process root action.yml or action.yaml if it exists (for repositories authoring GitHub Actions)
         if (repoRoot) {
             const rootActionYml = this.findActionYml(repoRoot);
-            if (rootActionYml) {
-                // Process if it's a composite or docker action
-                const content = fs.readFileSync(rootActionYml, 'utf8');
-                const parsed = parse(content, { merge: true });
-                if (parsed?.runs?.using === 'composite' ||
-                    parsed?.runs?.using === 'docker') {
-                    filesToProcess.push(rootActionYml);
-                }
+            if (rootActionYml && this.shouldProcessActionFile(rootActionYml)) {
+                filesToProcess.push(rootActionYml);
             }
         }
         // Process main workflow directory
@@ -46263,7 +46257,7 @@ class WorkflowParser {
             }
         }
         catch (error) {
-            coreExports.debug(`Error parsing ${filePath}: ${error}`);
+            coreExports.debug(`Error parsing ${filePath}: ${error instanceof Error ? error.message : String(error)}`);
         }
         return { dependencies, localActions, callableWorkflows, dockerDependencies };
     }
@@ -46344,8 +46338,8 @@ class WorkflowParser {
                 if (imageRef.toLowerCase() === 'scratch') {
                     continue;
                 }
-                // Check for build args/variables
-                if (imageRef.includes('$') || imageRef.includes('${')) {
+                // Check for build args/variables - use regex to detect actual variable syntax
+                if (/\$\{?[\w_]/.test(imageRef)) {
                     coreExports.warning(`Dockerfile contains variable reference in FROM: ${imageRef}. Skipping variable substitution.`);
                     continue;
                 }
@@ -46516,7 +46510,22 @@ class WorkflowParser {
                 return null;
             }
             // Log the found dependency to console
-            const depString = `Docker image: ${registry}/${namespace || ''}${namespace ? '/' : ''}${image}${tag ? ':' + tag : ''}${digest ? '@' + digest : ''}`;
+            const imagePathParts = [];
+            if (registry) {
+                imagePathParts.push(registry);
+            }
+            if (namespace) {
+                imagePathParts.push(namespace);
+            }
+            imagePathParts.push(image);
+            let imageRefString = imagePathParts.join('/');
+            if (tag) {
+                imageRefString += `:${tag}`;
+            }
+            if (digest) {
+                imageRefString += `@${digest}`;
+            }
+            const depString = `Docker image: ${imageRefString}`;
             coreExports.info(`📦 Found ${depString}`);
             return {
                 registry,
@@ -46583,6 +46592,19 @@ class WorkflowParser {
             const content = fs.readFileSync(filePath, 'utf8');
             const parsed = parse(content, { merge: true });
             return parsed?.runs?.using === 'composite';
+        }
+        catch {
+            return false;
+        }
+    }
+    /**
+     * Check if an action.yml file should be processed (composite or docker action)
+     */
+    shouldProcessActionFile(filePath) {
+        try {
+            const content = fs.readFileSync(filePath, 'utf8');
+            const parsed = parse(content, { merge: true });
+            return (parsed?.runs?.using === 'composite' || parsed?.runs?.using === 'docker');
         }
         catch {
             return false;
@@ -47653,7 +47675,9 @@ async function run() {
         coreExports.info(`Found ${actionDependencies.length} action dependencies`);
         // Log Docker dependencies
         if (dockerDependencies.length > 0) {
-            const message = `Found ${dockerDependencies.length} Docker image dependencies`;
+            const directDockerCount = dockerDependencies.filter((d) => !d.isTransitive).length;
+            const transitiveDockerCount = dockerDependencies.filter((d) => d.isTransitive).length;
+            const message = `Found ${dockerDependencies.length} Docker image dependencies${directDockerCount > 0 && transitiveDockerCount > 0 ? ` (${directDockerCount} direct, ${transitiveDockerCount} transitive)` : ''}`;
             if (detectDocker) {
                 coreExports.info(message);
             }

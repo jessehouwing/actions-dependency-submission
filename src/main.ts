@@ -90,7 +90,13 @@ export async function run(): Promise<void> {
 
     // Log Docker dependencies
     if (dockerDependencies.length > 0) {
-      const message = `Found ${dockerDependencies.length} Docker image dependencies`
+      const directDockerCount = dockerDependencies.filter(
+        (d) => !d.isTransitive
+      ).length
+      const transitiveDockerCount = dockerDependencies.filter(
+        (d) => d.isTransitive
+      ).length
+      const message = `Found ${dockerDependencies.length} Docker image dependencies${directDockerCount > 0 && transitiveDockerCount > 0 ? ` (${directDockerCount} direct, ${transitiveDockerCount} transitive)` : ''}`
       if (detectDocker) {
         core.info(message)
       } else {

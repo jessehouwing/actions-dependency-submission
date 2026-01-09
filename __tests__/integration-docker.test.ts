@@ -113,8 +113,11 @@ describe('Docker Integration Tests - Real World Scenarios', () => {
   function setMockOctokit(
     submitter: InstanceType<typeof DependencySubmitter>
   ): void {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    ;(submitter as any).octokit = mockOctokit
+    // Use unknown for safer type casting when accessing private property for testing
+    const submitterWithOctokit = submitter as unknown as {
+      octokit: typeof mockOctokit
+    }
+    submitterWithOctokit.octokit = mockOctokit
   }
 
   /**
