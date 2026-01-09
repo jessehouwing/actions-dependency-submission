@@ -39694,6 +39694,7 @@ class WorkflowParser {
             // Fetch the remote workflow file
             const workflowContent = await this.fetchRemoteFile(dependency.owner, dependency.repo, workflowPath, dependency.ref);
             if (!workflowContent) {
+                coreExports.debug(`No workflow content fetched for ${dependency.owner}/${dependency.repo}/${workflowPath}@${dependency.ref}`);
                 return [];
             }
             // Parse the workflow file
@@ -39702,7 +39703,8 @@ class WorkflowParser {
                 return [];
             }
             // Check if it's a callable workflow
-            if (workflowYaml.on?.workflow_call) {
+            // Note: workflow_call can be null/undefined if specified without inputs/secrets
+            if (workflowYaml.on && 'workflow_call' in workflowYaml.on) {
                 coreExports.info(`Processing remote callable workflow: ${dependency.owner}/${dependency.repo}/${workflowPath}@${dependency.ref}`);
                 const transitiveDeps = [];
                 // Extract dependencies from workflow jobs

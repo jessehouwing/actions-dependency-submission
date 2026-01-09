@@ -1664,21 +1664,16 @@ jobs:
       )
     })
 
-    it.skip('Recursively processes nested remote callable workflows', async () => {
-      // TODO: Debug why callable workflow recursive processing isn't working in tests
-      // The pattern matching works, but the workflow content isn't being processed
-      // This might be a test setup issue rather than a code issue
+    it('Recursively processes nested remote callable workflows', async () => {
       // Mock Octokit to handle multiple levels of callable workflows
       const mockGetContent = jest
         .fn()
         .mockImplementation(({ owner, repo, path }) => {
-          console.log('Mock called with:', { owner, repo, path })
           if (
             owner === 'top-org' &&
             repo === 'top-repo' &&
             path === '.github/workflows/level1.yml'
           ) {
-            console.log('Returning level 1 workflow')
             // First level callable workflow uses another callable workflow
             return Promise.resolve({
               data: {
@@ -1701,7 +1696,6 @@ jobs:
             repo === 'nested-repo' &&
             path === '.github/workflows/level2.yml'
           ) {
-            console.log('Returning level 2 workflow')
             // Second level callable workflow
             return Promise.resolve({
               data: {
@@ -1718,7 +1712,6 @@ jobs:
               }
             })
           } else if (path === 'action.yml' || path === 'action.yaml') {
-            console.log('Returning standard action for', owner, repo)
             // For actions/checkout, actions/setup-python - return non-composite
             return Promise.resolve({
               data: {
@@ -1732,7 +1725,6 @@ runs:
               }
             })
           }
-          console.log('No match, returning error')
           return Promise.reject(new Error('Not found'))
         })
 
