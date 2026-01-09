@@ -3,6 +3,7 @@ import * as path from 'path'
 import * as yaml from 'yaml'
 import * as core from '@actions/core'
 import { OctokitProvider } from './octokit-provider.js'
+import { DockerfileParser } from 'dockerfile-ast'
 
 /**
  * Represents a GitHub Action dependency
@@ -374,7 +375,7 @@ export class WorkflowParser {
 
     const imageRef = action.runs.image
 
-    // Only parse if it's a docker:// reference (not a Dockerfile path)
+    // Parse docker:// references directly
     if (typeof imageRef === 'string' && imageRef.startsWith('docker://')) {
       const dockerDep = this.parseDockerImage(imageRef)
       if (dockerDep) {
@@ -382,6 +383,76 @@ export class WorkflowParser {
         dockerDep.context = 'action'
         dockerDependencies.push(dockerDep)
       }
+      return
+    }
+
+    // Parse Dockerfile if it's a path reference
+    if (typeof imageRef === 'string' && !imageRef.startsWith('docker://')) {
+      this.parseDockerfile(imageRef, sourcePath, dockerDependencies)
+    }
+  }
+
+  /**
+   * Parse a Dockerfile to extract base images from FROM instructions
+   */
+  private parseDockerfile(
+    dockerfilePath: string,
+    sourcePath: string,
+    dockerDependencies: DockerDependency[]
+  ): void {
+    try {
+      // Resolve the Dockerfile path relative to the action.yml location
+      const actionDir = path.dirname(sourcePath)
+      const fullDockerfilePath = path.resolve(actionDir, dockerfilePath)
+
+      // Check if file exists
+      if (!fs.existsSync(fullDockerfilePath)) {
+        core.warning(
+          `Dockerfile not found: ${dockerfilePath} (resolved to ${fullDockerfilePath})`
+        )
+        return
+      }
+
+      // Read and parse the Dockerfile
+      const dockerfileContent = fs.readFileSync(fullDockerfilePath, 'utf8')
+      const dockerfile = DockerfileParser.parse(dockerfileContent)
+
+      // Extract FROM instructions
+      const fromInstructions = dockerfile.getFROMs()
+
+      for (const fromInstruction of fromInstructions) {
+        // Use getImage() which correctly returns the image reference without stage name
+        const imageRef = fromInstruction.getImage()
+
+        if (!imageRef) {
+          continue
+        }
+
+        // Skip scratch images (no parent)
+        if (imageRef.toLowerCase() === 'scratch') {
+          continue
+        }
+
+        // Check for build args/variables
+        if (imageRef.includes('$') || imageRef.includes('${')) {
+          core.warning(
+            `Dockerfile contains variable reference in FROM: ${imageRef}. Skipping variable substitution.`
+          )
+          continue
+        }
+
+        // Parse the image reference
+        const dockerDep = this.parseDockerImage(imageRef)
+        if (dockerDep) {
+          dockerDep.sourcePath = sourcePath
+          dockerDep.context = 'dockerfile'
+          dockerDependencies.push(dockerDep)
+        }
+      }
+    } catch (error) {
+      core.warning(
+        `Failed to parse Dockerfile ${dockerfilePath}: ${error instanceof Error ? error.message : String(error)}`
+      )
     }
   }
 

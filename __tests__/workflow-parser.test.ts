@@ -9,16 +9,23 @@ import {
   afterEach,
   jest
 } from '@jest/globals'
-import { WorkflowParser } from '../src/workflow-parser.js'
+import * as core from '../__fixtures__/core.js'
 import * as fs from 'fs'
 import * as os from 'os'
 import * as path from 'path'
+
+// Mock @actions/core before importing WorkflowParser
+jest.unstable_mockModule('@actions/core', () => core)
+
+// Import after mocking
+const { WorkflowParser } = await import('../src/workflow-parser.js')
 
 describe('WorkflowParser', () => {
   let parser: WorkflowParser
   let tempDir: string
 
   beforeEach(() => {
+    jest.clearAllMocks()
     parser = new WorkflowParser()
     tempDir = fs.mkdtempSync(path.join(os.tmpdir(), 'workflow-test-'))
   })
@@ -447,7 +454,16 @@ runs:
       })
     })
 
-    it('Skips Dockerfile paths in action.yml (not docker:// protocol)', async () => {
+    it('Parses Dockerfile from action.yml and extracts base images', async () => {
+      // Create a Dockerfile
+      const dockerfileContent = `FROM node:18
+RUN npm install
+COPY . .
+`
+      const dockerfilePath = path.join(tempDir, 'Dockerfile')
+      fs.writeFileSync(dockerfilePath, dockerfileContent)
+
+      // Create action.yml that references the Dockerfile
       const actionContent = `
 name: My Docker Action
 description: Test docker action
@@ -460,7 +476,113 @@ runs:
 
       const result = await parser.parseWorkflowFile(actionFile)
 
+      expect(result.dockerDependencies).toHaveLength(1)
+      expect(result.dockerDependencies[0]).toMatchObject({
+        registry: 'hub.docker.com',
+        namespace: 'library',
+        image: 'node',
+        tag: '18',
+        context: 'dockerfile'
+      })
+    })
+
+    it('Parses Dockerfile with multi-stage builds', async () => {
+      const dockerfileContent = `FROM node:18 AS builder
+WORKDIR /app
+RUN npm install
+
+FROM alpine:3.18
+COPY --from=builder /app /app
+`
+      const dockerfilePath = path.join(tempDir, 'Dockerfile')
+      fs.writeFileSync(dockerfilePath, dockerfileContent)
+
+      const actionContent = `
+name: My Docker Action
+runs:
+  using: docker
+  image: Dockerfile
+`
+      const actionFile = path.join(tempDir, 'action.yml')
+      fs.writeFileSync(actionFile, actionContent)
+
+      const result = await parser.parseWorkflowFile(actionFile)
+
+      expect(result.dockerDependencies).toHaveLength(2)
+      expect(result.dockerDependencies[0]).toMatchObject({
+        image: 'node',
+        tag: '18',
+        context: 'dockerfile'
+      })
+      expect(result.dockerDependencies[1]).toMatchObject({
+        image: 'alpine',
+        tag: '3.18',
+        context: 'dockerfile'
+      })
+    })
+
+    it('Skips FROM scratch in Dockerfile', async () => {
+      const dockerfileContent = `FROM scratch
+COPY app /app
+`
+      const dockerfilePath = path.join(tempDir, 'Dockerfile')
+      fs.writeFileSync(dockerfilePath, dockerfileContent)
+
+      const actionContent = `
+name: My Docker Action
+runs:
+  using: docker
+  image: Dockerfile
+`
+      const actionFile = path.join(tempDir, 'action.yml')
+      fs.writeFileSync(actionFile, actionContent)
+
+      const result = await parser.parseWorkflowFile(actionFile)
+
       expect(result.dockerDependencies).toHaveLength(0)
+    })
+
+    it('Logs warning for Dockerfile with variable references', async () => {
+      const dockerfileContent = `ARG BASE_IMAGE=node:18
+FROM \${BASE_IMAGE}
+RUN npm install
+`
+      const dockerfilePath = path.join(tempDir, 'Dockerfile')
+      fs.writeFileSync(dockerfilePath, dockerfileContent)
+
+      const actionContent = `
+name: My Docker Action
+runs:
+  using: docker
+  image: Dockerfile
+`
+      const actionFile = path.join(tempDir, 'action.yml')
+      fs.writeFileSync(actionFile, actionContent)
+
+      const result = await parser.parseWorkflowFile(actionFile)
+
+      expect(result.dockerDependencies).toHaveLength(0)
+      expect(core.warning).toHaveBeenCalledWith(
+        expect.stringContaining('variable reference in FROM')
+      )
+    })
+
+    it('Logs warning when Dockerfile not found', async () => {
+      const actionContent = `
+name: My Docker Action
+runs:
+  using: docker
+  image: Dockerfile
+`
+      const actionFile = path.join(tempDir, 'action.yml')
+      fs.writeFileSync(actionFile, actionContent)
+
+      const result = await parser.parseWorkflowFile(actionFile)
+
+      expect(result.dockerDependencies).toHaveLength(0)
+      expect(core.warning).toHaveBeenCalledWith(
+        expect.stringContaining('Dockerfile not found')
+      )
     })
 
     it('Extracts all Docker dependencies together', async () => {

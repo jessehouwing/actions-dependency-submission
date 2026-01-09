@@ -1,24 +1,24 @@
-import require$$0 from 'os';
-import require$$0$1 from 'crypto';
+import require$$0$1 from 'os';
+import require$$0$2 from 'crypto';
 import * as fs from 'fs';
 import fs__default from 'fs';
 import * as path from 'path';
 import path__default from 'path';
 import require$$2$1 from 'http';
 import require$$1 from 'https';
-import require$$0$4 from 'net';
+import require$$0$5 from 'net';
 import require$$1$1 from 'tls';
 import require$$4$1 from 'events';
-import require$$0$3 from 'assert';
-import require$$0$2 from 'util';
-import require$$0$5 from 'stream';
+import require$$0$4 from 'assert';
+import require$$0$3 from 'util';
+import require$$0$6 from 'stream';
 import require$$7 from 'buffer';
 import require$$8 from 'querystring';
 import require$$14 from 'stream/web';
-import require$$0$7 from 'node:stream';
+import require$$0$8 from 'node:stream';
 import require$$1$2 from 'node:util';
-import require$$0$6 from 'node:events';
-import require$$0$8 from 'worker_threads';
+import require$$0$7 from 'node:events';
+import require$$0$9 from 'worker_threads';
 import require$$2$2 from 'perf_hooks';
 import require$$5 from 'util/types';
 import require$$4$2 from 'async_hooks';
@@ -26,7 +26,7 @@ import require$$1$3 from 'console';
 import require$$1$4 from 'url';
 import require$$3$1 from 'zlib';
 import require$$6 from 'string_decoder';
-import require$$0$9 from 'diagnostics_channel';
+import require$$0$a from 'diagnostics_channel';
 import require$$2$3 from 'child_process';
 import require$$6$1 from 'timers';
 
@@ -158,7 +158,7 @@ function requireCommand () {
 	Object.defineProperty(command, "__esModule", { value: true });
 	command.issueCommand = issueCommand;
 	command.issue = issue;
-	const os = __importStar(require$$0);
+	const os = __importStar(require$$0$1);
 	const utils_1 = requireUtils$3();
 	/**
 	 * Issues a command to the GitHub Actions runner
@@ -298,9 +298,9 @@ function requireFileCommand () {
 	fileCommand.prepareKeyValueMessage = prepareKeyValueMessage;
 	// We use any as a valid input type
 	/* eslint-disable @typescript-eslint/no-explicit-any */
-	const crypto = __importStar(require$$0$1);
+	const crypto = __importStar(require$$0$2);
 	const fs = __importStar(fs__default);
-	const os = __importStar(require$$0);
+	const os = __importStar(require$$0$1);
 	const utils_1 = requireUtils$3();
 	function issueFileCommand(command, message) {
 	    const filePath = process.env[`GITHUB_${command}`];
@@ -450,7 +450,7 @@ function requireTunnel$1 () {
 	var http = require$$2$1;
 	var https = require$$1;
 	var events = require$$4$1;
-	var util = require$$0$2;
+	var util = require$$0$3;
 
 
 	tunnel$1.httpOverHttp = httpOverHttp;
@@ -1157,21 +1157,21 @@ function requireConstants$4 () {
 	return constants$4;
 }
 
-var util$6;
-var hasRequiredUtil$6;
+var util$7;
+var hasRequiredUtil$7;
 
-function requireUtil$6 () {
-	if (hasRequiredUtil$6) return util$6;
-	hasRequiredUtil$6 = 1;
+function requireUtil$7 () {
+	if (hasRequiredUtil$7) return util$7;
+	hasRequiredUtil$7 = 1;
 
-	const assert = require$$0$3;
+	const assert = require$$0$4;
 	const { kDestroyed, kBodyUsed } = requireSymbols$4();
 	const { IncomingMessage } = require$$2$1;
-	const stream = require$$0$5;
-	const net = require$$0$4;
+	const stream = require$$0$6;
+	const net = require$$0$5;
 	const { InvalidArgumentError } = requireErrors();
 	const { Blob } = require$$7;
-	const nodeUtil = require$$0$2;
+	const nodeUtil = require$$0$3;
 	const { stringify } = require$$8;
 	const { headerNameLowerCasedRecord } = requireConstants$4();
 
@@ -1647,7 +1647,7 @@ function requireUtil$6 () {
 	const kEnumerableProperty = Object.create(null);
 	kEnumerableProperty.enumerable = true;
 
-	util$6 = {
+	util$7 = {
 	  kEnumerableProperty,
 	  nop,
 	  isDisturbed,
@@ -1684,7 +1684,7 @@ function requireUtil$6 () {
 	  nodeHasAutoSelectFamily: nodeMajor > 18 || (nodeMajor === 18 && nodeMinor >= 13),
 	  safeHTTPMethods: ['GET', 'HEAD', 'OPTIONS', 'TRACE']
 	};
-	return util$6;
+	return util$7;
 }
 
 var timers;
@@ -1792,7 +1792,7 @@ function requireTimers () {
 	return timers;
 }
 
-var main = {exports: {}};
+var main$3 = {exports: {}};
 
 var sbmh;
 var hasRequiredSbmh;
@@ -1827,7 +1827,7 @@ function requireSbmh () {
 	 * Based heavily on the Streaming Boyer-Moore-Horspool C++ implementation
 	 * by Hongli Lai at: https://github.com/FooBarWidget/boyer-moore-horspool
 	 */
-	const EventEmitter = require$$0$6.EventEmitter;
+	const EventEmitter = require$$0$7.EventEmitter;
 	const inherits = require$$1$2.inherits;
 
 	function SBMH (needle) {
@@ -2038,7 +2038,7 @@ function requirePartStream () {
 	hasRequiredPartStream = 1;
 
 	const inherits = require$$1$2.inherits;
-	const ReadableStream = require$$0$7.Readable;
+	const ReadableStream = require$$0$8.Readable;
 
 	function PartStream (opts) {
 	  ReadableStream.call(this, opts);
@@ -2082,7 +2082,7 @@ function requireHeaderParser () {
 	if (hasRequiredHeaderParser) return HeaderParser_1;
 	hasRequiredHeaderParser = 1;
 
-	const EventEmitter = require$$0$6.EventEmitter;
+	const EventEmitter = require$$0$7.EventEmitter;
 	const inherits = require$$1$2.inherits;
 	const getLimit = requireGetLimit();
 
@@ -2190,7 +2190,7 @@ function requireDicer () {
 	if (hasRequiredDicer) return Dicer_1;
 	hasRequiredDicer = 1;
 
-	const WritableStream = require$$0$7.Writable;
+	const WritableStream = require$$0$8.Writable;
 	const inherits = require$$1$2.inherits;
 
 	const StreamSearch = requireSbmh();
@@ -2767,7 +2767,7 @@ function requireMultipart () {
 	//  * support limits.fieldNameSize
 	//     -- this will require modifications to utils.parseParams
 
-	const { Readable } = require$$0$7;
+	const { Readable } = require$$0$8;
 	const { inherits } = require$$1$2;
 
 	const Dicer = requireDicer();
@@ -3327,13 +3327,13 @@ function requireUrlencoded () {
 	return urlencoded;
 }
 
-var hasRequiredMain;
+var hasRequiredMain$2;
 
-function requireMain () {
-	if (hasRequiredMain) return main.exports;
-	hasRequiredMain = 1;
+function requireMain$2 () {
+	if (hasRequiredMain$2) return main$3.exports;
+	hasRequiredMain$2 = 1;
 
-	const WritableStream = require$$0$7.Writable;
+	const WritableStream = require$$0$8.Writable;
 	const { inherits } = require$$1$2;
 	const Dicer = requireDicer();
 
@@ -3411,12 +3411,12 @@ function requireMain () {
 	  this._parser.write(chunk, cb);
 	};
 
-	main.exports = Busboy;
-	main.exports.default = Busboy;
-	main.exports.Busboy = Busboy;
+	main$3.exports = Busboy;
+	main$3.exports.default = Busboy;
+	main$3.exports.Busboy = Busboy;
 
-	main.exports.Dicer = Dicer;
-	return main.exports;
+	main$3.exports.Dicer = Dicer;
+	return main$3.exports;
 }
 
 var constants$3;
@@ -3426,7 +3426,7 @@ function requireConstants$3 () {
 	if (hasRequiredConstants$3) return constants$3;
 	hasRequiredConstants$3 = 1;
 
-	const { MessageChannel, receiveMessageOnPort } = require$$0$8;
+	const { MessageChannel, receiveMessageOnPort } = require$$0$9;
 
 	const corsSafeListedMethods = ['GET', 'HEAD', 'POST'];
 	const corsSafeListedMethodsSet = new Set(corsSafeListedMethods);
@@ -3626,18 +3626,18 @@ function requireGlobal$1 () {
 	return global$2;
 }
 
-var util$5;
-var hasRequiredUtil$5;
+var util$6;
+var hasRequiredUtil$6;
 
-function requireUtil$5 () {
-	if (hasRequiredUtil$5) return util$5;
-	hasRequiredUtil$5 = 1;
+function requireUtil$6 () {
+	if (hasRequiredUtil$6) return util$6;
+	hasRequiredUtil$6 = 1;
 
 	const { redirectStatusSet, referrerPolicySet: referrerPolicyTokens, badPortsSet } = requireConstants$3();
 	const { getGlobalOrigin } = requireGlobal$1();
 	const { performance } = require$$2$2;
-	const { isBlobLike, toUSVString, ReadableStreamFrom } = requireUtil$6();
-	const assert = require$$0$3;
+	const { isBlobLike, toUSVString, ReadableStreamFrom } = requireUtil$7();
+	const assert = require$$0$4;
 	const { isUint8Array } = require$$5;
 
 	let supportedHashes = [];
@@ -4727,7 +4727,7 @@ function requireUtil$5 () {
 	 */
 	const hasOwn = Object.hasOwn || ((dict, key) => Object.prototype.hasOwnProperty.call(dict, key));
 
-	util$5 = {
+	util$6 = {
 	  isAborted,
 	  isCancelled,
 	  createDeferredPromise,
@@ -4774,7 +4774,7 @@ function requireUtil$5 () {
 	  normalizeMethodRecord,
 	  parseMetadata
 	};
-	return util$5;
+	return util$6;
 }
 
 var symbols$3;
@@ -4802,8 +4802,8 @@ function requireWebidl () {
 	if (hasRequiredWebidl) return webidl_1;
 	hasRequiredWebidl = 1;
 
-	const { types } = require$$0$2;
-	const { hasOwn, toUSVString } = requireUtil$5();
+	const { types } = require$$0$3;
+	const { hasOwn, toUSVString } = requireUtil$6();
 
 	/** @type {import('../../types/webidl').Webidl} */
 	const webidl = {};
@@ -5455,9 +5455,9 @@ var hasRequiredDataURL;
 function requireDataURL () {
 	if (hasRequiredDataURL) return dataURL;
 	hasRequiredDataURL = 1;
-	const assert = require$$0$3;
+	const assert = require$$0$4;
 	const { atob } = require$$7;
-	const { isomorphicDecode } = requireUtil$5();
+	const { isomorphicDecode } = requireUtil$6();
 
 	const encoder = new TextEncoder();
 
@@ -6093,12 +6093,12 @@ function requireFile () {
 	hasRequiredFile = 1;
 
 	const { Blob, File: NativeFile } = require$$7;
-	const { types } = require$$0$2;
+	const { types } = require$$0$3;
 	const { kState } = requireSymbols$3();
-	const { isBlobLike } = requireUtil$5();
+	const { isBlobLike } = requireUtil$6();
 	const { webidl } = requireWebidl();
 	const { parseMIMEType, serializeAMimeType } = requireDataURL();
-	const { kEnumerableProperty } = requireUtil$6();
+	const { kEnumerableProperty } = requireUtil$7();
 	const encoder = new TextEncoder();
 
 	class File extends Blob {
@@ -6444,7 +6444,7 @@ function requireFormdata () {
 	if (hasRequiredFormdata) return formdata;
 	hasRequiredFormdata = 1;
 
-	const { isBlobLike, toUSVString, makeIterator } = requireUtil$5();
+	const { isBlobLike, toUSVString, makeIterator } = requireUtil$6();
 	const { kState } = requireSymbols$3();
 	const { File: UndiciFile, FileLike, isFileLike } = requireFile();
 	const { webidl } = requireWebidl();
@@ -6717,8 +6717,8 @@ function requireBody () {
 	if (hasRequiredBody) return body;
 	hasRequiredBody = 1;
 
-	const Busboy = requireMain();
-	const util = requireUtil$6();
+	const Busboy = requireMain$2();
+	const util = requireUtil$7();
 	const {
 	  ReadableStreamFrom,
 	  isBlobLike,
@@ -6726,15 +6726,15 @@ function requireBody () {
 	  readableStreamClose,
 	  createDeferredPromise,
 	  fullyReadBody
-	} = requireUtil$5();
+	} = requireUtil$6();
 	const { FormData } = requireFormdata();
 	const { kState } = requireSymbols$3();
 	const { webidl } = requireWebidl();
 	const { DOMException, structuredClone } = requireConstants$3();
 	const { Blob, File: NativeFile } = require$$7;
 	const { kBodyUsed } = requireSymbols$4();
-	const assert = require$$0$3;
-	const { isErrored } = requireUtil$6();
+	const assert = require$$0$4;
+	const { isErrored } = requireUtil$7();
 	const { isUint8Array, isArrayBuffer } = require$$5;
 	const { File: UndiciFile } = requireFile();
 	const { parseMIMEType, serializeAMimeType } = requireDataURL();
@@ -7342,9 +7342,9 @@ function requireRequest$1 () {
 	  InvalidArgumentError,
 	  NotSupportedError
 	} = requireErrors();
-	const assert = require$$0$3;
+	const assert = require$$0$4;
 	const { kHTTP2BuildRequest, kHTTP2CopyHeaders, kHTTP1BuildRequest } = requireSymbols$4();
-	const util = requireUtil$6();
+	const util = requireUtil$7();
 
 	// tokenRegExp and headerCharRegex have been lifted from
 	// https://github.com/nodejs/node/blob/main/lib/_http_common.js
@@ -8072,9 +8072,9 @@ function requireConnect () {
 	if (hasRequiredConnect) return connect;
 	hasRequiredConnect = 1;
 
-	const net = require$$0$4;
-	const assert = require$$0$3;
-	const util = requireUtil$6();
+	const net = require$$0$5;
+	const assert = require$$0$4;
+	const util = requireUtil$7();
 	const { InvalidArgumentError, ConnectTimeoutError } = requireErrors();
 
 	let tls; // include tls conditionally since it is not always available
@@ -8576,9 +8576,9 @@ function requireRedirectHandler () {
 	if (hasRequiredRedirectHandler) return RedirectHandler_1;
 	hasRequiredRedirectHandler = 1;
 
-	const util = requireUtil$6();
+	const util = requireUtil$7();
 	const { kBodyUsed } = requireSymbols$4();
-	const assert = require$$0$3;
+	const assert = require$$0$4;
 	const { InvalidArgumentError } = requireErrors();
 	const EE = require$$4$1;
 
@@ -8838,11 +8838,11 @@ function requireClient () {
 
 	/* global WebAssembly */
 
-	const assert = require$$0$3;
-	const net = require$$0$4;
+	const assert = require$$0$4;
+	const net = require$$0$5;
 	const http = require$$2$1;
-	const { pipeline } = require$$0$5;
-	const util = requireUtil$6();
+	const { pipeline } = require$$0$6;
+	const util = requireUtil$7();
 	const timers = requireTimers();
 	const Request = requireRequest$1();
 	const DispatcherBase = requireDispatcherBase();
@@ -11504,7 +11504,7 @@ function requirePool () {
 	const {
 	  InvalidArgumentError
 	} = requireErrors();
-	const util = requireUtil$6();
+	const util = requireUtil$7();
 	const { kUrl, kInterceptors } = requireSymbols$4();
 	const buildConnector = requireConnect();
 
@@ -11623,7 +11623,7 @@ function requireBalancedPool () {
 	} = requirePoolBase();
 	const Pool = requirePool();
 	const { kUrl, kInterceptors } = requireSymbols$4();
-	const { parseOrigin } = requireUtil$6();
+	const { parseOrigin } = requireUtil$7();
 	const kFactory = Symbol('factory');
 
 	const kOptions = Symbol('options');
@@ -11868,7 +11868,7 @@ function requireAgent () {
 	const DispatcherBase = requireDispatcherBase();
 	const Pool = requirePool();
 	const Client = requireClient();
-	const util = requireUtil$6();
+	const util = requireUtil$7();
 	const createRedirectInterceptor = requireRedirectInterceptor();
 	const { WeakRef, FinalizationRegistry } = requireDispatcherWeakref()();
 
@@ -12023,11 +12023,11 @@ function requireReadable () {
 	if (hasRequiredReadable) return readable;
 	hasRequiredReadable = 1;
 
-	const assert = require$$0$3;
-	const { Readable } = require$$0$5;
+	const assert = require$$0$4;
+	const { Readable } = require$$0$6;
 	const { RequestAbortedError, NotSupportedError, InvalidArgumentError } = requireErrors();
-	const util = requireUtil$6();
-	const { ReadableStreamFrom, toUSVString } = requireUtil$6();
+	const util = requireUtil$7();
+	const { ReadableStreamFrom, toUSVString } = requireUtil$7();
 
 	let Blob;
 
@@ -12344,17 +12344,17 @@ function requireReadable () {
 	return readable;
 }
 
-var util$4;
-var hasRequiredUtil$4;
+var util$5;
+var hasRequiredUtil$5;
 
-function requireUtil$4 () {
-	if (hasRequiredUtil$4) return util$4;
-	hasRequiredUtil$4 = 1;
-	const assert = require$$0$3;
+function requireUtil$5 () {
+	if (hasRequiredUtil$5) return util$5;
+	hasRequiredUtil$5 = 1;
+	const assert = require$$0$4;
 	const {
 	  ResponseStatusCodeError
 	} = requireErrors();
-	const { toUSVString } = requireUtil$6();
+	const { toUSVString } = requireUtil$7();
 
 	async function getResolveErrorBodyCallback ({ callback, body, contentType, statusCode, statusMessage, headers }) {
 	  assert(body);
@@ -12395,8 +12395,8 @@ function requireUtil$4 () {
 	  process.nextTick(callback, new ResponseStatusCodeError(`Response status code ${statusCode}${statusMessage ? `: ${statusMessage}` : ''}`, statusCode, headers));
 	}
 
-	util$4 = { getResolveErrorBodyCallback };
-	return util$4;
+	util$5 = { getResolveErrorBodyCallback };
+	return util$5;
 }
 
 var abortSignal;
@@ -12405,7 +12405,7 @@ var hasRequiredAbortSignal;
 function requireAbortSignal () {
 	if (hasRequiredAbortSignal) return abortSignal;
 	hasRequiredAbortSignal = 1;
-	const { addAbortListener } = requireUtil$6();
+	const { addAbortListener } = requireUtil$7();
 	const { RequestAbortedError } = requireErrors();
 
 	const kListener = Symbol('kListener');
@@ -12473,8 +12473,8 @@ function requireApiRequest () {
 	  InvalidArgumentError,
 	  RequestAbortedError
 	} = requireErrors();
-	const util = requireUtil$6();
-	const { getResolveErrorBodyCallback } = requireUtil$4();
+	const util = requireUtil$7();
+	const { getResolveErrorBodyCallback } = requireUtil$5();
 	const { AsyncResource } = require$$4$2;
 	const { addSignal, removeSignal } = requireAbortSignal();
 
@@ -12656,14 +12656,14 @@ function requireApiStream () {
 	if (hasRequiredApiStream) return apiStream;
 	hasRequiredApiStream = 1;
 
-	const { finished, PassThrough } = require$$0$5;
+	const { finished, PassThrough } = require$$0$6;
 	const {
 	  InvalidArgumentError,
 	  InvalidReturnValueError,
 	  RequestAbortedError
 	} = requireErrors();
-	const util = requireUtil$6();
-	const { getResolveErrorBodyCallback } = requireUtil$4();
+	const util = requireUtil$7();
+	const { getResolveErrorBodyCallback } = requireUtil$5();
 	const { AsyncResource } = require$$4$2;
 	const { addSignal, removeSignal } = requireAbortSignal();
 
@@ -12888,16 +12888,16 @@ function requireApiPipeline () {
 	  Readable,
 	  Duplex,
 	  PassThrough
-	} = require$$0$5;
+	} = require$$0$6;
 	const {
 	  InvalidArgumentError,
 	  InvalidReturnValueError,
 	  RequestAbortedError
 	} = requireErrors();
-	const util = requireUtil$6();
+	const util = requireUtil$7();
 	const { AsyncResource } = require$$4$2;
 	const { addSignal, removeSignal } = requireAbortSignal();
-	const assert = require$$0$3;
+	const assert = require$$0$4;
 
 	const kResume = Symbol('resume');
 
@@ -13143,9 +13143,9 @@ function requireApiUpgrade () {
 
 	const { InvalidArgumentError, RequestAbortedError, SocketError } = requireErrors();
 	const { AsyncResource } = require$$4$2;
-	const util = requireUtil$6();
+	const util = requireUtil$7();
 	const { addSignal, removeSignal } = requireAbortSignal();
-	const assert = require$$0$3;
+	const assert = require$$0$4;
 
 	class UpgradeHandler extends AsyncResource {
 	  constructor (opts, callback) {
@@ -13256,7 +13256,7 @@ function requireApiConnect () {
 
 	const { AsyncResource } = require$$4$2;
 	const { InvalidArgumentError, RequestAbortedError, SocketError } = requireErrors();
-	const util = requireUtil$6();
+	const util = requireUtil$7();
 	const { addSignal, removeSignal } = requireAbortSignal();
 
 	class ConnectHandler extends AsyncResource {
@@ -13444,13 +13444,13 @@ function requireMockUtils () {
 	  kOrigin,
 	  kGetNetConnect
 	} = requireMockSymbols();
-	const { buildURL, nop } = requireUtil$6();
+	const { buildURL, nop } = requireUtil$7();
 	const { STATUS_CODES } = require$$2$1;
 	const {
 	  types: {
 	    isPromise
 	  }
-	} = require$$0$2;
+	} = require$$0$3;
 
 	function matchValue (match, value) {
 	  if (typeof match === 'string') {
@@ -13806,7 +13806,7 @@ function requireMockInterceptor () {
 	  kMockDispatch
 	} = requireMockSymbols();
 	const { InvalidArgumentError } = requireErrors();
-	const { buildURL } = requireUtil$6();
+	const { buildURL } = requireUtil$7();
 
 	/**
 	 * Defines the scope API for an interceptor reply
@@ -14010,7 +14010,7 @@ function requireMockClient () {
 	if (hasRequiredMockClient) return mockClient;
 	hasRequiredMockClient = 1;
 
-	const { promisify } = require$$0$2;
+	const { promisify } = require$$0$3;
 	const Client = requireClient();
 	const { buildMockDispatch } = requireMockUtils();
 	const {
@@ -14077,7 +14077,7 @@ function requireMockPool () {
 	if (hasRequiredMockPool) return mockPool;
 	hasRequiredMockPool = 1;
 
-	const { promisify } = require$$0$2;
+	const { promisify } = require$$0$3;
 	const Pool = requirePool();
 	const { buildMockDispatch } = requireMockUtils();
 	const {
@@ -14181,7 +14181,7 @@ function requirePendingInterceptorsFormatter () {
 	if (hasRequiredPendingInterceptorsFormatter) return pendingInterceptorsFormatter;
 	hasRequiredPendingInterceptorsFormatter = 1;
 
-	const { Transform } = require$$0$5;
+	const { Transform } = require$$0$6;
 	const { Console } = require$$1$3;
 
 	/**
@@ -14604,11 +14604,11 @@ var hasRequiredRetryHandler;
 function requireRetryHandler () {
 	if (hasRequiredRetryHandler) return RetryHandler_1;
 	hasRequiredRetryHandler = 1;
-	const assert = require$$0$3;
+	const assert = require$$0$4;
 
 	const { kRetryHandlerDefaultRetry } = requireSymbols$4();
 	const { RequestRetryError } = requireErrors();
-	const { isDisturbed, parseHeaders, parseRangeHeader } = requireUtil$6();
+	const { isDisturbed, parseHeaders, parseRangeHeader } = requireUtil$7();
 
 	function calculateRetryAfterHeader (retryAfter) {
 	  const current = Date.now();
@@ -15035,15 +15035,15 @@ function requireHeaders () {
 
 	const { kHeadersList, kConstruct } = requireSymbols$4();
 	const { kGuard } = requireSymbols$3();
-	const { kEnumerableProperty } = requireUtil$6();
+	const { kEnumerableProperty } = requireUtil$7();
 	const {
 	  makeIterator,
 	  isValidHeaderName,
 	  isValidHeaderValue
-	} = requireUtil$5();
-	const util = require$$0$2;
+	} = requireUtil$6();
+	const util = require$$0$3;
 	const { webidl } = requireWebidl();
-	const assert = require$$0$3;
+	const assert = require$$0$4;
 
 	const kHeadersMap = Symbol('headers map');
 	const kHeadersSortedMap = Symbol('headers map sorted');
@@ -15627,7 +15627,7 @@ function requireResponse () {
 
 	const { Headers, HeadersList, fill } = requireHeaders();
 	const { extractBody, cloneBody, mixinBody } = requireBody();
-	const util = requireUtil$6();
+	const util = requireUtil$7();
 	const { kEnumerableProperty } = util;
 	const {
 	  isValidReasonPhrase,
@@ -15637,7 +15637,7 @@ function requireResponse () {
 	  serializeJavascriptValueToJSONString,
 	  isErrorLike,
 	  isomorphicEncode
-	} = requireUtil$5();
+	} = requireUtil$6();
 	const {
 	  redirectStatusSet,
 	  nullBodyStatus,
@@ -15649,8 +15649,8 @@ function requireResponse () {
 	const { getGlobalOrigin } = requireGlobal$1();
 	const { URLSerializer } = requireDataURL();
 	const { kHeadersList, kConstruct } = requireSymbols$4();
-	const assert = require$$0$3;
-	const { types } = require$$0$2;
+	const assert = require$$0$4;
+	const { types } = require$$0$3;
 
 	const ReadableStream = globalThis.ReadableStream || require$$14.ReadableStream;
 	const textEncoder = new TextEncoder('utf-8');
@@ -16209,14 +16209,14 @@ function requireRequest () {
 	const { extractBody, mixinBody, cloneBody } = requireBody();
 	const { Headers, fill: fillHeaders, HeadersList } = requireHeaders();
 	const { FinalizationRegistry } = requireDispatcherWeakref()();
-	const util = requireUtil$6();
+	const util = requireUtil$7();
 	const {
 	  isValidHTTPToken,
 	  sameOrigin,
 	  normalizeMethod,
 	  makePolicyContainer,
 	  normalizeMethodRecord
-	} = requireUtil$5();
+	} = requireUtil$6();
 	const {
 	  forbiddenMethodsSet,
 	  corsSafeListedMethodsSet,
@@ -16233,7 +16233,7 @@ function requireRequest () {
 	const { getGlobalOrigin } = requireGlobal$1();
 	const { URLSerializer } = requireDataURL();
 	const { kHeadersList, kConstruct } = requireSymbols$4();
-	const assert = require$$0$3;
+	const assert = require$$0$4;
 	const { getMaxListeners, setMaxListeners, getEventListeners, defaultMaxListeners } = require$$4$1;
 
 	let TransformStream = globalThis.TransformStream;
@@ -17197,9 +17197,9 @@ function requireFetch () {
 	  urlIsLocal,
 	  urlIsHttpHttpsScheme,
 	  urlHasHttpsScheme
-	} = requireUtil$5();
+	} = requireUtil$6();
 	const { kState, kHeaders, kGuard, kRealm } = requireSymbols$3();
-	const assert = require$$0$3;
+	const assert = require$$0$4;
 	const { safelyExtractBody } = requireBody();
 	const {
 	  redirectStatusSet,
@@ -17211,8 +17211,8 @@ function requireFetch () {
 	} = requireConstants$3();
 	const { kHeadersList } = requireSymbols$4();
 	const EE = require$$4$1;
-	const { Readable, pipeline } = require$$0$5;
-	const { addAbortListener, isErrored, isReadable, nodeMajor, nodeMinor } = requireUtil$6();
+	const { Readable, pipeline } = require$$0$6;
+	const { addAbortListener, isErrored, isReadable, nodeMajor, nodeMinor } = requireUtil$7();
 	const { dataURLProcessor, serializeAMimeType } = requireDataURL();
 	const { TransformStream } = require$$14;
 	const { getGlobalDispatcher } = requireGlobal();
@@ -19633,12 +19633,12 @@ function requireEncoding () {
 	return encoding;
 }
 
-var util$3;
-var hasRequiredUtil$3;
+var util$4;
+var hasRequiredUtil$4;
 
-function requireUtil$3 () {
-	if (hasRequiredUtil$3) return util$3;
-	hasRequiredUtil$3 = 1;
+function requireUtil$4 () {
+	if (hasRequiredUtil$4) return util$4;
+	hasRequiredUtil$4 = 1;
 
 	const {
 	  kState,
@@ -19651,7 +19651,7 @@ function requireUtil$3 () {
 	const { getEncoding } = requireEncoding();
 	const { DOMException } = requireConstants$3();
 	const { serializeAMimeType, parseMIMEType } = requireDataURL();
-	const { types } = require$$0$2;
+	const { types } = require$$0$3;
 	const { StringDecoder } = require$$6;
 	const { btoa } = require$$7;
 
@@ -20025,12 +20025,12 @@ function requireUtil$3 () {
 	  }, new Uint8Array(size))
 	}
 
-	util$3 = {
+	util$4 = {
 	  staticPropertyDescriptors,
 	  readOperation,
 	  fireAProgressEvent
 	};
-	return util$3;
+	return util$4;
 }
 
 var filereader;
@@ -20044,7 +20044,7 @@ function requireFilereader () {
 	  staticPropertyDescriptors,
 	  readOperation,
 	  fireAProgressEvent
-	} = requireUtil$3();
+	} = requireUtil$4();
 	const {
 	  kState,
 	  kError,
@@ -20053,7 +20053,7 @@ function requireFilereader () {
 	  kAborted
 	} = requireSymbols$2();
 	const { webidl } = requireWebidl();
-	const { kEnumerableProperty } = requireUtil$6();
+	const { kEnumerableProperty } = requireUtil$7();
 
 	class FileReader extends EventTarget {
 	  constructor () {
@@ -20398,16 +20398,16 @@ function requireSymbols$1 () {
 	return symbols$1;
 }
 
-var util$2;
-var hasRequiredUtil$2;
+var util$3;
+var hasRequiredUtil$3;
 
-function requireUtil$2 () {
-	if (hasRequiredUtil$2) return util$2;
-	hasRequiredUtil$2 = 1;
+function requireUtil$3 () {
+	if (hasRequiredUtil$3) return util$3;
+	hasRequiredUtil$3 = 1;
 
-	const assert = require$$0$3;
+	const assert = require$$0$4;
 	const { URLSerializer } = requireDataURL();
-	const { isValidHeaderName } = requireUtil$5();
+	const { isValidHeaderName } = requireUtil$6();
 
 	/**
 	 * @see https://url.spec.whatwg.org/#concept-url-equals
@@ -20448,11 +20448,11 @@ function requireUtil$2 () {
 	  return values
 	}
 
-	util$2 = {
+	util$3 = {
 	  urlEquals,
 	  fieldValues
 	};
-	return util$2;
+	return util$3;
 }
 
 var cache;
@@ -20463,16 +20463,16 @@ function requireCache () {
 	hasRequiredCache = 1;
 
 	const { kConstruct } = requireSymbols$1();
-	const { urlEquals, fieldValues: getFieldValues } = requireUtil$2();
-	const { kEnumerableProperty, isDisturbed } = requireUtil$6();
+	const { urlEquals, fieldValues: getFieldValues } = requireUtil$3();
+	const { kEnumerableProperty, isDisturbed } = requireUtil$7();
 	const { kHeadersList } = requireSymbols$4();
 	const { webidl } = requireWebidl();
 	const { Response, cloneResponse } = requireResponse();
 	const { Request } = requireRequest();
 	const { kState, kHeaders, kGuard, kRealm } = requireSymbols$3();
 	const { fetching } = requireFetch();
-	const { urlIsHttpHttpsScheme, createDeferredPromise, readAllBytes } = requireUtil$5();
-	const assert = require$$0$3;
+	const { urlIsHttpHttpsScheme, createDeferredPromise, readAllBytes } = requireUtil$6();
+	const assert = require$$0$4;
 	const { getGlobalDispatcher } = requireGlobal();
 
 	/**
@@ -21311,7 +21311,7 @@ function requireCachestorage () {
 	const { kConstruct } = requireSymbols$1();
 	const { Cache } = requireCache();
 	const { webidl } = requireWebidl();
-	const { kEnumerableProperty } = requireUtil$6();
+	const { kEnumerableProperty } = requireUtil$7();
 
 	class CacheStorage {
 	  /**
@@ -21473,12 +21473,12 @@ function requireConstants$1 () {
 	return constants$1;
 }
 
-var util$1;
-var hasRequiredUtil$1;
+var util$2;
+var hasRequiredUtil$2;
 
-function requireUtil$1 () {
-	if (hasRequiredUtil$1) return util$1;
-	hasRequiredUtil$1 = 1;
+function requireUtil$2 () {
+	if (hasRequiredUtil$2) return util$2;
+	hasRequiredUtil$2 = 1;
 
 	/**
 	 * @param {string} value
@@ -21744,7 +21744,7 @@ function requireUtil$1 () {
 	  return out.join('; ')
 	}
 
-	util$1 = {
+	util$2 = {
 	  isCTLExcludingHtab,
 	  validateCookieName,
 	  validateCookiePath,
@@ -21752,7 +21752,7 @@ function requireUtil$1 () {
 	  toIMFDate,
 	  stringify
 	};
-	return util$1;
+	return util$2;
 }
 
 var parse$2;
@@ -21763,9 +21763,9 @@ function requireParse () {
 	hasRequiredParse = 1;
 
 	const { maxNameValuePairSize, maxAttributeValueSize } = requireConstants$1();
-	const { isCTLExcludingHtab } = requireUtil$1();
+	const { isCTLExcludingHtab } = requireUtil$2();
 	const { collectASequenceOfCodePointsFast } = requireDataURL();
-	const assert = require$$0$3;
+	const assert = require$$0$4;
 
 	/**
 	 * @description Parses the field-value attributes of a set-cookie header string.
@@ -22088,7 +22088,7 @@ function requireCookies () {
 	hasRequiredCookies = 1;
 
 	const { parseSetCookie } = requireParse();
-	const { stringify } = requireUtil$1();
+	const { stringify } = requireUtil$2();
 	const { webidl } = requireWebidl();
 	const { Headers } = requireHeaders();
 
@@ -22358,8 +22358,8 @@ function requireEvents () {
 	hasRequiredEvents = 1;
 
 	const { webidl } = requireWebidl();
-	const { kEnumerableProperty } = requireUtil$6();
-	const { MessagePort } = require$$0$8;
+	const { kEnumerableProperty } = requireUtil$7();
+	const { MessagePort } = require$$0$9;
 
 	/**
 	 * @see https://html.spec.whatwg.org/multipage/comms.html#messageevent
@@ -22661,12 +22661,12 @@ function requireEvents () {
 	return events;
 }
 
-var util;
-var hasRequiredUtil;
+var util$1;
+var hasRequiredUtil$1;
 
-function requireUtil () {
-	if (hasRequiredUtil) return util;
-	hasRequiredUtil = 1;
+function requireUtil$1 () {
+	if (hasRequiredUtil$1) return util$1;
+	hasRequiredUtil$1 = 1;
 
 	const { kReadyState, kController, kResponse, kBinaryType, kWebSocketURL } = requireSymbols();
 	const { states, opcodes } = requireConstants();
@@ -22856,7 +22856,7 @@ function requireUtil () {
 	  }
 	}
 
-	util = {
+	util$1 = {
 	  isEstablished,
 	  isClosing,
 	  isClosed,
@@ -22866,7 +22866,7 @@ function requireUtil () {
 	  failWebsocketConnection,
 	  websocketMessageReceived
 	};
-	return util;
+	return util$1;
 }
 
 var connection;
@@ -22876,7 +22876,7 @@ function requireConnection () {
 	if (hasRequiredConnection) return connection;
 	hasRequiredConnection = 1;
 
-	const diagnosticsChannel = require$$0$9;
+	const diagnosticsChannel = require$$0$a;
 	const { uid, states } = requireConstants();
 	const {
 	  kReadyState,
@@ -22884,7 +22884,7 @@ function requireConnection () {
 	  kByteParser,
 	  kReceivedClose
 	} = requireSymbols();
-	const { fireEvent, failWebsocketConnection } = requireUtil();
+	const { fireEvent, failWebsocketConnection } = requireUtil$1();
 	const { CloseEvent } = requireEvents();
 	const { makeRequest } = requireRequest();
 	const { fetching } = requireFetch();
@@ -23256,11 +23256,11 @@ function requireReceiver () {
 	if (hasRequiredReceiver) return receiver;
 	hasRequiredReceiver = 1;
 
-	const { Writable } = require$$0$5;
-	const diagnosticsChannel = require$$0$9;
+	const { Writable } = require$$0$6;
+	const diagnosticsChannel = require$$0$a;
 	const { parserStates, opcodes, states, emptyBuffer } = requireConstants();
 	const { kReadyState, kSentClose, kResponse, kReceivedClose } = requireSymbols();
-	const { isValidStatusCode, failWebsocketConnection, websocketMessageReceived } = requireUtil();
+	const { isValidStatusCode, failWebsocketConnection, websocketMessageReceived } = requireUtil$1();
 	const { WebsocketFrameSend } = requireFrame();
 
 	// This code was influenced by ws released under the MIT license.
@@ -23622,13 +23622,13 @@ function requireWebsocket () {
 	  kSentClose,
 	  kByteParser
 	} = requireSymbols();
-	const { isEstablished, isClosing, isValidSubprotocol, failWebsocketConnection, fireEvent } = requireUtil();
+	const { isEstablished, isClosing, isValidSubprotocol, failWebsocketConnection, fireEvent } = requireUtil$1();
 	const { establishWebSocketConnection } = requireConnection();
 	const { WebsocketFrameSend } = requireFrame();
 	const { ByteParser } = requireReceiver();
-	const { kEnumerableProperty, isBlobLike } = requireUtil$6();
+	const { kEnumerableProperty, isBlobLike } = requireUtil$7();
 	const { getGlobalDispatcher } = requireGlobal();
-	const { types } = require$$0$2;
+	const { types } = require$$0$3;
 
 	let experimentalWarned = false;
 
@@ -24259,7 +24259,7 @@ function requireUndici () {
 	const Pool = requirePool();
 	const BalancedPool = requireBalancedPool();
 	const Agent = requireAgent();
-	const util = requireUtil$6();
+	const util = requireUtil$7();
 	const { InvalidArgumentError } = errors;
 	const api = requireApi();
 	const buildConnector = requireConnect();
@@ -25347,7 +25347,7 @@ function requireSummary () {
 		};
 		Object.defineProperty(exports$1, "__esModule", { value: true });
 		exports$1.summary = exports$1.markdownSummary = exports$1.SUMMARY_DOCS_URL = exports$1.SUMMARY_ENV_VAR = void 0;
-		const os_1 = require$$0;
+		const os_1 = require$$0$1;
 		const fs_1 = fs__default;
 		const { access, appendFile, writeFile } = fs_1.promises;
 		exports$1.SUMMARY_ENV_VAR = 'GITHUB_STEP_SUMMARY';
@@ -25999,7 +25999,7 @@ function requireIo () {
 	io.mkdirP = mkdirP;
 	io.which = which;
 	io.findInPath = findInPath;
-	const assert_1 = require$$0$3;
+	const assert_1 = require$$0$4;
 	const path = __importStar(path__default);
 	const ioUtil = __importStar(requireIoUtil());
 	/**
@@ -26314,7 +26314,7 @@ function requireToolrunner () {
 	Object.defineProperty(toolrunner, "__esModule", { value: true });
 	toolrunner.ToolRunner = void 0;
 	toolrunner.argStringToArray = argStringToArray;
-	const os = __importStar(require$$0);
+	const os = __importStar(require$$0$1);
 	const events = __importStar(require$$4$1);
 	const child = __importStar(require$$2$3);
 	const path = __importStar(path__default);
@@ -27073,7 +27073,7 @@ function requirePlatform () {
 		Object.defineProperty(exports$1, "__esModule", { value: true });
 		exports$1.isLinux = exports$1.isMacOS = exports$1.isWindows = exports$1.arch = exports$1.platform = void 0;
 		exports$1.getDetails = getDetails;
-		const os_1 = __importDefault(require$$0);
+		const os_1 = __importDefault(require$$0$1);
 		const exec = __importStar(requireExec());
 		const getWindowsInfo = () => __awaiter(void 0, void 0, void 0, function* () {
 		    const { stdout: version } = yield exec.getExecOutput('powershell -command "(Get-CimInstance -ClassName Win32_OperatingSystem).Version"', undefined, {
@@ -27206,7 +27206,7 @@ function requireCore () {
 		const command_1 = requireCommand();
 		const file_command_1 = requireFileCommand();
 		const utils_1 = requireUtils$3();
-		const os = __importStar(require$$0);
+		const os = __importStar(require$$0$1);
 		const path = __importStar(path__default);
 		const oidc_utils_1 = requireOidcUtils();
 		/**
@@ -27534,7 +27534,7 @@ function requireContext () {
 	Object.defineProperty(context, "__esModule", { value: true });
 	context.Context = void 0;
 	const fs_1 = fs__default;
-	const os_1 = require$$0;
+	const os_1 = require$$0$1;
 	class Context {
 	    /**
 	     * Hydrate the context from the environment
@@ -28483,13 +28483,13 @@ function requireRegister () {
 	return register_1;
 }
 
-var add;
-var hasRequiredAdd;
+var add$1;
+var hasRequiredAdd$1;
 
-function requireAdd () {
-	if (hasRequiredAdd) return add;
-	hasRequiredAdd = 1;
-	add = addHook;
+function requireAdd$1 () {
+	if (hasRequiredAdd$1) return add$1;
+	hasRequiredAdd$1 = 1;
+	add$1 = addHook;
 
 	function addHook(state, kind, name, hook) {
 	  var orig = hook;
@@ -28535,7 +28535,7 @@ function requireAdd () {
 	    orig: orig,
 	  });
 	}
-	return add;
+	return add$1;
 }
 
 var remove;
@@ -28572,7 +28572,7 @@ function requireBeforeAfterHook () {
 	if (hasRequiredBeforeAfterHook) return beforeAfterHook.exports;
 	hasRequiredBeforeAfterHook = 1;
 	var register = requireRegister();
-	var addHook = requireAdd();
+	var addHook = requireAdd$1();
 	var removeHook = requireRemove();
 
 	// bind with array of arguments: https://stackoverflow.com/a/21792913
@@ -39232,6 +39232,6828 @@ class OctokitProvider {
     }
 }
 
+var main$2 = {};
+
+var argument = {};
+
+var hasRequiredArgument;
+
+function requireArgument () {
+	if (hasRequiredArgument) return argument;
+	hasRequiredArgument = 1;
+	Object.defineProperty(argument, "__esModule", { value: true });
+	argument.Argument = void 0;
+	class Argument {
+	    constructor(value, range) {
+	        this.value = value;
+	        this.range = range;
+	    }
+	    toString() {
+	        return this.value;
+	    }
+	    getRange() {
+	        return this.range;
+	    }
+	    getValue() {
+	        return this.value;
+	    }
+	    isAfter(position) {
+	        if (this.range.end.line < position.line) {
+	            return false;
+	        }
+	        return this.range.start.line > position.line ? true : this.range.start.character > position.character;
+	    }
+	    isBefore(position) {
+	        if (this.range.start.line < position.line) {
+	            return true;
+	        }
+	        return this.range.end.line > position.line ? false : this.range.end.character < position.character;
+	    }
+	}
+	argument.Argument = Argument;
+	return argument;
+}
+
+var jsonArgument = {};
+
+var hasRequiredJsonArgument;
+
+function requireJsonArgument () {
+	if (hasRequiredJsonArgument) return jsonArgument;
+	hasRequiredJsonArgument = 1;
+	Object.defineProperty(jsonArgument, "__esModule", { value: true });
+	jsonArgument.JSONArgument = void 0;
+	const argument_1 = requireArgument();
+	class JSONArgument extends argument_1.Argument {
+	    constructor(value, range, jsonRange) {
+	        super(value, range);
+	        this.jsonRange = jsonRange;
+	    }
+	    getJSONRange() {
+	        return this.jsonRange;
+	    }
+	    getJSONValue() {
+	        let value = super.getValue();
+	        value = value.substring(1, value.length - 1);
+	        return value;
+	    }
+	}
+	jsonArgument.JSONArgument = JSONArgument;
+	return jsonArgument;
+}
+
+var comment = {};
+
+function commonjsRequire(path) {
+	throw new Error('Could not dynamically require "' + path + '". Please configure the dynamicRequireTargets or/and ignoreDynamicRequires option of @rollup/plugin-commonjs appropriately for this require call to work.');
+}
+
+var main$1 = {exports: {}};
+
+var hasRequiredMain$1;
+
+function requireMain$1 () {
+	if (hasRequiredMain$1) return main$1.exports;
+	hasRequiredMain$1 = 1;
+	(function (module, exports$1) {
+		(function (factory) {
+		    {
+		        var v = factory(commonjsRequire, exports$1);
+		        if (v !== undefined) module.exports = v;
+		    }
+		})(function (require, exports$1) {
+		    Object.defineProperty(exports$1, "__esModule", { value: true });
+		    exports$1.TextDocument = exports$1.EOL = exports$1.WorkspaceFolder = exports$1.InlineCompletionContext = exports$1.SelectedCompletionInfo = exports$1.InlineCompletionTriggerKind = exports$1.InlineCompletionList = exports$1.InlineCompletionItem = exports$1.StringValue = exports$1.InlayHint = exports$1.InlayHintLabelPart = exports$1.InlayHintKind = exports$1.InlineValueContext = exports$1.InlineValueEvaluatableExpression = exports$1.InlineValueVariableLookup = exports$1.InlineValueText = exports$1.SemanticTokens = exports$1.SemanticTokenModifiers = exports$1.SemanticTokenTypes = exports$1.SelectionRange = exports$1.DocumentLink = exports$1.FormattingOptions = exports$1.CodeLens = exports$1.CodeAction = exports$1.CodeActionContext = exports$1.CodeActionTriggerKind = exports$1.CodeActionKind = exports$1.DocumentSymbol = exports$1.WorkspaceSymbol = exports$1.SymbolInformation = exports$1.SymbolTag = exports$1.SymbolKind = exports$1.DocumentHighlight = exports$1.DocumentHighlightKind = exports$1.SignatureInformation = exports$1.ParameterInformation = exports$1.Hover = exports$1.MarkedString = exports$1.CompletionList = exports$1.CompletionItem = exports$1.CompletionItemLabelDetails = exports$1.InsertTextMode = exports$1.InsertReplaceEdit = exports$1.CompletionItemTag = exports$1.InsertTextFormat = exports$1.CompletionItemKind = exports$1.MarkupContent = exports$1.MarkupKind = exports$1.TextDocumentItem = exports$1.OptionalVersionedTextDocumentIdentifier = exports$1.VersionedTextDocumentIdentifier = exports$1.TextDocumentIdentifier = exports$1.WorkspaceChange = exports$1.WorkspaceEdit = exports$1.DeleteFile = exports$1.RenameFile = exports$1.CreateFile = exports$1.TextDocumentEdit = exports$1.AnnotatedTextEdit = exports$1.ChangeAnnotationIdentifier = exports$1.ChangeAnnotation = exports$1.TextEdit = exports$1.Command = exports$1.Diagnostic = exports$1.CodeDescription = exports$1.DiagnosticTag = exports$1.DiagnosticSeverity = exports$1.DiagnosticRelatedInformation = exports$1.FoldingRange = exports$1.FoldingRangeKind = exports$1.ColorPresentation = exports$1.ColorInformation = exports$1.Color = exports$1.LocationLink = exports$1.Location = exports$1.Range = exports$1.Position = exports$1.uinteger = exports$1.integer = exports$1.URI = exports$1.DocumentUri = void 0;
+		    var DocumentUri;
+		    (function (DocumentUri) {
+		        function is(value) {
+		            return typeof value === 'string';
+		        }
+		        DocumentUri.is = is;
+		    })(DocumentUri || (exports$1.DocumentUri = DocumentUri = {}));
+		    var URI;
+		    (function (URI) {
+		        function is(value) {
+		            return typeof value === 'string';
+		        }
+		        URI.is = is;
+		    })(URI || (exports$1.URI = URI = {}));
+		    var integer;
+		    (function (integer) {
+		        integer.MIN_VALUE = -2147483648;
+		        integer.MAX_VALUE = 2147483647;
+		        function is(value) {
+		            return typeof value === 'number' && integer.MIN_VALUE <= value && value <= integer.MAX_VALUE;
+		        }
+		        integer.is = is;
+		    })(integer || (exports$1.integer = integer = {}));
+		    var uinteger;
+		    (function (uinteger) {
+		        uinteger.MIN_VALUE = 0;
+		        uinteger.MAX_VALUE = 2147483647;
+		        function is(value) {
+		            return typeof value === 'number' && uinteger.MIN_VALUE <= value && value <= uinteger.MAX_VALUE;
+		        }
+		        uinteger.is = is;
+		    })(uinteger || (exports$1.uinteger = uinteger = {}));
+		    /**
+		     * The Position namespace provides helper functions to work with
+		     * {@link Position} literals.
+		     */
+		    var Position;
+		    (function (Position) {
+		        /**
+		         * Creates a new Position literal from the given line and character.
+		         * @param line The position's line.
+		         * @param character The position's character.
+		         */
+		        function create(line, character) {
+		            if (line === Number.MAX_VALUE) {
+		                line = uinteger.MAX_VALUE;
+		            }
+		            if (character === Number.MAX_VALUE) {
+		                character = uinteger.MAX_VALUE;
+		            }
+		            return { line: line, character: character };
+		        }
+		        Position.create = create;
+		        /**
+		         * Checks whether the given literal conforms to the {@link Position} interface.
+		         */
+		        function is(value) {
+		            var candidate = value;
+		            return Is.objectLiteral(candidate) && Is.uinteger(candidate.line) && Is.uinteger(candidate.character);
+		        }
+		        Position.is = is;
+		    })(Position || (exports$1.Position = Position = {}));
+		    /**
+		     * The Range namespace provides helper functions to work with
+		     * {@link Range} literals.
+		     */
+		    var Range;
+		    (function (Range) {
+		        function create(one, two, three, four) {
+		            if (Is.uinteger(one) && Is.uinteger(two) && Is.uinteger(three) && Is.uinteger(four)) {
+		                return { start: Position.create(one, two), end: Position.create(three, four) };
+		            }
+		            else if (Position.is(one) && Position.is(two)) {
+		                return { start: one, end: two };
+		            }
+		            else {
+		                throw new Error("Range#create called with invalid arguments[".concat(one, ", ").concat(two, ", ").concat(three, ", ").concat(four, "]"));
+		            }
+		        }
+		        Range.create = create;
+		        /**
+		         * Checks whether the given literal conforms to the {@link Range} interface.
+		         */
+		        function is(value) {
+		            var candidate = value;
+		            return Is.objectLiteral(candidate) && Position.is(candidate.start) && Position.is(candidate.end);
+		        }
+		        Range.is = is;
+		    })(Range || (exports$1.Range = Range = {}));
+		    /**
+		     * The Location namespace provides helper functions to work with
+		     * {@link Location} literals.
+		     */
+		    var Location;
+		    (function (Location) {
+		        /**
+		         * Creates a Location literal.
+		         * @param uri The location's uri.
+		         * @param range The location's range.
+		         */
+		        function create(uri, range) {
+		            return { uri: uri, range: range };
+		        }
+		        Location.create = create;
+		        /**
+		         * Checks whether the given literal conforms to the {@link Location} interface.
+		         */
+		        function is(value) {
+		            var candidate = value;
+		            return Is.objectLiteral(candidate) && Range.is(candidate.range) && (Is.string(candidate.uri) || Is.undefined(candidate.uri));
+		        }
+		        Location.is = is;
+		    })(Location || (exports$1.Location = Location = {}));
+		    /**
+		     * The LocationLink namespace provides helper functions to work with
+		     * {@link LocationLink} literals.
+		     */
+		    var LocationLink;
+		    (function (LocationLink) {
+		        /**
+		         * Creates a LocationLink literal.
+		         * @param targetUri The definition's uri.
+		         * @param targetRange The full range of the definition.
+		         * @param targetSelectionRange The span of the symbol definition at the target.
+		         * @param originSelectionRange The span of the symbol being defined in the originating source file.
+		         */
+		        function create(targetUri, targetRange, targetSelectionRange, originSelectionRange) {
+		            return { targetUri: targetUri, targetRange: targetRange, targetSelectionRange: targetSelectionRange, originSelectionRange: originSelectionRange };
+		        }
+		        LocationLink.create = create;
+		        /**
+		         * Checks whether the given literal conforms to the {@link LocationLink} interface.
+		         */
+		        function is(value) {
+		            var candidate = value;
+		            return Is.objectLiteral(candidate) && Range.is(candidate.targetRange) && Is.string(candidate.targetUri)
+		                && Range.is(candidate.targetSelectionRange)
+		                && (Range.is(candidate.originSelectionRange) || Is.undefined(candidate.originSelectionRange));
+		        }
+		        LocationLink.is = is;
+		    })(LocationLink || (exports$1.LocationLink = LocationLink = {}));
+		    /**
+		     * The Color namespace provides helper functions to work with
+		     * {@link Color} literals.
+		     */
+		    var Color;
+		    (function (Color) {
+		        /**
+		         * Creates a new Color literal.
+		         */
+		        function create(red, green, blue, alpha) {
+		            return {
+		                red: red,
+		                green: green,
+		                blue: blue,
+		                alpha: alpha,
+		            };
+		        }
+		        Color.create = create;
+		        /**
+		         * Checks whether the given literal conforms to the {@link Color} interface.
+		         */
+		        function is(value) {
+		            var candidate = value;
+		            return Is.objectLiteral(candidate) && Is.numberRange(candidate.red, 0, 1)
+		                && Is.numberRange(candidate.green, 0, 1)
+		                && Is.numberRange(candidate.blue, 0, 1)
+		                && Is.numberRange(candidate.alpha, 0, 1);
+		        }
+		        Color.is = is;
+		    })(Color || (exports$1.Color = Color = {}));
+		    /**
+		     * The ColorInformation namespace provides helper functions to work with
+		     * {@link ColorInformation} literals.
+		     */
+		    var ColorInformation;
+		    (function (ColorInformation) {
+		        /**
+		         * Creates a new ColorInformation literal.
+		         */
+		        function create(range, color) {
+		            return {
+		                range: range,
+		                color: color,
+		            };
+		        }
+		        ColorInformation.create = create;
+		        /**
+		         * Checks whether the given literal conforms to the {@link ColorInformation} interface.
+		         */
+		        function is(value) {
+		            var candidate = value;
+		            return Is.objectLiteral(candidate) && Range.is(candidate.range) && Color.is(candidate.color);
+		        }
+		        ColorInformation.is = is;
+		    })(ColorInformation || (exports$1.ColorInformation = ColorInformation = {}));
+		    /**
+		     * The Color namespace provides helper functions to work with
+		     * {@link ColorPresentation} literals.
+		     */
+		    var ColorPresentation;
+		    (function (ColorPresentation) {
+		        /**
+		         * Creates a new ColorInformation literal.
+		         */
+		        function create(label, textEdit, additionalTextEdits) {
+		            return {
+		                label: label,
+		                textEdit: textEdit,
+		                additionalTextEdits: additionalTextEdits,
+		            };
+		        }
+		        ColorPresentation.create = create;
+		        /**
+		         * Checks whether the given literal conforms to the {@link ColorInformation} interface.
+		         */
+		        function is(value) {
+		            var candidate = value;
+		            return Is.objectLiteral(candidate) && Is.string(candidate.label)
+		                && (Is.undefined(candidate.textEdit) || TextEdit.is(candidate))
+		                && (Is.undefined(candidate.additionalTextEdits) || Is.typedArray(candidate.additionalTextEdits, TextEdit.is));
+		        }
+		        ColorPresentation.is = is;
+		    })(ColorPresentation || (exports$1.ColorPresentation = ColorPresentation = {}));
+		    /**
+		     * A set of predefined range kinds.
+		     */
+		    var FoldingRangeKind;
+		    (function (FoldingRangeKind) {
+		        /**
+		         * Folding range for a comment
+		         */
+		        FoldingRangeKind.Comment = 'comment';
+		        /**
+		         * Folding range for an import or include
+		         */
+		        FoldingRangeKind.Imports = 'imports';
+		        /**
+		         * Folding range for a region (e.g. `#region`)
+		         */
+		        FoldingRangeKind.Region = 'region';
+		    })(FoldingRangeKind || (exports$1.FoldingRangeKind = FoldingRangeKind = {}));
+		    /**
+		     * The folding range namespace provides helper functions to work with
+		     * {@link FoldingRange} literals.
+		     */
+		    var FoldingRange;
+		    (function (FoldingRange) {
+		        /**
+		         * Creates a new FoldingRange literal.
+		         */
+		        function create(startLine, endLine, startCharacter, endCharacter, kind, collapsedText) {
+		            var result = {
+		                startLine: startLine,
+		                endLine: endLine
+		            };
+		            if (Is.defined(startCharacter)) {
+		                result.startCharacter = startCharacter;
+		            }
+		            if (Is.defined(endCharacter)) {
+		                result.endCharacter = endCharacter;
+		            }
+		            if (Is.defined(kind)) {
+		                result.kind = kind;
+		            }
+		            if (Is.defined(collapsedText)) {
+		                result.collapsedText = collapsedText;
+		            }
+		            return result;
+		        }
+		        FoldingRange.create = create;
+		        /**
+		         * Checks whether the given literal conforms to the {@link FoldingRange} interface.
+		         */
+		        function is(value) {
+		            var candidate = value;
+		            return Is.objectLiteral(candidate) && Is.uinteger(candidate.startLine) && Is.uinteger(candidate.startLine)
+		                && (Is.undefined(candidate.startCharacter) || Is.uinteger(candidate.startCharacter))
+		                && (Is.undefined(candidate.endCharacter) || Is.uinteger(candidate.endCharacter))
+		                && (Is.undefined(candidate.kind) || Is.string(candidate.kind));
+		        }
+		        FoldingRange.is = is;
+		    })(FoldingRange || (exports$1.FoldingRange = FoldingRange = {}));
+		    /**
+		     * The DiagnosticRelatedInformation namespace provides helper functions to work with
+		     * {@link DiagnosticRelatedInformation} literals.
+		     */
+		    var DiagnosticRelatedInformation;
+		    (function (DiagnosticRelatedInformation) {
+		        /**
+		         * Creates a new DiagnosticRelatedInformation literal.
+		         */
+		        function create(location, message) {
+		            return {
+		                location: location,
+		                message: message
+		            };
+		        }
+		        DiagnosticRelatedInformation.create = create;
+		        /**
+		         * Checks whether the given literal conforms to the {@link DiagnosticRelatedInformation} interface.
+		         */
+		        function is(value) {
+		            var candidate = value;
+		            return Is.defined(candidate) && Location.is(candidate.location) && Is.string(candidate.message);
+		        }
+		        DiagnosticRelatedInformation.is = is;
+		    })(DiagnosticRelatedInformation || (exports$1.DiagnosticRelatedInformation = DiagnosticRelatedInformation = {}));
+		    /**
+		     * The diagnostic's severity.
+		     */
+		    var DiagnosticSeverity;
+		    (function (DiagnosticSeverity) {
+		        /**
+		         * Reports an error.
+		         */
+		        DiagnosticSeverity.Error = 1;
+		        /**
+		         * Reports a warning.
+		         */
+		        DiagnosticSeverity.Warning = 2;
+		        /**
+		         * Reports an information.
+		         */
+		        DiagnosticSeverity.Information = 3;
+		        /**
+		         * Reports a hint.
+		         */
+		        DiagnosticSeverity.Hint = 4;
+		    })(DiagnosticSeverity || (exports$1.DiagnosticSeverity = DiagnosticSeverity = {}));
+		    /**
+		     * The diagnostic tags.
+		     *
+		     * @since 3.15.0
+		     */
+		    var DiagnosticTag;
+		    (function (DiagnosticTag) {
+		        /**
+		         * Unused or unnecessary code.
+		         *
+		         * Clients are allowed to render diagnostics with this tag faded out instead of having
+		         * an error squiggle.
+		         */
+		        DiagnosticTag.Unnecessary = 1;
+		        /**
+		         * Deprecated or obsolete code.
+		         *
+		         * Clients are allowed to rendered diagnostics with this tag strike through.
+		         */
+		        DiagnosticTag.Deprecated = 2;
+		    })(DiagnosticTag || (exports$1.DiagnosticTag = DiagnosticTag = {}));
+		    /**
+		     * The CodeDescription namespace provides functions to deal with descriptions for diagnostic codes.
+		     *
+		     * @since 3.16.0
+		     */
+		    var CodeDescription;
+		    (function (CodeDescription) {
+		        function is(value) {
+		            var candidate = value;
+		            return Is.objectLiteral(candidate) && Is.string(candidate.href);
+		        }
+		        CodeDescription.is = is;
+		    })(CodeDescription || (exports$1.CodeDescription = CodeDescription = {}));
+		    /**
+		     * The Diagnostic namespace provides helper functions to work with
+		     * {@link Diagnostic} literals.
+		     */
+		    var Diagnostic;
+		    (function (Diagnostic) {
+		        /**
+		         * Creates a new Diagnostic literal.
+		         */
+		        function create(range, message, severity, code, source, relatedInformation) {
+		            var result = { range: range, message: message };
+		            if (Is.defined(severity)) {
+		                result.severity = severity;
+		            }
+		            if (Is.defined(code)) {
+		                result.code = code;
+		            }
+		            if (Is.defined(source)) {
+		                result.source = source;
+		            }
+		            if (Is.defined(relatedInformation)) {
+		                result.relatedInformation = relatedInformation;
+		            }
+		            return result;
+		        }
+		        Diagnostic.create = create;
+		        /**
+		         * Checks whether the given literal conforms to the {@link Diagnostic} interface.
+		         */
+		        function is(value) {
+		            var _a;
+		            var candidate = value;
+		            return Is.defined(candidate)
+		                && Range.is(candidate.range)
+		                && Is.string(candidate.message)
+		                && (Is.number(candidate.severity) || Is.undefined(candidate.severity))
+		                && (Is.integer(candidate.code) || Is.string(candidate.code) || Is.undefined(candidate.code))
+		                && (Is.undefined(candidate.codeDescription) || (Is.string((_a = candidate.codeDescription) === null || _a === void 0 ? void 0 : _a.href)))
+		                && (Is.string(candidate.source) || Is.undefined(candidate.source))
+		                && (Is.undefined(candidate.relatedInformation) || Is.typedArray(candidate.relatedInformation, DiagnosticRelatedInformation.is));
+		        }
+		        Diagnostic.is = is;
+		    })(Diagnostic || (exports$1.Diagnostic = Diagnostic = {}));
+		    /**
+		     * The Command namespace provides helper functions to work with
+		     * {@link Command} literals.
+		     */
+		    var Command;
+		    (function (Command) {
+		        /**
+		         * Creates a new Command literal.
+		         */
+		        function create(title, command) {
+		            var args = [];
+		            for (var _i = 2; _i < arguments.length; _i++) {
+		                args[_i - 2] = arguments[_i];
+		            }
+		            var result = { title: title, command: command };
+		            if (Is.defined(args) && args.length > 0) {
+		                result.arguments = args;
+		            }
+		            return result;
+		        }
+		        Command.create = create;
+		        /**
+		         * Checks whether the given literal conforms to the {@link Command} interface.
+		         */
+		        function is(value) {
+		            var candidate = value;
+		            return Is.defined(candidate) && Is.string(candidate.title) && Is.string(candidate.command);
+		        }
+		        Command.is = is;
+		    })(Command || (exports$1.Command = Command = {}));
+		    /**
+		     * The TextEdit namespace provides helper function to create replace,
+		     * insert and delete edits more easily.
+		     */
+		    var TextEdit;
+		    (function (TextEdit) {
+		        /**
+		         * Creates a replace text edit.
+		         * @param range The range of text to be replaced.
+		         * @param newText The new text.
+		         */
+		        function replace(range, newText) {
+		            return { range: range, newText: newText };
+		        }
+		        TextEdit.replace = replace;
+		        /**
+		         * Creates an insert text edit.
+		         * @param position The position to insert the text at.
+		         * @param newText The text to be inserted.
+		         */
+		        function insert(position, newText) {
+		            return { range: { start: position, end: position }, newText: newText };
+		        }
+		        TextEdit.insert = insert;
+		        /**
+		         * Creates a delete text edit.
+		         * @param range The range of text to be deleted.
+		         */
+		        function del(range) {
+		            return { range: range, newText: '' };
+		        }
+		        TextEdit.del = del;
+		        function is(value) {
+		            var candidate = value;
+		            return Is.objectLiteral(candidate)
+		                && Is.string(candidate.newText)
+		                && Range.is(candidate.range);
+		        }
+		        TextEdit.is = is;
+		    })(TextEdit || (exports$1.TextEdit = TextEdit = {}));
+		    var ChangeAnnotation;
+		    (function (ChangeAnnotation) {
+		        function create(label, needsConfirmation, description) {
+		            var result = { label: label };
+		            if (needsConfirmation !== undefined) {
+		                result.needsConfirmation = needsConfirmation;
+		            }
+		            if (description !== undefined) {
+		                result.description = description;
+		            }
+		            return result;
+		        }
+		        ChangeAnnotation.create = create;
+		        function is(value) {
+		            var candidate = value;
+		            return Is.objectLiteral(candidate) && Is.string(candidate.label) &&
+		                (Is.boolean(candidate.needsConfirmation) || candidate.needsConfirmation === undefined) &&
+		                (Is.string(candidate.description) || candidate.description === undefined);
+		        }
+		        ChangeAnnotation.is = is;
+		    })(ChangeAnnotation || (exports$1.ChangeAnnotation = ChangeAnnotation = {}));
+		    var ChangeAnnotationIdentifier;
+		    (function (ChangeAnnotationIdentifier) {
+		        function is(value) {
+		            var candidate = value;
+		            return Is.string(candidate);
+		        }
+		        ChangeAnnotationIdentifier.is = is;
+		    })(ChangeAnnotationIdentifier || (exports$1.ChangeAnnotationIdentifier = ChangeAnnotationIdentifier = {}));
+		    var AnnotatedTextEdit;
+		    (function (AnnotatedTextEdit) {
+		        /**
+		         * Creates an annotated replace text edit.
+		         *
+		         * @param range The range of text to be replaced.
+		         * @param newText The new text.
+		         * @param annotation The annotation.
+		         */
+		        function replace(range, newText, annotation) {
+		            return { range: range, newText: newText, annotationId: annotation };
+		        }
+		        AnnotatedTextEdit.replace = replace;
+		        /**
+		         * Creates an annotated insert text edit.
+		         *
+		         * @param position The position to insert the text at.
+		         * @param newText The text to be inserted.
+		         * @param annotation The annotation.
+		         */
+		        function insert(position, newText, annotation) {
+		            return { range: { start: position, end: position }, newText: newText, annotationId: annotation };
+		        }
+		        AnnotatedTextEdit.insert = insert;
+		        /**
+		         * Creates an annotated delete text edit.
+		         *
+		         * @param range The range of text to be deleted.
+		         * @param annotation The annotation.
+		         */
+		        function del(range, annotation) {
+		            return { range: range, newText: '', annotationId: annotation };
+		        }
+		        AnnotatedTextEdit.del = del;
+		        function is(value) {
+		            var candidate = value;
+		            return TextEdit.is(candidate) && (ChangeAnnotation.is(candidate.annotationId) || ChangeAnnotationIdentifier.is(candidate.annotationId));
+		        }
+		        AnnotatedTextEdit.is = is;
+		    })(AnnotatedTextEdit || (exports$1.AnnotatedTextEdit = AnnotatedTextEdit = {}));
+		    /**
+		     * The TextDocumentEdit namespace provides helper function to create
+		     * an edit that manipulates a text document.
+		     */
+		    var TextDocumentEdit;
+		    (function (TextDocumentEdit) {
+		        /**
+		         * Creates a new `TextDocumentEdit`
+		         */
+		        function create(textDocument, edits) {
+		            return { textDocument: textDocument, edits: edits };
+		        }
+		        TextDocumentEdit.create = create;
+		        function is(value) {
+		            var candidate = value;
+		            return Is.defined(candidate)
+		                && OptionalVersionedTextDocumentIdentifier.is(candidate.textDocument)
+		                && Array.isArray(candidate.edits);
+		        }
+		        TextDocumentEdit.is = is;
+		    })(TextDocumentEdit || (exports$1.TextDocumentEdit = TextDocumentEdit = {}));
+		    var CreateFile;
+		    (function (CreateFile) {
+		        function create(uri, options, annotation) {
+		            var result = {
+		                kind: 'create',
+		                uri: uri
+		            };
+		            if (options !== undefined && (options.overwrite !== undefined || options.ignoreIfExists !== undefined)) {
+		                result.options = options;
+		            }
+		            if (annotation !== undefined) {
+		                result.annotationId = annotation;
+		            }
+		            return result;
+		        }
+		        CreateFile.create = create;
+		        function is(value) {
+		            var candidate = value;
+		            return candidate && candidate.kind === 'create' && Is.string(candidate.uri) && (candidate.options === undefined ||
+		                ((candidate.options.overwrite === undefined || Is.boolean(candidate.options.overwrite)) && (candidate.options.ignoreIfExists === undefined || Is.boolean(candidate.options.ignoreIfExists)))) && (candidate.annotationId === undefined || ChangeAnnotationIdentifier.is(candidate.annotationId));
+		        }
+		        CreateFile.is = is;
+		    })(CreateFile || (exports$1.CreateFile = CreateFile = {}));
+		    var RenameFile;
+		    (function (RenameFile) {
+		        function create(oldUri, newUri, options, annotation) {
+		            var result = {
+		                kind: 'rename',
+		                oldUri: oldUri,
+		                newUri: newUri
+		            };
+		            if (options !== undefined && (options.overwrite !== undefined || options.ignoreIfExists !== undefined)) {
+		                result.options = options;
+		            }
+		            if (annotation !== undefined) {
+		                result.annotationId = annotation;
+		            }
+		            return result;
+		        }
+		        RenameFile.create = create;
+		        function is(value) {
+		            var candidate = value;
+		            return candidate && candidate.kind === 'rename' && Is.string(candidate.oldUri) && Is.string(candidate.newUri) && (candidate.options === undefined ||
+		                ((candidate.options.overwrite === undefined || Is.boolean(candidate.options.overwrite)) && (candidate.options.ignoreIfExists === undefined || Is.boolean(candidate.options.ignoreIfExists)))) && (candidate.annotationId === undefined || ChangeAnnotationIdentifier.is(candidate.annotationId));
+		        }
+		        RenameFile.is = is;
+		    })(RenameFile || (exports$1.RenameFile = RenameFile = {}));
+		    var DeleteFile;
+		    (function (DeleteFile) {
+		        function create(uri, options, annotation) {
+		            var result = {
+		                kind: 'delete',
+		                uri: uri
+		            };
+		            if (options !== undefined && (options.recursive !== undefined || options.ignoreIfNotExists !== undefined)) {
+		                result.options = options;
+		            }
+		            if (annotation !== undefined) {
+		                result.annotationId = annotation;
+		            }
+		            return result;
+		        }
+		        DeleteFile.create = create;
+		        function is(value) {
+		            var candidate = value;
+		            return candidate && candidate.kind === 'delete' && Is.string(candidate.uri) && (candidate.options === undefined ||
+		                ((candidate.options.recursive === undefined || Is.boolean(candidate.options.recursive)) && (candidate.options.ignoreIfNotExists === undefined || Is.boolean(candidate.options.ignoreIfNotExists)))) && (candidate.annotationId === undefined || ChangeAnnotationIdentifier.is(candidate.annotationId));
+		        }
+		        DeleteFile.is = is;
+		    })(DeleteFile || (exports$1.DeleteFile = DeleteFile = {}));
+		    var WorkspaceEdit;
+		    (function (WorkspaceEdit) {
+		        function is(value) {
+		            var candidate = value;
+		            return candidate &&
+		                (candidate.changes !== undefined || candidate.documentChanges !== undefined) &&
+		                (candidate.documentChanges === undefined || candidate.documentChanges.every(function (change) {
+		                    if (Is.string(change.kind)) {
+		                        return CreateFile.is(change) || RenameFile.is(change) || DeleteFile.is(change);
+		                    }
+		                    else {
+		                        return TextDocumentEdit.is(change);
+		                    }
+		                }));
+		        }
+		        WorkspaceEdit.is = is;
+		    })(WorkspaceEdit || (exports$1.WorkspaceEdit = WorkspaceEdit = {}));
+		    var TextEditChangeImpl = /** @class */ (function () {
+		        function TextEditChangeImpl(edits, changeAnnotations) {
+		            this.edits = edits;
+		            this.changeAnnotations = changeAnnotations;
+		        }
+		        TextEditChangeImpl.prototype.insert = function (position, newText, annotation) {
+		            var edit;
+		            var id;
+		            if (annotation === undefined) {
+		                edit = TextEdit.insert(position, newText);
+		            }
+		            else if (ChangeAnnotationIdentifier.is(annotation)) {
+		                id = annotation;
+		                edit = AnnotatedTextEdit.insert(position, newText, annotation);
+		            }
+		            else {
+		                this.assertChangeAnnotations(this.changeAnnotations);
+		                id = this.changeAnnotations.manage(annotation);
+		                edit = AnnotatedTextEdit.insert(position, newText, id);
+		            }
+		            this.edits.push(edit);
+		            if (id !== undefined) {
+		                return id;
+		            }
+		        };
+		        TextEditChangeImpl.prototype.replace = function (range, newText, annotation) {
+		            var edit;
+		            var id;
+		            if (annotation === undefined) {
+		                edit = TextEdit.replace(range, newText);
+		            }
+		            else if (ChangeAnnotationIdentifier.is(annotation)) {
+		                id = annotation;
+		                edit = AnnotatedTextEdit.replace(range, newText, annotation);
+		            }
+		            else {
+		                this.assertChangeAnnotations(this.changeAnnotations);
+		                id = this.changeAnnotations.manage(annotation);
+		                edit = AnnotatedTextEdit.replace(range, newText, id);
+		            }
+		            this.edits.push(edit);
+		            if (id !== undefined) {
+		                return id;
+		            }
+		        };
+		        TextEditChangeImpl.prototype.delete = function (range, annotation) {
+		            var edit;
+		            var id;
+		            if (annotation === undefined) {
+		                edit = TextEdit.del(range);
+		            }
+		            else if (ChangeAnnotationIdentifier.is(annotation)) {
+		                id = annotation;
+		                edit = AnnotatedTextEdit.del(range, annotation);
+		            }
+		            else {
+		                this.assertChangeAnnotations(this.changeAnnotations);
+		                id = this.changeAnnotations.manage(annotation);
+		                edit = AnnotatedTextEdit.del(range, id);
+		            }
+		            this.edits.push(edit);
+		            if (id !== undefined) {
+		                return id;
+		            }
+		        };
+		        TextEditChangeImpl.prototype.add = function (edit) {
+		            this.edits.push(edit);
+		        };
+		        TextEditChangeImpl.prototype.all = function () {
+		            return this.edits;
+		        };
+		        TextEditChangeImpl.prototype.clear = function () {
+		            this.edits.splice(0, this.edits.length);
+		        };
+		        TextEditChangeImpl.prototype.assertChangeAnnotations = function (value) {
+		            if (value === undefined) {
+		                throw new Error("Text edit change is not configured to manage change annotations.");
+		            }
+		        };
+		        return TextEditChangeImpl;
+		    }());
+		    /**
+		     * A helper class
+		     */
+		    var ChangeAnnotations = /** @class */ (function () {
+		        function ChangeAnnotations(annotations) {
+		            this._annotations = annotations === undefined ? Object.create(null) : annotations;
+		            this._counter = 0;
+		            this._size = 0;
+		        }
+		        ChangeAnnotations.prototype.all = function () {
+		            return this._annotations;
+		        };
+		        Object.defineProperty(ChangeAnnotations.prototype, "size", {
+		            get: function () {
+		                return this._size;
+		            },
+		            enumerable: false,
+		            configurable: true
+		        });
+		        ChangeAnnotations.prototype.manage = function (idOrAnnotation, annotation) {
+		            var id;
+		            if (ChangeAnnotationIdentifier.is(idOrAnnotation)) {
+		                id = idOrAnnotation;
+		            }
+		            else {
+		                id = this.nextId();
+		                annotation = idOrAnnotation;
+		            }
+		            if (this._annotations[id] !== undefined) {
+		                throw new Error("Id ".concat(id, " is already in use."));
+		            }
+		            if (annotation === undefined) {
+		                throw new Error("No annotation provided for id ".concat(id));
+		            }
+		            this._annotations[id] = annotation;
+		            this._size++;
+		            return id;
+		        };
+		        ChangeAnnotations.prototype.nextId = function () {
+		            this._counter++;
+		            return this._counter.toString();
+		        };
+		        return ChangeAnnotations;
+		    }());
+		    /**
+		     * A workspace change helps constructing changes to a workspace.
+		     */
+		    var WorkspaceChange = /** @class */ (function () {
+		        function WorkspaceChange(workspaceEdit) {
+		            var _this = this;
+		            this._textEditChanges = Object.create(null);
+		            if (workspaceEdit !== undefined) {
+		                this._workspaceEdit = workspaceEdit;
+		                if (workspaceEdit.documentChanges) {
+		                    this._changeAnnotations = new ChangeAnnotations(workspaceEdit.changeAnnotations);
+		                    workspaceEdit.changeAnnotations = this._changeAnnotations.all();
+		                    workspaceEdit.documentChanges.forEach(function (change) {
+		                        if (TextDocumentEdit.is(change)) {
+		                            var textEditChange = new TextEditChangeImpl(change.edits, _this._changeAnnotations);
+		                            _this._textEditChanges[change.textDocument.uri] = textEditChange;
+		                        }
+		                    });
+		                }
+		                else if (workspaceEdit.changes) {
+		                    Object.keys(workspaceEdit.changes).forEach(function (key) {
+		                        var textEditChange = new TextEditChangeImpl(workspaceEdit.changes[key]);
+		                        _this._textEditChanges[key] = textEditChange;
+		                    });
+		                }
+		            }
+		            else {
+		                this._workspaceEdit = {};
+		            }
+		        }
+		        Object.defineProperty(WorkspaceChange.prototype, "edit", {
+		            /**
+		             * Returns the underlying {@link WorkspaceEdit} literal
+		             * use to be returned from a workspace edit operation like rename.
+		             */
+		            get: function () {
+		                this.initDocumentChanges();
+		                if (this._changeAnnotations !== undefined) {
+		                    if (this._changeAnnotations.size === 0) {
+		                        this._workspaceEdit.changeAnnotations = undefined;
+		                    }
+		                    else {
+		                        this._workspaceEdit.changeAnnotations = this._changeAnnotations.all();
+		                    }
+		                }
+		                return this._workspaceEdit;
+		            },
+		            enumerable: false,
+		            configurable: true
+		        });
+		        WorkspaceChange.prototype.getTextEditChange = function (key) {
+		            if (OptionalVersionedTextDocumentIdentifier.is(key)) {
+		                this.initDocumentChanges();
+		                if (this._workspaceEdit.documentChanges === undefined) {
+		                    throw new Error('Workspace edit is not configured for document changes.');
+		                }
+		                var textDocument = { uri: key.uri, version: key.version };
+		                var result = this._textEditChanges[textDocument.uri];
+		                if (!result) {
+		                    var edits = [];
+		                    var textDocumentEdit = {
+		                        textDocument: textDocument,
+		                        edits: edits
+		                    };
+		                    this._workspaceEdit.documentChanges.push(textDocumentEdit);
+		                    result = new TextEditChangeImpl(edits, this._changeAnnotations);
+		                    this._textEditChanges[textDocument.uri] = result;
+		                }
+		                return result;
+		            }
+		            else {
+		                this.initChanges();
+		                if (this._workspaceEdit.changes === undefined) {
+		                    throw new Error('Workspace edit is not configured for normal text edit changes.');
+		                }
+		                var result = this._textEditChanges[key];
+		                if (!result) {
+		                    var edits = [];
+		                    this._workspaceEdit.changes[key] = edits;
+		                    result = new TextEditChangeImpl(edits);
+		                    this._textEditChanges[key] = result;
+		                }
+		                return result;
+		            }
+		        };
+		        WorkspaceChange.prototype.initDocumentChanges = function () {
+		            if (this._workspaceEdit.documentChanges === undefined && this._workspaceEdit.changes === undefined) {
+		                this._changeAnnotations = new ChangeAnnotations();
+		                this._workspaceEdit.documentChanges = [];
+		                this._workspaceEdit.changeAnnotations = this._changeAnnotations.all();
+		            }
+		        };
+		        WorkspaceChange.prototype.initChanges = function () {
+		            if (this._workspaceEdit.documentChanges === undefined && this._workspaceEdit.changes === undefined) {
+		                this._workspaceEdit.changes = Object.create(null);
+		            }
+		        };
+		        WorkspaceChange.prototype.createFile = function (uri, optionsOrAnnotation, options) {
+		            this.initDocumentChanges();
+		            if (this._workspaceEdit.documentChanges === undefined) {
+		                throw new Error('Workspace edit is not configured for document changes.');
+		            }
+		            var annotation;
+		            if (ChangeAnnotation.is(optionsOrAnnotation) || ChangeAnnotationIdentifier.is(optionsOrAnnotation)) {
+		                annotation = optionsOrAnnotation;
+		            }
+		            else {
+		                options = optionsOrAnnotation;
+		            }
+		            var operation;
+		            var id;
+		            if (annotation === undefined) {
+		                operation = CreateFile.create(uri, options);
+		            }
+		            else {
+		                id = ChangeAnnotationIdentifier.is(annotation) ? annotation : this._changeAnnotations.manage(annotation);
+		                operation = CreateFile.create(uri, options, id);
+		            }
+		            this._workspaceEdit.documentChanges.push(operation);
+		            if (id !== undefined) {
+		                return id;
+		            }
+		        };
+		        WorkspaceChange.prototype.renameFile = function (oldUri, newUri, optionsOrAnnotation, options) {
+		            this.initDocumentChanges();
+		            if (this._workspaceEdit.documentChanges === undefined) {
+		                throw new Error('Workspace edit is not configured for document changes.');
+		            }
+		            var annotation;
+		            if (ChangeAnnotation.is(optionsOrAnnotation) || ChangeAnnotationIdentifier.is(optionsOrAnnotation)) {
+		                annotation = optionsOrAnnotation;
+		            }
+		            else {
+		                options = optionsOrAnnotation;
+		            }
+		            var operation;
+		            var id;
+		            if (annotation === undefined) {
+		                operation = RenameFile.create(oldUri, newUri, options);
+		            }
+		            else {
+		                id = ChangeAnnotationIdentifier.is(annotation) ? annotation : this._changeAnnotations.manage(annotation);
+		                operation = RenameFile.create(oldUri, newUri, options, id);
+		            }
+		            this._workspaceEdit.documentChanges.push(operation);
+		            if (id !== undefined) {
+		                return id;
+		            }
+		        };
+		        WorkspaceChange.prototype.deleteFile = function (uri, optionsOrAnnotation, options) {
+		            this.initDocumentChanges();
+		            if (this._workspaceEdit.documentChanges === undefined) {
+		                throw new Error('Workspace edit is not configured for document changes.');
+		            }
+		            var annotation;
+		            if (ChangeAnnotation.is(optionsOrAnnotation) || ChangeAnnotationIdentifier.is(optionsOrAnnotation)) {
+		                annotation = optionsOrAnnotation;
+		            }
+		            else {
+		                options = optionsOrAnnotation;
+		            }
+		            var operation;
+		            var id;
+		            if (annotation === undefined) {
+		                operation = DeleteFile.create(uri, options);
+		            }
+		            else {
+		                id = ChangeAnnotationIdentifier.is(annotation) ? annotation : this._changeAnnotations.manage(annotation);
+		                operation = DeleteFile.create(uri, options, id);
+		            }
+		            this._workspaceEdit.documentChanges.push(operation);
+		            if (id !== undefined) {
+		                return id;
+		            }
+		        };
+		        return WorkspaceChange;
+		    }());
+		    exports$1.WorkspaceChange = WorkspaceChange;
+		    /**
+		     * The TextDocumentIdentifier namespace provides helper functions to work with
+		     * {@link TextDocumentIdentifier} literals.
+		     */
+		    var TextDocumentIdentifier;
+		    (function (TextDocumentIdentifier) {
+		        /**
+		         * Creates a new TextDocumentIdentifier literal.
+		         * @param uri The document's uri.
+		         */
+		        function create(uri) {
+		            return { uri: uri };
+		        }
+		        TextDocumentIdentifier.create = create;
+		        /**
+		         * Checks whether the given literal conforms to the {@link TextDocumentIdentifier} interface.
+		         */
+		        function is(value) {
+		            var candidate = value;
+		            return Is.defined(candidate) && Is.string(candidate.uri);
+		        }
+		        TextDocumentIdentifier.is = is;
+		    })(TextDocumentIdentifier || (exports$1.TextDocumentIdentifier = TextDocumentIdentifier = {}));
+		    /**
+		     * The VersionedTextDocumentIdentifier namespace provides helper functions to work with
+		     * {@link VersionedTextDocumentIdentifier} literals.
+		     */
+		    var VersionedTextDocumentIdentifier;
+		    (function (VersionedTextDocumentIdentifier) {
+		        /**
+		         * Creates a new VersionedTextDocumentIdentifier literal.
+		         * @param uri The document's uri.
+		         * @param version The document's version.
+		         */
+		        function create(uri, version) {
+		            return { uri: uri, version: version };
+		        }
+		        VersionedTextDocumentIdentifier.create = create;
+		        /**
+		         * Checks whether the given literal conforms to the {@link VersionedTextDocumentIdentifier} interface.
+		         */
+		        function is(value) {
+		            var candidate = value;
+		            return Is.defined(candidate) && Is.string(candidate.uri) && Is.integer(candidate.version);
+		        }
+		        VersionedTextDocumentIdentifier.is = is;
+		    })(VersionedTextDocumentIdentifier || (exports$1.VersionedTextDocumentIdentifier = VersionedTextDocumentIdentifier = {}));
+		    /**
+		     * The OptionalVersionedTextDocumentIdentifier namespace provides helper functions to work with
+		     * {@link OptionalVersionedTextDocumentIdentifier} literals.
+		     */
+		    var OptionalVersionedTextDocumentIdentifier;
+		    (function (OptionalVersionedTextDocumentIdentifier) {
+		        /**
+		         * Creates a new OptionalVersionedTextDocumentIdentifier literal.
+		         * @param uri The document's uri.
+		         * @param version The document's version.
+		         */
+		        function create(uri, version) {
+		            return { uri: uri, version: version };
+		        }
+		        OptionalVersionedTextDocumentIdentifier.create = create;
+		        /**
+		         * Checks whether the given literal conforms to the {@link OptionalVersionedTextDocumentIdentifier} interface.
+		         */
+		        function is(value) {
+		            var candidate = value;
+		            return Is.defined(candidate) && Is.string(candidate.uri) && (candidate.version === null || Is.integer(candidate.version));
+		        }
+		        OptionalVersionedTextDocumentIdentifier.is = is;
+		    })(OptionalVersionedTextDocumentIdentifier || (exports$1.OptionalVersionedTextDocumentIdentifier = OptionalVersionedTextDocumentIdentifier = {}));
+		    /**
+		     * The TextDocumentItem namespace provides helper functions to work with
+		     * {@link TextDocumentItem} literals.
+		     */
+		    var TextDocumentItem;
+		    (function (TextDocumentItem) {
+		        /**
+		         * Creates a new TextDocumentItem literal.
+		         * @param uri The document's uri.
+		         * @param languageId The document's language identifier.
+		         * @param version The document's version number.
+		         * @param text The document's text.
+		         */
+		        function create(uri, languageId, version, text) {
+		            return { uri: uri, languageId: languageId, version: version, text: text };
+		        }
+		        TextDocumentItem.create = create;
+		        /**
+		         * Checks whether the given literal conforms to the {@link TextDocumentItem} interface.
+		         */
+		        function is(value) {
+		            var candidate = value;
+		            return Is.defined(candidate) && Is.string(candidate.uri) && Is.string(candidate.languageId) && Is.integer(candidate.version) && Is.string(candidate.text);
+		        }
+		        TextDocumentItem.is = is;
+		    })(TextDocumentItem || (exports$1.TextDocumentItem = TextDocumentItem = {}));
+		    /**
+		     * Describes the content type that a client supports in various
+		     * result literals like `Hover`, `ParameterInfo` or `CompletionItem`.
+		     *
+		     * Please note that `MarkupKinds` must not start with a `$`. This kinds
+		     * are reserved for internal usage.
+		     */
+		    var MarkupKind;
+		    (function (MarkupKind) {
+		        /**
+		         * Plain text is supported as a content format
+		         */
+		        MarkupKind.PlainText = 'plaintext';
+		        /**
+		         * Markdown is supported as a content format
+		         */
+		        MarkupKind.Markdown = 'markdown';
+		        /**
+		         * Checks whether the given value is a value of the {@link MarkupKind} type.
+		         */
+		        function is(value) {
+		            var candidate = value;
+		            return candidate === MarkupKind.PlainText || candidate === MarkupKind.Markdown;
+		        }
+		        MarkupKind.is = is;
+		    })(MarkupKind || (exports$1.MarkupKind = MarkupKind = {}));
+		    var MarkupContent;
+		    (function (MarkupContent) {
+		        /**
+		         * Checks whether the given value conforms to the {@link MarkupContent} interface.
+		         */
+		        function is(value) {
+		            var candidate = value;
+		            return Is.objectLiteral(value) && MarkupKind.is(candidate.kind) && Is.string(candidate.value);
+		        }
+		        MarkupContent.is = is;
+		    })(MarkupContent || (exports$1.MarkupContent = MarkupContent = {}));
+		    /**
+		     * The kind of a completion entry.
+		     */
+		    var CompletionItemKind;
+		    (function (CompletionItemKind) {
+		        CompletionItemKind.Text = 1;
+		        CompletionItemKind.Method = 2;
+		        CompletionItemKind.Function = 3;
+		        CompletionItemKind.Constructor = 4;
+		        CompletionItemKind.Field = 5;
+		        CompletionItemKind.Variable = 6;
+		        CompletionItemKind.Class = 7;
+		        CompletionItemKind.Interface = 8;
+		        CompletionItemKind.Module = 9;
+		        CompletionItemKind.Property = 10;
+		        CompletionItemKind.Unit = 11;
+		        CompletionItemKind.Value = 12;
+		        CompletionItemKind.Enum = 13;
+		        CompletionItemKind.Keyword = 14;
+		        CompletionItemKind.Snippet = 15;
+		        CompletionItemKind.Color = 16;
+		        CompletionItemKind.File = 17;
+		        CompletionItemKind.Reference = 18;
+		        CompletionItemKind.Folder = 19;
+		        CompletionItemKind.EnumMember = 20;
+		        CompletionItemKind.Constant = 21;
+		        CompletionItemKind.Struct = 22;
+		        CompletionItemKind.Event = 23;
+		        CompletionItemKind.Operator = 24;
+		        CompletionItemKind.TypeParameter = 25;
+		    })(CompletionItemKind || (exports$1.CompletionItemKind = CompletionItemKind = {}));
+		    /**
+		     * Defines whether the insert text in a completion item should be interpreted as
+		     * plain text or a snippet.
+		     */
+		    var InsertTextFormat;
+		    (function (InsertTextFormat) {
+		        /**
+		         * The primary text to be inserted is treated as a plain string.
+		         */
+		        InsertTextFormat.PlainText = 1;
+		        /**
+		         * The primary text to be inserted is treated as a snippet.
+		         *
+		         * A snippet can define tab stops and placeholders with `$1`, `$2`
+		         * and `${3:foo}`. `$0` defines the final tab stop, it defaults to
+		         * the end of the snippet. Placeholders with equal identifiers are linked,
+		         * that is typing in one will update others too.
+		         *
+		         * See also: https://microsoft.github.io/language-server-protocol/specifications/specification-current/#snippet_syntax
+		         */
+		        InsertTextFormat.Snippet = 2;
+		    })(InsertTextFormat || (exports$1.InsertTextFormat = InsertTextFormat = {}));
+		    /**
+		     * Completion item tags are extra annotations that tweak the rendering of a completion
+		     * item.
+		     *
+		     * @since 3.15.0
+		     */
+		    var CompletionItemTag;
+		    (function (CompletionItemTag) {
+		        /**
+		         * Render a completion as obsolete, usually using a strike-out.
+		         */
+		        CompletionItemTag.Deprecated = 1;
+		    })(CompletionItemTag || (exports$1.CompletionItemTag = CompletionItemTag = {}));
+		    /**
+		     * The InsertReplaceEdit namespace provides functions to deal with insert / replace edits.
+		     *
+		     * @since 3.16.0
+		     */
+		    var InsertReplaceEdit;
+		    (function (InsertReplaceEdit) {
+		        /**
+		         * Creates a new insert / replace edit
+		         */
+		        function create(newText, insert, replace) {
+		            return { newText: newText, insert: insert, replace: replace };
+		        }
+		        InsertReplaceEdit.create = create;
+		        /**
+		         * Checks whether the given literal conforms to the {@link InsertReplaceEdit} interface.
+		         */
+		        function is(value) {
+		            var candidate = value;
+		            return candidate && Is.string(candidate.newText) && Range.is(candidate.insert) && Range.is(candidate.replace);
+		        }
+		        InsertReplaceEdit.is = is;
+		    })(InsertReplaceEdit || (exports$1.InsertReplaceEdit = InsertReplaceEdit = {}));
+		    /**
+		     * How whitespace and indentation is handled during completion
+		     * item insertion.
+		     *
+		     * @since 3.16.0
+		     */
+		    var InsertTextMode;
+		    (function (InsertTextMode) {
+		        /**
+		         * The insertion or replace strings is taken as it is. If the
+		         * value is multi line the lines below the cursor will be
+		         * inserted using the indentation defined in the string value.
+		         * The client will not apply any kind of adjustments to the
+		         * string.
+		         */
+		        InsertTextMode.asIs = 1;
+		        /**
+		         * The editor adjusts leading whitespace of new lines so that
+		         * they match the indentation up to the cursor of the line for
+		         * which the item is accepted.
+		         *
+		         * Consider a line like this: <2tabs><cursor><3tabs>foo. Accepting a
+		         * multi line completion item is indented using 2 tabs and all
+		         * following lines inserted will be indented using 2 tabs as well.
+		         */
+		        InsertTextMode.adjustIndentation = 2;
+		    })(InsertTextMode || (exports$1.InsertTextMode = InsertTextMode = {}));
+		    var CompletionItemLabelDetails;
+		    (function (CompletionItemLabelDetails) {
+		        function is(value) {
+		            var candidate = value;
+		            return candidate && (Is.string(candidate.detail) || candidate.detail === undefined) &&
+		                (Is.string(candidate.description) || candidate.description === undefined);
+		        }
+		        CompletionItemLabelDetails.is = is;
+		    })(CompletionItemLabelDetails || (exports$1.CompletionItemLabelDetails = CompletionItemLabelDetails = {}));
+		    /**
+		     * The CompletionItem namespace provides functions to deal with
+		     * completion items.
+		     */
+		    var CompletionItem;
+		    (function (CompletionItem) {
+		        /**
+		         * Create a completion item and seed it with a label.
+		         * @param label The completion item's label
+		         */
+		        function create(label) {
+		            return { label: label };
+		        }
+		        CompletionItem.create = create;
+		    })(CompletionItem || (exports$1.CompletionItem = CompletionItem = {}));
+		    /**
+		     * The CompletionList namespace provides functions to deal with
+		     * completion lists.
+		     */
+		    var CompletionList;
+		    (function (CompletionList) {
+		        /**
+		         * Creates a new completion list.
+		         *
+		         * @param items The completion items.
+		         * @param isIncomplete The list is not complete.
+		         */
+		        function create(items, isIncomplete) {
+		            return { items: items ? items : [], isIncomplete: !!isIncomplete };
+		        }
+		        CompletionList.create = create;
+		    })(CompletionList || (exports$1.CompletionList = CompletionList = {}));
+		    var MarkedString;
+		    (function (MarkedString) {
+		        /**
+		         * Creates a marked string from plain text.
+		         *
+		         * @param plainText The plain text.
+		         */
+		        function fromPlainText(plainText) {
+		            return plainText.replace(/[\\`*_{}[\]()#+\-.!]/g, '\\$&'); // escape markdown syntax tokens: http://daringfireball.net/projects/markdown/syntax#backslash
+		        }
+		        MarkedString.fromPlainText = fromPlainText;
+		        /**
+		         * Checks whether the given value conforms to the {@link MarkedString} type.
+		         */
+		        function is(value) {
+		            var candidate = value;
+		            return Is.string(candidate) || (Is.objectLiteral(candidate) && Is.string(candidate.language) && Is.string(candidate.value));
+		        }
+		        MarkedString.is = is;
+		    })(MarkedString || (exports$1.MarkedString = MarkedString = {}));
+		    var Hover;
+		    (function (Hover) {
+		        /**
+		         * Checks whether the given value conforms to the {@link Hover} interface.
+		         */
+		        function is(value) {
+		            var candidate = value;
+		            return !!candidate && Is.objectLiteral(candidate) && (MarkupContent.is(candidate.contents) ||
+		                MarkedString.is(candidate.contents) ||
+		                Is.typedArray(candidate.contents, MarkedString.is)) && (value.range === undefined || Range.is(value.range));
+		        }
+		        Hover.is = is;
+		    })(Hover || (exports$1.Hover = Hover = {}));
+		    /**
+		     * The ParameterInformation namespace provides helper functions to work with
+		     * {@link ParameterInformation} literals.
+		     */
+		    var ParameterInformation;
+		    (function (ParameterInformation) {
+		        /**
+		         * Creates a new parameter information literal.
+		         *
+		         * @param label A label string.
+		         * @param documentation A doc string.
+		         */
+		        function create(label, documentation) {
+		            return documentation ? { label: label, documentation: documentation } : { label: label };
+		        }
+		        ParameterInformation.create = create;
+		    })(ParameterInformation || (exports$1.ParameterInformation = ParameterInformation = {}));
+		    /**
+		     * The SignatureInformation namespace provides helper functions to work with
+		     * {@link SignatureInformation} literals.
+		     */
+		    var SignatureInformation;
+		    (function (SignatureInformation) {
+		        function create(label, documentation) {
+		            var parameters = [];
+		            for (var _i = 2; _i < arguments.length; _i++) {
+		                parameters[_i - 2] = arguments[_i];
+		            }
+		            var result = { label: label };
+		            if (Is.defined(documentation)) {
+		                result.documentation = documentation;
+		            }
+		            if (Is.defined(parameters)) {
+		                result.parameters = parameters;
+		            }
+		            else {
+		                result.parameters = [];
+		            }
+		            return result;
+		        }
+		        SignatureInformation.create = create;
+		    })(SignatureInformation || (exports$1.SignatureInformation = SignatureInformation = {}));
+		    /**
+		     * A document highlight kind.
+		     */
+		    var DocumentHighlightKind;
+		    (function (DocumentHighlightKind) {
+		        /**
+		         * A textual occurrence.
+		         */
+		        DocumentHighlightKind.Text = 1;
+		        /**
+		         * Read-access of a symbol, like reading a variable.
+		         */
+		        DocumentHighlightKind.Read = 2;
+		        /**
+		         * Write-access of a symbol, like writing to a variable.
+		         */
+		        DocumentHighlightKind.Write = 3;
+		    })(DocumentHighlightKind || (exports$1.DocumentHighlightKind = DocumentHighlightKind = {}));
+		    /**
+		     * DocumentHighlight namespace to provide helper functions to work with
+		     * {@link DocumentHighlight} literals.
+		     */
+		    var DocumentHighlight;
+		    (function (DocumentHighlight) {
+		        /**
+		         * Create a DocumentHighlight object.
+		         * @param range The range the highlight applies to.
+		         * @param kind The highlight kind
+		         */
+		        function create(range, kind) {
+		            var result = { range: range };
+		            if (Is.number(kind)) {
+		                result.kind = kind;
+		            }
+		            return result;
+		        }
+		        DocumentHighlight.create = create;
+		    })(DocumentHighlight || (exports$1.DocumentHighlight = DocumentHighlight = {}));
+		    /**
+		     * A symbol kind.
+		     */
+		    var SymbolKind;
+		    (function (SymbolKind) {
+		        SymbolKind.File = 1;
+		        SymbolKind.Module = 2;
+		        SymbolKind.Namespace = 3;
+		        SymbolKind.Package = 4;
+		        SymbolKind.Class = 5;
+		        SymbolKind.Method = 6;
+		        SymbolKind.Property = 7;
+		        SymbolKind.Field = 8;
+		        SymbolKind.Constructor = 9;
+		        SymbolKind.Enum = 10;
+		        SymbolKind.Interface = 11;
+		        SymbolKind.Function = 12;
+		        SymbolKind.Variable = 13;
+		        SymbolKind.Constant = 14;
+		        SymbolKind.String = 15;
+		        SymbolKind.Number = 16;
+		        SymbolKind.Boolean = 17;
+		        SymbolKind.Array = 18;
+		        SymbolKind.Object = 19;
+		        SymbolKind.Key = 20;
+		        SymbolKind.Null = 21;
+		        SymbolKind.EnumMember = 22;
+		        SymbolKind.Struct = 23;
+		        SymbolKind.Event = 24;
+		        SymbolKind.Operator = 25;
+		        SymbolKind.TypeParameter = 26;
+		    })(SymbolKind || (exports$1.SymbolKind = SymbolKind = {}));
+		    /**
+		     * Symbol tags are extra annotations that tweak the rendering of a symbol.
+		     *
+		     * @since 3.16
+		     */
+		    var SymbolTag;
+		    (function (SymbolTag) {
+		        /**
+		         * Render a symbol as obsolete, usually using a strike-out.
+		         */
+		        SymbolTag.Deprecated = 1;
+		    })(SymbolTag || (exports$1.SymbolTag = SymbolTag = {}));
+		    var SymbolInformation;
+		    (function (SymbolInformation) {
+		        /**
+		         * Creates a new symbol information literal.
+		         *
+		         * @param name The name of the symbol.
+		         * @param kind The kind of the symbol.
+		         * @param range The range of the location of the symbol.
+		         * @param uri The resource of the location of symbol.
+		         * @param containerName The name of the symbol containing the symbol.
+		         */
+		        function create(name, kind, range, uri, containerName) {
+		            var result = {
+		                name: name,
+		                kind: kind,
+		                location: { uri: uri, range: range }
+		            };
+		            if (containerName) {
+		                result.containerName = containerName;
+		            }
+		            return result;
+		        }
+		        SymbolInformation.create = create;
+		    })(SymbolInformation || (exports$1.SymbolInformation = SymbolInformation = {}));
+		    var WorkspaceSymbol;
+		    (function (WorkspaceSymbol) {
+		        /**
+		         * Create a new workspace symbol.
+		         *
+		         * @param name The name of the symbol.
+		         * @param kind The kind of the symbol.
+		         * @param uri The resource of the location of the symbol.
+		         * @param range An options range of the location.
+		         * @returns A WorkspaceSymbol.
+		         */
+		        function create(name, kind, uri, range) {
+		            return range !== undefined
+		                ? { name: name, kind: kind, location: { uri: uri, range: range } }
+		                : { name: name, kind: kind, location: { uri: uri } };
+		        }
+		        WorkspaceSymbol.create = create;
+		    })(WorkspaceSymbol || (exports$1.WorkspaceSymbol = WorkspaceSymbol = {}));
+		    var DocumentSymbol;
+		    (function (DocumentSymbol) {
+		        /**
+		         * Creates a new symbol information literal.
+		         *
+		         * @param name The name of the symbol.
+		         * @param detail The detail of the symbol.
+		         * @param kind The kind of the symbol.
+		         * @param range The range of the symbol.
+		         * @param selectionRange The selectionRange of the symbol.
+		         * @param children Children of the symbol.
+		         */
+		        function create(name, detail, kind, range, selectionRange, children) {
+		            var result = {
+		                name: name,
+		                detail: detail,
+		                kind: kind,
+		                range: range,
+		                selectionRange: selectionRange
+		            };
+		            if (children !== undefined) {
+		                result.children = children;
+		            }
+		            return result;
+		        }
+		        DocumentSymbol.create = create;
+		        /**
+		         * Checks whether the given literal conforms to the {@link DocumentSymbol} interface.
+		         */
+		        function is(value) {
+		            var candidate = value;
+		            return candidate &&
+		                Is.string(candidate.name) && Is.number(candidate.kind) &&
+		                Range.is(candidate.range) && Range.is(candidate.selectionRange) &&
+		                (candidate.detail === undefined || Is.string(candidate.detail)) &&
+		                (candidate.deprecated === undefined || Is.boolean(candidate.deprecated)) &&
+		                (candidate.children === undefined || Array.isArray(candidate.children)) &&
+		                (candidate.tags === undefined || Array.isArray(candidate.tags));
+		        }
+		        DocumentSymbol.is = is;
+		    })(DocumentSymbol || (exports$1.DocumentSymbol = DocumentSymbol = {}));
+		    /**
+		     * A set of predefined code action kinds
+		     */
+		    var CodeActionKind;
+		    (function (CodeActionKind) {
+		        /**
+		         * Empty kind.
+		         */
+		        CodeActionKind.Empty = '';
+		        /**
+		         * Base kind for quickfix actions: 'quickfix'
+		         */
+		        CodeActionKind.QuickFix = 'quickfix';
+		        /**
+		         * Base kind for refactoring actions: 'refactor'
+		         */
+		        CodeActionKind.Refactor = 'refactor';
+		        /**
+		         * Base kind for refactoring extraction actions: 'refactor.extract'
+		         *
+		         * Example extract actions:
+		         *
+		         * - Extract method
+		         * - Extract function
+		         * - Extract variable
+		         * - Extract interface from class
+		         * - ...
+		         */
+		        CodeActionKind.RefactorExtract = 'refactor.extract';
+		        /**
+		         * Base kind for refactoring inline actions: 'refactor.inline'
+		         *
+		         * Example inline actions:
+		         *
+		         * - Inline function
+		         * - Inline variable
+		         * - Inline constant
+		         * - ...
+		         */
+		        CodeActionKind.RefactorInline = 'refactor.inline';
+		        /**
+		         * Base kind for refactoring rewrite actions: 'refactor.rewrite'
+		         *
+		         * Example rewrite actions:
+		         *
+		         * - Convert JavaScript function to class
+		         * - Add or remove parameter
+		         * - Encapsulate field
+		         * - Make method static
+		         * - Move method to base class
+		         * - ...
+		         */
+		        CodeActionKind.RefactorRewrite = 'refactor.rewrite';
+		        /**
+		         * Base kind for source actions: `source`
+		         *
+		         * Source code actions apply to the entire file.
+		         */
+		        CodeActionKind.Source = 'source';
+		        /**
+		         * Base kind for an organize imports source action: `source.organizeImports`
+		         */
+		        CodeActionKind.SourceOrganizeImports = 'source.organizeImports';
+		        /**
+		         * Base kind for auto-fix source actions: `source.fixAll`.
+		         *
+		         * Fix all actions automatically fix errors that have a clear fix that do not require user input.
+		         * They should not suppress errors or perform unsafe fixes such as generating new types or classes.
+		         *
+		         * @since 3.15.0
+		         */
+		        CodeActionKind.SourceFixAll = 'source.fixAll';
+		    })(CodeActionKind || (exports$1.CodeActionKind = CodeActionKind = {}));
+		    /**
+		     * The reason why code actions were requested.
+		     *
+		     * @since 3.17.0
+		     */
+		    var CodeActionTriggerKind;
+		    (function (CodeActionTriggerKind) {
+		        /**
+		         * Code actions were explicitly requested by the user or by an extension.
+		         */
+		        CodeActionTriggerKind.Invoked = 1;
+		        /**
+		         * Code actions were requested automatically.
+		         *
+		         * This typically happens when current selection in a file changes, but can
+		         * also be triggered when file content changes.
+		         */
+		        CodeActionTriggerKind.Automatic = 2;
+		    })(CodeActionTriggerKind || (exports$1.CodeActionTriggerKind = CodeActionTriggerKind = {}));
+		    /**
+		     * The CodeActionContext namespace provides helper functions to work with
+		     * {@link CodeActionContext} literals.
+		     */
+		    var CodeActionContext;
+		    (function (CodeActionContext) {
+		        /**
+		         * Creates a new CodeActionContext literal.
+		         */
+		        function create(diagnostics, only, triggerKind) {
+		            var result = { diagnostics: diagnostics };
+		            if (only !== undefined && only !== null) {
+		                result.only = only;
+		            }
+		            if (triggerKind !== undefined && triggerKind !== null) {
+		                result.triggerKind = triggerKind;
+		            }
+		            return result;
+		        }
+		        CodeActionContext.create = create;
+		        /**
+		         * Checks whether the given literal conforms to the {@link CodeActionContext} interface.
+		         */
+		        function is(value) {
+		            var candidate = value;
+		            return Is.defined(candidate) && Is.typedArray(candidate.diagnostics, Diagnostic.is)
+		                && (candidate.only === undefined || Is.typedArray(candidate.only, Is.string))
+		                && (candidate.triggerKind === undefined || candidate.triggerKind === CodeActionTriggerKind.Invoked || candidate.triggerKind === CodeActionTriggerKind.Automatic);
+		        }
+		        CodeActionContext.is = is;
+		    })(CodeActionContext || (exports$1.CodeActionContext = CodeActionContext = {}));
+		    var CodeAction;
+		    (function (CodeAction) {
+		        function create(title, kindOrCommandOrEdit, kind) {
+		            var result = { title: title };
+		            var checkKind = true;
+		            if (typeof kindOrCommandOrEdit === 'string') {
+		                checkKind = false;
+		                result.kind = kindOrCommandOrEdit;
+		            }
+		            else if (Command.is(kindOrCommandOrEdit)) {
+		                result.command = kindOrCommandOrEdit;
+		            }
+		            else {
+		                result.edit = kindOrCommandOrEdit;
+		            }
+		            if (checkKind && kind !== undefined) {
+		                result.kind = kind;
+		            }
+		            return result;
+		        }
+		        CodeAction.create = create;
+		        function is(value) {
+		            var candidate = value;
+		            return candidate && Is.string(candidate.title) &&
+		                (candidate.diagnostics === undefined || Is.typedArray(candidate.diagnostics, Diagnostic.is)) &&
+		                (candidate.kind === undefined || Is.string(candidate.kind)) &&
+		                (candidate.edit !== undefined || candidate.command !== undefined) &&
+		                (candidate.command === undefined || Command.is(candidate.command)) &&
+		                (candidate.isPreferred === undefined || Is.boolean(candidate.isPreferred)) &&
+		                (candidate.edit === undefined || WorkspaceEdit.is(candidate.edit));
+		        }
+		        CodeAction.is = is;
+		    })(CodeAction || (exports$1.CodeAction = CodeAction = {}));
+		    /**
+		     * The CodeLens namespace provides helper functions to work with
+		     * {@link CodeLens} literals.
+		     */
+		    var CodeLens;
+		    (function (CodeLens) {
+		        /**
+		         * Creates a new CodeLens literal.
+		         */
+		        function create(range, data) {
+		            var result = { range: range };
+		            if (Is.defined(data)) {
+		                result.data = data;
+		            }
+		            return result;
+		        }
+		        CodeLens.create = create;
+		        /**
+		         * Checks whether the given literal conforms to the {@link CodeLens} interface.
+		         */
+		        function is(value) {
+		            var candidate = value;
+		            return Is.defined(candidate) && Range.is(candidate.range) && (Is.undefined(candidate.command) || Command.is(candidate.command));
+		        }
+		        CodeLens.is = is;
+		    })(CodeLens || (exports$1.CodeLens = CodeLens = {}));
+		    /**
+		     * The FormattingOptions namespace provides helper functions to work with
+		     * {@link FormattingOptions} literals.
+		     */
+		    var FormattingOptions;
+		    (function (FormattingOptions) {
+		        /**
+		         * Creates a new FormattingOptions literal.
+		         */
+		        function create(tabSize, insertSpaces) {
+		            return { tabSize: tabSize, insertSpaces: insertSpaces };
+		        }
+		        FormattingOptions.create = create;
+		        /**
+		         * Checks whether the given literal conforms to the {@link FormattingOptions} interface.
+		         */
+		        function is(value) {
+		            var candidate = value;
+		            return Is.defined(candidate) && Is.uinteger(candidate.tabSize) && Is.boolean(candidate.insertSpaces);
+		        }
+		        FormattingOptions.is = is;
+		    })(FormattingOptions || (exports$1.FormattingOptions = FormattingOptions = {}));
+		    /**
+		     * The DocumentLink namespace provides helper functions to work with
+		     * {@link DocumentLink} literals.
+		     */
+		    var DocumentLink;
+		    (function (DocumentLink) {
+		        /**
+		         * Creates a new DocumentLink literal.
+		         */
+		        function create(range, target, data) {
+		            return { range: range, target: target, data: data };
+		        }
+		        DocumentLink.create = create;
+		        /**
+		         * Checks whether the given literal conforms to the {@link DocumentLink} interface.
+		         */
+		        function is(value) {
+		            var candidate = value;
+		            return Is.defined(candidate) && Range.is(candidate.range) && (Is.undefined(candidate.target) || Is.string(candidate.target));
+		        }
+		        DocumentLink.is = is;
+		    })(DocumentLink || (exports$1.DocumentLink = DocumentLink = {}));
+		    /**
+		     * The SelectionRange namespace provides helper function to work with
+		     * SelectionRange literals.
+		     */
+		    var SelectionRange;
+		    (function (SelectionRange) {
+		        /**
+		         * Creates a new SelectionRange
+		         * @param range the range.
+		         * @param parent an optional parent.
+		         */
+		        function create(range, parent) {
+		            return { range: range, parent: parent };
+		        }
+		        SelectionRange.create = create;
+		        function is(value) {
+		            var candidate = value;
+		            return Is.objectLiteral(candidate) && Range.is(candidate.range) && (candidate.parent === undefined || SelectionRange.is(candidate.parent));
+		        }
+		        SelectionRange.is = is;
+		    })(SelectionRange || (exports$1.SelectionRange = SelectionRange = {}));
+		    /**
+		     * A set of predefined token types. This set is not fixed
+		     * an clients can specify additional token types via the
+		     * corresponding client capabilities.
+		     *
+		     * @since 3.16.0
+		     */
+		    var SemanticTokenTypes;
+		    (function (SemanticTokenTypes) {
+		        SemanticTokenTypes["namespace"] = "namespace";
+		        /**
+		         * Represents a generic type. Acts as a fallback for types which can't be mapped to
+		         * a specific type like class or enum.
+		         */
+		        SemanticTokenTypes["type"] = "type";
+		        SemanticTokenTypes["class"] = "class";
+		        SemanticTokenTypes["enum"] = "enum";
+		        SemanticTokenTypes["interface"] = "interface";
+		        SemanticTokenTypes["struct"] = "struct";
+		        SemanticTokenTypes["typeParameter"] = "typeParameter";
+		        SemanticTokenTypes["parameter"] = "parameter";
+		        SemanticTokenTypes["variable"] = "variable";
+		        SemanticTokenTypes["property"] = "property";
+		        SemanticTokenTypes["enumMember"] = "enumMember";
+		        SemanticTokenTypes["event"] = "event";
+		        SemanticTokenTypes["function"] = "function";
+		        SemanticTokenTypes["method"] = "method";
+		        SemanticTokenTypes["macro"] = "macro";
+		        SemanticTokenTypes["keyword"] = "keyword";
+		        SemanticTokenTypes["modifier"] = "modifier";
+		        SemanticTokenTypes["comment"] = "comment";
+		        SemanticTokenTypes["string"] = "string";
+		        SemanticTokenTypes["number"] = "number";
+		        SemanticTokenTypes["regexp"] = "regexp";
+		        SemanticTokenTypes["operator"] = "operator";
+		        /**
+		         * @since 3.17.0
+		         */
+		        SemanticTokenTypes["decorator"] = "decorator";
+		    })(SemanticTokenTypes || (exports$1.SemanticTokenTypes = SemanticTokenTypes = {}));
+		    /**
+		     * A set of predefined token modifiers. This set is not fixed
+		     * an clients can specify additional token types via the
+		     * corresponding client capabilities.
+		     *
+		     * @since 3.16.0
+		     */
+		    var SemanticTokenModifiers;
+		    (function (SemanticTokenModifiers) {
+		        SemanticTokenModifiers["declaration"] = "declaration";
+		        SemanticTokenModifiers["definition"] = "definition";
+		        SemanticTokenModifiers["readonly"] = "readonly";
+		        SemanticTokenModifiers["static"] = "static";
+		        SemanticTokenModifiers["deprecated"] = "deprecated";
+		        SemanticTokenModifiers["abstract"] = "abstract";
+		        SemanticTokenModifiers["async"] = "async";
+		        SemanticTokenModifiers["modification"] = "modification";
+		        SemanticTokenModifiers["documentation"] = "documentation";
+		        SemanticTokenModifiers["defaultLibrary"] = "defaultLibrary";
+		    })(SemanticTokenModifiers || (exports$1.SemanticTokenModifiers = SemanticTokenModifiers = {}));
+		    /**
+		     * @since 3.16.0
+		     */
+		    var SemanticTokens;
+		    (function (SemanticTokens) {
+		        function is(value) {
+		            var candidate = value;
+		            return Is.objectLiteral(candidate) && (candidate.resultId === undefined || typeof candidate.resultId === 'string') &&
+		                Array.isArray(candidate.data) && (candidate.data.length === 0 || typeof candidate.data[0] === 'number');
+		        }
+		        SemanticTokens.is = is;
+		    })(SemanticTokens || (exports$1.SemanticTokens = SemanticTokens = {}));
+		    /**
+		     * The InlineValueText namespace provides functions to deal with InlineValueTexts.
+		     *
+		     * @since 3.17.0
+		     */
+		    var InlineValueText;
+		    (function (InlineValueText) {
+		        /**
+		         * Creates a new InlineValueText literal.
+		         */
+		        function create(range, text) {
+		            return { range: range, text: text };
+		        }
+		        InlineValueText.create = create;
+		        function is(value) {
+		            var candidate = value;
+		            return candidate !== undefined && candidate !== null && Range.is(candidate.range) && Is.string(candidate.text);
+		        }
+		        InlineValueText.is = is;
+		    })(InlineValueText || (exports$1.InlineValueText = InlineValueText = {}));
+		    /**
+		     * The InlineValueVariableLookup namespace provides functions to deal with InlineValueVariableLookups.
+		     *
+		     * @since 3.17.0
+		     */
+		    var InlineValueVariableLookup;
+		    (function (InlineValueVariableLookup) {
+		        /**
+		         * Creates a new InlineValueText literal.
+		         */
+		        function create(range, variableName, caseSensitiveLookup) {
+		            return { range: range, variableName: variableName, caseSensitiveLookup: caseSensitiveLookup };
+		        }
+		        InlineValueVariableLookup.create = create;
+		        function is(value) {
+		            var candidate = value;
+		            return candidate !== undefined && candidate !== null && Range.is(candidate.range) && Is.boolean(candidate.caseSensitiveLookup)
+		                && (Is.string(candidate.variableName) || candidate.variableName === undefined);
+		        }
+		        InlineValueVariableLookup.is = is;
+		    })(InlineValueVariableLookup || (exports$1.InlineValueVariableLookup = InlineValueVariableLookup = {}));
+		    /**
+		     * The InlineValueEvaluatableExpression namespace provides functions to deal with InlineValueEvaluatableExpression.
+		     *
+		     * @since 3.17.0
+		     */
+		    var InlineValueEvaluatableExpression;
+		    (function (InlineValueEvaluatableExpression) {
+		        /**
+		         * Creates a new InlineValueEvaluatableExpression literal.
+		         */
+		        function create(range, expression) {
+		            return { range: range, expression: expression };
+		        }
+		        InlineValueEvaluatableExpression.create = create;
+		        function is(value) {
+		            var candidate = value;
+		            return candidate !== undefined && candidate !== null && Range.is(candidate.range)
+		                && (Is.string(candidate.expression) || candidate.expression === undefined);
+		        }
+		        InlineValueEvaluatableExpression.is = is;
+		    })(InlineValueEvaluatableExpression || (exports$1.InlineValueEvaluatableExpression = InlineValueEvaluatableExpression = {}));
+		    /**
+		     * The InlineValueContext namespace provides helper functions to work with
+		     * {@link InlineValueContext} literals.
+		     *
+		     * @since 3.17.0
+		     */
+		    var InlineValueContext;
+		    (function (InlineValueContext) {
+		        /**
+		         * Creates a new InlineValueContext literal.
+		         */
+		        function create(frameId, stoppedLocation) {
+		            return { frameId: frameId, stoppedLocation: stoppedLocation };
+		        }
+		        InlineValueContext.create = create;
+		        /**
+		         * Checks whether the given literal conforms to the {@link InlineValueContext} interface.
+		         */
+		        function is(value) {
+		            var candidate = value;
+		            return Is.defined(candidate) && Range.is(value.stoppedLocation);
+		        }
+		        InlineValueContext.is = is;
+		    })(InlineValueContext || (exports$1.InlineValueContext = InlineValueContext = {}));
+		    /**
+		     * Inlay hint kinds.
+		     *
+		     * @since 3.17.0
+		     */
+		    var InlayHintKind;
+		    (function (InlayHintKind) {
+		        /**
+		         * An inlay hint that for a type annotation.
+		         */
+		        InlayHintKind.Type = 1;
+		        /**
+		         * An inlay hint that is for a parameter.
+		         */
+		        InlayHintKind.Parameter = 2;
+		        function is(value) {
+		            return value === 1 || value === 2;
+		        }
+		        InlayHintKind.is = is;
+		    })(InlayHintKind || (exports$1.InlayHintKind = InlayHintKind = {}));
+		    var InlayHintLabelPart;
+		    (function (InlayHintLabelPart) {
+		        function create(value) {
+		            return { value: value };
+		        }
+		        InlayHintLabelPart.create = create;
+		        function is(value) {
+		            var candidate = value;
+		            return Is.objectLiteral(candidate)
+		                && (candidate.tooltip === undefined || Is.string(candidate.tooltip) || MarkupContent.is(candidate.tooltip))
+		                && (candidate.location === undefined || Location.is(candidate.location))
+		                && (candidate.command === undefined || Command.is(candidate.command));
+		        }
+		        InlayHintLabelPart.is = is;
+		    })(InlayHintLabelPart || (exports$1.InlayHintLabelPart = InlayHintLabelPart = {}));
+		    var InlayHint;
+		    (function (InlayHint) {
+		        function create(position, label, kind) {
+		            var result = { position: position, label: label };
+		            if (kind !== undefined) {
+		                result.kind = kind;
+		            }
+		            return result;
+		        }
+		        InlayHint.create = create;
+		        function is(value) {
+		            var candidate = value;
+		            return Is.objectLiteral(candidate) && Position.is(candidate.position)
+		                && (Is.string(candidate.label) || Is.typedArray(candidate.label, InlayHintLabelPart.is))
+		                && (candidate.kind === undefined || InlayHintKind.is(candidate.kind))
+		                && (candidate.textEdits === undefined) || Is.typedArray(candidate.textEdits, TextEdit.is)
+		                && (candidate.tooltip === undefined || Is.string(candidate.tooltip) || MarkupContent.is(candidate.tooltip))
+		                && (candidate.paddingLeft === undefined || Is.boolean(candidate.paddingLeft))
+		                && (candidate.paddingRight === undefined || Is.boolean(candidate.paddingRight));
+		        }
+		        InlayHint.is = is;
+		    })(InlayHint || (exports$1.InlayHint = InlayHint = {}));
+		    var StringValue;
+		    (function (StringValue) {
+		        function createSnippet(value) {
+		            return { kind: 'snippet', value: value };
+		        }
+		        StringValue.createSnippet = createSnippet;
+		    })(StringValue || (exports$1.StringValue = StringValue = {}));
+		    var InlineCompletionItem;
+		    (function (InlineCompletionItem) {
+		        function create(insertText, filterText, range, command) {
+		            return { insertText: insertText, filterText: filterText, range: range, command: command };
+		        }
+		        InlineCompletionItem.create = create;
+		    })(InlineCompletionItem || (exports$1.InlineCompletionItem = InlineCompletionItem = {}));
+		    var InlineCompletionList;
+		    (function (InlineCompletionList) {
+		        function create(items) {
+		            return { items: items };
+		        }
+		        InlineCompletionList.create = create;
+		    })(InlineCompletionList || (exports$1.InlineCompletionList = InlineCompletionList = {}));
+		    /**
+		     * Describes how an {@link InlineCompletionItemProvider inline completion provider} was triggered.
+		     *
+		     * @since 3.18.0
+		     * @proposed
+		     */
+		    var InlineCompletionTriggerKind;
+		    (function (InlineCompletionTriggerKind) {
+		        /**
+		         * Completion was triggered explicitly by a user gesture.
+		         */
+		        InlineCompletionTriggerKind.Invoked = 0;
+		        /**
+		         * Completion was triggered automatically while editing.
+		         */
+		        InlineCompletionTriggerKind.Automatic = 1;
+		    })(InlineCompletionTriggerKind || (exports$1.InlineCompletionTriggerKind = InlineCompletionTriggerKind = {}));
+		    var SelectedCompletionInfo;
+		    (function (SelectedCompletionInfo) {
+		        function create(range, text) {
+		            return { range: range, text: text };
+		        }
+		        SelectedCompletionInfo.create = create;
+		    })(SelectedCompletionInfo || (exports$1.SelectedCompletionInfo = SelectedCompletionInfo = {}));
+		    var InlineCompletionContext;
+		    (function (InlineCompletionContext) {
+		        function create(triggerKind, selectedCompletionInfo) {
+		            return { triggerKind: triggerKind, selectedCompletionInfo: selectedCompletionInfo };
+		        }
+		        InlineCompletionContext.create = create;
+		    })(InlineCompletionContext || (exports$1.InlineCompletionContext = InlineCompletionContext = {}));
+		    var WorkspaceFolder;
+		    (function (WorkspaceFolder) {
+		        function is(value) {
+		            var candidate = value;
+		            return Is.objectLiteral(candidate) && URI.is(candidate.uri) && Is.string(candidate.name);
+		        }
+		        WorkspaceFolder.is = is;
+		    })(WorkspaceFolder || (exports$1.WorkspaceFolder = WorkspaceFolder = {}));
+		    exports$1.EOL = ['\n', '\r\n', '\r'];
+		    /**
+		     * @deprecated Use the text document from the new vscode-languageserver-textdocument package.
+		     */
+		    var TextDocument;
+		    (function (TextDocument) {
+		        /**
+		         * Creates a new ITextDocument literal from the given uri and content.
+		         * @param uri The document's uri.
+		         * @param languageId The document's language Id.
+		         * @param version The document's version.
+		         * @param content The document's content.
+		         */
+		        function create(uri, languageId, version, content) {
+		            return new FullTextDocument(uri, languageId, version, content);
+		        }
+		        TextDocument.create = create;
+		        /**
+		         * Checks whether the given literal conforms to the {@link ITextDocument} interface.
+		         */
+		        function is(value) {
+		            var candidate = value;
+		            return Is.defined(candidate) && Is.string(candidate.uri) && (Is.undefined(candidate.languageId) || Is.string(candidate.languageId)) && Is.uinteger(candidate.lineCount)
+		                && Is.func(candidate.getText) && Is.func(candidate.positionAt) && Is.func(candidate.offsetAt) ? true : false;
+		        }
+		        TextDocument.is = is;
+		        function applyEdits(document, edits) {
+		            var text = document.getText();
+		            var sortedEdits = mergeSort(edits, function (a, b) {
+		                var diff = a.range.start.line - b.range.start.line;
+		                if (diff === 0) {
+		                    return a.range.start.character - b.range.start.character;
+		                }
+		                return diff;
+		            });
+		            var lastModifiedOffset = text.length;
+		            for (var i = sortedEdits.length - 1; i >= 0; i--) {
+		                var e = sortedEdits[i];
+		                var startOffset = document.offsetAt(e.range.start);
+		                var endOffset = document.offsetAt(e.range.end);
+		                if (endOffset <= lastModifiedOffset) {
+		                    text = text.substring(0, startOffset) + e.newText + text.substring(endOffset, text.length);
+		                }
+		                else {
+		                    throw new Error('Overlapping edit');
+		                }
+		                lastModifiedOffset = startOffset;
+		            }
+		            return text;
+		        }
+		        TextDocument.applyEdits = applyEdits;
+		        function mergeSort(data, compare) {
+		            if (data.length <= 1) {
+		                // sorted
+		                return data;
+		            }
+		            var p = (data.length / 2) | 0;
+		            var left = data.slice(0, p);
+		            var right = data.slice(p);
+		            mergeSort(left, compare);
+		            mergeSort(right, compare);
+		            var leftIdx = 0;
+		            var rightIdx = 0;
+		            var i = 0;
+		            while (leftIdx < left.length && rightIdx < right.length) {
+		                var ret = compare(left[leftIdx], right[rightIdx]);
+		                if (ret <= 0) {
+		                    // smaller_equal -> take left to preserve order
+		                    data[i++] = left[leftIdx++];
+		                }
+		                else {
+		                    // greater -> take right
+		                    data[i++] = right[rightIdx++];
+		                }
+		            }
+		            while (leftIdx < left.length) {
+		                data[i++] = left[leftIdx++];
+		            }
+		            while (rightIdx < right.length) {
+		                data[i++] = right[rightIdx++];
+		            }
+		            return data;
+		        }
+		    })(TextDocument || (exports$1.TextDocument = TextDocument = {}));
+		    /**
+		     * @deprecated Use the text document from the new vscode-languageserver-textdocument package.
+		     */
+		    var FullTextDocument = /** @class */ (function () {
+		        function FullTextDocument(uri, languageId, version, content) {
+		            this._uri = uri;
+		            this._languageId = languageId;
+		            this._version = version;
+		            this._content = content;
+		            this._lineOffsets = undefined;
+		        }
+		        Object.defineProperty(FullTextDocument.prototype, "uri", {
+		            get: function () {
+		                return this._uri;
+		            },
+		            enumerable: false,
+		            configurable: true
+		        });
+		        Object.defineProperty(FullTextDocument.prototype, "languageId", {
+		            get: function () {
+		                return this._languageId;
+		            },
+		            enumerable: false,
+		            configurable: true
+		        });
+		        Object.defineProperty(FullTextDocument.prototype, "version", {
+		            get: function () {
+		                return this._version;
+		            },
+		            enumerable: false,
+		            configurable: true
+		        });
+		        FullTextDocument.prototype.getText = function (range) {
+		            if (range) {
+		                var start = this.offsetAt(range.start);
+		                var end = this.offsetAt(range.end);
+		                return this._content.substring(start, end);
+		            }
+		            return this._content;
+		        };
+		        FullTextDocument.prototype.update = function (event, version) {
+		            this._content = event.text;
+		            this._version = version;
+		            this._lineOffsets = undefined;
+		        };
+		        FullTextDocument.prototype.getLineOffsets = function () {
+		            if (this._lineOffsets === undefined) {
+		                var lineOffsets = [];
+		                var text = this._content;
+		                var isLineStart = true;
+		                for (var i = 0; i < text.length; i++) {
+		                    if (isLineStart) {
+		                        lineOffsets.push(i);
+		                        isLineStart = false;
+		                    }
+		                    var ch = text.charAt(i);
+		                    isLineStart = (ch === '\r' || ch === '\n');
+		                    if (ch === '\r' && i + 1 < text.length && text.charAt(i + 1) === '\n') {
+		                        i++;
+		                    }
+		                }
+		                if (isLineStart && text.length > 0) {
+		                    lineOffsets.push(text.length);
+		                }
+		                this._lineOffsets = lineOffsets;
+		            }
+		            return this._lineOffsets;
+		        };
+		        FullTextDocument.prototype.positionAt = function (offset) {
+		            offset = Math.max(Math.min(offset, this._content.length), 0);
+		            var lineOffsets = this.getLineOffsets();
+		            var low = 0, high = lineOffsets.length;
+		            if (high === 0) {
+		                return Position.create(0, offset);
+		            }
+		            while (low < high) {
+		                var mid = Math.floor((low + high) / 2);
+		                if (lineOffsets[mid] > offset) {
+		                    high = mid;
+		                }
+		                else {
+		                    low = mid + 1;
+		                }
+		            }
+		            // low is the least x for which the line offset is larger than the current offset
+		            // or array.length if no line offset is larger than the current offset
+		            var line = low - 1;
+		            return Position.create(line, offset - lineOffsets[line]);
+		        };
+		        FullTextDocument.prototype.offsetAt = function (position) {
+		            var lineOffsets = this.getLineOffsets();
+		            if (position.line >= lineOffsets.length) {
+		                return this._content.length;
+		            }
+		            else if (position.line < 0) {
+		                return 0;
+		            }
+		            var lineOffset = lineOffsets[position.line];
+		            var nextLineOffset = (position.line + 1 < lineOffsets.length) ? lineOffsets[position.line + 1] : this._content.length;
+		            return Math.max(Math.min(lineOffset + position.character, nextLineOffset), lineOffset);
+		        };
+		        Object.defineProperty(FullTextDocument.prototype, "lineCount", {
+		            get: function () {
+		                return this.getLineOffsets().length;
+		            },
+		            enumerable: false,
+		            configurable: true
+		        });
+		        return FullTextDocument;
+		    }());
+		    var Is;
+		    (function (Is) {
+		        var toString = Object.prototype.toString;
+		        function defined(value) {
+		            return typeof value !== 'undefined';
+		        }
+		        Is.defined = defined;
+		        function undefined$1(value) {
+		            return typeof value === 'undefined';
+		        }
+		        Is.undefined = undefined$1;
+		        function boolean(value) {
+		            return value === true || value === false;
+		        }
+		        Is.boolean = boolean;
+		        function string(value) {
+		            return toString.call(value) === '[object String]';
+		        }
+		        Is.string = string;
+		        function number(value) {
+		            return toString.call(value) === '[object Number]';
+		        }
+		        Is.number = number;
+		        function numberRange(value, min, max) {
+		            return toString.call(value) === '[object Number]' && min <= value && value <= max;
+		        }
+		        Is.numberRange = numberRange;
+		        function integer(value) {
+		            return toString.call(value) === '[object Number]' && -2147483648 <= value && value <= 2147483647;
+		        }
+		        Is.integer = integer;
+		        function uinteger(value) {
+		            return toString.call(value) === '[object Number]' && 0 <= value && value <= 2147483647;
+		        }
+		        Is.uinteger = uinteger;
+		        function func(value) {
+		            return toString.call(value) === '[object Function]';
+		        }
+		        Is.func = func;
+		        function objectLiteral(value) {
+		            // Strictly speaking class instances pass this check as well. Since the LSP
+		            // doesn't use classes we ignore this for now. If we do we need to add something
+		            // like this: `Object.getPrototypeOf(Object.getPrototypeOf(x)) === null`
+		            return value !== null && typeof value === 'object';
+		        }
+		        Is.objectLiteral = objectLiteral;
+		        function typedArray(value, check) {
+		            return Array.isArray(value) && value.every(check);
+		        }
+		        Is.typedArray = typedArray;
+		    })(Is || (Is = {}));
+		}); 
+	} (main$1, main$1.exports));
+	return main$1.exports;
+}
+
+var line = {};
+
+var hasRequiredLine;
+
+function requireLine () {
+	if (hasRequiredLine) return line;
+	hasRequiredLine = 1;
+	Object.defineProperty(line, "__esModule", { value: true });
+	line.Line = void 0;
+	class Line {
+	    constructor(document, range) {
+	        this.document = document;
+	        this.range = range;
+	    }
+	    getRange() {
+	        return this.range;
+	    }
+	    getTextContent() {
+	        return this.document.getText().substring(this.document.offsetAt(this.range.start), this.document.offsetAt(this.range.end));
+	    }
+	    isAfter(line) {
+	        return this.range.start.line > line.range.start.line;
+	    }
+	    isBefore(line) {
+	        return this.range.start.line < line;
+	    }
+	}
+	line.Line = Line;
+	return line;
+}
+
+var util = {};
+
+/* --------------------------------------------------------------------------------------------
+ * Copyright (c) Remy Suen. All rights reserved.
+ * Licensed under the MIT License. See License.txt in the project root for license information.
+ * ------------------------------------------------------------------------------------------ */
+
+var hasRequiredUtil;
+
+function requireUtil () {
+	if (hasRequiredUtil) return util;
+	hasRequiredUtil = 1;
+	Object.defineProperty(util, "__esModule", { value: true });
+	util.Util = void 0;
+	class Util {
+	    static isUTF8BOM(char) {
+	        const uintArray = Uint8Array.from(Buffer.from(char, "UTF-8"));
+	        return uintArray[0] === 0xEF && uintArray[1] == 0xBB && uintArray[2] == 0xBF;
+	    }
+	    static isWhitespace(char) {
+	        return char === ' ' || char === '\t' || Util.isNewline(char);
+	    }
+	    static isNewline(char) {
+	        return char === '\r' || char === '\n';
+	    }
+	    static findLeadingNonWhitespace(content, escapeChar) {
+	        whitespaceCheck: for (let i = 0; i < content.length; i++) {
+	            switch (content.charAt(i)) {
+	                case ' ':
+	                case '\t':
+	                    continue;
+	                case escapeChar:
+	                    escapeCheck: for (let j = i + 1; j < content.length; j++) {
+	                        switch (content.charAt(j)) {
+	                            case ' ':
+	                            case '\t':
+	                                continue;
+	                            case '\r':
+	                                // offset one more for \r\n
+	                                i = j + 1;
+	                                continue whitespaceCheck;
+	                            case '\n':
+	                                i = j;
+	                                continue whitespaceCheck;
+	                            default:
+	                                break escapeCheck;
+	                        }
+	                    }
+	                    // found an escape character and then reached EOF
+	                    return -1;
+	                default:
+	                    return i;
+	            }
+	        }
+	        // only possible if the content is the empty string
+	        return -1;
+	    }
+	    /**
+	     * Determines if the given position is contained within the given range.
+	     *
+	     * @param position the position to check
+	     * @param range the range to see if the position is inside of
+	     */
+	    static isInsideRange(position, range) {
+	        if (range.start.line === range.end.line) {
+	            return range.start.line === position.line
+	                && range.start.character <= position.character
+	                && position.character <= range.end.character;
+	        }
+	        else if (range.start.line === position.line) {
+	            return range.start.character <= position.character;
+	        }
+	        else if (range.end.line === position.line) {
+	            return position.character <= range.end.character;
+	        }
+	        return range.start.line < position.line && position.line < range.end.line;
+	    }
+	    static parseHeredocName(value) {
+	        value = value.substring(2);
+	        if (value.charAt(0) === '-') {
+	            value = value.substring(1);
+	        }
+	        if (value.charAt(0) === '"') {
+	            if (value.charAt(value.length - 1) !== '"') {
+	                return null;
+	            }
+	            value = value.substring(1, value.length - 1);
+	        }
+	        if (value.charAt(0) === '\'') {
+	            if (value.charAt(value.length - 1) !== '\'') {
+	                return null;
+	            }
+	            value = value.substring(1, value.length - 1);
+	        }
+	        if (value.charAt(0) === "<") {
+	            return null;
+	        }
+	        return value;
+	    }
+	}
+	util.Util = Util;
+	return util;
+}
+
+var hasRequiredComment;
+
+function requireComment () {
+	if (hasRequiredComment) return comment;
+	hasRequiredComment = 1;
+	Object.defineProperty(comment, "__esModule", { value: true });
+	comment.Comment = void 0;
+	const vscode_languageserver_types_1 = requireMain$1();
+	const line_1 = requireLine();
+	const util_1 = requireUtil();
+	class Comment extends line_1.Line {
+	    constructor(document, range) {
+	        super(document, range);
+	    }
+	    toString() {
+	        const content = this.getContent();
+	        if (content) {
+	            return "# " + content;
+	        }
+	        return "#";
+	    }
+	    /**
+	     * Returns the content of this comment. This excludes leading and
+	     * trailing whitespace as well as the # symbol. If the comment only
+	     * consists of whitespace, the empty string will be returned.
+	     */
+	    getContent() {
+	        let range = this.getContentRange();
+	        if (range === null) {
+	            return "";
+	        }
+	        return this.document.getText().substring(this.document.offsetAt(range.start), this.document.offsetAt(range.end));
+	    }
+	    /**
+	     * Returns a range that includes the content of the comment
+	     * excluding any leading and trailing whitespace as well as the #
+	     * symbol. May return null if the comment only consists of whitespace
+	     * characters.
+	     */
+	    getContentRange() {
+	        let range = this.getRange();
+	        const startOffset = this.document.offsetAt(range.start);
+	        let raw = this.document.getText().substring(startOffset, this.document.offsetAt(range.end));
+	        let start = -1;
+	        let end = -1;
+	        // skip the first # symbol
+	        for (let i = 1; i < raw.length; i++) {
+	            if (!util_1.Util.isWhitespace(raw.charAt(i))) {
+	                start = i;
+	                break;
+	            }
+	        }
+	        if (start === -1) {
+	            return null;
+	        }
+	        // go backwards up to the first # symbol
+	        for (let i = raw.length - 1; i >= 1; i--) {
+	            if (!util_1.Util.isWhitespace(raw.charAt(i))) {
+	                end = i + 1;
+	                break;
+	            }
+	        }
+	        return vscode_languageserver_types_1.Range.create(this.document.positionAt(startOffset + start), this.document.positionAt(startOffset + end));
+	    }
+	}
+	comment.Comment = Comment;
+	return comment;
+}
+
+var parser = {};
+
+/* --------------------------------------------------------------------------------------------
+ * Copyright (c) Microsoft Corporation. All rights reserved.
+ * Licensed under the MIT License. See License.txt in the project root for license information.
+ * ------------------------------------------------------------------------------------------ */
+class FullTextDocument {
+    constructor(uri, languageId, version, content) {
+        this._uri = uri;
+        this._languageId = languageId;
+        this._version = version;
+        this._content = content;
+        this._lineOffsets = undefined;
+    }
+    get uri() {
+        return this._uri;
+    }
+    get languageId() {
+        return this._languageId;
+    }
+    get version() {
+        return this._version;
+    }
+    getText(range) {
+        if (range) {
+            const start = this.offsetAt(range.start);
+            const end = this.offsetAt(range.end);
+            return this._content.substring(start, end);
+        }
+        return this._content;
+    }
+    update(changes, version) {
+        for (const change of changes) {
+            if (FullTextDocument.isIncremental(change)) {
+                // makes sure start is before end
+                const range = getWellformedRange(change.range);
+                // update content
+                const startOffset = this.offsetAt(range.start);
+                const endOffset = this.offsetAt(range.end);
+                this._content = this._content.substring(0, startOffset) + change.text + this._content.substring(endOffset, this._content.length);
+                // update the offsets
+                const startLine = Math.max(range.start.line, 0);
+                const endLine = Math.max(range.end.line, 0);
+                let lineOffsets = this._lineOffsets;
+                const addedLineOffsets = computeLineOffsets(change.text, false, startOffset);
+                if (endLine - startLine === addedLineOffsets.length) {
+                    for (let i = 0, len = addedLineOffsets.length; i < len; i++) {
+                        lineOffsets[i + startLine + 1] = addedLineOffsets[i];
+                    }
+                }
+                else {
+                    if (addedLineOffsets.length < 10000) {
+                        lineOffsets.splice(startLine + 1, endLine - startLine, ...addedLineOffsets);
+                    }
+                    else { // avoid too many arguments for splice
+                        this._lineOffsets = lineOffsets = lineOffsets.slice(0, startLine + 1).concat(addedLineOffsets, lineOffsets.slice(endLine + 1));
+                    }
+                }
+                const diff = change.text.length - (endOffset - startOffset);
+                if (diff !== 0) {
+                    for (let i = startLine + 1 + addedLineOffsets.length, len = lineOffsets.length; i < len; i++) {
+                        lineOffsets[i] = lineOffsets[i] + diff;
+                    }
+                }
+            }
+            else if (FullTextDocument.isFull(change)) {
+                this._content = change.text;
+                this._lineOffsets = undefined;
+            }
+            else {
+                throw new Error('Unknown change event received');
+            }
+        }
+        this._version = version;
+    }
+    getLineOffsets() {
+        if (this._lineOffsets === undefined) {
+            this._lineOffsets = computeLineOffsets(this._content, true);
+        }
+        return this._lineOffsets;
+    }
+    positionAt(offset) {
+        offset = Math.max(Math.min(offset, this._content.length), 0);
+        const lineOffsets = this.getLineOffsets();
+        let low = 0, high = lineOffsets.length;
+        if (high === 0) {
+            return { line: 0, character: offset };
+        }
+        while (low < high) {
+            const mid = Math.floor((low + high) / 2);
+            if (lineOffsets[mid] > offset) {
+                high = mid;
+            }
+            else {
+                low = mid + 1;
+            }
+        }
+        // low is the least x for which the line offset is larger than the current offset
+        // or array.length if no line offset is larger than the current offset
+        const line = low - 1;
+        offset = this.ensureBeforeEOL(offset, lineOffsets[line]);
+        return { line, character: offset - lineOffsets[line] };
+    }
+    offsetAt(position) {
+        const lineOffsets = this.getLineOffsets();
+        if (position.line >= lineOffsets.length) {
+            return this._content.length;
+        }
+        else if (position.line < 0) {
+            return 0;
+        }
+        const lineOffset = lineOffsets[position.line];
+        if (position.character <= 0) {
+            return lineOffset;
+        }
+        const nextLineOffset = (position.line + 1 < lineOffsets.length) ? lineOffsets[position.line + 1] : this._content.length;
+        const offset = Math.min(lineOffset + position.character, nextLineOffset);
+        return this.ensureBeforeEOL(offset, lineOffset);
+    }
+    ensureBeforeEOL(offset, lineOffset) {
+        while (offset > lineOffset && isEOL(this._content.charCodeAt(offset - 1))) {
+            offset--;
+        }
+        return offset;
+    }
+    get lineCount() {
+        return this.getLineOffsets().length;
+    }
+    static isIncremental(event) {
+        const candidate = event;
+        return candidate !== undefined && candidate !== null &&
+            typeof candidate.text === 'string' && candidate.range !== undefined &&
+            (candidate.rangeLength === undefined || typeof candidate.rangeLength === 'number');
+    }
+    static isFull(event) {
+        const candidate = event;
+        return candidate !== undefined && candidate !== null &&
+            typeof candidate.text === 'string' && candidate.range === undefined && candidate.rangeLength === undefined;
+    }
+}
+var TextDocument;
+(function (TextDocument) {
+    /**
+     * Creates a new text document.
+     *
+     * @param uri The document's uri.
+     * @param languageId  The document's language Id.
+     * @param version The document's initial version number.
+     * @param content The document's content.
+     */
+    function create(uri, languageId, version, content) {
+        return new FullTextDocument(uri, languageId, version, content);
+    }
+    TextDocument.create = create;
+    /**
+     * Updates a TextDocument by modifying its content.
+     *
+     * @param document the document to update. Only documents created by TextDocument.create are valid inputs.
+     * @param changes the changes to apply to the document.
+     * @param version the changes version for the document.
+     * @returns The updated TextDocument. Note: That's the same document instance passed in as first parameter.
+     *
+     */
+    function update(document, changes, version) {
+        if (document instanceof FullTextDocument) {
+            document.update(changes, version);
+            return document;
+        }
+        else {
+            throw new Error('TextDocument.update: document must be created by TextDocument.create');
+        }
+    }
+    TextDocument.update = update;
+    function applyEdits(document, edits) {
+        const text = document.getText();
+        const sortedEdits = mergeSort(edits.map(getWellformedEdit), (a, b) => {
+            const diff = a.range.start.line - b.range.start.line;
+            if (diff === 0) {
+                return a.range.start.character - b.range.start.character;
+            }
+            return diff;
+        });
+        let lastModifiedOffset = 0;
+        const spans = [];
+        for (const e of sortedEdits) {
+            const startOffset = document.offsetAt(e.range.start);
+            if (startOffset < lastModifiedOffset) {
+                throw new Error('Overlapping edit');
+            }
+            else if (startOffset > lastModifiedOffset) {
+                spans.push(text.substring(lastModifiedOffset, startOffset));
+            }
+            if (e.newText.length) {
+                spans.push(e.newText);
+            }
+            lastModifiedOffset = document.offsetAt(e.range.end);
+        }
+        spans.push(text.substr(lastModifiedOffset));
+        return spans.join('');
+    }
+    TextDocument.applyEdits = applyEdits;
+})(TextDocument || (TextDocument = {}));
+function mergeSort(data, compare) {
+    if (data.length <= 1) {
+        // sorted
+        return data;
+    }
+    const p = (data.length / 2) | 0;
+    const left = data.slice(0, p);
+    const right = data.slice(p);
+    mergeSort(left, compare);
+    mergeSort(right, compare);
+    let leftIdx = 0;
+    let rightIdx = 0;
+    let i = 0;
+    while (leftIdx < left.length && rightIdx < right.length) {
+        const ret = compare(left[leftIdx], right[rightIdx]);
+        if (ret <= 0) {
+            // smaller_equal -> take left to preserve order
+            data[i++] = left[leftIdx++];
+        }
+        else {
+            // greater -> take right
+            data[i++] = right[rightIdx++];
+        }
+    }
+    while (leftIdx < left.length) {
+        data[i++] = left[leftIdx++];
+    }
+    while (rightIdx < right.length) {
+        data[i++] = right[rightIdx++];
+    }
+    return data;
+}
+function computeLineOffsets(text, isAtLineStart, textOffset = 0) {
+    const result = isAtLineStart ? [textOffset] : [];
+    for (let i = 0; i < text.length; i++) {
+        const ch = text.charCodeAt(i);
+        if (isEOL(ch)) {
+            if (ch === 13 /* CharCode.CarriageReturn */ && i + 1 < text.length && text.charCodeAt(i + 1) === 10 /* CharCode.LineFeed */) {
+                i++;
+            }
+            result.push(textOffset + i + 1);
+        }
+    }
+    return result;
+}
+function isEOL(char) {
+    return char === 13 /* CharCode.CarriageReturn */ || char === 10 /* CharCode.LineFeed */;
+}
+function getWellformedRange(range) {
+    const start = range.start;
+    const end = range.end;
+    if (start.line > end.line || (start.line === end.line && start.character > end.character)) {
+        return { start: end, end: start };
+    }
+    return range;
+}
+function getWellformedEdit(textEdit) {
+    const range = getWellformedRange(textEdit.range);
+    if (range !== textEdit.range) {
+        return { newText: textEdit.newText, range };
+    }
+    return textEdit;
+}
+
+var main = /*#__PURE__*/Object.freeze({
+	__proto__: null,
+	get TextDocument () { return TextDocument; }
+});
+
+var require$$0 = /*@__PURE__*/getAugmentedNamespace(main);
+
+var parserDirective = {};
+
+var hasRequiredParserDirective;
+
+function requireParserDirective () {
+	if (hasRequiredParserDirective) return parserDirective;
+	hasRequiredParserDirective = 1;
+	Object.defineProperty(parserDirective, "__esModule", { value: true });
+	parserDirective.ParserDirective = void 0;
+	const main_1 = requireMain();
+	const line_1 = requireLine();
+	class ParserDirective extends line_1.Line {
+	    constructor(document, range, nameRange, valueRange) {
+	        super(document, range);
+	        this.nameRange = nameRange;
+	        this.valueRange = valueRange;
+	    }
+	    toString() {
+	        return "# " + this.getName() + '=' + this.getValue();
+	    }
+	    getNameRange() {
+	        return this.nameRange;
+	    }
+	    getValueRange() {
+	        return this.valueRange;
+	    }
+	    getName() {
+	        return this.document.getText().substring(this.document.offsetAt(this.nameRange.start), this.document.offsetAt(this.nameRange.end));
+	    }
+	    getValue() {
+	        return this.document.getText().substring(this.document.offsetAt(this.valueRange.start), this.document.offsetAt(this.valueRange.end));
+	    }
+	    getDirective() {
+	        const directive = main_1.Directive[this.getName().toLowerCase()];
+	        return directive === undefined ? null : directive;
+	    }
+	}
+	parserDirective.ParserDirective = ParserDirective;
+	return parserDirective;
+}
+
+var instruction = {};
+
+var heredoc = {};
+
+var hasRequiredHeredoc;
+
+function requireHeredoc () {
+	if (hasRequiredHeredoc) return heredoc;
+	hasRequiredHeredoc = 1;
+	Object.defineProperty(heredoc, "__esModule", { value: true });
+	heredoc.Heredoc = void 0;
+	/**
+	 * Heredoc represents a here-document that has been embedded in a
+	 * Dockerfile.
+	 *
+	 * This API is experimental and subject to change.
+	 */
+	class Heredoc {
+	    constructor(startRange, name, nameRange, contentRange, endRange) {
+	        this.startRange = startRange;
+	        this.name = name;
+	        this.nameRange = nameRange;
+	        this.contentRange = contentRange;
+	        this.endRange = endRange;
+	    }
+	    /**
+	     * Returns the name of the here-document.
+	     *
+	     * This API is experimental and subject to change.
+	     */
+	    getName() {
+	        return this.name;
+	    }
+	    /**
+	     * Returns the range of the start operator and the name. If the
+	     * here-document is initialized with <<EOT then the start range would
+	     * encompass all five characters.
+	     *
+	     * This API is experimental and subject to change.
+	     */
+	    getStartRange() {
+	        return this.startRange;
+	    }
+	    /**
+	     * Returns the range of this here-document's name that is declared at
+	     * the beginning of the here-document with the operator. If the
+	     * here-document is initialized with <<EOT then the name range would
+	     * encompass the latter three "EOT" characters.
+	     *
+	     * This API is experimental and subject to change.
+	     */
+	    getNameRange() {
+	        return this.nameRange;
+	    }
+	    /**
+	     * Returns the range of the content of this here-document. This may
+	     * be null if the here-document has no content because:
+	     * - the start range is the only thing that was declared
+	     * - the end range was declared immediately and there is no content
+	     *
+	     * This API is experimental and subject to change.
+	     */
+	    getContentRange() {
+	        return this.contentRange;
+	    }
+	    /**
+	     * Returns the range of the here-document's name on a line that
+	     * represents the end of the here-document.
+	     *
+	     * This API is experimental and subject to change.
+	     */
+	    getDelimiterRange() {
+	        return this.endRange;
+	    }
+	}
+	heredoc.Heredoc = Heredoc;
+	return heredoc;
+}
+
+var variable = {};
+
+var hasRequiredVariable;
+
+function requireVariable () {
+	if (hasRequiredVariable) return variable;
+	hasRequiredVariable = 1;
+	Object.defineProperty(variable, "__esModule", { value: true });
+	variable.Variable = void 0;
+	class Variable {
+	    constructor(name, nameRange, range, modifier, modifierRange, substitutionParameter, substitutionRange, defined, buildVariable, stringValue) {
+	        this.name = name;
+	        this.nameRange = nameRange;
+	        this.range = range;
+	        this.modifier = modifier;
+	        this.modifierRange = modifierRange;
+	        this.substitutionParameter = substitutionParameter;
+	        this.substitutionRange = substitutionRange;
+	        this.defined = defined;
+	        this.buildVariable = buildVariable;
+	        this.stringValue = stringValue;
+	    }
+	    toString() {
+	        return this.stringValue;
+	    }
+	    getName() {
+	        return this.name;
+	    }
+	    getNameRange() {
+	        return this.nameRange;
+	    }
+	    /**
+	     * Returns the range of the entire variable. This includes the symbols for
+	     * the declaration of the variable such as the $, {, and } symbols.
+	     *
+	     * @return the range in the document that this variable encompasses in its
+	     *         entirety
+	     */
+	    getRange() {
+	        return this.range;
+	    }
+	    /**
+	     * Returns the modifier character that has been set for
+	     * specifying how this variable should be expanded and resolved.
+	     * If this variable is ${variable:+value} then the modifier
+	     * character is '+'. Will be the empty string if the variable is
+	     * declared as ${variable:}. Otherwise, will be null if this
+	     * variable will not use variable substitution at all (such as
+	     * ${variable} or $variable).
+	     *
+	     * @return this variable's modifier character, or the empty
+	     *         string if it does not have one, or null if this
+	     *         variable will not use variable substitution
+	     */
+	    getModifier() {
+	        return this.modifier;
+	    }
+	    getModifierRange() {
+	        return this.modifierRange;
+	    }
+	    /**
+	     * Returns the parameter that will be used for substitution if
+	     * this variable uses modifiers to define how its value should be
+	     * resolved. If this variable is ${variable:+value} then the
+	     * substitution value will be 'value'. Will be the empty string
+	     * if the variable is declared as ${variable:+} or some other
+	     * variant where the only thing that follows the modifier
+	     * character (excluding considerations of escape characters and
+	     * so on) is the variable's closing bracket. May be null if this
+	     * variable does not have a modifier character defined (such as
+	     * ${variable} or $variable).
+	     *
+	     * @return this variable's substitution parameter, or the empty
+	     *         string if it does not have one, or null if there is
+	     *         not one defined
+	     */
+	    getSubstitutionParameter() {
+	        return this.substitutionParameter;
+	    }
+	    getSubstitutionRange() {
+	        return this.substitutionRange;
+	    }
+	    /**
+	     * Returns whether this variable has been defined or not.
+	     *
+	     * @return true if this variable has been defined, false otherwise
+	     */
+	    isDefined() {
+	        return this.defined;
+	    }
+	    isBuildVariable() {
+	        return this.buildVariable === true;
+	    }
+	    isEnvironmentVariable() {
+	        return this.buildVariable === false;
+	    }
+	}
+	variable.Variable = Variable;
+	return variable;
+}
+
+var hasRequiredInstruction;
+
+function requireInstruction () {
+	if (hasRequiredInstruction) return instruction;
+	hasRequiredInstruction = 1;
+	Object.defineProperty(instruction, "__esModule", { value: true });
+	instruction.Instruction = void 0;
+	const vscode_languageserver_types_1 = requireMain$1();
+	const util_1 = requireUtil();
+	const line_1 = requireLine();
+	const argument_1 = requireArgument();
+	const heredoc_1 = requireHeredoc();
+	const variable_1 = requireVariable();
+	const main_1 = requireMain();
+	class Instruction extends line_1.Line {
+	    constructor(document, range, dockerfile, escapeChar, instruction, instructionRange) {
+	        super(document, range);
+	        this.dockerfile = dockerfile;
+	        this.escapeChar = escapeChar;
+	        this.instruction = instruction;
+	        this.instructionRange = instructionRange;
+	    }
+	    toString() {
+	        let value = this.getKeyword();
+	        for (let arg of this.getRawArguments()) {
+	            value += ' ';
+	            value += arg.getValue();
+	        }
+	        return value;
+	    }
+	    getRangeContent(range) {
+	        if (range === null) {
+	            return null;
+	        }
+	        return this.document.getText().substring(this.document.offsetAt(range.start), this.document.offsetAt(range.end));
+	    }
+	    getInstructionRange() {
+	        return this.instructionRange;
+	    }
+	    getInstruction() {
+	        return this.instruction;
+	    }
+	    getKeyword() {
+	        return this.getInstruction().toUpperCase();
+	    }
+	    getArgumentsRange() {
+	        let args = this.getArguments();
+	        if (args.length === 0) {
+	            return null;
+	        }
+	        return vscode_languageserver_types_1.Range.create(args[0].getRange().start, args[args.length - 1].getRange().end);
+	    }
+	    getArgumentsRanges() {
+	        let args = this.getArguments();
+	        if (args.length === 0) {
+	            return [];
+	        }
+	        if (args[0].getRange().start.line === args[args.length - 1].getRange().end.line) {
+	            return [vscode_languageserver_types_1.Range.create(args[0].getRange().start, args[args.length - 1].getRange().end)];
+	        }
+	        let ranges = [];
+	        let end = -1;
+	        let startPosition = args[0].getRange().start;
+	        let range = this.getInstructionRange();
+	        let extra = this.document.offsetAt(startPosition) - this.document.offsetAt(range.start);
+	        let content = this.getTextContent();
+	        let fullArgs = content.substring(extra, this.document.offsetAt(args[args.length - 1].getRange().end) - this.document.offsetAt(range.start));
+	        let offset = this.document.offsetAt(range.start) + extra;
+	        let comment = false;
+	        for (let i = 0; i < fullArgs.length; i++) {
+	            let char = fullArgs.charAt(i);
+	            if (char === this.escapeChar) {
+	                let next = fullArgs.charAt(i + 1);
+	                if (next === ' ' || next === '\t') {
+	                    whitespaceCheck: for (let j = i + 2; j < fullArgs.length; j++) {
+	                        switch (fullArgs.charAt(j)) {
+	                            case ' ':
+	                            case '\t':
+	                                continue;
+	                            case '\r':
+	                                j++;
+	                            case '\n':
+	                                if (startPosition !== null) {
+	                                    ranges.push(vscode_languageserver_types_1.Range.create(startPosition, this.document.positionAt(offset + end + 1)));
+	                                }
+	                                startPosition = null;
+	                                comment = false;
+	                                i = j;
+	                                break whitespaceCheck;
+	                            default:
+	                                break whitespaceCheck;
+	                        }
+	                    }
+	                }
+	                else if (next === '\r') {
+	                    if (startPosition !== null) {
+	                        ranges.push(vscode_languageserver_types_1.Range.create(startPosition, this.document.positionAt(offset + end + 1)));
+	                        startPosition = null;
+	                    }
+	                    comment = false;
+	                    i += 2;
+	                }
+	                else if (next === '\n') {
+	                    if (startPosition !== null) {
+	                        ranges.push(vscode_languageserver_types_1.Range.create(startPosition, this.document.positionAt(offset + end + 1)));
+	                    }
+	                    startPosition = null;
+	                    comment = false;
+	                    i++;
+	                }
+	                else {
+	                    i++;
+	                }
+	            }
+	            else if (util_1.Util.isNewline(char)) {
+	                if (comment) {
+	                    startPosition = null;
+	                    comment = false;
+	                }
+	            }
+	            else {
+	                if (!comment) {
+	                    if (startPosition === null) {
+	                        if (char === '#') {
+	                            comment = true;
+	                            continue;
+	                        }
+	                        let position = this.document.positionAt(offset + i);
+	                        if (position.character !== 0) {
+	                            startPosition = vscode_languageserver_types_1.Position.create(position.line, 0);
+	                        }
+	                    }
+	                    end = i;
+	                }
+	            }
+	        }
+	        if (startPosition === null) {
+	            // should only happen if the last argument is on its own line with
+	            // no leading whitespace
+	            ranges.push(vscode_languageserver_types_1.Range.create(this.document.positionAt(offset + end), this.document.positionAt(offset + end + 1)));
+	        }
+	        else {
+	            ranges.push(vscode_languageserver_types_1.Range.create(startPosition, this.document.positionAt(offset + end + 1)));
+	        }
+	        return ranges;
+	    }
+	    getRawArgumentsContent() {
+	        let args = this.getArguments();
+	        if (args.length === 0) {
+	            return null;
+	        }
+	        return this.getRangeContent(vscode_languageserver_types_1.Range.create(args[0].getRange().start, args[args.length - 1].getRange().end));
+	    }
+	    getArgumentsContent() {
+	        let args = this.getArguments();
+	        if (args.length === 0) {
+	            return null;
+	        }
+	        let content = "";
+	        let ranges = this.getArgumentsRanges();
+	        let documentText = this.document.getText();
+	        for (let range of ranges) {
+	            content += documentText.substring(this.document.offsetAt(range.start), this.document.offsetAt(range.end));
+	        }
+	        return content;
+	    }
+	    getArguments() {
+	        return this.getRawArguments();
+	    }
+	    getRawArguments() {
+	        let args = [];
+	        let range = this.getInstructionRange();
+	        let extra = this.document.offsetAt(range.end) - this.document.offsetAt(range.start);
+	        let content = this.getTextContent();
+	        let fullArgs = content.substring(extra);
+	        let offset = this.document.offsetAt(range.start) + extra;
+	        let start = false;
+	        let comment = false;
+	        let found = -1;
+	        // determines whether the parser has found a space or tab
+	        // whitespace character that's a part of an escaped newline sequence
+	        let escapedWhitespaceDetected = false;
+	        // determines if the parser is currently in an escaped newline sequence
+	        let escaping = false;
+	        let escapeMarker = -1;
+	        let escapedArg = "";
+	        for (let i = 0; i < fullArgs.length; i++) {
+	            let char = fullArgs.charAt(i);
+	            if (util_1.Util.isWhitespace(char)) {
+	                if (escaping) {
+	                    escapedWhitespaceDetected = true;
+	                    if (util_1.Util.isNewline(char)) {
+	                        // reached a newline, any previously
+	                        // detected whitespace should be ignored
+	                        escapedWhitespaceDetected = false;
+	                        if (comment) {
+	                            // reached a newline, no longer in a comment
+	                            comment = false;
+	                            start = true;
+	                        }
+	                    }
+	                    continue;
+	                }
+	                else if (found !== -1) {
+	                    if (escapeMarker === -1) {
+	                        args.push(new argument_1.Argument(escapedArg, vscode_languageserver_types_1.Range.create(this.document.positionAt(offset + found), this.document.positionAt(offset + i))));
+	                    }
+	                    else {
+	                        args.push(new argument_1.Argument(escapedArg, vscode_languageserver_types_1.Range.create(this.document.positionAt(offset + found), this.document.positionAt(offset + escapeMarker))));
+	                    }
+	                    escapeMarker = -1;
+	                    escapedArg = "";
+	                    found = -1;
+	                }
+	            }
+	            else if (char === this.escapeChar) {
+	                let next = fullArgs.charAt(i + 1);
+	                if (next === ' ' || next === '\t') {
+	                    whitespaceCheck: for (let j = i + 2; j < fullArgs.length; j++) {
+	                        let newlineCheck = fullArgs.charAt(j);
+	                        switch (newlineCheck) {
+	                            case ' ':
+	                            case '\t':
+	                                continue;
+	                            case '\r':
+	                                j++;
+	                            case '\n':
+	                                comment = false;
+	                                escaping = true;
+	                                start = true;
+	                                if (found !== -1) {
+	                                    escapeMarker = i;
+	                                }
+	                                i = j;
+	                                break whitespaceCheck;
+	                            default:
+	                                escapeMarker = i;
+	                                if (found === -1) {
+	                                    i = j - 1;
+	                                }
+	                                break whitespaceCheck;
+	                        }
+	                    }
+	                }
+	                else if (next === '\r') {
+	                    comment = false;
+	                    escaping = true;
+	                    start = true;
+	                    if (found !== -1 && escapeMarker === -1) {
+	                        escapeMarker = i;
+	                    }
+	                    i += 2;
+	                }
+	                else if (next === '\n') {
+	                    comment = false;
+	                    escaping = true;
+	                    start = true;
+	                    if (found !== -1 && escapeMarker === -1) {
+	                        escapeMarker = i;
+	                    }
+	                    i++;
+	                }
+	                else {
+	                    if (escapedWhitespaceDetected && escapeMarker !== -1) {
+	                        args.push(new argument_1.Argument(escapedArg, vscode_languageserver_types_1.Range.create(this.document.positionAt(offset + found), this.document.positionAt(offset + escapeMarker))));
+	                        escapedArg = "";
+	                        found = -1;
+	                    }
+	                    escapeMarker = -1;
+	                    escapedWhitespaceDetected = false;
+	                    escaping = false;
+	                    if (next === '$') {
+	                        escapedArg = escapedArg + char + next;
+	                    }
+	                    else if (next === '') {
+	                        // reached EOF, stop processing
+	                        break;
+	                    }
+	                    else {
+	                        escapedArg = escapedArg + next;
+	                    }
+	                    if (found === -1) {
+	                        found = i;
+	                    }
+	                    i++;
+	                }
+	            }
+	            else if (!comment) {
+	                if (start && char === '#') {
+	                    comment = true;
+	                }
+	                else {
+	                    if (escapedWhitespaceDetected && escapeMarker !== -1) {
+	                        args.push(new argument_1.Argument(escapedArg, vscode_languageserver_types_1.Range.create(this.document.positionAt(offset + found), this.document.positionAt(offset + escapeMarker))));
+	                        escapedArg = "";
+	                        found = -1;
+	                    }
+	                    escapedWhitespaceDetected = false;
+	                    escaping = false;
+	                    escapeMarker = -1;
+	                    escapedArg = escapedArg + char;
+	                    if (found === -1) {
+	                        found = i;
+	                    }
+	                }
+	                // non-whitespace character detected, reset
+	                start = false;
+	            }
+	        }
+	        if (found !== -1) {
+	            if (escapeMarker === -1) {
+	                args.push(new argument_1.Argument(escapedArg, vscode_languageserver_types_1.Range.create(this.document.positionAt(offset + found), this.document.positionAt(offset + fullArgs.length))));
+	            }
+	            else {
+	                args.push(new argument_1.Argument(escapedArg, vscode_languageserver_types_1.Range.create(this.document.positionAt(offset + found), this.document.positionAt(offset + escapeMarker))));
+	            }
+	        }
+	        return args;
+	    }
+	    getExpandedArguments() {
+	        let args = this.getArguments();
+	        for (let i = 0; i < args.length; i++) {
+	            const argRange = args[i].getRange();
+	            let offset = this.document.offsetAt(argRange.start);
+	            const variables = this.parseVariables(offset, args[i].getValue());
+	            const swaps = [];
+	            let requiresExpansion = false;
+	            for (let variable of variables) {
+	                const value = this.dockerfile.resolveVariable(variable.getName(), variable.getNameRange().start.line);
+	                swaps.push(value);
+	                requiresExpansion = requiresExpansion || value !== undefined;
+	            }
+	            if (requiresExpansion) {
+	                let expanded = "";
+	                for (let j = 0; j < swaps.length; j++) {
+	                    const variableRange = variables[j].getRange();
+	                    const start = this.document.offsetAt(variableRange.start);
+	                    const end = this.document.offsetAt(variableRange.end);
+	                    if (swaps[j]) {
+	                        // replace variable with its resolved value
+	                        expanded += this.document.getText().substring(offset, start);
+	                        expanded += swaps[j];
+	                        offset = end;
+	                    }
+	                    else {
+	                        expanded += this.document.getText().substring(offset, end);
+	                        offset = end;
+	                    }
+	                }
+	                const argEnd = this.document.offsetAt(argRange.end);
+	                if (argEnd !== offset) {
+	                    // if the variable's range doesn't match the argument,
+	                    // append the remaining text
+	                    expanded += this.document.getText().substring(offset, argEnd);
+	                }
+	                args[i] = new argument_1.Argument(expanded, argRange);
+	            }
+	        }
+	        return args;
+	    }
+	    getVariables() {
+	        const variables = [];
+	        const args = this.getRawArguments();
+	        for (const arg of args) {
+	            let range = arg.getRange();
+	            let rawValue = this.document.getText().substring(this.document.offsetAt(range.start), this.document.offsetAt(range.end));
+	            const parsedVariables = this.parseVariables(this.document.offsetAt(arg.getRange().start), rawValue);
+	            for (const parsedVariable of parsedVariables) {
+	                variables.push(parsedVariable);
+	            }
+	        }
+	        return variables;
+	    }
+	    parseVariables(offset, arg) {
+	        let variables = [];
+	        variableLoop: for (let i = 0; i < arg.length; i++) {
+	            switch (arg.charAt(i)) {
+	                case this.escapeChar:
+	                    if (arg.charAt(i + 1) === '$') {
+	                        i++;
+	                    }
+	                    break;
+	                case '$':
+	                    if (arg.charAt(i + 1) === '{') {
+	                        let escapedString = "${";
+	                        let escapedName = "";
+	                        let nameEnd = -1;
+	                        let escapedSubstitutionParameter = "";
+	                        let substitutionStart = -1;
+	                        let substitutionEnd = -1;
+	                        let modifierRead = -1;
+	                        nameLoop: for (let j = i + 2; j < arg.length; j++) {
+	                            let char = arg.charAt(j);
+	                            switch (char) {
+	                                case this.escapeChar:
+	                                    for (let k = j + 1; k < arg.length; k++) {
+	                                        switch (arg.charAt(k)) {
+	                                            case ' ':
+	                                            case '\t':
+	                                            case '\r':
+	                                                // ignore whitespace
+	                                                continue;
+	                                            case '\n':
+	                                                // escape this newline
+	                                                j = k;
+	                                                continue nameLoop;
+	                                        }
+	                                    }
+	                                    break;
+	                                case '}':
+	                                    escapedString += '}';
+	                                    let modifier = null;
+	                                    let modifierRange = null;
+	                                    let substitutionParameter = modifierRead !== -1 ? escapedSubstitutionParameter : null;
+	                                    let substitutionRange = null;
+	                                    if (nameEnd === -1) {
+	                                        nameEnd = j;
+	                                    }
+	                                    else if (nameEnd + 1 === j) {
+	                                        modifier = "";
+	                                        modifierRange = vscode_languageserver_types_1.Range.create(this.document.positionAt(offset + nameEnd + 1), this.document.positionAt(offset + nameEnd + 1));
+	                                    }
+	                                    else {
+	                                        if (substitutionStart === -1) {
+	                                            // no substitution parameter found,
+	                                            // but a modifier character existed,
+	                                            // just offset the range by 1 from
+	                                            // the modifier character
+	                                            substitutionStart = modifierRead + 1;
+	                                            substitutionEnd = modifierRead + 1;
+	                                        }
+	                                        else {
+	                                            // offset one more from the last
+	                                            // character found
+	                                            substitutionEnd = substitutionEnd + 1;
+	                                        }
+	                                        modifier = arg.substring(modifierRead, modifierRead + 1);
+	                                        modifierRange = vscode_languageserver_types_1.Range.create(this.document.positionAt(offset + modifierRead), this.document.positionAt(offset + modifierRead + 1));
+	                                        substitutionRange = vscode_languageserver_types_1.Range.create(this.document.positionAt(offset + substitutionStart), this.document.positionAt(offset + substitutionEnd));
+	                                    }
+	                                    let start = this.document.positionAt(offset + i);
+	                                    variables.push(new variable_1.Variable(escapedName, vscode_languageserver_types_1.Range.create(this.document.positionAt(offset + i + 2), this.document.positionAt(offset + nameEnd)), vscode_languageserver_types_1.Range.create(start, this.document.positionAt(offset + j + 1)), modifier, modifierRange, substitutionParameter, substitutionRange, this.dockerfile.resolveVariable(escapedName, start.line) !== undefined, this.isBuildVariable(escapedName, start.line), escapedString));
+	                                    i = j;
+	                                    continue variableLoop;
+	                                case ':':
+	                                    if (nameEnd === -1) {
+	                                        nameEnd = j;
+	                                    }
+	                                    else if (modifierRead !== -1) {
+	                                        if (substitutionStart === -1) {
+	                                            substitutionStart = j;
+	                                            substitutionEnd = j;
+	                                        }
+	                                        else {
+	                                            substitutionEnd = j;
+	                                        }
+	                                        escapedSubstitutionParameter += ':';
+	                                    }
+	                                    else {
+	                                        modifierRead = j;
+	                                    }
+	                                    escapedString += ':';
+	                                    break;
+	                                case '\n':
+	                                case '\r':
+	                                case ' ':
+	                                case '\t':
+	                                    break;
+	                                default:
+	                                    if (nameEnd === -1) {
+	                                        escapedName += char;
+	                                    }
+	                                    else if (modifierRead !== -1) {
+	                                        if (substitutionStart === -1) {
+	                                            substitutionStart = j;
+	                                            substitutionEnd = j;
+	                                        }
+	                                        else {
+	                                            substitutionEnd = j;
+	                                        }
+	                                        escapedSubstitutionParameter += char;
+	                                    }
+	                                    else {
+	                                        modifierRead = j;
+	                                    }
+	                                    escapedString += char;
+	                                    break;
+	                            }
+	                        }
+	                        // no } found, not a valid variable, stop processing
+	                        break variableLoop;
+	                    }
+	                    else if (util_1.Util.isWhitespace(arg.charAt(i + 1)) || i === arg.length - 1) {
+	                        // $ followed by whitespace or EOF, ignore this variable
+	                        continue;
+	                    }
+	                    else {
+	                        let escapedName = "";
+	                        nameLoop: for (let j = i + 1; j < arg.length; j++) {
+	                            let char = arg.charAt(j);
+	                            switch (char) {
+	                                case '\r':
+	                                case '\n':
+	                                case ' ':
+	                                case '\t':
+	                                    continue;
+	                                case '$':
+	                                case '\'':
+	                                case '"':
+	                                    let varStart = this.document.positionAt(offset + i);
+	                                    variables.push(new variable_1.Variable(escapedName, vscode_languageserver_types_1.Range.create(this.document.positionAt(offset + i + 1), this.document.positionAt(offset + j)), vscode_languageserver_types_1.Range.create(varStart, this.document.positionAt(offset + j)), null, null, null, null, this.dockerfile.resolveVariable(escapedName, varStart.line) !== undefined, this.isBuildVariable(escapedName, varStart.line), '$' + escapedName));
+	                                    i = j - 1;
+	                                    continue variableLoop;
+	                                case this.escapeChar:
+	                                    for (let k = j + 1; k < arg.length; k++) {
+	                                        switch (arg.charAt(k)) {
+	                                            case ' ':
+	                                            case '\t':
+	                                            case '\r':
+	                                                // ignore whitespace
+	                                                continue;
+	                                            case '\n':
+	                                                // escape this newline
+	                                                j = k;
+	                                                continue nameLoop;
+	                                        }
+	                                    }
+	                                    // reached EOF after an escape character
+	                                    let start = this.document.positionAt(offset + i);
+	                                    variables.push(new variable_1.Variable(escapedName, vscode_languageserver_types_1.Range.create(this.document.positionAt(offset + i + 1), this.document.positionAt(offset + j)), vscode_languageserver_types_1.Range.create(start, this.document.positionAt(offset + j)), null, null, null, null, this.dockerfile.resolveVariable(escapedName, start.line) !== undefined, this.isBuildVariable(escapedName, start.line), '$' + escapedName));
+	                                    break variableLoop;
+	                            }
+	                            if (char.match(/^[a-z0-9_]+$/i) === null) {
+	                                let varStart = this.document.positionAt(offset + i);
+	                                variables.push(new variable_1.Variable(escapedName, vscode_languageserver_types_1.Range.create(this.document.positionAt(offset + i + 1), this.document.positionAt(offset + j)), vscode_languageserver_types_1.Range.create(varStart, this.document.positionAt(offset + j)), null, null, null, null, this.dockerfile.resolveVariable(escapedName, varStart.line) !== undefined, this.isBuildVariable(escapedName, varStart.line), '$' + escapedName));
+	                                i = j - 1;
+	                                continue variableLoop;
+	                            }
+	                            escapedName += char;
+	                        }
+	                        let start = this.document.positionAt(offset + i);
+	                        variables.push(new variable_1.Variable(escapedName, vscode_languageserver_types_1.Range.create(this.document.positionAt(offset + i + 1), this.document.positionAt(offset + arg.length)), vscode_languageserver_types_1.Range.create(start, this.document.positionAt(offset + arg.length)), null, null, null, null, this.dockerfile.resolveVariable(escapedName, start.line) !== undefined, this.isBuildVariable(escapedName, start.line), '$' + escapedName));
+	                    }
+	                    break variableLoop;
+	            }
+	        }
+	        return variables;
+	    }
+	    isBuildVariable(variable, line) {
+	        if (this.getKeyword() === main_1.Keyword.FROM) {
+	            for (const initialArg of this.dockerfile.getInitialARGs()) {
+	                const arg = initialArg;
+	                const property = arg.getProperty();
+	                if (property && variable === property.getName()) {
+	                    return true;
+	                }
+	            }
+	            return undefined;
+	        }
+	        let image = this.dockerfile.getContainingImage(vscode_languageserver_types_1.Position.create(line, 0));
+	        let envs = image.getENVs();
+	        for (let i = envs.length - 1; i >= 0; i--) {
+	            if (envs[i].isBefore(line)) {
+	                for (let property of envs[i].getProperties()) {
+	                    if (property.getName() === variable) {
+	                        return false;
+	                    }
+	                }
+	            }
+	        }
+	        let args = image.getARGs();
+	        for (let i = args.length - 1; i >= 0; i--) {
+	            if (args[i].isBefore(line)) {
+	                let property = args[i].getProperty();
+	                if (property && property.getName() === variable) {
+	                    return true;
+	                }
+	            }
+	        }
+	        return undefined;
+	    }
+	    createSingleLineHeredocs(args) {
+	        const heredocs = [];
+	        // instruction only on one line, if heredocs exist they would be incomplete
+	        for (const arg of args) {
+	            const value = arg.getValue();
+	            if (value.startsWith("<<") && util_1.Util.parseHeredocName(value) !== null) {
+	                const startRange = arg.getRange();
+	                const nameRange = this.getNameRange(startRange);
+	                const name = this.getName(nameRange);
+	                heredocs.push(new heredoc_1.Heredoc(startRange, name, nameRange, null, null));
+	            }
+	        }
+	        return heredocs;
+	    }
+	    getName(nameRange) {
+	        const content = this.document.getText(nameRange);
+	        let escaping = false;
+	        let name = "";
+	        nameLoop: for (let i = 0; i < content.length; i++) {
+	            const ch = content.charAt(i);
+	            switch (ch) {
+	                case this.escapeChar:
+	                    escaping = true;
+	                    for (let j = i + 1; j < content.length; j++) {
+	                        switch (content.charAt(j)) {
+	                            case ' ':
+	                            case '\t':
+	                                break;
+	                            case '\r':
+	                                i = j + 1;
+	                                continue nameLoop;
+	                            case '\n':
+	                                i = j;
+	                                continue nameLoop;
+	                            default:
+	                                name += content.charAt(j);
+	                                i = j;
+	                                continue nameLoop;
+	                        }
+	                    }
+	                    break;
+	                case '#':
+	                    if (escaping) {
+	                        for (let j = i + 1; j < content.length; j++) {
+	                            switch (content.charAt(j)) {
+	                                case '\n':
+	                                    i = j;
+	                                    continue nameLoop;
+	                            }
+	                        }
+	                    }
+	                case ' ':
+	                case '\t':
+	                case '\r':
+	                case '\n':
+	                    if (escaping) {
+	                        break;
+	                    }
+	                default:
+	                    name += ch;
+	                    break;
+	            }
+	        }
+	        return name;
+	    }
+	    getNameRange(startRange) {
+	        const content = this.document.getText(startRange);
+	        let endFound = false;
+	        let searchHyphen = false;
+	        let start = -1;
+	        let end = -1;
+	        let escaping = false;
+	        let quote = null;
+	        contentLoop: for (let i = 0; i < content.length; i++) {
+	            const ch = content.charAt(i);
+	            switch (ch) {
+	                case '"':
+	                case '\'':
+	                    if (quote === ch) {
+	                        break contentLoop;
+	                    }
+	                    quote = ch;
+	                    continue;
+	                case this.escapeChar:
+	                    for (let j = i + 1; j < content.length; j++) {
+	                        switch (content.charAt(j)) {
+	                            case '\n':
+	                                escaping = true;
+	                                j = i;
+	                                continue contentLoop;
+	                        }
+	                    }
+	                    break;
+	                case ' ':
+	                case '\t':
+	                case '\r':
+	                case '\n':
+	                    break;
+	                case '<':
+	                    if (endFound) {
+	                        searchHyphen = true;
+	                    }
+	                    else {
+	                        endFound = true;
+	                    }
+	                    break;
+	                case '-':
+	                    if (searchHyphen) {
+	                        searchHyphen = false;
+	                        break;
+	                    }
+	                case '#':
+	                    if (escaping) {
+	                        for (let j = i + 1; j < content.length; j++) {
+	                            switch (content.charAt(j)) {
+	                                case '\n':
+	                                    i = j;
+	                                    continue contentLoop;
+	                            }
+	                        }
+	                    }
+	                default:
+	                    if (start === -1) {
+	                        start = i;
+	                    }
+	                    if (quote !== null) {
+	                        end = i + 1;
+	                        break;
+	                    }
+	                    break contentLoop;
+	            }
+	        }
+	        if (start === -1) {
+	            return vscode_languageserver_types_1.Range.create(startRange.end, startRange.end);
+	        }
+	        const nameStart = this.document.positionAt(this.document.offsetAt(startRange.start) + start);
+	        const nameEnd = quote !== null ? this.document.positionAt(this.document.offsetAt(startRange.start) + end) : startRange.end;
+	        return vscode_languageserver_types_1.Range.create(nameStart, nameEnd);
+	    }
+	    getHeredocs() {
+	        const args = this.getArguments();
+	        if (args.length === 0) {
+	            return [];
+	        }
+	        const heredocs = [];
+	        const range = this.getRange();
+	        if (range.start.line === range.end.line) {
+	            // instruction only on one line, if heredocs exist they would be incomplete
+	            return this.createSingleLineHeredocs(args);
+	        }
+	        const heredocDefinitions = [];
+	        let heredocsProcessed = false;
+	        let escaping = false;
+	        let contentStart = -1;
+	        let contentEnd = -1;
+	        let lineStart = -1;
+	        let currentHeredoc = 0;
+	        const startOffset = this.document.offsetAt(args[0].getRange().start);
+	        const content = this.getRangeContent(vscode_languageserver_types_1.Range.create(args[0].getRange().start, this.getRange().end));
+	        contentLoop: for (let i = 0; i < content.length; i++) {
+	            switch (content.charAt(i)) {
+	                case this.escapeChar:
+	                    escaping = true;
+	                    for (let j = i + 1; j < content.length; j++) {
+	                        switch (content.charAt(j)) {
+	                            case ' ':
+	                            case '\t':
+	                                break;
+	                            case '\r':
+	                                j++;
+	                            case '\n':
+	                                i = j;
+	                                continue contentLoop;
+	                            default:
+	                                i = j;
+	                                continue contentLoop;
+	                        }
+	                    }
+	                    break;
+	                case '\r':
+	                    break;
+	                case '\n':
+	                    if (escaping) {
+	                        break;
+	                    }
+	                    if (heredocsProcessed) {
+	                        if (contentStart === -1) {
+	                            contentStart = i;
+	                        }
+	                        contentEnd = i;
+	                        const arg = heredocDefinitions[currentHeredoc];
+	                        const startRange = arg.getRange();
+	                        const nameRange = this.getNameRange(startRange);
+	                        const name = this.getName(nameRange);
+	                        const delimiterRange = this.getDelimiterRange(arg, name, vscode_languageserver_types_1.Range.create(this.document.positionAt(startOffset + lineStart), this.document.positionAt(startOffset + i)));
+	                        if (delimiterRange !== null) {
+	                            const contentRange = vscode_languageserver_types_1.Range.create(this.document.positionAt(startOffset + contentStart), this.document.positionAt(startOffset + lineStart - 1));
+	                            heredocs.push(new heredoc_1.Heredoc(startRange, name, nameRange, contentRange, delimiterRange));
+	                            contentStart = -1;
+	                            currentHeredoc++;
+	                        }
+	                        lineStart = -1;
+	                    }
+	                    else {
+	                        // found a newline that hasn't been escaped,
+	                        // must be in a heredoc
+	                        const offsetLimit = startOffset + i;
+	                        for (const arg of args) {
+	                            // check if this argument is on the initial line of the instruction,
+	                            // note that it may not all be on the same line due to escaped newlines,
+	                            // because of that we need to use offset checks instead of line checks
+	                            // as an argument being on a different line in the document does not
+	                            // imply it is on a different line from the Dockerfile's point of view
+	                            if (this.document.offsetAt(arg.getRange().start) < offsetLimit) {
+	                                if (arg.getValue().startsWith("<<")) {
+	                                    heredocDefinitions.push(arg);
+	                                }
+	                            }
+	                            else {
+	                                break;
+	                            }
+	                        }
+	                        heredocsProcessed = true;
+	                        lineStart = -1;
+	                        continue contentLoop;
+	                    }
+	                    break;
+	                case ' ':
+	                case '\t':
+	                    if (escaping) {
+	                        break;
+	                    }
+	                case '#':
+	                    if (escaping) {
+	                        for (let j = i + 1; j < content.length; j++) {
+	                            switch (content.charAt(j)) {
+	                                case '\n':
+	                                    i = j;
+	                                    continue contentLoop;
+	                            }
+	                        }
+	                    }
+	                default:
+	                    if (escaping) {
+	                        escaping = false;
+	                    }
+	                    if (heredocsProcessed) {
+	                        if (contentStart === -1) {
+	                            contentStart = i;
+	                        }
+	                        if (lineStart === -1) {
+	                            lineStart = i;
+	                        }
+	                    }
+	                    break;
+	            }
+	        }
+	        if (heredocsProcessed) {
+	            const arg = heredocDefinitions[currentHeredoc];
+	            const startRange = arg.getRange();
+	            const nameRange = this.getNameRange(startRange);
+	            const name = this.getName(nameRange);
+	            let contentRange = null;
+	            // check if the last line of this instruction matches the name of the last heredoc
+	            const delimiterRange = this.getDelimiterRange(arg, name, vscode_languageserver_types_1.Range.create(this.document.positionAt(startOffset + lineStart), range.end));
+	            if (delimiterRange === null) {
+	                contentRange = vscode_languageserver_types_1.Range.create(this.document.positionAt(startOffset + contentStart), range.end);
+	            }
+	            else if (contentEnd !== -1) {
+	                contentRange = vscode_languageserver_types_1.Range.create(this.document.positionAt(startOffset + contentStart), this.document.positionAt(startOffset + contentEnd));
+	            }
+	            heredocs.push(new heredoc_1.Heredoc(startRange, name, nameRange, contentRange, delimiterRange));
+	            currentHeredoc++;
+	            for (let i = currentHeredoc; i < heredocDefinitions.length; i++) {
+	                const arg = heredocDefinitions[currentHeredoc];
+	                const startRange = arg.getRange();
+	                const nameRange = this.getNameRange(startRange);
+	                const name = this.getName(nameRange);
+	                heredocs.push(new heredoc_1.Heredoc(startRange, name, nameRange, null, null));
+	                currentHeredoc++;
+	            }
+	        }
+	        else {
+	            // instruction only on one line, if heredocs exist they would be incomplete
+	            return this.createSingleLineHeredocs(args);
+	        }
+	        return heredocs;
+	    }
+	    getDelimiterRange(startArg, name, candidateRange) {
+	        const text = this.document.getText(candidateRange);
+	        if (startArg.getValue().startsWith("<<-")) {
+	            // remove tabs in the front
+	            let index = 0;
+	            while (text.charAt(index) === '\t') {
+	                index++;
+	            }
+	            if (text.substring(index) === name) {
+	                return vscode_languageserver_types_1.Range.create(vscode_languageserver_types_1.Position.create(candidateRange.start.line, index), candidateRange.end);
+	            }
+	            return null;
+	        }
+	        return text === name ? candidateRange : null;
+	    }
+	}
+	instruction.Instruction = Instruction;
+	return instruction;
+}
+
+var add = {};
+
+var jsonInstruction = {};
+
+var modifiableInstruction = {};
+
+var flag = {};
+
+var flagOption = {};
+
+var hasRequiredFlagOption;
+
+function requireFlagOption () {
+	if (hasRequiredFlagOption) return flagOption;
+	hasRequiredFlagOption = 1;
+	Object.defineProperty(flagOption, "__esModule", { value: true });
+	flagOption.FlagOption = void 0;
+	class FlagOption {
+	    constructor(range, name, nameRange, value, valueRange) {
+	        this.range = range;
+	        this.name = name;
+	        this.nameRange = nameRange;
+	        this.value = value;
+	        this.valueRange = valueRange;
+	    }
+	    toString() {
+	        if (this.valueRange !== null) {
+	            return this.name + "=" + this.value;
+	        }
+	        return this.name;
+	    }
+	    getRange() {
+	        return this.range;
+	    }
+	    getName() {
+	        return this.name;
+	    }
+	    getNameRange() {
+	        return this.nameRange;
+	    }
+	    getValue() {
+	        return this.value;
+	    }
+	    getValueRange() {
+	        return this.valueRange;
+	    }
+	}
+	flagOption.FlagOption = FlagOption;
+	return flagOption;
+}
+
+var hasRequiredFlag;
+
+function requireFlag () {
+	if (hasRequiredFlag) return flag;
+	hasRequiredFlag = 1;
+	Object.defineProperty(flag, "__esModule", { value: true });
+	flag.Flag = void 0;
+	const vscode_languageserver_types_1 = requireMain$1();
+	const flagOption_1 = requireFlagOption();
+	class Flag {
+	    constructor(document, range, name, nameRange, value, valueRange) {
+	        this.options = [];
+	        this.range = range;
+	        this.name = name;
+	        this.nameRange = nameRange;
+	        this.value = value;
+	        this.valueRange = valueRange;
+	        if (this.value !== null) {
+	            let offset = document.offsetAt(valueRange.start);
+	            let nameStart = -1;
+	            let valueStart = -1;
+	            let hasOptions = false;
+	            for (let i = 0; i < value.length; i++) {
+	                switch (value.charAt(i)) {
+	                    case '=':
+	                        hasOptions = true;
+	                        if (valueStart === -1) {
+	                            valueStart = i + 1;
+	                            break;
+	                        }
+	                        break;
+	                    case ',':
+	                        this.options.push(this.createFlagOption(document, value, offset, nameStart, valueStart, i));
+	                        nameStart = -1;
+	                        valueStart = -1;
+	                        break;
+	                    default:
+	                        if (nameStart === -1) {
+	                            nameStart = i;
+	                        }
+	                        break;
+	                }
+	            }
+	            if (hasOptions && nameStart !== -1) {
+	                this.options.push(this.createFlagOption(document, value, offset, nameStart, valueStart, value.length));
+	            }
+	        }
+	    }
+	    createFlagOption(document, content, documentOffset, nameStart, valueStart, valueEnd) {
+	        const optionRange = vscode_languageserver_types_1.Range.create(document.positionAt(documentOffset + nameStart), document.positionAt(documentOffset + valueEnd));
+	        if (valueStart === -1) {
+	            return new flagOption_1.FlagOption(optionRange, content.substring(nameStart, valueEnd), optionRange, null, null);
+	        }
+	        return new flagOption_1.FlagOption(optionRange, content.substring(nameStart, valueStart - 1), vscode_languageserver_types_1.Range.create(document.positionAt(documentOffset + nameStart), document.positionAt(documentOffset + valueStart - 1)), content.substring(valueStart, valueEnd), vscode_languageserver_types_1.Range.create(document.positionAt(documentOffset + valueStart), document.positionAt(documentOffset + valueEnd)));
+	    }
+	    toString() {
+	        if (this.valueRange) {
+	            return "--" + this.name + "=" + this.value;
+	        }
+	        return "--" + this.name;
+	    }
+	    /**
+	     * Returns the range that encompasses this entire flag. This includes the
+	     * -- prefix in the beginning to the last character of the flag's value (if
+	     * it has been defined).
+	     *
+	     * @return the entire range of this flag
+	     */
+	    getRange() {
+	        return this.range;
+	    }
+	    /**
+	     * Returns the name of this flag. The name does not include the -- prefix.
+	     * Thus, for HEALTHCHECK's --interval flag, interval is the flag's name and
+	     * not --interval.
+	     *
+	     * @return this flag's name
+	     */
+	    getName() {
+	        return this.name;
+	    }
+	    /**
+	     * Returns the range that encompasses the flag's name
+	     *
+	     * @return the range containing the flag's name
+	     */
+	    getNameRange() {
+	        return this.nameRange;
+	    }
+	    /**
+	     * Returns the value that has been set to this flag. May be null if the
+	     * flag is invalid and has no value set like a --start-period. If the flag
+	     * is instead a --start-period= with an equals sign then the flag's value
+	     * is the empty string.
+	     *
+	     * @return this flag's value if it has been defined, null otherwise
+	     */
+	    getValue() {
+	        return this.value;
+	    }
+	    /**
+	     * Returns the range that encompasses this flag's value. If no value has
+	     * been set then null will be returned.
+	     *
+	     * @return the range containing this flag's value, or null if the flag
+	     *         has no value defined
+	     */
+	    getValueRange() {
+	        return this.valueRange;
+	    }
+	    getOption(name) {
+	        for (const option of this.options) {
+	            if (option.getName() === name) {
+	                return option;
+	            }
+	        }
+	        return null;
+	    }
+	    getOptions() {
+	        return this.options;
+	    }
+	    hasOptions() {
+	        return this.options.length > 0;
+	    }
+	}
+	flag.Flag = Flag;
+	return flag;
+}
+
+var hasRequiredModifiableInstruction;
+
+function requireModifiableInstruction () {
+	if (hasRequiredModifiableInstruction) return modifiableInstruction;
+	hasRequiredModifiableInstruction = 1;
+	Object.defineProperty(modifiableInstruction, "__esModule", { value: true });
+	modifiableInstruction.ModifiableInstruction = void 0;
+	const vscode_languageserver_types_1 = requireMain$1();
+	const flag_1 = requireFlag();
+	const instruction_1 = requireInstruction();
+	class ModifiableInstruction extends instruction_1.Instruction {
+	    constructor(document, range, dockerfile, escapeChar, instruction, instructionRange) {
+	        super(document, range, dockerfile, escapeChar, instruction, instructionRange);
+	    }
+	    getFlags() {
+	        if (!this.flags) {
+	            this.flags = [];
+	            for (let arg of this.getArguments()) {
+	                let value = arg.getValue();
+	                if (this.stopSearchingForFlags(value)) {
+	                    return this.flags;
+	                }
+	                else if (value.indexOf("--") === 0) {
+	                    let range = arg.getRange();
+	                    let rawValue = this.document.getText().substring(this.document.offsetAt(range.start), this.document.offsetAt(range.end));
+	                    let nameIndex = value.indexOf('=');
+	                    let index = rawValue.indexOf('=');
+	                    let firstMatch = false;
+	                    let secondMatch = false;
+	                    let startIndex = -1;
+	                    nameSearchLoop: for (let i = 0; i < rawValue.length; i++) {
+	                        switch (rawValue.charAt(i)) {
+	                            case '\\':
+	                            case ' ':
+	                            case '\t':
+	                            case '\r':
+	                            case '\n':
+	                                break;
+	                            case '-':
+	                                if (secondMatch) {
+	                                    startIndex = i;
+	                                    break nameSearchLoop;
+	                                }
+	                                else if (firstMatch) {
+	                                    secondMatch = true;
+	                                }
+	                                else {
+	                                    firstMatch = true;
+	                                }
+	                                break;
+	                            default:
+	                                startIndex = i;
+	                                break nameSearchLoop;
+	                        }
+	                    }
+	                    let nameStart = this.document.positionAt(this.document.offsetAt(range.start) + startIndex);
+	                    if (index === -1) {
+	                        this.flags.push(new flag_1.Flag(this.document, range, value.substring(2), vscode_languageserver_types_1.Range.create(nameStart, range.end), null, null));
+	                    }
+	                    else if (index === value.length - 1) {
+	                        let nameEnd = this.document.positionAt(this.document.offsetAt(range.start) + index);
+	                        this.flags.push(new flag_1.Flag(this.document, range, value.substring(2, index), vscode_languageserver_types_1.Range.create(nameStart, nameEnd), "", vscode_languageserver_types_1.Range.create(range.end, range.end)));
+	                    }
+	                    else {
+	                        let nameEnd = this.document.positionAt(this.document.offsetAt(range.start) + index);
+	                        this.flags.push(new flag_1.Flag(this.document, range, value.substring(2, nameIndex), vscode_languageserver_types_1.Range.create(nameStart, nameEnd), value.substring(nameIndex + 1), vscode_languageserver_types_1.Range.create(this.document.positionAt(this.document.offsetAt(range.start) + index + 1), range.end)));
+	                    }
+	                }
+	            }
+	        }
+	        return this.flags;
+	    }
+	    getArguments() {
+	        const args = super.getArguments();
+	        const flags = this.getFlags();
+	        if (flags.length === 0) {
+	            return args;
+	        }
+	        for (let i = 0; i < flags.length; i++) {
+	            args.shift();
+	        }
+	        return args;
+	    }
+	}
+	modifiableInstruction.ModifiableInstruction = ModifiableInstruction;
+	return modifiableInstruction;
+}
+
+var hasRequiredJsonInstruction;
+
+function requireJsonInstruction () {
+	if (hasRequiredJsonInstruction) return jsonInstruction;
+	hasRequiredJsonInstruction = 1;
+	Object.defineProperty(jsonInstruction, "__esModule", { value: true });
+	jsonInstruction.JSONInstruction = void 0;
+	const vscode_languageserver_types_1 = requireMain$1();
+	const argument_1 = requireArgument();
+	const jsonArgument_1 = requireJsonArgument();
+	const modifiableInstruction_1 = requireModifiableInstruction();
+	class JSONInstruction extends modifiableInstruction_1.ModifiableInstruction {
+	    constructor(document, range, dockerfile, escapeChar, instruction, instructionRange) {
+	        super(document, range, dockerfile, escapeChar, instruction, instructionRange);
+	        this.openingBracket = null;
+	        this.closingBracket = null;
+	        this.jsonStrings = [];
+	        const argsContent = this.getRawArgumentsContent();
+	        if (argsContent === null) {
+	            return;
+	        }
+	        const args = this.getArguments();
+	        if (args.length === 1 && args[0].getValue() === "[]") {
+	            let argRange = args[0].getRange();
+	            this.openingBracket = new argument_1.Argument("[", vscode_languageserver_types_1.Range.create(argRange.start.line, argRange.start.character, argRange.start.line, argRange.start.character + 1));
+	            this.closingBracket = new argument_1.Argument("]", vscode_languageserver_types_1.Range.create(argRange.start.line, argRange.start.character + 1, argRange.end.line, argRange.end.character));
+	            return;
+	        }
+	        else if (args.length === 2 && args[0].getValue() === '[' && args[1].getValue() === ']') {
+	            this.openingBracket = args[0];
+	            this.closingBracket = args[1];
+	            return;
+	        }
+	        const argsOffset = document.offsetAt(this.getArgumentsRange().start);
+	        let start = -1;
+	        let last = "";
+	        let quoted = false;
+	        let escapedArg = "";
+	        argsCheck: for (let i = 0; i < argsContent.length; i++) {
+	            let char = argsContent.charAt(i);
+	            switch (char) {
+	                case '[':
+	                    if (last === "") {
+	                        this.openingBracket = new argument_1.Argument("[", vscode_languageserver_types_1.Range.create(document.positionAt(argsOffset + i), document.positionAt(argsOffset + i + 1)));
+	                        last = '[';
+	                    }
+	                    else if (quoted) {
+	                        escapedArg = escapedArg + char;
+	                    }
+	                    else {
+	                        break argsCheck;
+	                    }
+	                    break;
+	                case '"':
+	                    if (last === '[' || last === ',') {
+	                        start = i;
+	                        quoted = true;
+	                        last = '"';
+	                        escapedArg = escapedArg + char;
+	                        continue;
+	                    }
+	                    else if (last === '"') {
+	                        if (quoted) {
+	                            escapedArg = escapedArg + char;
+	                            // quoted string done
+	                            quoted = false;
+	                            this.jsonStrings.push(new jsonArgument_1.JSONArgument(escapedArg, vscode_languageserver_types_1.Range.create(document.positionAt(argsOffset + start), document.positionAt(argsOffset + i + 1)), vscode_languageserver_types_1.Range.create(document.positionAt(argsOffset + start + 1), document.positionAt(argsOffset + i))));
+	                            escapedArg = "";
+	                        }
+	                        else {
+	                            // should be a , or a ]
+	                            break argsCheck;
+	                        }
+	                    }
+	                    else {
+	                        break argsCheck;
+	                    }
+	                    break;
+	                case ',':
+	                    if (quoted) {
+	                        escapedArg = escapedArg + char;
+	                    }
+	                    else {
+	                        if (last === '"') {
+	                            last = ',';
+	                        }
+	                        else {
+	                            break argsCheck;
+	                        }
+	                    }
+	                    break;
+	                case ']':
+	                    if (quoted) {
+	                        escapedArg = escapedArg + char;
+	                    }
+	                    else if (last !== "") {
+	                        this.closingBracket = new argument_1.Argument("]", vscode_languageserver_types_1.Range.create(document.positionAt(argsOffset + i), document.positionAt(argsOffset + i + 1)));
+	                        break argsCheck;
+	                    }
+	                    break;
+	                case ' ':
+	                case '\t':
+	                    break;
+	                case '\\':
+	                    if (quoted) {
+	                        switch (argsContent.charAt(i + 1)) {
+	                            case '"':
+	                            case '\\':
+	                                escapedArg = escapedArg + argsContent.charAt(i + 1);
+	                                i++;
+	                                continue;
+	                            case ' ':
+	                            case '\t':
+	                                escapeCheck: for (let j = i + 2; j < argsContent.length; j++) {
+	                                    switch (argsContent.charAt(j)) {
+	                                        case '\r':
+	                                            // offset one more for \r\n
+	                                            j++;
+	                                        case '\n':
+	                                            i = j;
+	                                            continue argsCheck;
+	                                        case ' ':
+	                                        case '\t':
+	                                            break;
+	                                        default:
+	                                            break escapeCheck;
+	                                    }
+	                                }
+	                                break;
+	                            case '\r':
+	                                // offset one more for \r\n
+	                                i++;
+	                            default:
+	                                i++;
+	                                continue;
+	                        }
+	                    }
+	                    else {
+	                        escapeCheck: for (let j = i + 1; j < argsContent.length; j++) {
+	                            switch (argsContent.charAt(j)) {
+	                                case '\r':
+	                                    // offset one more for \r\n
+	                                    j++;
+	                                case '\n':
+	                                    i = j;
+	                                    continue argsCheck;
+	                                case ' ':
+	                                case '\t':
+	                                    break;
+	                                default:
+	                                    break escapeCheck;
+	                            }
+	                        }
+	                    }
+	                    break argsCheck;
+	                default:
+	                    if (!quoted) {
+	                        break argsCheck;
+	                    }
+	                    escapedArg = escapedArg + char;
+	                    break;
+	            }
+	        }
+	    }
+	    stopSearchingForFlags(_value) {
+	        return true;
+	    }
+	    getOpeningBracket() {
+	        return this.openingBracket;
+	    }
+	    getJSONStrings() {
+	        return this.jsonStrings;
+	    }
+	    getClosingBracket() {
+	        return this.closingBracket;
+	    }
+	}
+	jsonInstruction.JSONInstruction = JSONInstruction;
+	return jsonInstruction;
+}
+
+var hasRequiredAdd;
+
+function requireAdd () {
+	if (hasRequiredAdd) return add;
+	hasRequiredAdd = 1;
+	Object.defineProperty(add, "__esModule", { value: true });
+	add.Add = void 0;
+	const jsonInstruction_1 = requireJsonInstruction();
+	class Add extends jsonInstruction_1.JSONInstruction {
+	    constructor(document, range, dockerfile, escapeChar, instruction, instructionRange) {
+	        super(document, range, dockerfile, escapeChar, instruction, instructionRange);
+	    }
+	    stopSearchingForFlags(argument) {
+	        return argument.indexOf("--") === -1;
+	    }
+	}
+	add.Add = Add;
+	return add;
+}
+
+var arg = {};
+
+var property = {};
+
+var hasRequiredProperty;
+
+function requireProperty () {
+	if (hasRequiredProperty) return property;
+	hasRequiredProperty = 1;
+	Object.defineProperty(property, "__esModule", { value: true });
+	property.Property = void 0;
+	const vscode_languageserver_types_1 = requireMain$1();
+	const util_1 = requireUtil();
+	class Property {
+	    constructor(document, escapeChar, arg, arg2) {
+	        this.assignmentOperatorRange = null;
+	        this.assignmentOperator = null;
+	        this.valueRange = null;
+	        this.value = null;
+	        this.document = document;
+	        this.escapeChar = escapeChar;
+	        this.nameRange = Property.getNameRange(document, arg);
+	        let value = document.getText().substring(document.offsetAt(this.nameRange.start), document.offsetAt(this.nameRange.end));
+	        this.name = Property.getValue(value, escapeChar);
+	        if (arg2) {
+	            this.valueRange = arg2.getRange();
+	            value = document.getText().substring(document.offsetAt(this.valueRange.start), document.offsetAt(this.valueRange.end));
+	            this.value = Property.getValue(value, escapeChar);
+	            this.range = vscode_languageserver_types_1.Range.create(this.nameRange.start, this.valueRange.end);
+	        }
+	        else {
+	            let argRange = arg.getRange();
+	            if (this.nameRange.start.line === argRange.start.line
+	                && this.nameRange.start.character === argRange.start.character
+	                && this.nameRange.end.line === argRange.end.line
+	                && this.nameRange.end.character === argRange.end.character) ;
+	            else {
+	                this.valueRange = Property.getValueRange(document, arg);
+	                value = document.getText().substring(document.offsetAt(this.valueRange.start), document.offsetAt(this.valueRange.end));
+	                this.value = Property.getValue(value, escapeChar);
+	                this.assignmentOperatorRange = vscode_languageserver_types_1.Range.create(this.nameRange.end, this.valueRange.start);
+	                this.assignmentOperator = "=";
+	            }
+	            this.range = argRange;
+	        }
+	    }
+	    getRange() {
+	        return this.range;
+	    }
+	    getName() {
+	        return this.name;
+	    }
+	    getNameRange() {
+	        return this.nameRange;
+	    }
+	    getValue() {
+	        return this.value;
+	    }
+	    getValueRange() {
+	        return this.valueRange;
+	    }
+	    /**
+	     * Retrieves the operator used for delimiting between the name and
+	     * value of this property. This will either be the "=" character
+	     * or null if a character was not used or if this property has no
+	     * value defined.
+	     */
+	    getAssignmentOperator() {
+	        return this.assignmentOperator;
+	    }
+	    getAssignmentOperatorRange() {
+	        return this.assignmentOperatorRange;
+	    }
+	    /**
+	     * Returns the value of this property including any enclosing
+	     * single or double quotes and relevant escape characters.
+	     * Escaped newlines and its associated contiguous whitespace
+	     * characters however will not be returned as they are deemed to
+	     * be uninteresting to clients trying to return a Dockerfile.
+	     *
+	     * @return the unescaped value of this property or null if this
+	     *         property has no associated value
+	     */
+	    getUnescapedValue() {
+	        if (this.valueRange === null) {
+	            return null;
+	        }
+	        let escaped = false;
+	        let rawValue = "";
+	        let value = this.document.getText().substring(this.document.offsetAt(this.valueRange.start), this.document.offsetAt(this.valueRange.end));
+	        rawLoop: for (let i = 0; i < value.length; i++) {
+	            let char = value.charAt(i);
+	            switch (char) {
+	                case this.escapeChar:
+	                    for (let j = i + 1; j < value.length; j++) {
+	                        switch (value.charAt(j)) {
+	                            case '\r':
+	                                j++;
+	                            case '\n':
+	                                escaped = true;
+	                                i = j;
+	                                continue rawLoop;
+	                            case ' ':
+	                            case '\t':
+	                                break;
+	                            default:
+	                                rawValue = rawValue + char;
+	                                continue rawLoop;
+	                        }
+	                    }
+	                    // this happens if there's only whitespace after the escape character
+	                    rawValue = rawValue + char;
+	                    break;
+	                case '\r':
+	                case '\n':
+	                    break;
+	                case ' ':
+	                case '\t':
+	                    if (!escaped) {
+	                        rawValue = rawValue + char;
+	                    }
+	                    break;
+	                case '#':
+	                    if (escaped) {
+	                        for (let j = i + 1; j < value.length; j++) {
+	                            switch (value.charAt(j)) {
+	                                case '\r':
+	                                    j++;
+	                                case '\n':
+	                                    i = j;
+	                                    continue rawLoop;
+	                            }
+	                        }
+	                    }
+	                    else {
+	                        rawValue = rawValue + char;
+	                    }
+	                    break;
+	                default:
+	                    rawValue = rawValue + char;
+	                    escaped = false;
+	                    break;
+	            }
+	        }
+	        return rawValue;
+	    }
+	    static getNameRange(document, arg) {
+	        let value = arg.getValue();
+	        let index = value.indexOf('=');
+	        if (index !== -1) {
+	            let initial = value.charAt(0);
+	            let before = value.charAt(index - 1);
+	            // check if content before the equals sign are in quotes
+	            // "var"=value
+	            // 'var'=value
+	            // otherwise, just assume it's a standard definition
+	            // var=value
+	            if ((initial === '"' && before === '"') || (initial === '\'' && before === '\'') || (initial !== '"' && initial !== '\'')) {
+	                return vscode_languageserver_types_1.Range.create(arg.getRange().start, document.positionAt(document.offsetAt(arg.getRange().start) + index));
+	            }
+	        }
+	        // no '=' found, just defined the property's name
+	        return arg.getRange();
+	    }
+	    static getValueRange(document, arg) {
+	        return vscode_languageserver_types_1.Range.create(document.positionAt(document.offsetAt(arg.getRange().start) + arg.getValue().indexOf('=') + 1), document.positionAt(document.offsetAt(arg.getRange().end)));
+	    }
+	    /**
+	     * Returns the actual value of this key-value pair. The value will
+	     * have its escape characters removed if applicable. If the value
+	     * spans multiple lines and there are comments nested within the
+	     * lines, they too will be removed.
+	     *
+	     * @return the value that this key-value pair will actually be, may
+	     *         be null if no value is defined, may be the empty string
+	     *         if the value only consists of whitespace
+	     */
+	    static getValue(value, escapeChar) {
+	        let escaped = false;
+	        const skip = util_1.Util.findLeadingNonWhitespace(value, escapeChar);
+	        if (skip !== 0 && value.charAt(skip) === '#') {
+	            // need to skip over comments
+	            escaped = true;
+	        }
+	        value = value.substring(skip);
+	        let first = value.charAt(0);
+	        let last = value.charAt(value.length - 1);
+	        let literal = first === '\'' || first === '"';
+	        let inSingle = (first === '\'' && last === '\'');
+	        let inDouble = false;
+	        if (first === '"') {
+	            for (let i = 1; i < value.length; i++) {
+	                if (value.charAt(i) === escapeChar) {
+	                    i++;
+	                }
+	                else if (value.charAt(i) === '"' && i === value.length - 1) {
+	                    inDouble = true;
+	                }
+	            }
+	        }
+	        if (inSingle || inDouble) {
+	            value = value.substring(1, value.length - 1);
+	        }
+	        let commentCheck = -1;
+	        let escapedValue = "";
+	        parseValue: for (let i = 0; i < value.length; i++) {
+	            let char = value.charAt(i);
+	            switch (char) {
+	                case escapeChar:
+	                    if (i + 1 === value.length) {
+	                        escapedValue = escapedValue + escapeChar;
+	                        break parseValue;
+	                    }
+	                    char = value.charAt(i + 1);
+	                    if (char === ' ' || char === '\t') {
+	                        whitespaceCheck: for (let j = i + 2; j < value.length; j++) {
+	                            let char2 = value.charAt(j);
+	                            switch (char2) {
+	                                case ' ':
+	                                case '\t':
+	                                    break;
+	                                case '\r':
+	                                    j++;
+	                                case '\n':
+	                                    escaped = true;
+	                                    i = j;
+	                                    continue parseValue;
+	                                default:
+	                                    if (!inDouble && !inSingle && !literal) {
+	                                        if (char2 === escapeChar) {
+	                                            // add the escaped character
+	                                            escapedValue = escapedValue + char;
+	                                            // now start parsing from the next escape character
+	                                            i = i + 1;
+	                                        }
+	                                        else {
+	                                            // the expectation is that this j = i + 2 here
+	                                            escapedValue = escapedValue + char + char2;
+	                                            i = j;
+	                                        }
+	                                        continue parseValue;
+	                                    }
+	                                    break whitespaceCheck;
+	                            }
+	                        }
+	                    }
+	                    if (inDouble) {
+	                        if (char === '\r') {
+	                            escaped = true;
+	                            i = i + 2;
+	                        }
+	                        else if (char === '\n') {
+	                            escaped = true;
+	                            i++;
+	                        }
+	                        else if (char !== '"') {
+	                            if (char === escapeChar) {
+	                                i++;
+	                            }
+	                            escapedValue = escapedValue + escapeChar;
+	                        }
+	                        continue parseValue;
+	                    }
+	                    else if (inSingle || literal) {
+	                        if (char === '\r') {
+	                            escaped = true;
+	                            i = i + 2;
+	                        }
+	                        else if (char === '\n') {
+	                            escaped = true;
+	                            i++;
+	                        }
+	                        else {
+	                            escapedValue = escapedValue + escapeChar;
+	                        }
+	                        continue parseValue;
+	                    }
+	                    else if (char === escapeChar) {
+	                        // double escape, append one and move on
+	                        escapedValue = escapedValue + escapeChar;
+	                        i++;
+	                    }
+	                    else if (char === '\r') {
+	                        escaped = true;
+	                        // offset one more for \r\n
+	                        i = i + 2;
+	                    }
+	                    else if (char === '\n') {
+	                        escaped = true;
+	                        i++;
+	                    }
+	                    else {
+	                        // any other escapes are simply ignored
+	                        escapedValue = escapedValue + char;
+	                        i++;
+	                    }
+	                    break;
+	                case ' ':
+	                case '\t':
+	                    if (escaped && commentCheck === -1) {
+	                        commentCheck = i;
+	                    }
+	                    escapedValue = escapedValue + char;
+	                    break;
+	                case '\r':
+	                    i++;
+	                case '\n':
+	                    if (escaped && commentCheck !== -1) {
+	                        // rollback and remove the whitespace that was previously appended
+	                        escapedValue = escapedValue.substring(0, escapedValue.length - (i - commentCheck - 1));
+	                        commentCheck = -1;
+	                    }
+	                    break;
+	                case '#':
+	                    // a newline was escaped and now there's a comment
+	                    if (escaped) {
+	                        if (commentCheck !== -1) {
+	                            // rollback and remove the whitespace that was previously appended
+	                            escapedValue = escapedValue.substring(0, escapedValue.length - (i - commentCheck));
+	                            commentCheck = -1;
+	                        }
+	                        newlineCheck: for (let j = i + 1; j < value.length; j++) {
+	                            switch (value.charAt(j)) {
+	                                case '\r':
+	                                    j++;
+	                                case '\n':
+	                                    i = j;
+	                                    break newlineCheck;
+	                            }
+	                        }
+	                        continue parseValue;
+	                    }
+	                default:
+	                    if (escaped) {
+	                        escaped = false;
+	                        commentCheck = -1;
+	                    }
+	                    escapedValue = escapedValue + char;
+	                    break;
+	            }
+	        }
+	        return escapedValue;
+	    }
+	}
+	property.Property = Property;
+	return property;
+}
+
+var propertyInstruction = {};
+
+var hasRequiredPropertyInstruction;
+
+function requirePropertyInstruction () {
+	if (hasRequiredPropertyInstruction) return propertyInstruction;
+	hasRequiredPropertyInstruction = 1;
+	Object.defineProperty(propertyInstruction, "__esModule", { value: true });
+	propertyInstruction.PropertyInstruction = void 0;
+	const vscode_languageserver_types_1 = requireMain$1();
+	const instruction_1 = requireInstruction();
+	const property_1 = requireProperty();
+	const argument_1 = requireArgument();
+	const util_1 = requireUtil();
+	class PropertyInstruction extends instruction_1.Instruction {
+	    constructor(document, range, dockerfile, escapeChar, instruction, instructionRange) {
+	        super(document, range, dockerfile, escapeChar, instruction, instructionRange);
+	        this.properties = undefined;
+	    }
+	    getProperties() {
+	        if (this.properties === undefined) {
+	            let args = this.getPropertyArguments();
+	            if (args.length === 0) {
+	                this.properties = [];
+	            }
+	            else if (args.length === 1) {
+	                this.properties = [new property_1.Property(this.document, this.escapeChar, args[0])];
+	            }
+	            else if (args.length === 2) {
+	                if (args[0].getValue().indexOf('=') === -1) {
+	                    this.properties = [new property_1.Property(this.document, this.escapeChar, args[0], args[1])];
+	                }
+	                else {
+	                    this.properties = [
+	                        new property_1.Property(this.document, this.escapeChar, args[0]),
+	                        new property_1.Property(this.document, this.escapeChar, args[1])
+	                    ];
+	                }
+	            }
+	            else if (args[0].getValue().indexOf('=') === -1) {
+	                let text = this.document.getText();
+	                let start = args[1].getRange().start;
+	                let end = args[args.length - 1].getRange().end;
+	                text = text.substring(this.document.offsetAt(start), this.document.offsetAt(end));
+	                this.properties = [new property_1.Property(this.document, this.escapeChar, args[0], new argument_1.Argument(text, vscode_languageserver_types_1.Range.create(args[1].getRange().start, args[args.length - 1].getRange().end)))];
+	            }
+	            else {
+	                this.properties = [];
+	                for (let i = 0; i < args.length; i++) {
+	                    this.properties.push(new property_1.Property(this.document, this.escapeChar, args[i]));
+	                }
+	            }
+	        }
+	        return this.properties;
+	    }
+	    /**
+	     * Goes from the back of the string and returns the first
+	     * non-whitespace character that is found. If an escape character
+	     * is found with newline characters, the escape character will
+	     * not be considered a non-whitespace character and its index in
+	     * the string will not be returned.
+	     *
+	     * @param content the string to search through
+	     * @return the index in the string for the first non-whitespace
+	     *         character when searching from the end of the string
+	     */
+	    findTrailingNonWhitespace(content) {
+	        // loop back to find the first non-whitespace character
+	        let index = content.length;
+	        whitespaceCheck: for (let i = content.length - 1; i >= 0; i--) {
+	            switch (content.charAt(i)) {
+	                case ' ':
+	                case '\t':
+	                    continue;
+	                case '\n':
+	                    if (content.charAt(i - 1) === '\r') {
+	                        i = i - 1;
+	                    }
+	                case '\r':
+	                    newlineCheck: for (let j = i - 1; j >= 0; j--) {
+	                        switch (content.charAt(j)) {
+	                            case ' ':
+	                            case '\t':
+	                            case '\r':
+	                            case '\n':
+	                            case this.escapeChar:
+	                                continue;
+	                            default:
+	                                index = j;
+	                                break newlineCheck;
+	                        }
+	                    }
+	                    break whitespaceCheck;
+	                default:
+	                    index = i;
+	                    break whitespaceCheck;
+	            }
+	        }
+	        return index;
+	    }
+	    getPropertyArguments() {
+	        const args = [];
+	        let range = this.getInstructionRange();
+	        let instructionNameEndOffset = this.document.offsetAt(range.end);
+	        let extra = instructionNameEndOffset - this.document.offsetAt(range.start);
+	        let content = this.getTextContent();
+	        let fullArgs = content.substring(extra);
+	        let start = util_1.Util.findLeadingNonWhitespace(fullArgs, this.escapeChar);
+	        if (start === -1) {
+	            // only whitespace found, no arguments
+	            return [];
+	        }
+	        const startPosition = this.document.positionAt(instructionNameEndOffset + start);
+	        // records whether the parser has just processed an escaped newline or not,
+	        // if our starting position is not on the same line as the instruction then
+	        // the start of the content is already on an escaped line
+	        let escaped = range.start.line !== startPosition.line;
+	        // flag to track if the last character was an escape character
+	        let endingEscape = false;
+	        // position before the first escape character was hit
+	        let mark = -1;
+	        let end = this.findTrailingNonWhitespace(fullArgs);
+	        content = fullArgs.substring(start, end + 1);
+	        let argStart = escaped ? -1 : 0;
+	        let spaced = false;
+	        argumentLoop: for (let i = 0; i < content.length; i++) {
+	            let char = content.charAt(i);
+	            switch (char) {
+	                case this.escapeChar:
+	                    if (i + 1 === content.length) {
+	                        endingEscape = true;
+	                        break argumentLoop;
+	                    }
+	                    if (!escaped) {
+	                        mark = i;
+	                    }
+	                    switch (content.charAt(i + 1)) {
+	                        case ' ':
+	                        case '\t':
+	                            if (!util_1.Util.isWhitespace(content.charAt(i + 2))) {
+	                                // space was escaped, continue as normal
+	                                i = i + 1;
+	                                continue argumentLoop;
+	                            }
+	                            // whitespace encountered, need to figure out if it extends to EOL
+	                            whitespaceCheck: for (let j = i + 2; j < content.length; j++) {
+	                                switch (content.charAt(j)) {
+	                                    case '\r':
+	                                        // offset one more for \r\n
+	                                        j++;
+	                                    case '\n':
+	                                        // whitespace only, safe to skip
+	                                        escaped = true;
+	                                        i = j;
+	                                        continue argumentLoop;
+	                                    case ' ':
+	                                    case '\t':
+	                                        // ignore whitespace
+	                                        break;
+	                                    default:
+	                                        // whitespace doesn't extend to EOL, create an argument
+	                                        args.push(new argument_1.Argument(content.substring(argStart, i), vscode_languageserver_types_1.Range.create(this.document.positionAt(instructionNameEndOffset + start + argStart), this.document.positionAt(instructionNameEndOffset + start + i + 2))));
+	                                        argStart = j;
+	                                        break whitespaceCheck;
+	                                }
+	                            }
+	                            // go back and start processing the encountered non-whitespace character
+	                            i = argStart - 1;
+	                            continue argumentLoop;
+	                        case '\r':
+	                            // offset one more for \r\n
+	                            i++;
+	                        case '\n':
+	                            // immediately followed by a newline, skip the newline
+	                            escaped = true;
+	                            i = i + 1;
+	                            continue argumentLoop;
+	                        case this.escapeChar:
+	                            // double escape found, skip it and move on
+	                            if (argStart === -1) {
+	                                argStart = i;
+	                            }
+	                            i = i + 1;
+	                            continue argumentLoop;
+	                        default:
+	                            if (argStart === -1) {
+	                                argStart = i;
+	                            }
+	                            // non-whitespace encountered, skip the escape and process the
+	                            // character normally
+	                            continue argumentLoop;
+	                    }
+	                case '\'':
+	                case '"':
+	                    if (spaced) {
+	                        this.createSpacedArgument(argStart, args, content, mark, instructionNameEndOffset, start);
+	                        // reset to start a new argument
+	                        argStart = i;
+	                        spaced = false;
+	                    }
+	                    if (argStart === -1) {
+	                        argStart = i;
+	                    }
+	                    for (let j = i + 1; j < content.length; j++) {
+	                        switch (content.charAt(j)) {
+	                            case char:
+	                                if (content.charAt(j + 1) !== ' ' && content.charAt(j + 1) !== '') {
+	                                    // there is more content after this quote,
+	                                    // continue so that it is all processed as
+	                                    // one single argument
+	                                    i = j;
+	                                    continue argumentLoop;
+	                                }
+	                                args.push(new argument_1.Argument(content.substring(argStart, j + 1), vscode_languageserver_types_1.Range.create(this.document.positionAt(instructionNameEndOffset + start + argStart), this.document.positionAt(instructionNameEndOffset + start + j + 1))));
+	                                i = j;
+	                                argStart = -1;
+	                                continue argumentLoop;
+	                            case this.escapeChar:
+	                                j++;
+	                                break;
+	                        }
+	                    }
+	                    break argumentLoop;
+	                case ' ':
+	                case '\t':
+	                    if (escaped) {
+	                        // consider there to be a space only if an argument
+	                        // is not spanning multiple lines
+	                        if (argStart !== -1) {
+	                            spaced = true;
+	                        }
+	                    }
+	                    else if (argStart !== -1) {
+	                        args.push(new argument_1.Argument(content.substring(argStart, i), vscode_languageserver_types_1.Range.create(this.document.positionAt(instructionNameEndOffset + start + argStart), this.document.positionAt(instructionNameEndOffset + start + i))));
+	                        argStart = -1;
+	                    }
+	                    break;
+	                case '\r':
+	                    // offset one more for \r\n
+	                    i++;
+	                case '\n':
+	                    spaced = false;
+	                    break;
+	                case '#':
+	                    if (escaped) {
+	                        // a newline was escaped and now there's a comment
+	                        for (let j = i + 1; j < content.length; j++) {
+	                            switch (content.charAt(j)) {
+	                                case '\r':
+	                                    j++;
+	                                case '\n':
+	                                    i = j;
+	                                    spaced = false;
+	                                    continue argumentLoop;
+	                            }
+	                        }
+	                        // went to the end without finding a newline,
+	                        // the comment was the last line in the instruction,
+	                        // just stop parsing, create an argument if needed
+	                        if (argStart !== -1) {
+	                            let value = content.substring(argStart, mark);
+	                            args.push(new argument_1.Argument(value, vscode_languageserver_types_1.Range.create(this.document.positionAt(instructionNameEndOffset + start + argStart), this.document.positionAt(instructionNameEndOffset + start + mark))));
+	                            argStart = -1;
+	                        }
+	                        break argumentLoop;
+	                    }
+	                    else if (argStart === -1) {
+	                        argStart = i;
+	                    }
+	                    break;
+	                default:
+	                    if (spaced) {
+	                        this.createSpacedArgument(argStart, args, content, mark, instructionNameEndOffset, start);
+	                        // reset to start a new argument
+	                        argStart = i;
+	                        spaced = false;
+	                    }
+	                    escaped = false;
+	                    if (argStart === -1) {
+	                        argStart = i;
+	                    }
+	                    // variable detected
+	                    if (char === '$' && content.charAt(i + 1) === '{') {
+	                        let singleQuotes = false;
+	                        let doubleQuotes = false;
+	                        let escaped = false;
+	                        for (let j = i + 1; j < content.length; j++) {
+	                            switch (content.charAt(j)) {
+	                                case this.escapeChar:
+	                                    escaped = true;
+	                                    break;
+	                                case '\r':
+	                                case '\n':
+	                                    break;
+	                                case '\'':
+	                                    singleQuotes = !singleQuotes;
+	                                    escaped = false;
+	                                    break;
+	                                case '"':
+	                                    doubleQuotes = !doubleQuotes;
+	                                    escaped = false;
+	                                    break;
+	                                case ' ':
+	                                case '\t':
+	                                    if (escaped || singleQuotes || doubleQuotes) {
+	                                        break;
+	                                    }
+	                                    i = j - 1;
+	                                    continue argumentLoop;
+	                                case '}':
+	                                    i = j;
+	                                    continue argumentLoop;
+	                                default:
+	                                    escaped = false;
+	                                    break;
+	                            }
+	                        }
+	                        break argumentLoop;
+	                    }
+	                    break;
+	            }
+	        }
+	        if (argStart !== -1 && argStart !== content.length) {
+	            let end = endingEscape ? content.length - 1 : content.length;
+	            let value = content.substring(argStart, end);
+	            args.push(new argument_1.Argument(value, vscode_languageserver_types_1.Range.create(this.document.positionAt(instructionNameEndOffset + start + argStart), this.document.positionAt(instructionNameEndOffset + start + end))));
+	        }
+	        return args;
+	    }
+	    createSpacedArgument(argStart, args, content, mark, instructionNameEndOffset, start) {
+	        if (argStart !== -1) {
+	            args.push(new argument_1.Argument(content.substring(argStart, mark), vscode_languageserver_types_1.Range.create(this.document.positionAt(instructionNameEndOffset + start + argStart), this.document.positionAt(instructionNameEndOffset + start + mark))));
+	        }
+	    }
+	}
+	propertyInstruction.PropertyInstruction = PropertyInstruction;
+	return propertyInstruction;
+}
+
+var hasRequiredArg;
+
+function requireArg () {
+	if (hasRequiredArg) return arg;
+	hasRequiredArg = 1;
+	Object.defineProperty(arg, "__esModule", { value: true });
+	arg.Arg = void 0;
+	const property_1 = requireProperty();
+	const propertyInstruction_1 = requirePropertyInstruction();
+	class Arg extends propertyInstruction_1.PropertyInstruction {
+	    constructor(document, range, dockerfile, escapeChar, instruction, instructionRange) {
+	        super(document, range, dockerfile, escapeChar, instruction, instructionRange);
+	        this.property = null;
+	        const args = this.getPropertyArguments();
+	        if (args.length === 1) {
+	            this.property = new property_1.Property(this.document, this.escapeChar, args[0]);
+	        }
+	        else {
+	            this.property = null;
+	        }
+	    }
+	    /**
+	     * Returns the variable defined by this ARG. This may be null if
+	     * this ARG instruction is malformed and has no variable
+	     * declaration.
+	     */
+	    getProperty() {
+	        return this.property;
+	    }
+	}
+	arg.Arg = Arg;
+	return arg;
+}
+
+var cmd = {};
+
+var hasRequiredCmd;
+
+function requireCmd () {
+	if (hasRequiredCmd) return cmd;
+	hasRequiredCmd = 1;
+	Object.defineProperty(cmd, "__esModule", { value: true });
+	cmd.Cmd = void 0;
+	const jsonInstruction_1 = requireJsonInstruction();
+	class Cmd extends jsonInstruction_1.JSONInstruction {
+	    constructor(document, range, dockerfile, escapeChar, instruction, instructionRange) {
+	        super(document, range, dockerfile, escapeChar, instruction, instructionRange);
+	    }
+	}
+	cmd.Cmd = Cmd;
+	return cmd;
+}
+
+var copy = {};
+
+var hasRequiredCopy;
+
+function requireCopy () {
+	if (hasRequiredCopy) return copy;
+	hasRequiredCopy = 1;
+	Object.defineProperty(copy, "__esModule", { value: true });
+	copy.Copy = void 0;
+	const jsonInstruction_1 = requireJsonInstruction();
+	class Copy extends jsonInstruction_1.JSONInstruction {
+	    constructor(document, range, dockerfile, escapeChar, instruction, instructionRange) {
+	        super(document, range, dockerfile, escapeChar, instruction, instructionRange);
+	    }
+	    stopSearchingForFlags(argument) {
+	        return argument.indexOf("--") === -1;
+	    }
+	    getFromFlag() {
+	        let flags = super.getFlags();
+	        return flags.length === 1 && flags[0].getName() === "from" ? flags[0] : null;
+	    }
+	    /**
+	     * Returns there here-documents that are defined in this RUN
+	     * instruction.
+	     *
+	     * This API is experimental and subject to change.
+	     */
+	    getHeredocs() {
+	        return super.getHeredocs();
+	    }
+	}
+	copy.Copy = Copy;
+	return copy;
+}
+
+var env = {};
+
+var hasRequiredEnv;
+
+function requireEnv () {
+	if (hasRequiredEnv) return env;
+	hasRequiredEnv = 1;
+	Object.defineProperty(env, "__esModule", { value: true });
+	env.Env = void 0;
+	const propertyInstruction_1 = requirePropertyInstruction();
+	class Env extends propertyInstruction_1.PropertyInstruction {
+	    constructor(document, range, dockerfile, escapeChar, instruction, instructionRange) {
+	        super(document, range, dockerfile, escapeChar, instruction, instructionRange);
+	    }
+	    getProperties() {
+	        return super.getProperties();
+	    }
+	}
+	env.Env = Env;
+	return env;
+}
+
+var entrypoint = {};
+
+var hasRequiredEntrypoint;
+
+function requireEntrypoint () {
+	if (hasRequiredEntrypoint) return entrypoint;
+	hasRequiredEntrypoint = 1;
+	Object.defineProperty(entrypoint, "__esModule", { value: true });
+	entrypoint.Entrypoint = void 0;
+	const jsonInstruction_1 = requireJsonInstruction();
+	class Entrypoint extends jsonInstruction_1.JSONInstruction {
+	    constructor(document, range, dockerfile, escapeChar, instruction, instructionRange) {
+	        super(document, range, dockerfile, escapeChar, instruction, instructionRange);
+	    }
+	}
+	entrypoint.Entrypoint = Entrypoint;
+	return entrypoint;
+}
+
+var from = {};
+
+var hasRequiredFrom;
+
+function requireFrom () {
+	if (hasRequiredFrom) return from;
+	hasRequiredFrom = 1;
+	Object.defineProperty(from, "__esModule", { value: true });
+	from.From = void 0;
+	const vscode_languageserver_types_1 = requireMain$1();
+	const modifiableInstruction_1 = requireModifiableInstruction();
+	class From extends modifiableInstruction_1.ModifiableInstruction {
+	    constructor(document, range, dockerfile, escapeChar, instruction, instructionRange) {
+	        super(document, range, dockerfile, escapeChar, instruction, instructionRange);
+	    }
+	    stopSearchingForFlags(argument) {
+	        return argument.indexOf("--") === -1;
+	    }
+	    getImage() {
+	        const args = this.getArguments();
+	        return args.length > 0 ? args[0].getValue() : null;
+	    }
+	    /**
+	     * Returns the name of the image that will be used as the base image.
+	     *
+	     * @return the base image's name, or null if unspecified
+	     */
+	    getImageName() {
+	        const imageName = this.getRangeContent(this.getImageNameRange());
+	        if (imageName === null) {
+	            return null;
+	        }
+	        let commented = false;
+	        let escaped = false;
+	        let name = "";
+	        for (let i = 0; i < imageName.length; i++) {
+	            const ch = imageName.charAt(i);
+	            switch (ch) {
+	                case this.escapeChar:
+	                    escaped = true;
+	                    break;
+	                case '\r':
+	                    continue;
+	                case '\n':
+	                    commented = false;
+	                    break;
+	                case ' ':
+	                case '\t':
+	                    break;
+	                case '#':
+	                    if (escaped) {
+	                        commented = true;
+	                    }
+	                    else {
+	                        name = name + ch;
+	                        escaped = false;
+	                    }
+	                    break;
+	                default:
+	                    if (!commented) {
+	                        name = name + ch;
+	                        escaped = false;
+	                    }
+	                    break;
+	            }
+	        }
+	        return name;
+	    }
+	    /**
+	     * Returns the range that covers the name of the image used by
+	     * this instruction.
+	     *
+	     * @return the range of the name of this instruction's argument,
+	     *         or null if no image has been specified
+	     */
+	    getImageNameRange() {
+	        let range = this.getImageRange();
+	        if (range) {
+	            let registryRange = this.getRegistryRange();
+	            if (registryRange) {
+	                range.start = this.document.positionAt(this.document.offsetAt(registryRange.end) + 1);
+	            }
+	            let tagRange = this.getImageTagRange();
+	            let digestRange = this.getImageDigestRange();
+	            if (tagRange === null) {
+	                if (digestRange !== null) {
+	                    range.end = this.document.positionAt(this.document.offsetAt(digestRange.start) - 1);
+	                }
+	            }
+	            else {
+	                range.end = this.document.positionAt(this.document.offsetAt(tagRange.start) - 1);
+	            }
+	            return range;
+	        }
+	        return null;
+	    }
+	    /**
+	     * Returns the range that covers the image argument of this
+	     * instruction. This includes the tag or digest of the image if
+	     * it has been specified by the instruction.
+	     *
+	     * @return the range of the image argument, or null if no image
+	     *         has been specified
+	     */
+	    getImageRange() {
+	        let args = this.getArguments();
+	        return args.length !== 0 ? args[0].getRange() : null;
+	    }
+	    getImageTag() {
+	        return this.getRangeContent(this.getImageTagRange());
+	    }
+	    /**
+	     * Returns the range in the document that the tag of the base
+	     * image encompasses.
+	     *
+	     * @return the base image's tag's range in the document, or null
+	     *         if no tag has been specified
+	     */
+	    getImageTagRange() {
+	        const range = this.getImageRange();
+	        if (range) {
+	            const rangeStartOffset = this.document.offsetAt(range.start);
+	            const content = this.getRangeContent(range);
+	            const atIndex = this.indexOf(rangeStartOffset, content, '@');
+	            const slashIndex = content.indexOf('/');
+	            if (atIndex === -1) {
+	                const colonIndex = this.lastIndexOf(rangeStartOffset, content, ':');
+	                if (colonIndex > slashIndex) {
+	                    return vscode_languageserver_types_1.Range.create(this.document.positionAt(rangeStartOffset + colonIndex + 1), range.end);
+	                }
+	            }
+	            const subcontent = content.substring(0, atIndex);
+	            const subcolonIndex = subcontent.indexOf(':');
+	            if (subcolonIndex === -1) {
+	                return null;
+	            }
+	            if (slashIndex === -1) {
+	                // slash not found suggests no registry and no namespace defined
+	                return vscode_languageserver_types_1.Range.create(this.document.positionAt(rangeStartOffset + subcolonIndex + 1), this.document.positionAt(rangeStartOffset + atIndex));
+	            }
+	            // both colon and slash found, check if it is a port
+	            if (subcolonIndex < slashIndex) {
+	                return null;
+	            }
+	            return vscode_languageserver_types_1.Range.create(this.document.positionAt(rangeStartOffset + subcolonIndex + 1), this.document.positionAt(rangeStartOffset + subcontent.length));
+	        }
+	        return null;
+	    }
+	    getImageDigest() {
+	        return this.getRangeContent(this.getImageDigestRange());
+	    }
+	    /**
+	     * Returns the range in the document that the digest of the base
+	     * image encompasses.
+	     *
+	     * @return the base image's digest's range in the document, or null
+	     *         if no digest has been specified
+	     */
+	    getImageDigestRange() {
+	        let range = this.getImageRange();
+	        if (range) {
+	            let content = this.getRangeContent(range);
+	            let index = this.lastIndexOf(this.document.offsetAt(range.start), content, '@');
+	            if (index !== -1) {
+	                return vscode_languageserver_types_1.Range.create(range.start.line, range.start.character + index + 1, range.end.line, range.end.character);
+	            }
+	        }
+	        return null;
+	    }
+	    indexOf(documentOffset, content, searchString) {
+	        let index = content.indexOf(searchString);
+	        const variables = this.getVariables();
+	        for (let i = 0; i < variables.length; i++) {
+	            const position = documentOffset + index;
+	            const variableRange = variables[i].getRange();
+	            if (this.document.offsetAt(variableRange.start) < position && position < this.document.offsetAt(variableRange.end)) {
+	                const offset = this.document.offsetAt(variableRange.end) - documentOffset;
+	                const substring = content.substring(offset);
+	                const subIndex = substring.indexOf(searchString);
+	                if (subIndex === -1) {
+	                    return -1;
+	                }
+	                index = subIndex + offset;
+	                i = -1;
+	                continue;
+	            }
+	        }
+	        return index;
+	    }
+	    lastIndexOf(documentOffset, content, searchString) {
+	        let index = content.lastIndexOf(searchString);
+	        const variables = this.getVariables();
+	        for (let i = 0; i < variables.length; i++) {
+	            const position = documentOffset + index;
+	            const variableRange = variables[i].getRange();
+	            if (this.document.offsetAt(variableRange.start) < position && position < this.document.offsetAt(variableRange.end)) {
+	                index = content.substring(0, index).lastIndexOf(searchString);
+	                if (index === -1) {
+	                    return -1;
+	                }
+	                i = -1;
+	                continue;
+	            }
+	        }
+	        return index;
+	    }
+	    getRegistry() {
+	        return this.getRangeContent(this.getRegistryRange());
+	    }
+	    getRegistryRange() {
+	        const range = this.getImageRange();
+	        if (range) {
+	            const tagRange = this.getImageTagRange();
+	            const digestRange = this.getImageDigestRange();
+	            if (tagRange === null) {
+	                if (digestRange !== null) {
+	                    range.end = this.document.positionAt(this.document.offsetAt(digestRange.start) - 1);
+	                }
+	            }
+	            else {
+	                range.end = this.document.positionAt(this.document.offsetAt(tagRange.start) - 1);
+	            }
+	            const content = this.getRangeContent(range);
+	            const rangeStart = this.document.offsetAt(range.start);
+	            const startingSlashIndex = this.indexOf(rangeStart, content, '/');
+	            if (startingSlashIndex === -1) {
+	                return null;
+	            }
+	            const portIndex = this.indexOf(rangeStart, content, ':');
+	            const dotIndex = this.indexOf(rangeStart, content, '.');
+	            // hostname detected
+	            if (portIndex !== -1 || dotIndex !== -1) {
+	                return vscode_languageserver_types_1.Range.create(range.start, this.document.positionAt(rangeStart + startingSlashIndex));
+	            }
+	            const registry = content.substring(0, startingSlashIndex);
+	            // localhost registry detected
+	            if (registry === 'localhost') {
+	                return vscode_languageserver_types_1.Range.create(range.start, this.document.positionAt(rangeStart + startingSlashIndex));
+	            }
+	        }
+	        return null;
+	    }
+	    getBuildStage() {
+	        let range = this.getBuildStageRange();
+	        return range === null ? null : this.getRangeContent(range);
+	    }
+	    getBuildStageRange() {
+	        let args = this.getArguments();
+	        if (args.length > 2 && args[1].getValue().toUpperCase() === "AS") {
+	            return args[2].getRange();
+	        }
+	        return null;
+	    }
+	    getPlatformFlag() {
+	        let flags = super.getFlags();
+	        return flags.length === 1 && flags[0].getName() === "platform" ? flags[0] : null;
+	    }
+	}
+	from.From = From;
+	return from;
+}
+
+var healthcheck = {};
+
+var hasRequiredHealthcheck;
+
+function requireHealthcheck () {
+	if (hasRequiredHealthcheck) return healthcheck;
+	hasRequiredHealthcheck = 1;
+	Object.defineProperty(healthcheck, "__esModule", { value: true });
+	healthcheck.Healthcheck = void 0;
+	const modifiableInstruction_1 = requireModifiableInstruction();
+	class Healthcheck extends modifiableInstruction_1.ModifiableInstruction {
+	    constructor(document, range, dockerfile, escapeChar, instruction, instructionRange) {
+	        super(document, range, dockerfile, escapeChar, instruction, instructionRange);
+	    }
+	    stopSearchingForFlags(argument) {
+	        argument = argument.toUpperCase();
+	        return argument === "CMD" || argument === "NONE";
+	    }
+	    getSubcommand() {
+	        let args = this.getArguments();
+	        return args.length !== 0 ? args[0] : null;
+	    }
+	}
+	healthcheck.Healthcheck = Healthcheck;
+	return healthcheck;
+}
+
+var label = {};
+
+var hasRequiredLabel;
+
+function requireLabel () {
+	if (hasRequiredLabel) return label;
+	hasRequiredLabel = 1;
+	Object.defineProperty(label, "__esModule", { value: true });
+	label.Label = void 0;
+	const propertyInstruction_1 = requirePropertyInstruction();
+	const util_1 = requireUtil();
+	class Label extends propertyInstruction_1.PropertyInstruction {
+	    constructor(document, range, dockerfile, escapeChar, instruction, instructionRange) {
+	        super(document, range, dockerfile, escapeChar, instruction, instructionRange);
+	    }
+	    getVariables() {
+	        const variables = super.getVariables();
+	        const properties = this.getProperties();
+	        // iterate over all of this LABEL's properties
+	        for (const property of properties) {
+	            const value = property.getUnescapedValue();
+	            // check if the value is contained in single quotes,
+	            // single quotes would indicate a literal value
+	            if (value !== null && value.length > 2 && value.charAt(0) === '\'' && value.charAt(value.length - 1) === '\'') {
+	                const range = property.getValueRange();
+	                for (let i = 0; i < variables.length; i++) {
+	                    // if a variable is in a single quote, remove it from the list
+	                    if (util_1.Util.isInsideRange(variables[i].getRange().start, range)) {
+	                        variables.splice(i, 1);
+	                        i--;
+	                    }
+	                }
+	            }
+	        }
+	        return variables;
+	    }
+	    getProperties() {
+	        return super.getProperties();
+	    }
+	}
+	label.Label = Label;
+	return label;
+}
+
+var onbuild = {};
+
+var hasRequiredOnbuild;
+
+function requireOnbuild () {
+	if (hasRequiredOnbuild) return onbuild;
+	hasRequiredOnbuild = 1;
+	Object.defineProperty(onbuild, "__esModule", { value: true });
+	onbuild.Onbuild = void 0;
+	const vscode_languageserver_types_1 = requireMain$1();
+	const parser_1 = requireParser();
+	const instruction_1 = requireInstruction();
+	class Onbuild extends instruction_1.Instruction {
+	    constructor(document, range, dockerfile, escapeChar, instruction, instructionRange) {
+	        super(document, range, dockerfile, escapeChar, instruction, instructionRange);
+	    }
+	    getTrigger() {
+	        let trigger = this.getTriggerWord();
+	        return trigger === null ? null : trigger.toUpperCase();
+	    }
+	    getTriggerWord() {
+	        return this.getRangeContent(this.getTriggerRange());
+	    }
+	    getTriggerRange() {
+	        let args = this.getArguments();
+	        return args.length > 0 ? args[0].getRange() : null;
+	    }
+	    getTriggerInstruction() {
+	        let triggerRange = this.getTriggerRange();
+	        if (triggerRange === null) {
+	            return null;
+	        }
+	        let args = this.getArguments();
+	        return parser_1.Parser.createInstruction(this.document, this.dockerfile, this.escapeChar, vscode_languageserver_types_1.Range.create(args[0].getRange().start, this.getRange().end), this.getTriggerWord(), triggerRange);
+	    }
+	}
+	onbuild.Onbuild = Onbuild;
+	return onbuild;
+}
+
+var run$1 = {};
+
+var hasRequiredRun;
+
+function requireRun () {
+	if (hasRequiredRun) return run$1;
+	hasRequiredRun = 1;
+	Object.defineProperty(run$1, "__esModule", { value: true });
+	run$1.Run = void 0;
+	const jsonInstruction_1 = requireJsonInstruction();
+	class Run extends jsonInstruction_1.JSONInstruction {
+	    constructor(document, range, dockerfile, escapeChar, instruction, instructionRange) {
+	        super(document, range, dockerfile, escapeChar, instruction, instructionRange);
+	    }
+	    stopSearchingForFlags(argument) {
+	        return argument.indexOf("--") === -1;
+	    }
+	    /**
+	     * Returns there here-documents that are defined in this RUN
+	     * instruction.
+	     *
+	     * This API is experimental and subject to change.
+	     */
+	    getHeredocs() {
+	        return super.getHeredocs();
+	    }
+	}
+	run$1.Run = Run;
+	return run$1;
+}
+
+var shell = {};
+
+var hasRequiredShell;
+
+function requireShell () {
+	if (hasRequiredShell) return shell;
+	hasRequiredShell = 1;
+	Object.defineProperty(shell, "__esModule", { value: true });
+	shell.Shell = void 0;
+	const jsonInstruction_1 = requireJsonInstruction();
+	class Shell extends jsonInstruction_1.JSONInstruction {
+	    constructor(document, range, dockerfile, escapeChar, instruction, instructionRange) {
+	        super(document, range, dockerfile, escapeChar, instruction, instructionRange);
+	    }
+	}
+	shell.Shell = Shell;
+	return shell;
+}
+
+var stopsignal = {};
+
+var hasRequiredStopsignal;
+
+function requireStopsignal () {
+	if (hasRequiredStopsignal) return stopsignal;
+	hasRequiredStopsignal = 1;
+	Object.defineProperty(stopsignal, "__esModule", { value: true });
+	stopsignal.Stopsignal = void 0;
+	const instruction_1 = requireInstruction();
+	class Stopsignal extends instruction_1.Instruction {
+	    constructor(document, range, dockerfile, escapeChar, instruction, instructionRange) {
+	        super(document, range, dockerfile, escapeChar, instruction, instructionRange);
+	    }
+	}
+	stopsignal.Stopsignal = Stopsignal;
+	return stopsignal;
+}
+
+var workdir = {};
+
+var hasRequiredWorkdir;
+
+function requireWorkdir () {
+	if (hasRequiredWorkdir) return workdir;
+	hasRequiredWorkdir = 1;
+	Object.defineProperty(workdir, "__esModule", { value: true });
+	workdir.Workdir = void 0;
+	const instruction_1 = requireInstruction();
+	class Workdir extends instruction_1.Instruction {
+	    constructor(document, range, dockerfile, escapeChar, instruction, instructionRange) {
+	        super(document, range, dockerfile, escapeChar, instruction, instructionRange);
+	    }
+	    /**
+	     * Returns the path that has been defined. Note that this path may
+	     * be absolute or relative depending on what was written in the
+	     * instruction.
+	     *
+	     * @return the working directory's path, or null if this
+	     *         instruction has no arguments
+	     */
+	    getPath() {
+	        return this.getArgumentsContent();
+	    }
+	    /**
+	     * Returns the absolute path that this instruction resolves to. The
+	     * function will inspect prior WORKDIR instructions in the current
+	     * image or another build stage in the Dockerfile to try to
+	     * determine this.
+	     *
+	     * @return the absolute path of the working directory, or null if
+	     *         this instruction has no arguments, or undefined if it
+	     *         cannot be determined because only relative paths could be
+	     *         found
+	     */
+	    getAbsolutePath() {
+	        const path = this.getPath();
+	        if (path === null || path.startsWith("/")) {
+	            return path;
+	        }
+	        const startLine = this.getRange().start.line;
+	        const hierarchy = this.dockerfile.getStageHierarchy(startLine);
+	        for (let i = hierarchy.length - 1; i >= 0; i--) {
+	            const workdirs = hierarchy[i].getWORKDIRs();
+	            for (let j = workdirs.length - 1; j >= 0; j--) {
+	                if (workdirs[j].getRange().start.line < startLine) {
+	                    const parent = workdirs[j].getAbsolutePath();
+	                    if (parent === undefined || parent === null) {
+	                        return undefined;
+	                    }
+	                    return parent.endsWith("/") ? parent + path : parent + "/" + path;
+	                }
+	            }
+	        }
+	        return undefined;
+	    }
+	}
+	workdir.Workdir = Workdir;
+	return workdir;
+}
+
+var user = {};
+
+var hasRequiredUser;
+
+function requireUser () {
+	if (hasRequiredUser) return user;
+	hasRequiredUser = 1;
+	Object.defineProperty(user, "__esModule", { value: true });
+	user.User = void 0;
+	const instruction_1 = requireInstruction();
+	class User extends instruction_1.Instruction {
+	    constructor(document, range, dockerfile, escapeChar, instruction, instructionRange) {
+	        super(document, range, dockerfile, escapeChar, instruction, instructionRange);
+	    }
+	}
+	user.User = User;
+	return user;
+}
+
+var volume = {};
+
+var hasRequiredVolume;
+
+function requireVolume () {
+	if (hasRequiredVolume) return volume;
+	hasRequiredVolume = 1;
+	Object.defineProperty(volume, "__esModule", { value: true });
+	volume.Volume = void 0;
+	const jsonInstruction_1 = requireJsonInstruction();
+	class Volume extends jsonInstruction_1.JSONInstruction {
+	    constructor(document, range, dockerfile, escapeChar, instruction, instructionRange) {
+	        super(document, range, dockerfile, escapeChar, instruction, instructionRange);
+	    }
+	}
+	volume.Volume = Volume;
+	return volume;
+}
+
+var dockerfile = {};
+
+var imageTemplate = {};
+
+/* --------------------------------------------------------------------------------------------
+ * Copyright (c) Remy Suen. All rights reserved.
+ * Licensed under the MIT License. See License.txt in the project root for license information.
+ * ------------------------------------------------------------------------------------------ */
+
+var hasRequiredImageTemplate;
+
+function requireImageTemplate () {
+	if (hasRequiredImageTemplate) return imageTemplate;
+	hasRequiredImageTemplate = 1;
+	Object.defineProperty(imageTemplate, "__esModule", { value: true });
+	imageTemplate.ImageTemplate = void 0;
+	const vscode_languageserver_types_1 = requireMain$1();
+	const arg_1 = requireArg();
+	const cmd_1 = requireCmd();
+	const copy_1 = requireCopy();
+	const env_1 = requireEnv();
+	const entrypoint_1 = requireEntrypoint();
+	const from_1 = requireFrom();
+	const healthcheck_1 = requireHealthcheck();
+	const onbuild_1 = requireOnbuild();
+	const util_1 = requireUtil();
+	const workdir_1 = requireWorkdir();
+	class ImageTemplate {
+	    constructor() {
+	        this.comments = [];
+	        this.instructions = [];
+	    }
+	    addComment(comment) {
+	        this.comments.push(comment);
+	    }
+	    getComments() {
+	        return this.comments;
+	    }
+	    addInstruction(instruction) {
+	        this.instructions.push(instruction);
+	    }
+	    getInstructions() {
+	        return this.instructions;
+	    }
+	    getInstructionAt(line) {
+	        for (let instruction of this.instructions) {
+	            if (util_1.Util.isInsideRange(vscode_languageserver_types_1.Position.create(line, 0), instruction.getRange())) {
+	                return instruction;
+	            }
+	        }
+	        return null;
+	    }
+	    /**
+	     * Gets all the ARG instructions that are defined in this image.
+	     */
+	    getARGs() {
+	        let args = [];
+	        for (let instruction of this.instructions) {
+	            if (instruction instanceof arg_1.Arg) {
+	                args.push(instruction);
+	            }
+	        }
+	        return args;
+	    }
+	    /**
+	     * Gets all the CMD instructions that are defined in this image.
+	     */
+	    getCMDs() {
+	        let cmds = [];
+	        for (let instruction of this.instructions) {
+	            if (instruction instanceof cmd_1.Cmd) {
+	                cmds.push(instruction);
+	            }
+	        }
+	        return cmds;
+	    }
+	    /**
+	     * Gets all the COPY instructions that are defined in this image.
+	     */
+	    getCOPYs() {
+	        let copies = [];
+	        for (let instruction of this.instructions) {
+	            if (instruction instanceof copy_1.Copy) {
+	                copies.push(instruction);
+	            }
+	        }
+	        return copies;
+	    }
+	    /**
+	     * Gets all the ENTRYPOINT instructions that are defined in this image.
+	     */
+	    getENTRYPOINTs() {
+	        let froms = [];
+	        for (let instruction of this.instructions) {
+	            if (instruction instanceof entrypoint_1.Entrypoint) {
+	                froms.push(instruction);
+	            }
+	        }
+	        return froms;
+	    }
+	    /**
+	     * Gets all the ENV instructions that are defined in this image.
+	     */
+	    getENVs() {
+	        let args = [];
+	        for (let instruction of this.instructions) {
+	            if (instruction instanceof env_1.Env) {
+	                args.push(instruction);
+	            }
+	        }
+	        return args;
+	    }
+	    getFROM() {
+	        for (const instruction of this.instructions) {
+	            if (instruction instanceof from_1.From) {
+	                return instruction;
+	            }
+	        }
+	        return null;
+	    }
+	    /**
+	     * Gets all the FROM instructions that are defined in this image.
+	     */
+	    getFROMs() {
+	        let froms = [];
+	        for (let instruction of this.instructions) {
+	            if (instruction instanceof from_1.From) {
+	                froms.push(instruction);
+	            }
+	        }
+	        return froms;
+	    }
+	    /**
+	     * Gets all the HEALTHCHECK instructions that are defined in this image.
+	     */
+	    getHEALTHCHECKs() {
+	        let froms = [];
+	        for (let instruction of this.instructions) {
+	            if (instruction instanceof healthcheck_1.Healthcheck) {
+	                froms.push(instruction);
+	            }
+	        }
+	        return froms;
+	    }
+	    getWORKDIRs() {
+	        const workdirs = [];
+	        for (const instruction of this.instructions) {
+	            if (instruction instanceof workdir_1.Workdir) {
+	                workdirs.push(instruction);
+	            }
+	        }
+	        return workdirs;
+	    }
+	    getOnbuildTriggers() {
+	        let triggers = [];
+	        for (let instruction of this.instructions) {
+	            if (instruction instanceof onbuild_1.Onbuild) {
+	                let trigger = instruction.getTriggerInstruction();
+	                if (trigger) {
+	                    triggers.push(trigger);
+	                }
+	            }
+	        }
+	        return triggers;
+	    }
+	    getAvailableVariables(currentLine) {
+	        const variables = [];
+	        for (const arg of this.getARGs()) {
+	            if (arg.isBefore(currentLine)) {
+	                const property = arg.getProperty();
+	                if (property) {
+	                    const variable = property.getName();
+	                    if (variables.indexOf(variable) === -1) {
+	                        variables.push(variable);
+	                    }
+	                }
+	            }
+	        }
+	        for (const env of this.getENVs()) {
+	            if (env.isBefore(currentLine)) {
+	                for (const property of env.getProperties()) {
+	                    const variable = property.getName();
+	                    if (variables.indexOf(variable) === -1) {
+	                        variables.push(variable);
+	                    }
+	                }
+	            }
+	        }
+	        return variables;
+	    }
+	    /**
+	     * Resolves a variable with the given name at the specified line
+	     * to its value. If null is returned, then the variable has been
+	     * defined but no value was given. If undefined is returned, then
+	     * a variable with the given name has not been defined yet as of
+	     * the given line.
+	     *
+	     * @param variable the name of the variable to resolve
+	     * @param line the line number that the variable is on, zero-based
+	     * @return the value of the variable as defined by an ARG or ENV
+	     *         instruction, or null if no value has been specified, or
+	     *         undefined if a variable with the given name has not
+	     *         been defined
+	     */
+	    resolveVariable(variable, line) {
+	        let envs = this.getENVs();
+	        for (let i = envs.length - 1; i >= 0; i--) {
+	            if (envs[i].isBefore(line)) {
+	                for (let property of envs[i].getProperties()) {
+	                    if (property.getName() === variable) {
+	                        return property.getValue();
+	                    }
+	                }
+	            }
+	        }
+	        let args = this.getARGs();
+	        for (let i = args.length - 1; i >= 0; i--) {
+	            if (args[i].isBefore(line)) {
+	                let property = args[i].getProperty();
+	                if (property && property.getName() === variable) {
+	                    return property.getValue();
+	                }
+	            }
+	        }
+	        return undefined;
+	    }
+	    getRange() {
+	        const instructions = this.getInstructions();
+	        if (instructions.length === 0) {
+	            // all templates should have instructions, this only happens for
+	            // the initial set of instruction
+	            return vscode_languageserver_types_1.Range.create(0, 0, 0, 0);
+	        }
+	        const instructionStart = instructions[0].getRange().start;
+	        const instructionEnd = instructions[instructions.length - 1].getRange().end;
+	        return vscode_languageserver_types_1.Range.create(instructionStart, instructionEnd);
+	    }
+	    contains(position) {
+	        const range = this.getRange();
+	        if (range === null) {
+	            return false;
+	        }
+	        return util_1.Util.isInsideRange(position, range);
+	    }
+	}
+	imageTemplate.ImageTemplate = ImageTemplate;
+	return imageTemplate;
+}
+
+/* --------------------------------------------------------------------------------------------
+ * Copyright (c) Remy Suen. All rights reserved.
+ * Licensed under the MIT License. See License.txt in the project root for license information.
+ * ------------------------------------------------------------------------------------------ */
+
+var hasRequiredDockerfile;
+
+function requireDockerfile () {
+	if (hasRequiredDockerfile) return dockerfile;
+	hasRequiredDockerfile = 1;
+	Object.defineProperty(dockerfile, "__esModule", { value: true });
+	dockerfile.Dockerfile = void 0;
+	const vscode_languageserver_types_1 = requireMain$1();
+	const ast = requireMain();
+	const imageTemplate_1 = requireImageTemplate();
+	const from_1 = requireFrom();
+	const util_1 = requireUtil();
+	const main_1 = requireMain();
+	class Dockerfile extends imageTemplate_1.ImageTemplate {
+	    constructor(document) {
+	        super();
+	        this.initialInstructions = new imageTemplate_1.ImageTemplate();
+	        this.buildStages = [];
+	        this.directives = [];
+	        /**
+	         * Whether a FROM instruction has been added to this Dockerfile or not.
+	         */
+	        this.foundFrom = false;
+	        this.document = document;
+	    }
+	    getEscapeCharacter() {
+	        for (const directive of this.directives) {
+	            if (directive.getDirective() === ast.Directive.escape) {
+	                const value = directive.getValue();
+	                if (value === '\\' || value === '`') {
+	                    return value;
+	                }
+	            }
+	        }
+	        return '\\';
+	    }
+	    getInitialARGs() {
+	        return this.initialInstructions.getARGs();
+	    }
+	    getContainingImage(position) {
+	        let range = vscode_languageserver_types_1.Range.create(vscode_languageserver_types_1.Position.create(0, 0), this.document.positionAt(this.document.getText().length));
+	        if (!util_1.Util.isInsideRange(position, range)) {
+	            // not inside the document, invalid position
+	            return null;
+	        }
+	        if (this.initialInstructions.getComments().length > 0 || this.initialInstructions.getInstructions().length > 0) {
+	            if (util_1.Util.isInsideRange(position, this.initialInstructions.getRange())) {
+	                return this.initialInstructions;
+	            }
+	        }
+	        for (const buildStage of this.buildStages) {
+	            if (util_1.Util.isInsideRange(position, buildStage.getRange())) {
+	                return buildStage;
+	            }
+	        }
+	        return this;
+	    }
+	    addInstruction(instruction) {
+	        if (instruction.getKeyword() === main_1.Keyword.FROM) {
+	            this.currentBuildStage = new imageTemplate_1.ImageTemplate();
+	            this.buildStages.push(this.currentBuildStage);
+	            this.foundFrom = true;
+	        }
+	        else if (!this.foundFrom) {
+	            this.initialInstructions.addInstruction(instruction);
+	        }
+	        if (this.foundFrom) {
+	            this.currentBuildStage.addInstruction(instruction);
+	        }
+	        super.addInstruction(instruction);
+	    }
+	    setDirectives(directives) {
+	        this.directives = directives;
+	    }
+	    getDirective() {
+	        return this.directives.length === 0 ? null : this.directives[0];
+	    }
+	    getDirectives() {
+	        return this.directives;
+	    }
+	    resolveVariable(variable, line) {
+	        for (let from of this.getFROMs()) {
+	            let range = from.getRange();
+	            if (range.start.line <= line && line <= range.end.line) {
+	                // resolve the FROM variable against the initial ARGs
+	                let initialARGs = new imageTemplate_1.ImageTemplate();
+	                for (let instruction of this.initialInstructions.getARGs()) {
+	                    initialARGs.addInstruction(instruction);
+	                }
+	                return initialARGs.resolveVariable(variable, line);
+	            }
+	        }
+	        let image = this.getContainingImage(vscode_languageserver_types_1.Position.create(line, 0));
+	        if (image === null) {
+	            return undefined;
+	        }
+	        let resolvedVariable = image.resolveVariable(variable, line);
+	        if (resolvedVariable === null) {
+	            // refers to an uninitialized ARG variable,
+	            // try resolving it against the initial ARGs then
+	            let initialARGs = new imageTemplate_1.ImageTemplate();
+	            for (let instruction of this.initialInstructions.getARGs()) {
+	                initialARGs.addInstruction(instruction);
+	            }
+	            return initialARGs.resolveVariable(variable, line);
+	        }
+	        return resolvedVariable;
+	    }
+	    getAvailableVariables(currentLine) {
+	        if (this.getInstructionAt(currentLine) instanceof from_1.From) {
+	            let variables = [];
+	            for (let arg of this.getInitialARGs()) {
+	                let property = arg.getProperty();
+	                if (property) {
+	                    variables.push(property.getName());
+	                }
+	            }
+	            return variables;
+	        }
+	        let image = this.getContainingImage(vscode_languageserver_types_1.Position.create(currentLine, 0));
+	        return image ? image.getAvailableVariables(currentLine) : [];
+	    }
+	    getParentStage(image) {
+	        const templateFrom = image.getFROM();
+	        const imageName = templateFrom === null ? null : templateFrom.getImageName();
+	        if (imageName === null) {
+	            return null;
+	        }
+	        for (const from of this.getFROMs()) {
+	            if (from.getBuildStage() === imageName) {
+	                const range = from.getRange();
+	                // on the same line then it's an image that shares the name as the build stage
+	                if (range.start.line === templateFrom.getRange().start.line) {
+	                    return null;
+	                }
+	                return this.getContainingImage(range.start);
+	            }
+	        }
+	        return null;
+	    }
+	    getStageHierarchy(line) {
+	        const image = this.getContainingImage(vscode_languageserver_types_1.Position.create(line, 0));
+	        if (image === null) {
+	            return [];
+	        }
+	        const stages = [image];
+	        let stage = this.getParentStage(image);
+	        while (stage !== null) {
+	            stages.splice(0, 0, stage);
+	            stage = this.getParentStage(stage);
+	        }
+	        return stages;
+	    }
+	    getAvailableWorkingDirectories(line) {
+	        const availableDirectories = new Set();
+	        for (const image of this.getStageHierarchy(line)) {
+	            for (const workdir of image.getWORKDIRs()) {
+	                if (workdir.getRange().end.line < line) {
+	                    let directory = workdir.getAbsolutePath();
+	                    if (directory !== undefined && directory !== null) {
+	                        if (!directory.endsWith("/")) {
+	                            directory += "/";
+	                        }
+	                        availableDirectories.add(directory);
+	                    }
+	                }
+	            }
+	        }
+	        return Array.from(availableDirectories);
+	    }
+	    /**
+	     * Internally reorganize the comments in the Dockerfile and allocate
+	     * them to the relevant build stages that they belong to.
+	     */
+	    organizeComments() {
+	        const comments = this.getComments();
+	        for (let i = 0; i < comments.length; i++) {
+	            if (util_1.Util.isInsideRange(comments[i].getRange().end, this.initialInstructions.getRange())) {
+	                this.initialInstructions.addComment(comments[i]);
+	            }
+	            else {
+	                for (const buildStage of this.buildStages) {
+	                    if (util_1.Util.isInsideRange(comments[i].getRange().start, buildStage.getRange())) {
+	                        buildStage.addComment(comments[i]);
+	                    }
+	                }
+	            }
+	        }
+	    }
+	    getRange() {
+	        const comments = this.getComments();
+	        const instructions = this.getInstructions();
+	        let range = null;
+	        if (comments.length === 0) {
+	            if (instructions.length > 0) {
+	                range = vscode_languageserver_types_1.Range.create(instructions[0].getRange().start, instructions[instructions.length - 1].getRange().end);
+	            }
+	        }
+	        else if (instructions.length === 0) {
+	            range = vscode_languageserver_types_1.Range.create(comments[0].getRange().start, comments[comments.length - 1].getRange().end);
+	        }
+	        else {
+	            const commentStart = comments[0].getRange().start;
+	            const commentEnd = comments[comments.length - 1].getRange().end;
+	            const instructionStart = instructions[0].getRange().start;
+	            const instructionEnd = instructions[instructions.length - 1].getRange().end;
+	            if (commentStart.line < instructionStart.line) {
+	                if (commentEnd.line < instructionEnd.line) {
+	                    range = vscode_languageserver_types_1.Range.create(commentStart, instructionEnd);
+	                }
+	                range = vscode_languageserver_types_1.Range.create(commentStart, commentEnd);
+	            }
+	            else if (commentEnd.line < instructionEnd.line) {
+	                range = vscode_languageserver_types_1.Range.create(instructionStart, instructionEnd);
+	            }
+	            else {
+	                range = vscode_languageserver_types_1.Range.create(instructionStart, commentEnd);
+	            }
+	        }
+	        if (range === null) {
+	            if (this.directives.length === 0) {
+	                return null;
+	            }
+	            return this.directives[0].getRange();
+	        }
+	        else if (this.directives.length === 0) {
+	            return range;
+	        }
+	        return vscode_languageserver_types_1.Range.create(this.directives[0].getRange().start, range.end);
+	    }
+	}
+	dockerfile.Dockerfile = Dockerfile;
+	return dockerfile;
+}
+
+/* --------------------------------------------------------------------------------------------
+ * Copyright (c) Remy Suen. All rights reserved.
+ * Licensed under the MIT License. See License.txt in the project root for license information.
+ * ------------------------------------------------------------------------------------------ */
+
+var hasRequiredParser;
+
+function requireParser () {
+	if (hasRequiredParser) return parser;
+	hasRequiredParser = 1;
+	Object.defineProperty(parser, "__esModule", { value: true });
+	parser.Parser = void 0;
+	const vscode_languageserver_textdocument_1 = require$$0;
+	const vscode_languageserver_types_1 = requireMain$1();
+	const comment_1 = requireComment();
+	const parserDirective_1 = requireParserDirective();
+	const instruction_1 = requireInstruction();
+	const add_1 = requireAdd();
+	const arg_1 = requireArg();
+	const cmd_1 = requireCmd();
+	const copy_1 = requireCopy();
+	const env_1 = requireEnv();
+	const entrypoint_1 = requireEntrypoint();
+	const from_1 = requireFrom();
+	const healthcheck_1 = requireHealthcheck();
+	const label_1 = requireLabel();
+	const onbuild_1 = requireOnbuild();
+	const run_1 = requireRun();
+	const shell_1 = requireShell();
+	const stopsignal_1 = requireStopsignal();
+	const workdir_1 = requireWorkdir();
+	const user_1 = requireUser();
+	const volume_1 = requireVolume();
+	const dockerfile_1 = requireDockerfile();
+	const util_1 = requireUtil();
+	const main_1 = requireMain();
+	class Parser {
+	    constructor() {
+	        this.escapeChar = null;
+	    }
+	    static createInstruction(document, dockerfile, escapeChar, lineRange, instruction, instructionRange) {
+	        switch (instruction.toUpperCase()) {
+	            case "ADD":
+	                return new add_1.Add(document, lineRange, dockerfile, escapeChar, instruction, instructionRange);
+	            case "ARG":
+	                return new arg_1.Arg(document, lineRange, dockerfile, escapeChar, instruction, instructionRange);
+	            case "CMD":
+	                return new cmd_1.Cmd(document, lineRange, dockerfile, escapeChar, instruction, instructionRange);
+	            case "COPY":
+	                return new copy_1.Copy(document, lineRange, dockerfile, escapeChar, instruction, instructionRange);
+	            case "ENTRYPOINT":
+	                return new entrypoint_1.Entrypoint(document, lineRange, dockerfile, escapeChar, instruction, instructionRange);
+	            case "ENV":
+	                return new env_1.Env(document, lineRange, dockerfile, escapeChar, instruction, instructionRange);
+	            case "FROM":
+	                return new from_1.From(document, lineRange, dockerfile, escapeChar, instruction, instructionRange);
+	            case "HEALTHCHECK":
+	                return new healthcheck_1.Healthcheck(document, lineRange, dockerfile, escapeChar, instruction, instructionRange);
+	            case "LABEL":
+	                return new label_1.Label(document, lineRange, dockerfile, escapeChar, instruction, instructionRange);
+	            case "ONBUILD":
+	                return new onbuild_1.Onbuild(document, lineRange, dockerfile, escapeChar, instruction, instructionRange);
+	            case "RUN":
+	                return new run_1.Run(document, lineRange, dockerfile, escapeChar, instruction, instructionRange);
+	            case "SHELL":
+	                return new shell_1.Shell(document, lineRange, dockerfile, escapeChar, instruction, instructionRange);
+	            case "STOPSIGNAL":
+	                return new stopsignal_1.Stopsignal(document, lineRange, dockerfile, escapeChar, instruction, instructionRange);
+	            case "WORKDIR":
+	                return new workdir_1.Workdir(document, lineRange, dockerfile, escapeChar, instruction, instructionRange);
+	            case "USER":
+	                return new user_1.User(document, lineRange, dockerfile, escapeChar, instruction, instructionRange);
+	            case "VOLUME":
+	                return new volume_1.Volume(document, lineRange, dockerfile, escapeChar, instruction, instructionRange);
+	        }
+	        return new instruction_1.Instruction(document, lineRange, dockerfile, escapeChar, instruction, instructionRange);
+	    }
+	    getParserDirectives(document, buffer) {
+	        // reset the escape directive in between runs
+	        const directives = [];
+	        this.escapeChar = '';
+	        const offset = util_1.Util.isUTF8BOM(buffer.substring(0, 1)) ? 1 : 0;
+	        directiveCheck: for (let i = offset; i < buffer.length; i++) {
+	            switch (buffer.charAt(i)) {
+	                case ' ':
+	                case '\t':
+	                    break;
+	                case '\r':
+	                case '\n':
+	                    // blank lines stop the parsing of directives immediately
+	                    break directiveCheck;
+	                case '#':
+	                    let directiveStart = -1;
+	                    let directiveEnd = -1;
+	                    for (let j = i + 1; j < buffer.length; j++) {
+	                        let char = buffer.charAt(j);
+	                        switch (char) {
+	                            case ' ':
+	                            case '\t':
+	                                if (directiveStart !== -1 && directiveEnd === -1) {
+	                                    directiveEnd = j;
+	                                }
+	                                break;
+	                            case '\r':
+	                            case '\n':
+	                                break directiveCheck;
+	                            case '=':
+	                                let valueStart = -1;
+	                                let valueEnd = -1;
+	                                if (directiveEnd === -1) {
+	                                    directiveEnd = j;
+	                                }
+	                                // assume the line ends with the file
+	                                let lineEnd = buffer.length;
+	                                directiveValue: for (let k = j + 1; k < buffer.length; k++) {
+	                                    char = buffer.charAt(k);
+	                                    switch (char) {
+	                                        case '\r':
+	                                        case '\n':
+	                                            if (valueStart !== -1 && valueEnd === -1) {
+	                                                valueEnd = k;
+	                                            }
+	                                            // line break found, reset
+	                                            lineEnd = k;
+	                                            break directiveValue;
+	                                        case '\t':
+	                                        case ' ':
+	                                            if (valueStart !== -1 && valueEnd === -1) {
+	                                                valueEnd = k;
+	                                            }
+	                                            continue;
+	                                        default:
+	                                            if (valueStart === -1) {
+	                                                valueStart = k;
+	                                            }
+	                                            break;
+	                                    }
+	                                }
+	                                if (directiveStart === -1) {
+	                                    // no directive, it's a regular comment
+	                                    break directiveCheck;
+	                                }
+	                                if (valueStart === -1) {
+	                                    // no non-whitespace characters found, highlight all the characters then
+	                                    valueStart = j + 1;
+	                                    valueEnd = lineEnd;
+	                                }
+	                                else if (valueEnd === -1) {
+	                                    // reached EOF
+	                                    valueEnd = buffer.length;
+	                                }
+	                                const lineRange = vscode_languageserver_types_1.Range.create(document.positionAt(i), document.positionAt(lineEnd));
+	                                const nameRange = vscode_languageserver_types_1.Range.create(document.positionAt(directiveStart), document.positionAt(directiveEnd));
+	                                const valueRange = vscode_languageserver_types_1.Range.create(document.positionAt(valueStart), document.positionAt(valueEnd));
+	                                directives.push(new parserDirective_1.ParserDirective(document, lineRange, nameRange, valueRange));
+	                                directiveStart = -1;
+	                                if (buffer.charAt(valueEnd) === '\r') {
+	                                    // skip over the \r
+	                                    i = valueEnd + 1;
+	                                }
+	                                else {
+	                                    i = valueEnd;
+	                                }
+	                                continue directiveCheck;
+	                            default:
+	                                if (directiveStart === -1) {
+	                                    directiveStart = j;
+	                                }
+	                                break;
+	                        }
+	                    }
+	                    break;
+	                default:
+	                    break directiveCheck;
+	            }
+	        }
+	        return directives;
+	    }
+	    parse(buffer) {
+	        this.document = vscode_languageserver_textdocument_1.TextDocument.create("", "", 0, buffer);
+	        this.buffer = buffer;
+	        let dockerfile = new dockerfile_1.Dockerfile(this.document);
+	        let directives = this.getParserDirectives(this.document, this.buffer);
+	        let offset = 0;
+	        this.escapeChar = '\\';
+	        if (directives.length > 0) {
+	            dockerfile.setDirectives(directives);
+	            this.escapeChar = dockerfile.getEscapeCharacter();
+	            // start parsing after the directives
+	            offset = this.document.offsetAt(vscode_languageserver_types_1.Position.create(directives.length, 0));
+	        }
+	        else if (util_1.Util.isUTF8BOM(buffer.substring(0, 1))) {
+	            offset = 1;
+	        }
+	        for (let i = offset; i < this.buffer.length; i++) {
+	            const char = this.buffer.charAt(i);
+	            switch (char) {
+	                case ' ':
+	                case '\t':
+	                case '\r':
+	                case '\n':
+	                    break;
+	                case '#':
+	                    i = this.processComment(dockerfile, i);
+	                    break;
+	                default:
+	                    i = this.processInstruction(dockerfile, char, i);
+	                    break;
+	            }
+	        }
+	        dockerfile.organizeComments();
+	        return dockerfile;
+	    }
+	    processInstruction(dockerfile, char, start) {
+	        let instruction = char;
+	        let instructionEnd = -1;
+	        let escapedInstruction = false;
+	        instructionCheck: for (let i = start + 1; i < this.buffer.length; i++) {
+	            char = this.buffer.charAt(i);
+	            switch (char) {
+	                case this.escapeChar:
+	                    escapedInstruction = true;
+	                    char = this.buffer.charAt(i + 1);
+	                    if (char === '\r' || char === '\n') {
+	                        if (instructionEnd === -1) {
+	                            instructionEnd = i;
+	                        }
+	                        i++;
+	                    }
+	                    else if (char === ' ' || char === '\t') {
+	                        for (let j = i + 2; j < this.buffer.length; j++) {
+	                            switch (this.buffer.charAt(j)) {
+	                                case ' ':
+	                                case '\t':
+	                                    break;
+	                                case '\r':
+	                                case '\n':
+	                                    i = j;
+	                                    continue instructionCheck;
+	                                default:
+	                                    // found an argument, mark end of instruction
+	                                    instructionEnd = i + 1;
+	                                    instruction = instruction + this.escapeChar;
+	                                    i = j - 2;
+	                                    continue instructionCheck;
+	                            }
+	                        }
+	                        // reached EOF
+	                        instructionEnd = i + 1;
+	                        instruction = instruction + this.escapeChar;
+	                        break instructionCheck;
+	                    }
+	                    else {
+	                        instructionEnd = i + 1;
+	                        instruction = instruction + this.escapeChar;
+	                        // reset and consider it as one contiguous word
+	                        escapedInstruction = false;
+	                    }
+	                    break;
+	                case ' ':
+	                case '\t':
+	                    if (escapedInstruction) {
+	                        // on an escaped newline, need to search for non-whitespace
+	                        escapeCheck: for (let j = i + 1; j < this.buffer.length; j++) {
+	                            switch (this.buffer.charAt(j)) {
+	                                case ' ':
+	                                case '\t':
+	                                    break;
+	                                case '\r':
+	                                case '\n':
+	                                    i = j;
+	                                    continue instructionCheck;
+	                                default:
+	                                    break escapeCheck;
+	                            }
+	                        }
+	                        escapedInstruction = false;
+	                    }
+	                    if (instructionEnd === -1) {
+	                        instructionEnd = i;
+	                    }
+	                    i = this.processArguments(dockerfile, instruction, instructionEnd, start, i);
+	                    dockerfile.addInstruction(this.createInstruction(dockerfile, instruction, start, instructionEnd, i));
+	                    return i;
+	                case '\r':
+	                case '\n':
+	                    if (escapedInstruction) {
+	                        continue;
+	                    }
+	                    if (instructionEnd === -1) {
+	                        instructionEnd = i;
+	                    }
+	                    dockerfile.addInstruction(this.createInstruction(dockerfile, instruction, start, i, i));
+	                    return i;
+	                case '#':
+	                    if (escapedInstruction) {
+	                        continue;
+	                    }
+	                default:
+	                    instructionEnd = i + 1;
+	                    instruction = instruction + char;
+	                    escapedInstruction = false;
+	                    break;
+	            }
+	        }
+	        // reached EOF
+	        if (instructionEnd === -1) {
+	            instructionEnd = this.buffer.length;
+	        }
+	        dockerfile.addInstruction(this.createInstruction(dockerfile, instruction, start, instructionEnd, this.buffer.length));
+	        return this.buffer.length;
+	    }
+	    processHeredocs(instruction, offset) {
+	        let keyword = instruction.getKeyword();
+	        if (keyword === main_1.Keyword.ONBUILD) {
+	            instruction = instruction.getTriggerInstruction();
+	            if (instruction === null) {
+	                return offset;
+	            }
+	            keyword = instruction.getKeyword();
+	        }
+	        if (keyword !== main_1.Keyword.ADD && keyword !== main_1.Keyword.COPY && keyword !== main_1.Keyword.RUN) {
+	            return offset;
+	        }
+	        const heredocs = [];
+	        let tabbed = false;
+	        for (const arg of instruction.getArguments()) {
+	            const value = arg.getValue();
+	            if (value.startsWith("<<") && value.length > 2) {
+	                if (value.startsWith("<<-")) {
+	                    tabbed = true;
+	                }
+	                const name = util_1.Util.parseHeredocName(value);
+	                if (name !== null) {
+	                    heredocs.push(name);
+	                }
+	            }
+	        }
+	        if (heredocs.length > 0) {
+	            for (const heredoc of heredocs) {
+	                offset = this.parseHeredoc(heredoc, offset, tabbed);
+	            }
+	        }
+	        return offset;
+	    }
+	    processArguments(dockerfile, instruction, instructionEnd, start, offset) {
+	        let escaped = false;
+	        argumentsCheck: for (let i = offset + 1; i < this.buffer.length; i++) {
+	            switch (this.buffer.charAt(i)) {
+	                case '\r':
+	                case '\n':
+	                    if (escaped) {
+	                        continue;
+	                    }
+	                    return this.processHeredocs(this.createInstruction(dockerfile, instruction, start, instructionEnd, i), i);
+	                case this.escapeChar:
+	                    const next = this.buffer.charAt(i + 1);
+	                    if (next === '\n' || next === '\r') {
+	                        escaped = true;
+	                        i++;
+	                    }
+	                    else if (next === ' ' || next === '\t') {
+	                        for (let j = i + 2; j < this.buffer.length; j++) {
+	                            switch (this.buffer.charAt(j)) {
+	                                case ' ':
+	                                case '\t':
+	                                    break;
+	                                case '\r':
+	                                case '\n':
+	                                    escaped = true;
+	                                default:
+	                                    i = j;
+	                                    continue argumentsCheck;
+	                            }
+	                        }
+	                        // reached EOF
+	                        return this.buffer.length;
+	                    }
+	                    continue;
+	                case '#':
+	                    if (escaped) {
+	                        i = this.processComment(dockerfile, i);
+	                        continue argumentsCheck;
+	                    }
+	                    break;
+	                case ' ':
+	                case '\t':
+	                    break;
+	                default:
+	                    if (escaped) {
+	                        escaped = false;
+	                    }
+	                    break;
+	            }
+	        }
+	        return this.buffer.length;
+	    }
+	    processComment(dockerfile, start) {
+	        let end = this.buffer.length;
+	        commentLoop: for (let i = start + 1; i < this.buffer.length; i++) {
+	            switch (this.buffer.charAt(i)) {
+	                case '\r':
+	                case '\n':
+	                    end = i;
+	                    break commentLoop;
+	            }
+	        }
+	        const range = vscode_languageserver_types_1.Range.create(this.document.positionAt(start), this.document.positionAt(end));
+	        dockerfile.addComment(new comment_1.Comment(this.document, range));
+	        return end;
+	    }
+	    parseHeredoc(heredocName, offset, tabbed) {
+	        let startWord = -1;
+	        let lineStart = true;
+	        for (let i = offset; i < this.buffer.length; i++) {
+	            switch (this.buffer.charAt(i)) {
+	                case ' ':
+	                    lineStart = false;
+	                    break;
+	                case '\t':
+	                    if (!tabbed) {
+	                        lineStart = false;
+	                    }
+	                    break;
+	                case '\r':
+	                case '\n':
+	                    if (startWord !== -1 && heredocName === this.buffer.substring(startWord, i)) {
+	                        return i;
+	                    }
+	                    startWord = -1;
+	                    lineStart = true;
+	                    break;
+	                default:
+	                    if (lineStart) {
+	                        startWord = i;
+	                        lineStart = false;
+	                    }
+	                    break;
+	            }
+	        }
+	        return this.buffer.length;
+	    }
+	    createInstruction(dockerfile, instruction, start, instructionEnd, end) {
+	        const startPosition = this.document.positionAt(start);
+	        const instructionRange = vscode_languageserver_types_1.Range.create(startPosition, this.document.positionAt(instructionEnd));
+	        const lineRange = vscode_languageserver_types_1.Range.create(startPosition, this.document.positionAt(end));
+	        return Parser.createInstruction(this.document, dockerfile, this.escapeChar, lineRange, instruction, instructionRange);
+	    }
+	}
+	parser.Parser = Parser;
+	return parser;
+}
+
+var hasRequiredMain;
+
+function requireMain () {
+	if (hasRequiredMain) return main$2;
+	hasRequiredMain = 1;
+	(function (exports$1) {
+		Object.defineProperty(exports$1, "__esModule", { value: true });
+		exports$1.DockerfileParser = exports$1.DefaultVariables = exports$1.Directive = exports$1.Keyword = exports$1.Workdir = exports$1.Volume = exports$1.User = exports$1.Stopsignal = exports$1.Shell = exports$1.Run = exports$1.PropertyInstruction = exports$1.Onbuild = exports$1.ModifiableInstruction = exports$1.Label = exports$1.JSONInstruction = exports$1.Heredoc = exports$1.Healthcheck = exports$1.From = exports$1.Env = exports$1.Entrypoint = exports$1.Copy = exports$1.Cmd = exports$1.Arg = exports$1.Add = exports$1.Variable = exports$1.Property = exports$1.ParserDirective = exports$1.Line = exports$1.Instruction = exports$1.Flag = exports$1.Comment = exports$1.JSONArgument = exports$1.Argument = void 0;
+		var argument_1 = requireArgument();
+		Object.defineProperty(exports$1, "Argument", { enumerable: true, get: function () { return argument_1.Argument; } });
+		var jsonArgument_1 = requireJsonArgument();
+		Object.defineProperty(exports$1, "JSONArgument", { enumerable: true, get: function () { return jsonArgument_1.JSONArgument; } });
+		const comment_1 = requireComment();
+		Object.defineProperty(exports$1, "Comment", { enumerable: true, get: function () { return comment_1.Comment; } });
+		const parser_1 = requireParser();
+		var flag_1 = requireFlag();
+		Object.defineProperty(exports$1, "Flag", { enumerable: true, get: function () { return flag_1.Flag; } });
+		const instruction_1 = requireInstruction();
+		Object.defineProperty(exports$1, "Instruction", { enumerable: true, get: function () { return instruction_1.Instruction; } });
+		var line_1 = requireLine();
+		Object.defineProperty(exports$1, "Line", { enumerable: true, get: function () { return line_1.Line; } });
+		const parserDirective_1 = requireParserDirective();
+		Object.defineProperty(exports$1, "ParserDirective", { enumerable: true, get: function () { return parserDirective_1.ParserDirective; } });
+		var property_1 = requireProperty();
+		Object.defineProperty(exports$1, "Property", { enumerable: true, get: function () { return property_1.Property; } });
+		var variable_1 = requireVariable();
+		Object.defineProperty(exports$1, "Variable", { enumerable: true, get: function () { return variable_1.Variable; } });
+		var add_1 = requireAdd();
+		Object.defineProperty(exports$1, "Add", { enumerable: true, get: function () { return add_1.Add; } });
+		const arg_1 = requireArg();
+		Object.defineProperty(exports$1, "Arg", { enumerable: true, get: function () { return arg_1.Arg; } });
+		const cmd_1 = requireCmd();
+		Object.defineProperty(exports$1, "Cmd", { enumerable: true, get: function () { return cmd_1.Cmd; } });
+		const copy_1 = requireCopy();
+		Object.defineProperty(exports$1, "Copy", { enumerable: true, get: function () { return copy_1.Copy; } });
+		const entrypoint_1 = requireEntrypoint();
+		Object.defineProperty(exports$1, "Entrypoint", { enumerable: true, get: function () { return entrypoint_1.Entrypoint; } });
+		const env_1 = requireEnv();
+		Object.defineProperty(exports$1, "Env", { enumerable: true, get: function () { return env_1.Env; } });
+		const from_1 = requireFrom();
+		Object.defineProperty(exports$1, "From", { enumerable: true, get: function () { return from_1.From; } });
+		const healthcheck_1 = requireHealthcheck();
+		Object.defineProperty(exports$1, "Healthcheck", { enumerable: true, get: function () { return healthcheck_1.Healthcheck; } });
+		var heredoc_1 = requireHeredoc();
+		Object.defineProperty(exports$1, "Heredoc", { enumerable: true, get: function () { return heredoc_1.Heredoc; } });
+		var jsonInstruction_1 = requireJsonInstruction();
+		Object.defineProperty(exports$1, "JSONInstruction", { enumerable: true, get: function () { return jsonInstruction_1.JSONInstruction; } });
+		var label_1 = requireLabel();
+		Object.defineProperty(exports$1, "Label", { enumerable: true, get: function () { return label_1.Label; } });
+		var modifiableInstruction_1 = requireModifiableInstruction();
+		Object.defineProperty(exports$1, "ModifiableInstruction", { enumerable: true, get: function () { return modifiableInstruction_1.ModifiableInstruction; } });
+		var onbuild_1 = requireOnbuild();
+		Object.defineProperty(exports$1, "Onbuild", { enumerable: true, get: function () { return onbuild_1.Onbuild; } });
+		var propertyInstruction_1 = requirePropertyInstruction();
+		Object.defineProperty(exports$1, "PropertyInstruction", { enumerable: true, get: function () { return propertyInstruction_1.PropertyInstruction; } });
+		var run_1 = requireRun();
+		Object.defineProperty(exports$1, "Run", { enumerable: true, get: function () { return run_1.Run; } });
+		var shell_1 = requireShell();
+		Object.defineProperty(exports$1, "Shell", { enumerable: true, get: function () { return shell_1.Shell; } });
+		var stopsignal_1 = requireStopsignal();
+		Object.defineProperty(exports$1, "Stopsignal", { enumerable: true, get: function () { return stopsignal_1.Stopsignal; } });
+		var user_1 = requireUser();
+		Object.defineProperty(exports$1, "User", { enumerable: true, get: function () { return user_1.User; } });
+		var volume_1 = requireVolume();
+		Object.defineProperty(exports$1, "Volume", { enumerable: true, get: function () { return volume_1.Volume; } });
+		const workdir_1 = requireWorkdir();
+		Object.defineProperty(exports$1, "Workdir", { enumerable: true, get: function () { return workdir_1.Workdir; } });
+		var Keyword;
+		(function (Keyword) {
+		    Keyword["ADD"] = "ADD";
+		    Keyword["ARG"] = "ARG";
+		    Keyword["CMD"] = "CMD";
+		    Keyword["COPY"] = "COPY";
+		    Keyword["ENTRYPOINT"] = "ENTRYPOINT";
+		    Keyword["ENV"] = "ENV";
+		    Keyword["EXPOSE"] = "EXPOSE";
+		    Keyword["FROM"] = "FROM";
+		    Keyword["HEALTHCHECK"] = "HEALTHCHECK";
+		    Keyword["LABEL"] = "LABEL";
+		    Keyword["MAINTAINER"] = "MAINTAINER";
+		    Keyword["ONBUILD"] = "ONBUILD";
+		    Keyword["RUN"] = "RUN";
+		    Keyword["SHELL"] = "SHELL";
+		    Keyword["STOPSIGNAL"] = "STOPSIGNAL";
+		    Keyword["USER"] = "USER";
+		    Keyword["VOLUME"] = "VOLUME";
+		    Keyword["WORKDIR"] = "WORKDIR";
+		})(Keyword || (exports$1.Keyword = Keyword = {}));
+		var Directive;
+		(function (Directive) {
+		    Directive["escape"] = "escape";
+		    Directive["syntax"] = "syntax";
+		})(Directive || (exports$1.Directive = Directive = {}));
+		exports$1.DefaultVariables = [
+		    "ALL_PROXY", "all_proxy",
+		    "FTP_PROXY", "ftp_proxy",
+		    "HTTP_PROXY", "http_proxy",
+		    "HTTPS_PROXY", "https_proxy",
+		    "NO_PROXY", "no_proxy"
+		];
+		var DockerfileParser;
+		(function (DockerfileParser) {
+		    function parse(content) {
+		        let parser = new parser_1.Parser();
+		        return parser.parse(content);
+		    }
+		    DockerfileParser.parse = parse;
+		})(DockerfileParser || (exports$1.DockerfileParser = DockerfileParser = {})); 
+	} (main$2));
+	return main$2;
+}
+
+var mainExports = requireMain();
+
 /**
  * Parses workflow files to extract action dependencies
  */
@@ -39479,7 +46301,7 @@ class WorkflowParser {
             return;
         }
         const imageRef = action.runs.image;
-        // Only parse if it's a docker:// reference (not a Dockerfile path)
+        // Parse docker:// references directly
         if (typeof imageRef === 'string' && imageRef.startsWith('docker://')) {
             const dockerDep = this.parseDockerImage(imageRef);
             if (dockerDep) {
@@ -39487,6 +46309,57 @@ class WorkflowParser {
                 dockerDep.context = 'action';
                 dockerDependencies.push(dockerDep);
             }
+            return;
+        }
+        // Parse Dockerfile if it's a path reference
+        if (typeof imageRef === 'string' && !imageRef.startsWith('docker://')) {
+            this.parseDockerfile(imageRef, sourcePath, dockerDependencies);
+        }
+    }
+    /**
+     * Parse a Dockerfile to extract base images from FROM instructions
+     */
+    parseDockerfile(dockerfilePath, sourcePath, dockerDependencies) {
+        try {
+            // Resolve the Dockerfile path relative to the action.yml location
+            const actionDir = path.dirname(sourcePath);
+            const fullDockerfilePath = path.resolve(actionDir, dockerfilePath);
+            // Check if file exists
+            if (!fs.existsSync(fullDockerfilePath)) {
+                coreExports.warning(`Dockerfile not found: ${dockerfilePath} (resolved to ${fullDockerfilePath})`);
+                return;
+            }
+            // Read and parse the Dockerfile
+            const dockerfileContent = fs.readFileSync(fullDockerfilePath, 'utf8');
+            const dockerfile = mainExports.DockerfileParser.parse(dockerfileContent);
+            // Extract FROM instructions
+            const fromInstructions = dockerfile.getFROMs();
+            for (const fromInstruction of fromInstructions) {
+                // Use getImage() which correctly returns the image reference without stage name
+                const imageRef = fromInstruction.getImage();
+                if (!imageRef) {
+                    continue;
+                }
+                // Skip scratch images (no parent)
+                if (imageRef.toLowerCase() === 'scratch') {
+                    continue;
+                }
+                // Check for build args/variables
+                if (imageRef.includes('$') || imageRef.includes('${')) {
+                    coreExports.warning(`Dockerfile contains variable reference in FROM: ${imageRef}. Skipping variable substitution.`);
+                    continue;
+                }
+                // Parse the image reference
+                const dockerDep = this.parseDockerImage(imageRef);
+                if (dockerDep) {
+                    dockerDep.sourcePath = sourcePath;
+                    dockerDep.context = 'dockerfile';
+                    dockerDependencies.push(dockerDep);
+                }
+            }
+        }
+        catch (error) {
+            coreExports.warning(`Failed to parse Dockerfile ${dockerfilePath}: ${error instanceof Error ? error.message : String(error)}`);
         }
     }
     /**
