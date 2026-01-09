@@ -57,6 +57,23 @@ npm run test
 Unit tests should exist in the `__tests__` directory. They are powered by
 `jest`. Fixtures should be placed in the `__fixtures__` directory.
 
+## Linting
+
+Before committing any code changes, ensure all linting checks pass by running:
+
+```bash
+npm run lint
+```
+
+This will run ESLint and Prettier to check for code style and quality issues.
+If there are any issues, they can often be automatically fixed by running:
+
+```bash
+npm run format:write
+```
+
+Always verify that linting passes before committing code or creating a pull request.
+
 ## Bundling
 
 Any time files in the `src` directory are changed, you should run the following
@@ -82,6 +99,8 @@ npm run bundle
 - Use JSDoc comments to document functions, classes, and complex logic
 - After doing any refactoring, ensure to run `npm run test` to ensure that all
   tests still pass and coverage requirements are met
+- **Before committing any changes, always run `npm run lint` to verify code
+  quality and style compliance**
 - When suggesting code changes, always opt for the most maintainable approach.
   Try your best to keep the code clean and follow "Don't Repeat Yourself" (DRY)
   principles
