@@ -856,5 +856,152 @@ describe('DependencySubmitter', () => {
         manifests['pkg:githubactions/actions/checkout@4.1.0'].relationship
       ).toBe('indirect')
     })
+
+    it('Submits Docker dependencies with correct PURL format', async () => {
+      github.mockOctokit.rest.dependencyGraph.createRepositorySnapshot.mockResolvedValueOnce(
+        {}
+      )
+
+      const submitter = new DependencySubmitter({
+        token: 'test-token',
+        repository: 'test-owner/test-repo',
+        sha: 'abc123',
+        ref: 'refs/heads/main'
+      })
+
+      const actionDependencies = []
+      const dockerDependencies = [
+        {
+          registry: 'hub.docker.com',
+          namespace: 'library',
+          image: 'alpine',
+          tag: '3.18',
+          originalReference: 'alpine:3.18',
+          sourcePath: 'workflow.yml'
+        },
+        {
+          registry: 'ghcr.io',
+          namespace: 'owner',
+          image: 'myimage',
+          tag: 'v1.0.0',
+          originalReference: 'ghcr.io/owner/myimage:v1.0.0',
+          sourcePath: 'workflow.yml'
+        }
+      ]
+
+      const count = await submitter.submitDependencies(
+        actionDependencies,
+        dockerDependencies
+      )
+
+      expect(count).toBe(2)
+
+      const call =
+        github.mockOctokit.rest.dependencyGraph.createRepositorySnapshot.mock
+          .calls[0][0]
+      const manifests = call.manifests['workflow.yml'].resolved
+
+      // Docker Hub image should not have repository_url qualifier
+      expect(Object.keys(manifests)).toContain('pkg:docker/library/alpine@3.18')
+      expect(manifests['pkg:docker/library/alpine@3.18'].relationship).toBe(
+        'direct'
+      )
+
+      // GHCR image should have repository_url qualifier
+      expect(Object.keys(manifests)).toContain(
+        'pkg:docker/owner/myimage@v1.0.0?repository_url=ghcr.io'
+      )
+      expect(
+        manifests['pkg:docker/owner/myimage@v1.0.0?repository_url=ghcr.io']
+          .relationship
+      ).toBe('direct')
+    })
+
+    it('Marks transitive Docker dependencies as indirect', async () => {
+      github.mockOctokit.rest.dependencyGraph.createRepositorySnapshot.mockResolvedValueOnce(
+        {}
+      )
+
+      const submitter = new DependencySubmitter({
+        token: 'test-token',
+        repository: 'test-owner/test-repo',
+        sha: 'abc123',
+        ref: 'refs/heads/main',
+        reportTransitiveAsDirect: false
+      })
+
+      const actionDependencies = []
+      const dockerDependencies = [
+        {
+          registry: 'hub.docker.com',
+          namespace: 'library',
+          image: 'node',
+          tag: '18',
+          originalReference: 'node:18',
+          sourcePath: 'remote-action.yml',
+          isTransitive: true
+        }
+      ]
+
+      const count = await submitter.submitDependencies(
+        actionDependencies,
+        dockerDependencies
+      )
+
+      expect(count).toBe(1)
+
+      const call =
+        github.mockOctokit.rest.dependencyGraph.createRepositorySnapshot.mock
+          .calls[0][0]
+      const manifests = call.manifests['remote-action.yml'].resolved
+
+      expect(Object.keys(manifests)).toContain('pkg:docker/library/node@18')
+      expect(manifests['pkg:docker/library/node@18'].relationship).toBe(
+        'indirect'
+      )
+    })
+
+    it('Uses digest when available for Docker dependencies', async () => {
+      github.mockOctokit.rest.dependencyGraph.createRepositorySnapshot.mockResolvedValueOnce(
+        {}
+      )
+
+      const submitter = new DependencySubmitter({
+        token: 'test-token',
+        repository: 'test-owner/test-repo',
+        sha: 'abc123',
+        ref: 'refs/heads/main'
+      })
+
+      const actionDependencies = []
+      const dockerDependencies = [
+        {
+          registry: 'hub.docker.com',
+          namespace: 'library',
+          image: 'alpine',
+          tag: '3.18',
+          digest: 'sha256:abc123def456',
+          originalReference: 'alpine:3.18@sha256:abc123def456',
+          sourcePath: 'workflow.yml'
+        }
+      ]
+
+      const count = await submitter.submitDependencies(
+        actionDependencies,
+        dockerDependencies
+      )
+
+      expect(count).toBe(1)
+
+      const call =
+        github.mockOctokit.rest.dependencyGraph.createRepositorySnapshot.mock
+          .calls[0][0]
+      const manifests = call.manifests['workflow.yml'].resolved
+
+      // Should use digest as version, not tag
+      expect(Object.keys(manifests)).toContain(
+        'pkg:docker/library/alpine@sha256:abc123def456'
+      )
+    })
   })
 })

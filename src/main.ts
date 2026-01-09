@@ -141,8 +141,10 @@ export async function run(): Promise<void> {
       ref,
       reportTransitiveAsDirect
     })
-    const submittedCount =
-      await submitter.submitDependencies(resolvedDependencies)
+    const submittedCount = await submitter.submitDependencies(
+      resolvedDependencies,
+      dockerDependencies
+    )
 
     core.info(`Successfully submitted ${submittedCount} dependencies`)
     core.setOutput('dependency-count', submittedCount)
