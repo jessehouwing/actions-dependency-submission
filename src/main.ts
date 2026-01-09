@@ -78,14 +78,19 @@ export async function run(): Promise<void> {
 
     // Parse workflow files (with composite actions and callable workflows support)
     const parser = new WorkflowParser(token, publicGitHubToken || undefined)
-    const dependencies = await parser.parseWorkflowDirectory(
+    const result = await parser.parseWorkflowDirectory(
       workflowDirectory,
       additionalPaths,
       repoRoot
     )
-    core.info(`Found ${dependencies.length} action dependencies`)
+    const { actionDependencies, dockerDependencies } = result
 
-    if (dependencies.length === 0) {
+    core.info(`Found ${actionDependencies.length} action dependencies`)
+    if (dockerDependencies.length > 0) {
+      core.info(`Found ${dockerDependencies.length} Docker image dependencies`)
+    }
+
+    if (actionDependencies.length === 0) {
       core.warning('No action dependencies found in workflow files')
       core.setOutput('dependency-count', 0)
       return
@@ -99,7 +104,7 @@ export async function run(): Promise<void> {
       publicGitHubToken: publicGitHubToken || undefined
     })
     const resolvedDependencies =
-      await resolver.resolveDependencies(dependencies)
+      await resolver.resolveDependencies(actionDependencies)
 
     // Determine the correct SHA and ref to use
     // For pull_request events, github.context.sha is the merge commit SHA (refs/pull/<pr>/merge),
