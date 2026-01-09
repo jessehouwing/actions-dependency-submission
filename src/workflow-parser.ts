@@ -428,7 +428,8 @@ export class WorkflowParser {
         }
 
         // Check for build args/variables - use regex to detect actual variable syntax
-        if (/\$\{?[\w_]/.test(imageRef)) {
+        // Matches: $VAR or ${VAR} with optional whitespace inside braces
+        if (/\$(?:[\w_]+|\{\s*[\w_]+\s*\})/.test(imageRef)) {
           core.warning(
             `Dockerfile contains variable reference in FROM: ${imageRef}. Skipping variable substitution.`
           )
