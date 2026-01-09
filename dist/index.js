@@ -40451,9 +40451,10 @@ class DependencySubmitter {
      * Submits dependencies to GitHub
      *
      * @param dependencies Array of resolved dependencies
+     * @param dockerDependencies Array of Docker dependencies
      * @returns Number of dependencies submitted
      */
-    async submitDependencies(dependencies) {
+    async submitDependencies(dependencies, dockerDependencies = []) {
         const [owner, repo] = this.config.repository.split('/');
         // Group dependencies by source path
         const dependenciesBySource = new Map();
@@ -40477,6 +40478,30 @@ class DependencySubmitter {
                 dep.actionPath);
                 coreExports.info(`Submitting both ${dep.owner}/${dep.repo} and original ${dep.original.owner}/${dep.original.repo}`);
             }
+        }
+        // Add Docker dependencies
+        for (const dockerDep of dockerDependencies) {
+            const sourcePath = dockerDep.sourcePath || 'github-actions.yml';
+            if (!dependenciesBySource.has(sourcePath)) {
+                dependenciesBySource.set(sourcePath, []);
+            }
+            const sourceManifests = dependenciesBySource.get(sourcePath);
+            // Docker dependencies from this repository are direct
+            // Docker dependencies from remote repositories (transitive) are indirect
+            const isTransitive = dockerDep.isTransitive || false;
+            // Determine the effective relationship based on configuration
+            const reportTransitiveAsDirect = this.config.reportTransitiveAsDirect !== false;
+            const effectiveRelationship = isTransitive && !reportTransitiveAsDirect
+                ? DEPENDENCY_RELATIONSHIP.INDIRECT
+                : DEPENDENCY_RELATIONSHIP.DIRECT;
+            const purl = this.createDockerPackageUrl(dockerDep);
+            sourceManifests.push({
+                package_url: purl,
+                relationship: effectiveRelationship,
+                scope: DEPENDENCY_SCOPE.RUNTIME
+            });
+            dependencyCount++;
+            coreExports.debug(`Added Docker dependency: ${purl} (${effectiveRelationship})`);
         }
         // Convert grouped dependencies to manifest format
         const manifests = {};
@@ -40583,6 +40608,30 @@ class DependencySubmitter {
         const repoPath = actionPath ? `${repo}/${actionPath}` : repo;
         // Package URL format for GitHub Actions
         return `pkg:githubactions/${owner}/${repoPath}@${version}`;
+    }
+    /**
+     * Creates a Package URL (purl) for a Docker image
+     * Follows the PURL specification: https://github.com/package-url/purl-spec/blob/main/PURL-TYPES.rst#docker
+     *
+     * @param dockerDep Docker dependency object
+     * @returns Package URL string
+     */
+    createDockerPackageUrl(dockerDep) {
+        // Build the namespace/name part
+        // For Docker Hub library images: pkg:docker/library/alpine@3.18
+        // For Docker Hub user images: pkg:docker/username/image@tag
+        // For other registries: pkg:docker/namespace/image@tag?repository_url=registry.com
+        const namespacePart = dockerDep.namespace ? `${dockerDep.namespace}/` : '';
+        const basePurl = `pkg:docker/${namespacePart}${dockerDep.image}`;
+        // Use digest if available, otherwise tag
+        const version = dockerDep.digest || dockerDep.tag || 'latest';
+        // Add version
+        let purl = `${basePurl}@${version}`;
+        // Add repository_url qualifier for non-Docker Hub registries
+        if (dockerDep.registry && dockerDep.registry !== 'hub.docker.com') {
+            purl += `?repository_url=${encodeURIComponent(dockerDep.registry)}`;
+        }
+        return purl;
     }
 }
 
@@ -40693,7 +40742,7 @@ async function run() {
             ref,
             reportTransitiveAsDirect
         });
-        const submittedCount = await submitter.submitDependencies(resolvedDependencies);
+        const submittedCount = await submitter.submitDependencies(resolvedDependencies, dockerDependencies);
         coreExports.info(`Successfully submitted ${submittedCount} dependencies`);
         coreExports.setOutput('dependency-count', submittedCount);
     }

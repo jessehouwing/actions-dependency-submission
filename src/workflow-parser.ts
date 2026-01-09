@@ -29,6 +29,7 @@ export interface DockerDependency {
   originalReference: string // Full original string
   sourcePath?: string // Where this was found
   context?: string // Optional: "container" | "step" | "action" | "service"
+  isTransitive?: boolean // Whether this is from a remote repository
 }
 
 /**
