@@ -47651,11 +47651,15 @@ async function run() {
         const result = await parser.parseWorkflowDirectory(workflowDirectory, additionalPaths, repoRoot);
         const { actionDependencies, dockerDependencies } = result;
         coreExports.info(`Found ${actionDependencies.length} action dependencies`);
-        if (detectDocker && dockerDependencies.length > 0) {
-            coreExports.info(`Found ${dockerDependencies.length} Docker image dependencies`);
-        }
-        else if (dockerDependencies.length > 0) {
-            coreExports.info(`Found ${dockerDependencies.length} Docker image dependencies (skipped - enable with detect-docker: true)`);
+        // Log Docker dependencies
+        if (dockerDependencies.length > 0) {
+            const message = `Found ${dockerDependencies.length} Docker image dependencies`;
+            if (detectDocker) {
+                coreExports.info(message);
+            }
+            else {
+                coreExports.info(`${message} (skipped - enable with detect-docker: true)`);
+            }
         }
         if (actionDependencies.length === 0) {
             coreExports.warning('No action dependencies found in workflow files');
