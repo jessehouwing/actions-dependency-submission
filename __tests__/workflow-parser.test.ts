@@ -80,7 +80,119 @@ describe('WorkflowParser', () => {
 
     it('Returns empty for invalid uses string', () => {
       expect(parser.parseUsesString('invalid')).toEqual({})
-      expect(parser.parseUsesString('docker://image:tag')).toEqual({})
+    })
+
+    it('Parses docker:// references', () => {
+      const result = parser.parseUsesString('docker://alpine:latest')
+      expect(result.dockerDependency).toBeDefined()
+      expect(result.dockerDependency).toMatchObject({
+        registry: 'hub.docker.com',
+        namespace: 'library',
+        image: 'alpine',
+        tag: 'latest',
+        originalReference: 'docker://alpine:latest'
+      })
+    })
+  })
+
+  describe('parseDockerImage', () => {
+    it('Parses simple Docker Hub image', () => {
+      const result = parser.parseDockerImage('alpine:3.18')
+      expect(result).toEqual({
+        registry: 'hub.docker.com',
+        namespace: 'library',
+        image: 'alpine',
+        tag: '3.18',
+        originalReference: 'alpine:3.18'
+      })
+    })
+
+    it('Parses image with namespace', () => {
+      const result = parser.parseDockerImage('library/node:18')
+      expect(result).toEqual({
+        registry: 'hub.docker.com',
+        namespace: 'library',
+        image: 'node',
+        tag: '18',
+        originalReference: 'library/node:18'
+      })
+    })
+
+    it('Parses image without tag (defaults to latest)', () => {
+      const result = parser.parseDockerImage('alpine')
+      expect(result).toEqual({
+        registry: 'hub.docker.com',
+        namespace: 'library',
+        image: 'alpine',
+        tag: 'latest',
+        originalReference: 'alpine'
+      })
+    })
+
+    it('Parses image with digest', () => {
+      const result = parser.parseDockerImage('node@sha256:abc123def456')
+      expect(result).toEqual({
+        registry: 'hub.docker.com',
+        namespace: 'library',
+        image: 'node',
+        digest: 'sha256:abc123def456',
+        originalReference: 'node@sha256:abc123def456'
+      })
+    })
+
+    it('Parses image with tag and digest', () => {
+      const result = parser.parseDockerImage('node:18@sha256:abc123def456')
+      expect(result).toEqual({
+        registry: 'hub.docker.com',
+        namespace: 'library',
+        image: 'node',
+        tag: '18',
+        digest: 'sha256:abc123def456',
+        originalReference: 'node:18@sha256:abc123def456'
+      })
+    })
+
+    it('Parses GHCR image', () => {
+      const result = parser.parseDockerImage('ghcr.io/owner/image:v1.0.0')
+      expect(result).toEqual({
+        registry: 'ghcr.io',
+        namespace: 'owner',
+        image: 'image',
+        tag: 'v1.0.0',
+        originalReference: 'ghcr.io/owner/image:v1.0.0'
+      })
+    })
+
+    it('Parses GCR image', () => {
+      const result = parser.parseDockerImage('gcr.io/project-id/image:tag')
+      expect(result).toEqual({
+        registry: 'gcr.io',
+        namespace: 'project-id',
+        image: 'image',
+        tag: 'tag',
+        originalReference: 'gcr.io/project-id/image:tag'
+      })
+    })
+
+    it('Parses docker:// prefix', () => {
+      const result = parser.parseDockerImage('docker://alpine:3.18')
+      expect(result).toEqual({
+        registry: 'hub.docker.com',
+        namespace: 'library',
+        image: 'alpine',
+        tag: '3.18',
+        originalReference: 'docker://alpine:3.18'
+      })
+    })
+
+    it('Returns null for empty string', () => {
+      const result = parser.parseDockerImage('')
+      expect(result).toBeNull()
+    })
+
+    it('Returns null for whitespace only', () => {
+      const result = parser.parseDockerImage('   ')
+      expect(result).toBeNull()
     })
   })
 
