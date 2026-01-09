@@ -510,6 +510,16 @@ export class WorkflowParser {
     }
 
     try {
+      // Check if it's a callable workflow first (uses pattern like owner/repo/path/to/workflow.yml@ref)
+      // Callable workflows have a path component with a .yml or .yaml extension
+      const callableWorkflowPattern = /^[^/]+\/[^/]+\/.+\.ya?ml@.+$/
+      if (callableWorkflowPattern.test(dependency.uses)) {
+        return await this.processRemoteCallableWorkflow(
+          dependency,
+          callingWorkflowPath
+        )
+      }
+
       // Try to fetch action.yml or action.yaml from the remote repository
       const actionContent = await this.fetchRemoteActionFile(
         dependency.owner,
@@ -544,27 +554,29 @@ export class WorkflowParser {
               const result = this.parseUsesString(step.uses)
               if (result.dependency) {
                 // Mark as transitive and reference the calling workflow as manifest
-                transitiveDeps.push({
+                const transitiveDep = {
                   ...result.dependency,
                   sourcePath: callingWorkflowPath,
                   isTransitive: true
-                })
+                }
+                transitiveDeps.push(transitiveDep)
+
+                // Recursively process this transitive dependency if it hasn't been processed yet
+                const transitiveKey = `${transitiveDep.owner}/${transitiveDep.repo}@${transitiveDep.ref}`
+                if (!this.processedRemoteActions.has(transitiveKey)) {
+                  this.processedRemoteActions.add(transitiveKey)
+                  const nestedDeps = await this.processRemoteCompositeAction(
+                    transitiveDep,
+                    callingWorkflowPath
+                  )
+                  transitiveDeps.push(...nestedDeps)
+                }
               }
             }
           }
         }
 
         return transitiveDeps
-      }
-
-      // Check if it's a callable workflow (uses pattern like owner/repo/path/to/workflow.yml@ref)
-      // Callable workflows have a path component with a .yml or .yaml extension
-      const callableWorkflowPattern = /^[^/]+\/[^/]+\/.+\.ya?ml@.+$/
-      if (callableWorkflowPattern.test(dependency.uses)) {
-        return await this.processRemoteCallableWorkflow(
-          dependency,
-          callingWorkflowPath
-        )
       }
     } catch (error) {
       core.debug(
@@ -638,11 +650,23 @@ export class WorkflowParser {
             if (job.uses) {
               const result = this.parseUsesString(job.uses)
               if (result.dependency) {
-                transitiveDeps.push({
+                const transitiveDep = {
                   ...result.dependency,
                   sourcePath: callingWorkflowPath,
                   isTransitive: true
-                })
+                }
+                transitiveDeps.push(transitiveDep)
+
+                // Recursively process this transitive dependency if it hasn't been processed yet
+                const transitiveKey = `${transitiveDep.owner}/${transitiveDep.repo}@${transitiveDep.ref}`
+                if (!this.processedRemoteActions.has(transitiveKey)) {
+                  this.processedRemoteActions.add(transitiveKey)
+                  const nestedDeps = await this.processRemoteCompositeAction(
+                    transitiveDep,
+                    callingWorkflowPath
+                  )
+                  transitiveDeps.push(...nestedDeps)
+                }
               }
             }
 
@@ -659,11 +683,24 @@ export class WorkflowParser {
                     const uses = (step as { uses: string }).uses
                     const result = this.parseUsesString(uses)
                     if (result.dependency) {
-                      transitiveDeps.push({
+                      const transitiveDep = {
                         ...result.dependency,
                         sourcePath: callingWorkflowPath,
                         isTransitive: true
-                      })
+                      }
+                      transitiveDeps.push(transitiveDep)
+
+                      // Recursively process this transitive dependency if it hasn't been processed yet
+                      const transitiveKey = `${transitiveDep.owner}/${transitiveDep.repo}@${transitiveDep.ref}`
+                      if (!this.processedRemoteActions.has(transitiveKey)) {
+                        this.processedRemoteActions.add(transitiveKey)
+                        const nestedDeps =
+                          await this.processRemoteCompositeAction(
+                            transitiveDep,
+                            callingWorkflowPath
+                          )
+                        transitiveDeps.push(...nestedDeps)
+                      }
                     }
                   }
                 }
