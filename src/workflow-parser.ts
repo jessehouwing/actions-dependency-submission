@@ -83,16 +83,8 @@ export class WorkflowParser {
     // Process root action.yml or action.yaml if it exists (for repositories authoring GitHub Actions)
     if (repoRoot) {
       const rootActionYml = this.findActionYml(repoRoot)
-      if (rootActionYml) {
-        // Process if it's a composite or docker action
-        const content = fs.readFileSync(rootActionYml, 'utf8')
-        const parsed = yaml.parse(content, { merge: true })
-        if (
-          parsed?.runs?.using === 'composite' ||
-          parsed?.runs?.using === 'docker'
-        ) {
-          filesToProcess.push(rootActionYml)
-        }
+      if (rootActionYml && this.shouldProcessActionFile(rootActionYml)) {
+        filesToProcess.push(rootActionYml)
       }
     }
 
@@ -325,7 +317,9 @@ export class WorkflowParser {
         )
       }
     } catch (error) {
-      core.debug(`Error parsing ${filePath}: ${error}`)
+      core.debug(
+        `Error parsing ${filePath}: ${error instanceof Error ? error.message : String(error)}`
+      )
     }
 
     return { dependencies, localActions, callableWorkflows, dockerDependencies }
@@ -433,8 +427,8 @@ export class WorkflowParser {
           continue
         }
 
-        // Check for build args/variables
-        if (imageRef.includes('$') || imageRef.includes('${')) {
+        // Check for build args/variables - use regex to detect actual variable syntax
+        if (/\$\{?[\w_]/.test(imageRef)) {
           core.warning(
             `Dockerfile contains variable reference in FROM: ${imageRef}. Skipping variable substitution.`
           )
@@ -619,7 +613,22 @@ export class WorkflowParser {
       }
 
       // Log the found dependency to console
-      const depString = `Docker image: ${registry}/${namespace || ''}${namespace ? '/' : ''}${image}${tag ? ':' + tag : ''}${digest ? '@' + digest : ''}`
+      const imagePathParts = []
+      if (registry) {
+        imagePathParts.push(registry)
+      }
+      if (namespace) {
+        imagePathParts.push(namespace)
+      }
+      imagePathParts.push(image)
+      let imageRefString = imagePathParts.join('/')
+      if (tag) {
+        imageRefString += `:${tag}`
+      }
+      if (digest) {
+        imageRefString += `@${digest}`
+      }
+      const depString = `Docker image: ${imageRefString}`
       core.info(`📦 Found ${depString}`)
 
       return {
@@ -700,6 +709,21 @@ export class WorkflowParser {
       const content = fs.readFileSync(filePath, 'utf8')
       const parsed = yaml.parse(content, { merge: true })
       return parsed?.runs?.using === 'composite'
+    } catch {
+      return false
+    }
+  }
+
+  /**
+   * Check if an action.yml file should be processed (composite or docker action)
+   */
+  private shouldProcessActionFile(filePath: string): boolean {
+    try {
+      const content = fs.readFileSync(filePath, 'utf8')
+      const parsed = yaml.parse(content, { merge: true })
+      return (
+        parsed?.runs?.using === 'composite' || parsed?.runs?.using === 'docker'
+      )
     } catch {
       return false
     }
