@@ -34,6 +34,16 @@ export class WorkflowParser {
   }
 
   /**
+   * Generates a unique key for an action dependency for tracking processed actions
+   *
+   * @param dependency Action dependency to generate key for
+   * @returns Unique key in format "owner/repo@ref"
+   */
+  private getActionKey(dependency: ActionDependency): string {
+    return `${dependency.owner}/${dependency.repo}@${dependency.ref}`
+  }
+
+  /**
    * Scans a directory for workflow files and extracts all action dependencies
    *
    * @param workflowDir Directory containing workflow files
@@ -124,7 +134,7 @@ export class WorkflowParser {
 
         // Process remote composite actions and callable workflows
         for (const dep of result.dependencies) {
-          const remoteActionKey = `${dep.owner}/${dep.repo}@${dep.ref}`
+          const remoteActionKey = this.getActionKey(dep)
           if (!this.processedRemoteActions.has(remoteActionKey)) {
             this.processedRemoteActions.add(remoteActionKey)
             const remoteDeps = await this.processRemoteActionOrWorkflow(
@@ -581,7 +591,7 @@ export class WorkflowParser {
                 transitiveDeps.push(transitiveDep)
 
                 // Recursively process this transitive dependency if it hasn't been processed yet
-                const transitiveKey = `${transitiveDep.owner}/${transitiveDep.repo}@${transitiveDep.ref}`
+                const transitiveKey = this.getActionKey(transitiveDep)
                 if (!this.processedRemoteActions.has(transitiveKey)) {
                   this.processedRemoteActions.add(transitiveKey)
                   const nestedDeps = await this.processRemoteActionOrWorkflow(
@@ -656,7 +666,9 @@ export class WorkflowParser {
       }
 
       // Check if it's a callable workflow
-      // Note: workflow_call can be null/undefined if specified without inputs/secrets
+      // Note: workflow_call can be null/undefined if specified without inputs/secrets.
+      // We use the `in` operator instead of optional chaining here so we can detect
+      // the presence of the `workflow_call` key even when its value is null/undefined.
       if (workflowYaml.on && 'workflow_call' in workflowYaml.on) {
         core.info(
           `Processing remote callable workflow: ${dependency.owner}/${dependency.repo}/${workflowPath}@${dependency.ref}`
@@ -681,7 +693,7 @@ export class WorkflowParser {
                 transitiveDeps.push(transitiveDep)
 
                 // Recursively process this transitive dependency if it hasn't been processed yet
-                const transitiveKey = `${transitiveDep.owner}/${transitiveDep.repo}@${transitiveDep.ref}`
+                const transitiveKey = this.getActionKey(transitiveDep)
                 if (!this.processedRemoteActions.has(transitiveKey)) {
                   this.processedRemoteActions.add(transitiveKey)
                   const nestedDeps = await this.processRemoteActionOrWorkflow(
@@ -714,7 +726,7 @@ export class WorkflowParser {
                       transitiveDeps.push(transitiveDep)
 
                       // Recursively process this transitive dependency if it hasn't been processed yet
-                      const transitiveKey = `${transitiveDep.owner}/${transitiveDep.repo}@${transitiveDep.ref}`
+                      const transitiveKey = this.getActionKey(transitiveDep)
                       if (!this.processedRemoteActions.has(transitiveKey)) {
                         this.processedRemoteActions.add(transitiveKey)
                         const nestedDeps =
