@@ -47602,6 +47602,7 @@ async function run() {
         const forkRegexInput = coreExports.getInput('fork-regex');
         const publicGitHubToken = coreExports.getInput('public-github-token');
         const reportTransitiveAsDirect = coreExports.getInput('report-transitive-as-direct') !== 'false';
+        const detectDocker = coreExports.getInput('detect-docker') === 'true';
         // Parse additional paths (comma or newline separated)
         const additionalPaths = additionalPathsInput
             ? additionalPathsInput
@@ -47650,8 +47651,11 @@ async function run() {
         const result = await parser.parseWorkflowDirectory(workflowDirectory, additionalPaths, repoRoot);
         const { actionDependencies, dockerDependencies } = result;
         coreExports.info(`Found ${actionDependencies.length} action dependencies`);
-        if (dockerDependencies.length > 0) {
+        if (detectDocker && dockerDependencies.length > 0) {
             coreExports.info(`Found ${dockerDependencies.length} Docker image dependencies`);
+        }
+        else if (dockerDependencies.length > 0) {
+            coreExports.info(`Found ${dockerDependencies.length} Docker image dependencies (skipped - enable with detect-docker: true)`);
         }
         if (actionDependencies.length === 0) {
             coreExports.warning('No action dependencies found in workflow files');
@@ -47691,7 +47695,7 @@ async function run() {
             ref,
             reportTransitiveAsDirect
         });
-        const submittedCount = await submitter.submitDependencies(resolvedDependencies, dockerDependencies);
+        const submittedCount = await submitter.submitDependencies(resolvedDependencies, detectDocker ? dockerDependencies : []);
         coreExports.info(`Successfully submitted ${submittedCount} dependencies`);
         coreExports.setOutput('dependency-count', submittedCount);
     }

@@ -19,6 +19,13 @@ dependencies to GitHub's Dependency Graph with fork traversal support.
   from workflows
 - 🎯 **Additional Paths**: Supports scanning custom directories for composite
   actions and callable workflows
+- 🐳 **Docker Image Detection** (Experimental, opt-in): Detects Docker images
+  from:
+  - Job-level containers (`jobs.<job_id>.container.image`)
+  - Service containers (`jobs.<job_id>.services.<service>.image`)
+  - Step-level Docker actions (`uses: docker://image:tag`)
+  - Docker-based action.yml files (`runs.using: docker`)
+  - Dockerfile base images (`FROM` instructions)
 - 🔀 **Fork Traversal**: Detects forked actions and submits both the fork and
   original repository as dependencies
 - 🔗 **GitHub API Integration**: Uses GitHub's fork relationship to find
@@ -174,18 +181,77 @@ With `report-transitive-as-direct: false`:
 dependencies. Setting this to `false` means you won't receive vulnerability
 alerts for transitive dependencies and original repositories.
 
+### Detecting Docker Image Dependencies (Experimental)
+
+**Note:** Docker dependency detection is experimental and opt-in. Enable with
+`detect-docker: true`.
+
+The action can detect and report Docker image dependencies from your workflows:
+
+```yaml
+- uses: jessehouwing/actions-dependency-submission@v1
+  with:
+    token: ${{ secrets.GITHUB_TOKEN }}
+    detect-docker: true
+```
+
+This will extract Docker images from:
+
+- **Job containers**: `jobs.<job_id>.container.image`
+- **Service containers**: `jobs.<job_id>.services.<service>.image`
+- **Step-level Docker actions**: `uses: docker://alpine:latest`
+- **Docker-based action.yml**: `runs.using: docker`, `image: docker://node:18`
+- **Dockerfile base images**: FROM instructions in Dockerfiles referenced by
+  action.yml
+
+**Example workflow with Docker dependencies:**
+
+```yaml
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    container: node:18-alpine
+    services:
+      postgres:
+        image: postgres:15
+    steps:
+      - uses: actions/checkout@v6
+      - uses: docker://alpine:latest
+        with:
+          args: echo "Hello from Alpine"
+```
+
+Docker images are reported using the
+[PURL (Package URL) standard](https://github.com/package-url/purl-spec) format:
+
+- `pkg:docker/library/node@18-alpine` (Docker Hub official images)
+- `pkg:docker/owner/image@v1.0.0?repository_url=ghcr.io` (GHCR)
+- `pkg:docker/library/postgres@sha256:abc123...` (with digest)
+
+**Benefits:**
+
+- 🔒 Get Dependabot alerts for vulnerable Docker images
+- 🛡️ Use Dependency Review to block PRs with vulnerable container images
+- 📦 Track Docker image versions across workflows
+- 🐳 Discover Dockerfile base images used in custom actions
+- 📋 Generate complete SBOMs including all container dependencies
+
+**Note:** Docker detection is currently experimental. Please report any issues
+or unexpected behavior.
+
 ## Inputs
 
-| Input                         | Description                                                                                                                                                                                                | Required | Default                    |
-| ----------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------- | -------------------------- |
-| `token`                       | GitHub token for API access and dependency submission                                                                                                                                                      | Yes      | `${{ github.token }}`      |
-| `repository`                  | Repository to submit dependencies for (owner/repository format)                                                                                                                                            | No       | `${{ github.repository }}` |
-| `workflow-directory`          | Directory containing workflow files to scan                                                                                                                                                                | No       | `.github/workflows`        |
-| `additional-paths`            | Additional paths to scan for composite actions and callable workflows (comma-separated or newline-separated)                                                                                               | No       | -                          |
-| `fork-organizations`          | Comma-separated list of organization names that contain forked actions                                                                                                                                     | No       | -                          |
-| `fork-regex`                  | Regular expression pattern to transform forked repository names. Must contain named captures `org` and `repo`                                                                                              | No       | -                          |
-| `public-github-token`         | GitHub token for accessing public GitHub (api.github.com) when running on EMU, GitHub-DR, or GHES. Used to look up actions not on local instance                                                           | No       | -                          |
-| `report-transitive-as-direct` | Whether to report transitive dependencies as direct. When `true` (default), all dependencies are reported as direct to enable vulnerability reporting. When `false`, transitive dependencies are indirect. | No       | `true`                     |
+| Input                         | Description                                                                                                                                                                                                                                                                                                                | Required | Default                    |
+| ----------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------- | -------------------------- |
+| `token`                       | GitHub token for API access and dependency submission                                                                                                                                                                                                                                                                      | Yes      | `${{ github.token }}`      |
+| `repository`                  | Repository to submit dependencies for (owner/repository format)                                                                                                                                                                                                                                                            | No       | `${{ github.repository }}` |
+| `workflow-directory`          | Directory containing workflow files to scan                                                                                                                                                                                                                                                                                | No       | `.github/workflows`        |
+| `additional-paths`            | Additional paths to scan for composite actions and callable workflows (comma-separated or newline-separated)                                                                                                                                                                                                               | No       | -                          |
+| `fork-organizations`          | Comma-separated list of organization names that contain forked actions                                                                                                                                                                                                                                                     | No       | -                          |
+| `fork-regex`                  | Regular expression pattern to transform forked repository names. Must contain named captures `org` and `repo`                                                                                                                                                                                                              | No       | -                          |
+| `public-github-token`         | GitHub token for accessing public GitHub (api.github.com) when running on EMU, GitHub-DR, or GHES. Used to look up actions not on local instance                                                                                                                                                                           | No       | -                          |
+| `report-transitive-as-direct` | Whether to report transitive dependencies as direct. When `true` (default), all dependencies are reported as direct to enable vulnerability reporting. When `false`, transitive dependencies are indirect.                                                                                                                 | No       | `true`                     |
+| `detect-docker`               | (Experimental) Whether to detect and report Docker image dependencies from workflows, actions, and Dockerfiles. When `true`, extracts Docker images from containers, services, docker:// steps, and Dockerfile base images. When `false` (default), only GitHub Actions dependencies are reported. This feature is opt-in. | No       | `false`                    |
 
 ## Outputs
 
