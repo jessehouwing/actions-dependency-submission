@@ -22,7 +22,7 @@ export async function run(): Promise<void> {
     const forkRegexInput = core.getInput('fork-regex')
     const publicGitHubToken = core.getInput('public-github-token')
     const reportTransitiveAsDirect =
-      core.getInput('report-transitive-as-direct') !== 'false'
+      core.getInput('report-transitive-as-direct') === 'true'
     const detectDocker = core.getInput('detect-docker') === 'true'
 
     // Parse additional paths (comma or newline separated)
