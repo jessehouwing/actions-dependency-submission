@@ -47624,7 +47624,7 @@ async function run() {
         const forkOrgsInput = coreExports.getInput('fork-organizations');
         const forkRegexInput = coreExports.getInput('fork-regex');
         const publicGitHubToken = coreExports.getInput('public-github-token');
-        const reportTransitiveAsDirect = coreExports.getInput('report-transitive-as-direct') !== 'false';
+        const reportTransitiveAsDirect = coreExports.getInput('report-transitive-as-direct') === 'true';
         const detectDocker = coreExports.getInput('detect-docker') === 'true';
         // Parse additional paths (comma or newline separated)
         const additionalPaths = additionalPathsInput

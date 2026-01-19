@@ -98,7 +98,8 @@ describe('DependencySubmitter', () => {
         'pkg:githubactions/actions/checkout@4.*.*'
       )
 
-      // Check relationships - with default behavior, both should be direct for vulnerability reporting
+      // Check relationships - with default behavior, both should be direct
+      // (no isTransitive flag set on these dependencies)
       expect(
         manifests['pkg:githubactions/myorg/checkout@4.*.*'].relationship
       ).toBe('direct')
@@ -430,7 +431,8 @@ describe('DependencySubmitter', () => {
         'pkg:githubactions/jessehouwing/actions-semver-checker@1.0.7'
       )
 
-      // Check relationships - both are direct by default (reportTransitiveAsDirect: true)
+      // Check relationships - both are direct by default when no reportTransitiveAsDirect is set
+      // (config defaults to undefined which is treated as false, but here no isTransitive flag is set)
       expect(
         manifests[
           'pkg:githubactions/jessehouwing/actions-semver-checker@3cb8b94e8a9f14b89c86702e5c8c7c3d95559c5e'
@@ -495,8 +497,8 @@ describe('DependencySubmitter', () => {
         'pkg:githubactions/actions/checkout@4.1.0'
       )
 
-      // Check relationships - With default behavior (reportTransitiveAsDirect: true),
-      // all dependencies are direct for vulnerability reporting
+      // Check relationships - dependencies from fork and original
+      // (no isTransitive flag set on these dependencies)
       expect(
         manifests[
           'pkg:githubactions/myorg/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8'
@@ -559,7 +561,8 @@ describe('DependencySubmitter', () => {
         'pkg:githubactions/actions/checkout@4.2.1'
       )
 
-      // With default behavior, both should be direct for vulnerability reporting
+      // With default behavior, both should be direct
+      // (no isTransitive flag set on these dependencies)
       expect(
         manifests['pkg:githubactions/enterprise/actions-checkout@4.2.1']
           .relationship
@@ -806,7 +809,7 @@ describe('DependencySubmitter', () => {
           .calls[0][0]
       const manifests = call.manifests['github-actions.yml'].resolved
 
-      // Both should be direct for vulnerability reporting
+      // Both should be direct when reportTransitiveAsDirect is true
       expect(
         manifests['pkg:githubactions/actions/checkout@4.*.*'].relationship
       ).toBe('direct')

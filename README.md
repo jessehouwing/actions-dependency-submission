@@ -157,29 +157,25 @@ detailed setup instructions for different token types.
 
 ### Configuring Transitive Dependency Reporting
 
-By default, all dependencies (including transitive dependencies from composite
-actions and original repositories from forks) are reported as "direct"
-dependencies. This ensures that GitHub's Dependency Graph will report
-vulnerabilities for all dependencies.
-
-If you want to distinguish between direct and transitive dependencies:
-
-```yaml
-- uses: jessehouwing/actions-dependency-submission@v1
-  with:
-    token: ${{ secrets.GITHUB_TOKEN }}
-    report-transitive-as-direct: false
-```
-
-With `report-transitive-as-direct: false`:
+By default, dependencies are reported with their actual relationship:
 
 - Dependencies directly referenced in your workflows are marked as "direct"
 - Dependencies from composite actions are marked as "indirect"
 - Original repositories (when using forked actions) are marked as "indirect"
 
-**Note:** GitHub's Dependency Graph only reports vulnerabilities for "direct"
-dependencies. Setting this to `false` means you won't receive vulnerability
-alerts for transitive dependencies and original repositories.
+If you want all dependencies to be reported as direct:
+
+```yaml
+- uses: jessehouwing/actions-dependency-submission@v1
+  with:
+    token: ${{ secrets.GITHUB_TOKEN }}
+    report-transitive-as-direct: true
+```
+
+With `report-transitive-as-direct: true`:
+
+- All dependencies are marked as "direct", regardless of how they were
+  discovered
 
 ### Detecting Docker Image Dependencies (Experimental)
 

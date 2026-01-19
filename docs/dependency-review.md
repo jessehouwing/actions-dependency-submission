@@ -288,9 +288,7 @@ If the `dependency-review` check doesn't appear when configuring your ruleset:
 If you're getting vulnerability alerts for original repositories that you've
 already patched in your fork:
 
-1. Consider setting `report-transitive-as-direct: false` in the dependency
-   submission action
-2. Use `allow-ghsas` in the dependency review action to suppress specific
+1. Use `allow-ghsas` in the dependency review action to suppress specific
    advisories you've addressed
 
 ## Best Practices
