@@ -1,5 +1,6 @@
 name: GitHub Actions Dependency Submission
-description: Submit workflow dependencies to Dependency Graph with composite actions and fork support
+description: >
+  Submit workflow dependencies to Dependency Graph with composite actions and fork support
 author: Jesse Houwing
 
 # Add your action's branding here. This will appear on the GitHub Marketplace.
