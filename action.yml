@@ -1,8 +1,8 @@
 name: GitHub Actions Dependency Submission
 description: >
-  Submit workflow dependencies to Dependency Graph with composite actions and fork support
+  Submit workflow dependencies to Dependency Graph with composite actions and
+  fork support
 author: Jesse Houwing
-
 # Add your action's branding here. This will appear on the GitHub Marketplace.
 branding:
   icon: package
@@ -12,7 +12,10 @@ branding:
 inputs:
   token:
     description: >
-      GitHub token with contents:write permission for dependency submission. If workflows reference private or internal actions in other repositories, ensure those repositories are configured to allow access. The token will automatically have contents:read access to allowed repositories.
+      GitHub token with contents:write permission for dependency submission. If
+      workflows reference private or internal actions in other repositories,
+      ensure those repositories are configured to allow access. The token will
+      automatically have contents:read access to allowed repositories.
     required: true
     default: ${{ github.token }}
   repository:
@@ -24,28 +27,45 @@ inputs:
     required: false
     default: .github/workflows
   additional-paths:
-    description: Additional paths to scan for composite actions and callable workflows (comma-separated or newline-separated)
+    description:
+      Additional paths to scan for composite actions and callable workflows
+      (comma-separated or newline-separated)
     required: false
     default: ''
   fork-organizations:
-    description: Comma-separated list of organization names that contain forked actions
+    description:
+      Comma-separated list of organization names that contain forked actions
     required: false
   fork-regex:
     description: >
-      Regular expression pattern to transform forked repository names to original names. Must contain named captures 'org' and 'repo' (e.g., '(?<org>[^/]+)/(?<repo>actions-.+)')
+      Regular expression pattern to transform forked repository names to
+      original names. Must contain named captures 'org' and 'repo' (e.g.,
+      '(?<org>[^/]+)/(?<repo>actions-.+)')
     required: false
   public-github-token:
     description: >
-      GitHub token with contents:read permission for accessing public GitHub (api.github.com) when running on EMU, GitHub-DR, or GHES instances. Used to look up original actions from public GitHub when they are not found on the local instance. See environment-specific documentation in docs/ for setup instructions.
+      GitHub token with contents:read permission for accessing public GitHub
+      (api.github.com) when running on EMU, GitHub-DR, or GHES instances. Used
+      to look up original actions from public GitHub when they are not found on
+      the local instance. See environment-specific documentation in docs/ for
+      setup instructions.
     required: false
   report-transitive-as-direct:
     description: >
-      Whether to report transitive dependencies as direct. When true, all dependencies are reported as direct. When false (default), transitive dependencies (from composite actions and original repositories) are reported as indirect.
+      Whether to report transitive dependencies as direct. When true, all
+      dependencies are reported as direct. When false (default), transitive
+      dependencies (from composite actions and original repositories) are
+      reported as indirect.
     required: false
     default: 'false'
   detect-docker:
     description: >
-      Whether to detect and report Docker image dependencies from workflows, actions, and Dockerfiles. When true, extracts Docker images from job containers, service containers, docker:// step references, and Dockerfile base images. When false (default), only GitHub Actions dependencies are reported. This is an experimental feature - please report any issues on GitHub.
+      Whether to detect and report Docker image dependencies from workflows,
+      actions, and Dockerfiles. When true, extracts Docker images from job
+      containers, service containers, docker:// step references, and Dockerfile
+      base images. When false (default), only GitHub Actions dependencies are
+      reported. This is an experimental feature - please report any issues on
+      GitHub.
     required: false
     default: 'false'
 
