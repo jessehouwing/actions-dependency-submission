@@ -36,8 +36,6 @@ export default {
       }
     ]
   },
-  transformIgnorePatterns: [
-    'node_modules/(?!(@octokit|@actions/github)/)'
-  ],
+  transformIgnorePatterns: ['node_modules/(?!(@octokit|@actions/github)/)'],
   verbose: true
 }
