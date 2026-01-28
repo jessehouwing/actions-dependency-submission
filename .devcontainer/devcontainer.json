@@ -36,6 +36,10 @@
   },
   "features": {
     "ghcr.io/devcontainers/features/github-cli:1": {},
-    "ghcr.io/devcontainers-community/npm-features/prettier:1": {}
+    "ghcr.io/devcontainers-community/npm-features/prettier:1": {},
+    "ghcr.io/devcontainers/features/ruby:1": {
+      "version": "latest",
+      "installRubyGems": "licensed:5.0.0"
+    }
   }
 }
