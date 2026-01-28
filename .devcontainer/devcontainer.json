@@ -1,7 +1,7 @@
 {
   "name": "GitHub Actions (TypeScript)",
   "image": "mcr.microsoft.com/devcontainers/typescript-node:20",
-  "postCreateCommand": "npm install && bundle install",
+  "updateContentCommand": "npm install && bundle install",
   "customizations": {
     "codespaces": {
       "openFiles": ["README.md"]
