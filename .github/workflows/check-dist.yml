@@ -41,6 +41,19 @@ jobs:
         id: install
         run: npm ci
 
+      - name: Setup Ruby
+        id: setup-ruby
+        uses: ruby/setup-ruby@d5f787ce339eb0767271bc01d922e85644c2c8ab #v1.280.0
+        with:
+          ruby-version: ruby
+
+      - name: Setup Licensed
+        id: setup-licensed
+        uses: licensee/setup-licensed@0d52e575b3258417672be0dff2f115d7db8771d8 #v1.3.2
+        with:
+          version: 5.x
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+
       - name: Build dist/ Directory
         id: build
         run: npm run bundle
