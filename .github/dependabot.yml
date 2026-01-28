@@ -24,3 +24,13 @@ updates:
         dependency-type: production
         update-types:
           - patch
+
+  - package-ecosystem: bundler
+    directory: /
+    schedule:
+      interval: weekly
+    groups:
+      bundler-minor:
+        update-types:
+          - minor
+          - patch
