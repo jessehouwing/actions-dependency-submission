@@ -13,12 +13,14 @@ import {
   jest
 } from '@jest/globals'
 import * as core from '../__fixtures__/core.js'
+import * as github from '../__fixtures__/github.js'
 import * as fs from 'fs'
 import * as path from 'path'
 import * as os from 'os'
 
-// Mock @actions/core before importing modules
+// Mock @actions/core and @actions/github before importing modules
 jest.unstable_mockModule('@actions/core', () => core)
+jest.unstable_mockModule('@actions/github', () => github)
 
 // Import after mocking
 const { WorkflowParser } = await import('../src/workflow-parser.js')
