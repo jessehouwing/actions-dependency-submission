@@ -12,7 +12,7 @@ permissions: {}
 jobs:
   check-semver:
     permissions:
-      contents: read
+      contents: write
 
     concurrency:
       group: '${{ github.workflow }}'
