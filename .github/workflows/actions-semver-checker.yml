@@ -21,7 +21,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: ./
+      - uses: jessehouwing/actions-semver-checker@v2.0.0
         with:
           check-minor-version: error
           check-release-immutability: none
