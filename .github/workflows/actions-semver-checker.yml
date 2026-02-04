@@ -21,11 +21,11 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: jessehouwing/actions-semver-checker@v2.0.0
+      - uses: jessehouwing/actions-semver-checker@v2.0.1
         with:
           check-minor-version: error
-          check-release-immutability: none
+          check-release-immutability: warning
           ignore-preview-releases: true
-          check-releases: true
+          check-releases: error
           token: ${{ secrets.GITHUB_TOKEN }}
           auto-fix: false
