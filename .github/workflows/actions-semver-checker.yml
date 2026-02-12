@@ -21,7 +21,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: jessehouwing/actions-semver-checker@fix/immutable-show-remediation
+      - uses: jessehouwing/actions-semver-checker@v2
         with:
           check-minor-version: error
           check-release-immutability: error
