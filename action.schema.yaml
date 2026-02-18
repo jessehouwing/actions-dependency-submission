@@ -1,0 +1,69 @@
+# Schema file for actions-dependency-submission validation
+# This file provides advanced validation for action inputs and outputs
+# See: https://github.com/jessehouwing/actions-example-checker
+
+# Define reusable custom types
+types:
+  # GitHub repository name in owner/repo format
+  repository-name:
+    type: string
+    match: '^[a-zA-Z0-9]([a-zA-Z0-9-]*[a-zA-Z0-9])?/[a-zA-Z0-9]([a-zA-Z0-9_.-]*[a-zA-Z0-9])?$'
+
+  # Organization name (alphanumeric with hyphens, must start and end with alphanumeric)
+  organization-name:
+    type: string
+    match: '^[a-zA-Z0-9]([a-zA-Z0-9-]*[a-zA-Z0-9])?$'
+
+  # Regular expression pattern with named captures
+  regex-pattern:
+    type: string
+
+# Validate inputs with explicit types
+inputs:
+  # GitHub token - string input (no pattern needed for secrets)
+  token:
+    type: string
+
+  # Repository name in owner/repo format
+  repository:
+    type: repository-name
+
+  # Directory path for workflows
+  workflow-directory:
+    type: string
+
+  # Comma or newline-separated paths
+  additional-paths:
+    type: string
+    separators: ['newline', ',']
+    items:
+      type: string
+
+  # Comma-separated list of organization names
+  fork-organizations:
+    type: string
+    separators: ','
+    items:
+      type: organization-name
+
+  # Regular expression pattern for fork transformation
+  fork-regex:
+    type: regex-pattern
+
+  # GitHub token for public GitHub access
+  public-github-token:
+    type: string
+
+  # Boolean flag for transitive dependency reporting
+  report-transitive-as-direct:
+    type: boolean
+
+  # Boolean flag for Docker image detection
+  detect-docker:
+    type: boolean
+
+# Validate outputs
+outputs:
+  # Number of dependencies submitted to dependency graph
+  dependency-count:
+    type: number
