@@ -124,17 +124,17 @@ sudo dnf install ruby cmake
 The following extensions are recommended for development (also auto-installed in
 dev containers):
 
-| Extension                                                                                                                  | Purpose                        |
-| -------------------------------------------------------------------------------------------------------------------------- | ------------------------------ |
-| [ESLint](https://marketplace.visualstudio.com/items?itemName=dbaeumer.vscode-eslint)                                       | JavaScript/TypeScript linting  |
-| [Prettier](https://marketplace.visualstudio.com/items?itemName=esbenp.prettier-vscode)                                     | Code formatting                |
-| [GitHub Actions](https://marketplace.visualstudio.com/items?itemName=github.vscode-github-actions)                         | Workflow file support          |
-| [YAML](https://marketplace.visualstudio.com/items?itemName=redhat.vscode-yaml)                                             | YAML language support          |
-| [Markdown All in One](https://marketplace.visualstudio.com/items?itemName=yzhang.markdown-all-in-one)                      | Markdown editing               |
-| [markdownlint](https://marketplace.visualstudio.com/items?itemName=davidanson.vscode-markdownlint)                         | Markdown linting               |
-| [GitHub Pull Requests](https://marketplace.visualstudio.com/items?itemName=github.vscode-pull-request-github)              | PR integration                 |
-| [GitHub Copilot](https://marketplace.visualstudio.com/items?itemName=github.copilot)                                       | AI-assisted development        |
-| [Markdown Preview GitHub Styles](https://marketplace.visualstudio.com/items?itemName=bierner.markdown-preview-github-styles) | GitHub-style markdown preview  |
+| Extension                                                                                                                    | Purpose                       |
+| ---------------------------------------------------------------------------------------------------------------------------- | ----------------------------- |
+| [ESLint](https://marketplace.visualstudio.com/items?itemName=dbaeumer.vscode-eslint)                                         | JavaScript/TypeScript linting |
+| [Prettier](https://marketplace.visualstudio.com/items?itemName=esbenp.prettier-vscode)                                       | Code formatting               |
+| [GitHub Actions](https://marketplace.visualstudio.com/items?itemName=github.vscode-github-actions)                           | Workflow file support         |
+| [YAML](https://marketplace.visualstudio.com/items?itemName=redhat.vscode-yaml)                                               | YAML language support         |
+| [Markdown All in One](https://marketplace.visualstudio.com/items?itemName=yzhang.markdown-all-in-one)                        | Markdown editing              |
+| [markdownlint](https://marketplace.visualstudio.com/items?itemName=davidanson.vscode-markdownlint)                           | Markdown linting              |
+| [GitHub Pull Requests](https://marketplace.visualstudio.com/items?itemName=github.vscode-pull-request-github)                | PR integration                |
+| [GitHub Copilot](https://marketplace.visualstudio.com/items?itemName=github.copilot)                                         | AI-assisted development       |
+| [Markdown Preview GitHub Styles](https://marketplace.visualstudio.com/items?itemName=bierner.markdown-preview-github-styles) | GitHub-style markdown preview |
 
 ### Editor Settings
 
@@ -145,9 +145,8 @@ VS Code settings are provided in `.vscode/settings.json`.
 
 ### Local Action Debugging
 
-This project uses
-[@github/local-action](https://github.com/github/local-action) for local
-debugging. A VS Code launch configuration is provided.
+This project uses [@github/local-action](https://github.com/github/local-action)
+for local debugging. A VS Code launch configuration is provided.
 
 1. Copy `.env.example` to `.env`:
 
@@ -238,17 +237,17 @@ licensed cache
 
 ## Project Structure
 
-| Path             | Description                                              |
-| ---------------- | -------------------------------------------------------- |
-| `src/`           | TypeScript source code                                   |
-| `dist/`          | Generated JavaScript (do not edit directly)              |
-| `__tests__/`     | Unit tests                                               |
-| `__fixtures__/`  | Test fixtures                                            |
-| `.devcontainer/` | Dev Container configuration                              |
-| `.github/`       | GitHub configuration (workflows, issue templates, etc.)  |
-| `.vscode/`       | VS Code configuration                                    |
-| `.licenses/`     | License cache (generated by `licensed`)                  |
-| `docs/`          | Research documents and specifications                    |
+| Path             | Description                                             |
+| ---------------- | ------------------------------------------------------- |
+| `src/`           | TypeScript source code                                  |
+| `dist/`          | Generated JavaScript (do not edit directly)             |
+| `__tests__/`     | Unit tests                                              |
+| `__fixtures__/`  | Test fixtures                                           |
+| `.devcontainer/` | Dev Container configuration                             |
+| `.github/`       | GitHub configuration (workflows, issue templates, etc.) |
+| `.vscode/`       | VS Code configuration                                   |
+| `.licenses/`     | License cache (generated by `licensed`)                 |
+| `docs/`          | Research documents and specifications                   |
 
 ## Pull Request Guidelines
 
