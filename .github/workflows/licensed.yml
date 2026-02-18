@@ -42,7 +42,7 @@ jobs:
       - &npm-ci
         name: Install Dependencies
         id: npm-ci
-        run: npm ci
+        run: npm ci --legacy-peer-deps
 
       - &setup-ruby
         name: Setup Ruby

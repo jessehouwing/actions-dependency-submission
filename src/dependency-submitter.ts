@@ -306,7 +306,7 @@ export class DependencySubmitter {
         core.error(`Failed to submit dependencies: ${error.message}`)
         throw error
       }
-      throw new Error('Failed to submit dependencies')
+      throw new Error('Failed to submit dependencies', { cause: error })
     }
 
     return dependencyCount
