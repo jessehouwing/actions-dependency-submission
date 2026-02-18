@@ -55,7 +55,8 @@ export async function run(): Promise<void> {
         }
       } catch (error) {
         throw new Error(
-          `Invalid fork-regex: ${error instanceof Error ? error.message : 'Unknown error'}`
+          `Invalid fork-regex: ${error instanceof Error ? error.message : 'Unknown error'}`,
+          { cause: error }
         )
       }
     }

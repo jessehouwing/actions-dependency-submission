@@ -30,7 +30,7 @@ jobs:
 
       - name: Install Dependencies
         id: npm-ci
-        run: npm ci
+        run: npm ci --legacy-peer-deps
 
       - name: Check Format
         id: npm-format-check
@@ -60,7 +60,7 @@ jobs:
 
       - name: Install Dependencies
         id: npm-ci
-        run: npm ci
+        run: npm ci --legacy-peer-deps
 
       - name: Run Integration Tests
         id: integration-test
