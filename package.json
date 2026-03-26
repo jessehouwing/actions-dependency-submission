@@ -42,7 +42,7 @@
     "@actions/github": "^9.0.0",
     "@octokit/core": "^7.0.6",
     "dockerfile-ast": "^0.7.1",
-    "yaml": "^2.8.2"
+    "yaml": "^2.8.3"
   },
   "devDependencies": {
     "@eslint/compat": "^2.0.3",
