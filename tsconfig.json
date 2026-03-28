@@ -16,6 +16,7 @@
     "noUnusedParameters": false,
     "outDir": "./dist",
     "pretty": true,
+    "rootDir": "./src",
     "resolveJsonModule": true,
     "strict": true,
     "strictNullChecks": true,
