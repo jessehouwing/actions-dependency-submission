@@ -1,9 +1,7 @@
 // See: https://eslint.org/docs/latest/use/configure/configuration-files
 
-import { fixupPluginRules } from '@eslint/compat'
 import js from '@eslint/js'
 import tseslint from 'typescript-eslint'
-import _import from 'eslint-plugin-import'
 import jest from 'eslint-plugin-jest'
 import prettier from 'eslint-plugin-prettier'
 import eslintConfigPrettier from 'eslint-config-prettier'
@@ -17,7 +15,6 @@ export default tseslint.config(
   ...tseslint.configs.recommended,
   {
     plugins: {
-      import: fixupPluginRules(_import),
       jest,
       prettier
     },
@@ -48,21 +45,11 @@ export default tseslint.config(
       }
     },
 
-    settings: {
-      'import/resolver': {
-        typescript: {
-          alwaysTryTypes: true,
-          project: 'tsconfig.json'
-        }
-      }
-    },
-
     rules: {
       camelcase: 'off',
       'eslint-comments/no-use': 'off',
       'eslint-comments/no-unused-disable': 'off',
       'i18n-text/no-en': 'off',
-      'import/no-namespace': 'off',
       'no-console': 'off',
       'no-shadow': 'off',
       'no-unused-vars': 'off',
