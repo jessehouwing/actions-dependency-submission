@@ -42,7 +42,7 @@
     "@actions/github": "^9.1.1",
     "@octokit/core": "^7.0.6",
     "dockerfile-ast": "^0.7.1",
-    "yaml": "^2.8.3"
+    "yaml": "^2.8.4"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",
@@ -68,6 +68,6 @@
     "typescript-eslint": "^8.59.1"
   },
   "optionalDependencies": {
-    "@rollup/rollup-linux-x64-gnu": "^4.60.2"
+    "@rollup/rollup-linux-x64-gnu": "^4.60.3"
   }
 }
