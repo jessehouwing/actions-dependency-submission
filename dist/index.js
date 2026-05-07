@@ -3625,9 +3625,9 @@ var hasRequiredConstants$3;
 function requireConstants$3 () {
 	if (hasRequiredConstants$3) return constants$3;
 	hasRequiredConstants$3 = 1;
-	(function (exports$1) {
-		Object.defineProperty(exports$1, "__esModule", { value: true });
-		exports$1.SPECIAL_HEADERS = exports$1.HEADER_STATE = exports$1.MINOR = exports$1.MAJOR = exports$1.CONNECTION_TOKEN_CHARS = exports$1.HEADER_CHARS = exports$1.TOKEN = exports$1.STRICT_TOKEN = exports$1.HEX = exports$1.URL_CHAR = exports$1.STRICT_URL_CHAR = exports$1.USERINFO_CHARS = exports$1.MARK = exports$1.ALPHANUM = exports$1.NUM = exports$1.HEX_MAP = exports$1.NUM_MAP = exports$1.ALPHA = exports$1.FINISH = exports$1.H_METHOD_MAP = exports$1.METHOD_MAP = exports$1.METHODS_RTSP = exports$1.METHODS_ICE = exports$1.METHODS_HTTP = exports$1.METHODS = exports$1.LENIENT_FLAGS = exports$1.FLAGS = exports$1.TYPE = exports$1.ERROR = void 0;
+	(function (exports) {
+		Object.defineProperty(exports, "__esModule", { value: true });
+		exports.SPECIAL_HEADERS = exports.HEADER_STATE = exports.MINOR = exports.MAJOR = exports.CONNECTION_TOKEN_CHARS = exports.HEADER_CHARS = exports.TOKEN = exports.STRICT_TOKEN = exports.HEX = exports.URL_CHAR = exports.STRICT_URL_CHAR = exports.USERINFO_CHARS = exports.MARK = exports.ALPHANUM = exports.NUM = exports.HEX_MAP = exports.NUM_MAP = exports.ALPHA = exports.FINISH = exports.H_METHOD_MAP = exports.METHOD_MAP = exports.METHODS_RTSP = exports.METHODS_ICE = exports.METHODS_HTTP = exports.METHODS = exports.LENIENT_FLAGS = exports.FLAGS = exports.TYPE = exports.ERROR = void 0;
 		const utils_1 = requireUtils();
 		(function (ERROR) {
 		    ERROR[ERROR["OK"] = 0] = "OK";
@@ -3655,12 +3655,12 @@ function requireConstants$3 () {
 		    ERROR[ERROR["PAUSED_UPGRADE"] = 22] = "PAUSED_UPGRADE";
 		    ERROR[ERROR["PAUSED_H2_UPGRADE"] = 23] = "PAUSED_H2_UPGRADE";
 		    ERROR[ERROR["USER"] = 24] = "USER";
-		})(exports$1.ERROR || (exports$1.ERROR = {}));
+		})(exports.ERROR || (exports.ERROR = {}));
 		(function (TYPE) {
 		    TYPE[TYPE["BOTH"] = 0] = "BOTH";
 		    TYPE[TYPE["REQUEST"] = 1] = "REQUEST";
 		    TYPE[TYPE["RESPONSE"] = 2] = "RESPONSE";
-		})(exports$1.TYPE || (exports$1.TYPE = {}));
+		})(exports.TYPE || (exports.TYPE = {}));
 		(function (FLAGS) {
 		    FLAGS[FLAGS["CONNECTION_KEEP_ALIVE"] = 1] = "CONNECTION_KEEP_ALIVE";
 		    FLAGS[FLAGS["CONNECTION_CLOSE"] = 2] = "CONNECTION_CLOSE";
@@ -3672,12 +3672,12 @@ function requireConstants$3 () {
 		    FLAGS[FLAGS["TRAILING"] = 128] = "TRAILING";
 		    // 1 << 8 is unused
 		    FLAGS[FLAGS["TRANSFER_ENCODING"] = 512] = "TRANSFER_ENCODING";
-		})(exports$1.FLAGS || (exports$1.FLAGS = {}));
+		})(exports.FLAGS || (exports.FLAGS = {}));
 		(function (LENIENT_FLAGS) {
 		    LENIENT_FLAGS[LENIENT_FLAGS["HEADERS"] = 1] = "HEADERS";
 		    LENIENT_FLAGS[LENIENT_FLAGS["CHUNKED_LENGTH"] = 2] = "CHUNKED_LENGTH";
 		    LENIENT_FLAGS[LENIENT_FLAGS["KEEP_ALIVE"] = 4] = "KEEP_ALIVE";
-		})(exports$1.LENIENT_FLAGS || (exports$1.LENIENT_FLAGS = {}));
+		})(exports.LENIENT_FLAGS || (exports.LENIENT_FLAGS = {}));
 		var METHODS;
 		(function (METHODS) {
 		    METHODS[METHODS["DELETE"] = 0] = "DELETE";
@@ -3737,8 +3737,8 @@ function requireConstants$3 () {
 		    METHODS[METHODS["RECORD"] = 44] = "RECORD";
 		    /* RAOP */
 		    METHODS[METHODS["FLUSH"] = 45] = "FLUSH";
-		})(METHODS = exports$1.METHODS || (exports$1.METHODS = {}));
-		exports$1.METHODS_HTTP = [
+		})(METHODS = exports.METHODS || (exports.METHODS = {}));
+		exports.METHODS_HTTP = [
 		    METHODS.DELETE,
 		    METHODS.GET,
 		    METHODS.HEAD,
@@ -3776,10 +3776,10 @@ function requireConstants$3 () {
 		    // TODO(indutny): should we allow it with HTTP?
 		    METHODS.SOURCE,
 		];
-		exports$1.METHODS_ICE = [
+		exports.METHODS_ICE = [
 		    METHODS.SOURCE,
 		];
-		exports$1.METHODS_RTSP = [
+		exports.METHODS_RTSP = [
 		    METHODS.OPTIONS,
 		    METHODS.DESCRIBE,
 		    METHODS.ANNOUNCE,
@@ -3796,59 +3796,59 @@ function requireConstants$3 () {
 		    METHODS.GET,
 		    METHODS.POST,
 		];
-		exports$1.METHOD_MAP = utils_1.enumToMap(METHODS);
-		exports$1.H_METHOD_MAP = {};
-		Object.keys(exports$1.METHOD_MAP).forEach((key) => {
+		exports.METHOD_MAP = utils_1.enumToMap(METHODS);
+		exports.H_METHOD_MAP = {};
+		Object.keys(exports.METHOD_MAP).forEach((key) => {
 		    if (/^H/.test(key)) {
-		        exports$1.H_METHOD_MAP[key] = exports$1.METHOD_MAP[key];
+		        exports.H_METHOD_MAP[key] = exports.METHOD_MAP[key];
 		    }
 		});
 		(function (FINISH) {
 		    FINISH[FINISH["SAFE"] = 0] = "SAFE";
 		    FINISH[FINISH["SAFE_WITH_CB"] = 1] = "SAFE_WITH_CB";
 		    FINISH[FINISH["UNSAFE"] = 2] = "UNSAFE";
-		})(exports$1.FINISH || (exports$1.FINISH = {}));
-		exports$1.ALPHA = [];
+		})(exports.FINISH || (exports.FINISH = {}));
+		exports.ALPHA = [];
 		for (let i = 'A'.charCodeAt(0); i <= 'Z'.charCodeAt(0); i++) {
 		    // Upper case
-		    exports$1.ALPHA.push(String.fromCharCode(i));
+		    exports.ALPHA.push(String.fromCharCode(i));
 		    // Lower case
-		    exports$1.ALPHA.push(String.fromCharCode(i + 0x20));
+		    exports.ALPHA.push(String.fromCharCode(i + 0x20));
 		}
-		exports$1.NUM_MAP = {
+		exports.NUM_MAP = {
 		    0: 0, 1: 1, 2: 2, 3: 3, 4: 4,
 		    5: 5, 6: 6, 7: 7, 8: 8, 9: 9,
 		};
-		exports$1.HEX_MAP = {
+		exports.HEX_MAP = {
 		    0: 0, 1: 1, 2: 2, 3: 3, 4: 4,
 		    5: 5, 6: 6, 7: 7, 8: 8, 9: 9,
 		    A: 0XA, B: 0XB, C: 0XC, D: 0XD, E: 0XE, F: 0XF,
 		    a: 0xa, b: 0xb, c: 0xc, d: 0xd, e: 0xe, f: 0xf,
 		};
-		exports$1.NUM = [
+		exports.NUM = [
 		    '0', '1', '2', '3', '4', '5', '6', '7', '8', '9',
 		];
-		exports$1.ALPHANUM = exports$1.ALPHA.concat(exports$1.NUM);
-		exports$1.MARK = ['-', '_', '.', '!', '~', '*', '\'', '(', ')'];
-		exports$1.USERINFO_CHARS = exports$1.ALPHANUM
-		    .concat(exports$1.MARK)
+		exports.ALPHANUM = exports.ALPHA.concat(exports.NUM);
+		exports.MARK = ['-', '_', '.', '!', '~', '*', '\'', '(', ')'];
+		exports.USERINFO_CHARS = exports.ALPHANUM
+		    .concat(exports.MARK)
 		    .concat(['%', ';', ':', '&', '=', '+', '$', ',']);
 		// TODO(indutny): use RFC
-		exports$1.STRICT_URL_CHAR = [
+		exports.STRICT_URL_CHAR = [
 		    '!', '"', '$', '%', '&', '\'',
 		    '(', ')', '*', '+', ',', '-', '.', '/',
 		    ':', ';', '<', '=', '>',
 		    '@', '[', '\\', ']', '^', '_',
 		    '`',
 		    '{', '|', '}', '~',
-		].concat(exports$1.ALPHANUM);
-		exports$1.URL_CHAR = exports$1.STRICT_URL_CHAR
+		].concat(exports.ALPHANUM);
+		exports.URL_CHAR = exports.STRICT_URL_CHAR
 		    .concat(['\t', '\f']);
 		// All characters with 0x80 bit set to 1
 		for (let i = 0x80; i <= 0xff; i++) {
-		    exports$1.URL_CHAR.push(i);
+		    exports.URL_CHAR.push(i);
 		}
-		exports$1.HEX = exports$1.NUM.concat(['a', 'b', 'c', 'd', 'e', 'f', 'A', 'B', 'C', 'D', 'E', 'F']);
+		exports.HEX = exports.NUM.concat(['a', 'b', 'c', 'd', 'e', 'f', 'A', 'B', 'C', 'D', 'E', 'F']);
 		/* Tokens as defined by rfc 2616. Also lowercases them.
 		 *        token       = 1*<any CHAR except CTLs or separators>
 		 *     separators     = "(" | ")" | "<" | ">" | "@"
@@ -3856,27 +3856,27 @@ function requireConstants$3 () {
 		 *                    | "/" | "[" | "]" | "?" | "="
 		 *                    | "{" | "}" | SP | HT
 		 */
-		exports$1.STRICT_TOKEN = [
+		exports.STRICT_TOKEN = [
 		    '!', '#', '$', '%', '&', '\'',
 		    '*', '+', '-', '.',
 		    '^', '_', '`',
 		    '|', '~',
-		].concat(exports$1.ALPHANUM);
-		exports$1.TOKEN = exports$1.STRICT_TOKEN.concat([' ']);
+		].concat(exports.ALPHANUM);
+		exports.TOKEN = exports.STRICT_TOKEN.concat([' ']);
 		/*
 		 * Verify that a char is a valid visible (printable) US-ASCII
 		 * character or %x80-FF
 		 */
-		exports$1.HEADER_CHARS = ['\t'];
+		exports.HEADER_CHARS = ['\t'];
 		for (let i = 32; i <= 255; i++) {
 		    if (i !== 127) {
-		        exports$1.HEADER_CHARS.push(i);
+		        exports.HEADER_CHARS.push(i);
 		    }
 		}
 		// ',' = \x44
-		exports$1.CONNECTION_TOKEN_CHARS = exports$1.HEADER_CHARS.filter((c) => c !== 44);
-		exports$1.MAJOR = exports$1.NUM_MAP;
-		exports$1.MINOR = exports$1.MAJOR;
+		exports.CONNECTION_TOKEN_CHARS = exports.HEADER_CHARS.filter((c) => c !== 44);
+		exports.MAJOR = exports.NUM_MAP;
+		exports.MINOR = exports.MAJOR;
 		var HEADER_STATE;
 		(function (HEADER_STATE) {
 		    HEADER_STATE[HEADER_STATE["GENERAL"] = 0] = "GENERAL";
@@ -3888,8 +3888,8 @@ function requireConstants$3 () {
 		    HEADER_STATE[HEADER_STATE["CONNECTION_CLOSE"] = 6] = "CONNECTION_CLOSE";
 		    HEADER_STATE[HEADER_STATE["CONNECTION_UPGRADE"] = 7] = "CONNECTION_UPGRADE";
 		    HEADER_STATE[HEADER_STATE["TRANSFER_ENCODING_CHUNKED"] = 8] = "TRANSFER_ENCODING_CHUNKED";
-		})(HEADER_STATE = exports$1.HEADER_STATE || (exports$1.HEADER_STATE = {}));
-		exports$1.SPECIAL_HEADERS = {
+		})(HEADER_STATE = exports.HEADER_STATE || (exports.HEADER_STATE = {}));
+		exports.SPECIAL_HEADERS = {
 		    'connection': HEADER_STATE.CONNECTION,
 		    'content-length': HEADER_STATE.CONTENT_LENGTH,
 		    'proxy-connection': HEADER_STATE.CONNECTION,
@@ -8780,10 +8780,10 @@ function requireClientH1 () {
 	const TIMEOUT_KEEP_ALIVE = 8 | USE_NATIVE_TIMER;
 
 	class Parser {
-	  constructor (client, socket, { exports: exports$1 }) {
+	  constructor (client, socket, { exports }) {
 	    assert(Number.isFinite(client[kMaxHeadersSize]) && client[kMaxHeadersSize] > 0);
 
-	    this.llhttp = exports$1;
+	    this.llhttp = exports;
 	    this.ptr = this.llhttp.llhttp_alloc(constants.TYPE.RESPONSE);
 	    this.client = client;
 	    this.socket = socket;
@@ -33449,6 +33449,8 @@ class Alias extends NodeBase {
      * instance of the `source` anchor before this node.
      */
     resolve(doc, ctx) {
+        if (ctx?.maxAliasCount === 0)
+            throw new ReferenceError('Alias resolution is disabled');
         let nodes;
         if (ctx?.aliasResolveCache) {
             nodes = ctx.aliasResolveCache;
@@ -34579,18 +34581,18 @@ const isMergeKey = (ctx, key) => (merge.identify(key) ||
         merge.identify(key.value))) &&
     ctx?.doc.schema.tags.some(tag => tag.tag === merge.tag && tag.default);
 function addMergeToJSMap(ctx, map, value) {
-    value = ctx && isAlias(value) ? value.resolve(ctx.doc) : value;
-    if (isSeq(value))
-        for (const it of value.items)
+    const source = resolveAliasValue(ctx, value);
+    if (isSeq(source))
+        for (const it of source.items)
             mergeValue(ctx, map, it);
-    else if (Array.isArray(value))
-        for (const it of value)
+    else if (Array.isArray(source))
+        for (const it of source)
             mergeValue(ctx, map, it);
     else
-        mergeValue(ctx, map, value);
+        mergeValue(ctx, map, source);
 }
 function mergeValue(ctx, map, value) {
-    const source = ctx && isAlias(value) ? value.resolve(ctx.doc) : value;
+    const source = resolveAliasValue(ctx, value);
     if (!isMap(source))
         throw new Error('Merge sources must be maps or map aliases');
     const srcMap = source.toJSON(null, ctx, Map);
@@ -34612,6 +34614,9 @@ function mergeValue(ctx, map, value) {
         }
     }
     return map;
+}
+function resolveAliasValue(ctx, value) {
+    return ctx && isAlias(value) ? value.resolve(ctx.doc, ctx) : value;
 }
 
 function addPairToJSMap(ctx, map, { key, value }) {
@@ -35164,7 +35169,8 @@ function stringifyNumber({ format, minFractionDigits, tag, value }) {
     if (!format &&
         minFractionDigits &&
         (!tag || tag === 'tag:yaml.org,2002:float') &&
-        /^\d/.test(n)) {
+        /^-?\d/.test(n) &&
+        !n.includes('e')) {
         let i = n.indexOf('.');
         if (i < 0) {
             i = n.length;
@@ -37423,7 +37429,7 @@ function doubleQuotedValue(source, onError) {
                     next = source[++i + 1];
             }
             else if (next === 'x' || next === 'u' || next === 'U') {
-                const length = { x: 2, u: 4, U: 8 }[next];
+                const length = next === 'x' ? 2 : next === 'u' ? 4 : 8;
                 res += parseCharCode(source, i + 1, length, onError);
                 i += length;
             }
@@ -37493,12 +37499,14 @@ function parseCharCode(source, offset, length, onError) {
     const cc = source.substr(offset, length);
     const ok = cc.length === length && /^[0-9a-fA-F]+$/.test(cc);
     const code = ok ? parseInt(cc, 16) : NaN;
-    if (isNaN(code)) {
+    try {
+        return String.fromCodePoint(code);
+    }
+    catch {
         const raw = source.substr(offset - 2, length + 2);
         onError(offset - 2, 'BAD_DQ_ESCAPE', `Invalid escape sequence ${raw}`);
         return raw;
     }
-    return String.fromCodePoint(code);
 }
 
 function composeScalar(ctx, token, tagToken, onError) {
@@ -39980,29 +39988,29 @@ var hasRequiredMain$1;
 function requireMain$1 () {
 	if (hasRequiredMain$1) return main$1.exports;
 	hasRequiredMain$1 = 1;
-	(function (module, exports$1) {
+	(function (module, exports) {
 		(function (factory) {
 		    {
-		        var v = factory(commonjsRequire, exports$1);
+		        var v = factory(commonjsRequire, exports);
 		        if (v !== undefined) module.exports = v;
 		    }
-		})(function (require, exports$1) {
-		    Object.defineProperty(exports$1, "__esModule", { value: true });
-		    exports$1.TextDocument = exports$1.EOL = exports$1.WorkspaceFolder = exports$1.InlineCompletionContext = exports$1.SelectedCompletionInfo = exports$1.InlineCompletionTriggerKind = exports$1.InlineCompletionList = exports$1.InlineCompletionItem = exports$1.StringValue = exports$1.InlayHint = exports$1.InlayHintLabelPart = exports$1.InlayHintKind = exports$1.InlineValueContext = exports$1.InlineValueEvaluatableExpression = exports$1.InlineValueVariableLookup = exports$1.InlineValueText = exports$1.SemanticTokens = exports$1.SemanticTokenModifiers = exports$1.SemanticTokenTypes = exports$1.SelectionRange = exports$1.DocumentLink = exports$1.FormattingOptions = exports$1.CodeLens = exports$1.CodeAction = exports$1.CodeActionContext = exports$1.CodeActionTriggerKind = exports$1.CodeActionKind = exports$1.DocumentSymbol = exports$1.WorkspaceSymbol = exports$1.SymbolInformation = exports$1.SymbolTag = exports$1.SymbolKind = exports$1.DocumentHighlight = exports$1.DocumentHighlightKind = exports$1.SignatureInformation = exports$1.ParameterInformation = exports$1.Hover = exports$1.MarkedString = exports$1.CompletionList = exports$1.CompletionItem = exports$1.CompletionItemLabelDetails = exports$1.InsertTextMode = exports$1.InsertReplaceEdit = exports$1.CompletionItemTag = exports$1.InsertTextFormat = exports$1.CompletionItemKind = exports$1.MarkupContent = exports$1.MarkupKind = exports$1.TextDocumentItem = exports$1.OptionalVersionedTextDocumentIdentifier = exports$1.VersionedTextDocumentIdentifier = exports$1.TextDocumentIdentifier = exports$1.WorkspaceChange = exports$1.WorkspaceEdit = exports$1.DeleteFile = exports$1.RenameFile = exports$1.CreateFile = exports$1.TextDocumentEdit = exports$1.AnnotatedTextEdit = exports$1.ChangeAnnotationIdentifier = exports$1.ChangeAnnotation = exports$1.TextEdit = exports$1.Command = exports$1.Diagnostic = exports$1.CodeDescription = exports$1.DiagnosticTag = exports$1.DiagnosticSeverity = exports$1.DiagnosticRelatedInformation = exports$1.FoldingRange = exports$1.FoldingRangeKind = exports$1.ColorPresentation = exports$1.ColorInformation = exports$1.Color = exports$1.LocationLink = exports$1.Location = exports$1.Range = exports$1.Position = exports$1.uinteger = exports$1.integer = exports$1.URI = exports$1.DocumentUri = void 0;
+		})(function (require, exports) {
+		    Object.defineProperty(exports, "__esModule", { value: true });
+		    exports.TextDocument = exports.EOL = exports.WorkspaceFolder = exports.InlineCompletionContext = exports.SelectedCompletionInfo = exports.InlineCompletionTriggerKind = exports.InlineCompletionList = exports.InlineCompletionItem = exports.StringValue = exports.InlayHint = exports.InlayHintLabelPart = exports.InlayHintKind = exports.InlineValueContext = exports.InlineValueEvaluatableExpression = exports.InlineValueVariableLookup = exports.InlineValueText = exports.SemanticTokens = exports.SemanticTokenModifiers = exports.SemanticTokenTypes = exports.SelectionRange = exports.DocumentLink = exports.FormattingOptions = exports.CodeLens = exports.CodeAction = exports.CodeActionContext = exports.CodeActionTriggerKind = exports.CodeActionKind = exports.DocumentSymbol = exports.WorkspaceSymbol = exports.SymbolInformation = exports.SymbolTag = exports.SymbolKind = exports.DocumentHighlight = exports.DocumentHighlightKind = exports.SignatureInformation = exports.ParameterInformation = exports.Hover = exports.MarkedString = exports.CompletionList = exports.CompletionItem = exports.CompletionItemLabelDetails = exports.InsertTextMode = exports.InsertReplaceEdit = exports.CompletionItemTag = exports.InsertTextFormat = exports.CompletionItemKind = exports.MarkupContent = exports.MarkupKind = exports.TextDocumentItem = exports.OptionalVersionedTextDocumentIdentifier = exports.VersionedTextDocumentIdentifier = exports.TextDocumentIdentifier = exports.WorkspaceChange = exports.WorkspaceEdit = exports.DeleteFile = exports.RenameFile = exports.CreateFile = exports.TextDocumentEdit = exports.AnnotatedTextEdit = exports.ChangeAnnotationIdentifier = exports.ChangeAnnotation = exports.TextEdit = exports.Command = exports.Diagnostic = exports.CodeDescription = exports.DiagnosticTag = exports.DiagnosticSeverity = exports.DiagnosticRelatedInformation = exports.FoldingRange = exports.FoldingRangeKind = exports.ColorPresentation = exports.ColorInformation = exports.Color = exports.LocationLink = exports.Location = exports.Range = exports.Position = exports.uinteger = exports.integer = exports.URI = exports.DocumentUri = void 0;
 		    var DocumentUri;
 		    (function (DocumentUri) {
 		        function is(value) {
 		            return typeof value === 'string';
 		        }
 		        DocumentUri.is = is;
-		    })(DocumentUri || (exports$1.DocumentUri = DocumentUri = {}));
+		    })(DocumentUri || (exports.DocumentUri = DocumentUri = {}));
 		    var URI;
 		    (function (URI) {
 		        function is(value) {
 		            return typeof value === 'string';
 		        }
 		        URI.is = is;
-		    })(URI || (exports$1.URI = URI = {}));
+		    })(URI || (exports.URI = URI = {}));
 		    var integer;
 		    (function (integer) {
 		        integer.MIN_VALUE = -2147483648;
@@ -40011,7 +40019,7 @@ function requireMain$1 () {
 		            return typeof value === 'number' && integer.MIN_VALUE <= value && value <= integer.MAX_VALUE;
 		        }
 		        integer.is = is;
-		    })(integer || (exports$1.integer = integer = {}));
+		    })(integer || (exports.integer = integer = {}));
 		    var uinteger;
 		    (function (uinteger) {
 		        uinteger.MIN_VALUE = 0;
@@ -40020,7 +40028,7 @@ function requireMain$1 () {
 		            return typeof value === 'number' && uinteger.MIN_VALUE <= value && value <= uinteger.MAX_VALUE;
 		        }
 		        uinteger.is = is;
-		    })(uinteger || (exports$1.uinteger = uinteger = {}));
+		    })(uinteger || (exports.uinteger = uinteger = {}));
 		    /**
 		     * The Position namespace provides helper functions to work with
 		     * {@link Position} literals.
@@ -40050,7 +40058,7 @@ function requireMain$1 () {
 		            return Is.objectLiteral(candidate) && Is.uinteger(candidate.line) && Is.uinteger(candidate.character);
 		        }
 		        Position.is = is;
-		    })(Position || (exports$1.Position = Position = {}));
+		    })(Position || (exports.Position = Position = {}));
 		    /**
 		     * The Range namespace provides helper functions to work with
 		     * {@link Range} literals.
@@ -40077,7 +40085,7 @@ function requireMain$1 () {
 		            return Is.objectLiteral(candidate) && Position.is(candidate.start) && Position.is(candidate.end);
 		        }
 		        Range.is = is;
-		    })(Range || (exports$1.Range = Range = {}));
+		    })(Range || (exports.Range = Range = {}));
 		    /**
 		     * The Location namespace provides helper functions to work with
 		     * {@link Location} literals.
@@ -40101,7 +40109,7 @@ function requireMain$1 () {
 		            return Is.objectLiteral(candidate) && Range.is(candidate.range) && (Is.string(candidate.uri) || Is.undefined(candidate.uri));
 		        }
 		        Location.is = is;
-		    })(Location || (exports$1.Location = Location = {}));
+		    })(Location || (exports.Location = Location = {}));
 		    /**
 		     * The LocationLink namespace provides helper functions to work with
 		     * {@link LocationLink} literals.
@@ -40129,7 +40137,7 @@ function requireMain$1 () {
 		                && (Range.is(candidate.originSelectionRange) || Is.undefined(candidate.originSelectionRange));
 		        }
 		        LocationLink.is = is;
-		    })(LocationLink || (exports$1.LocationLink = LocationLink = {}));
+		    })(LocationLink || (exports.LocationLink = LocationLink = {}));
 		    /**
 		     * The Color namespace provides helper functions to work with
 		     * {@link Color} literals.
@@ -40159,7 +40167,7 @@ function requireMain$1 () {
 		                && Is.numberRange(candidate.alpha, 0, 1);
 		        }
 		        Color.is = is;
-		    })(Color || (exports$1.Color = Color = {}));
+		    })(Color || (exports.Color = Color = {}));
 		    /**
 		     * The ColorInformation namespace provides helper functions to work with
 		     * {@link ColorInformation} literals.
@@ -40184,7 +40192,7 @@ function requireMain$1 () {
 		            return Is.objectLiteral(candidate) && Range.is(candidate.range) && Color.is(candidate.color);
 		        }
 		        ColorInformation.is = is;
-		    })(ColorInformation || (exports$1.ColorInformation = ColorInformation = {}));
+		    })(ColorInformation || (exports.ColorInformation = ColorInformation = {}));
 		    /**
 		     * The Color namespace provides helper functions to work with
 		     * {@link ColorPresentation} literals.
@@ -40212,7 +40220,7 @@ function requireMain$1 () {
 		                && (Is.undefined(candidate.additionalTextEdits) || Is.typedArray(candidate.additionalTextEdits, TextEdit.is));
 		        }
 		        ColorPresentation.is = is;
-		    })(ColorPresentation || (exports$1.ColorPresentation = ColorPresentation = {}));
+		    })(ColorPresentation || (exports.ColorPresentation = ColorPresentation = {}));
 		    /**
 		     * A set of predefined range kinds.
 		     */
@@ -40230,7 +40238,7 @@ function requireMain$1 () {
 		         * Folding range for a region (e.g. `#region`)
 		         */
 		        FoldingRangeKind.Region = 'region';
-		    })(FoldingRangeKind || (exports$1.FoldingRangeKind = FoldingRangeKind = {}));
+		    })(FoldingRangeKind || (exports.FoldingRangeKind = FoldingRangeKind = {}));
 		    /**
 		     * The folding range namespace provides helper functions to work with
 		     * {@link FoldingRange} literals.
@@ -40271,7 +40279,7 @@ function requireMain$1 () {
 		                && (Is.undefined(candidate.kind) || Is.string(candidate.kind));
 		        }
 		        FoldingRange.is = is;
-		    })(FoldingRange || (exports$1.FoldingRange = FoldingRange = {}));
+		    })(FoldingRange || (exports.FoldingRange = FoldingRange = {}));
 		    /**
 		     * The DiagnosticRelatedInformation namespace provides helper functions to work with
 		     * {@link DiagnosticRelatedInformation} literals.
@@ -40296,7 +40304,7 @@ function requireMain$1 () {
 		            return Is.defined(candidate) && Location.is(candidate.location) && Is.string(candidate.message);
 		        }
 		        DiagnosticRelatedInformation.is = is;
-		    })(DiagnosticRelatedInformation || (exports$1.DiagnosticRelatedInformation = DiagnosticRelatedInformation = {}));
+		    })(DiagnosticRelatedInformation || (exports.DiagnosticRelatedInformation = DiagnosticRelatedInformation = {}));
 		    /**
 		     * The diagnostic's severity.
 		     */
@@ -40318,7 +40326,7 @@ function requireMain$1 () {
 		         * Reports a hint.
 		         */
 		        DiagnosticSeverity.Hint = 4;
-		    })(DiagnosticSeverity || (exports$1.DiagnosticSeverity = DiagnosticSeverity = {}));
+		    })(DiagnosticSeverity || (exports.DiagnosticSeverity = DiagnosticSeverity = {}));
 		    /**
 		     * The diagnostic tags.
 		     *
@@ -40339,7 +40347,7 @@ function requireMain$1 () {
 		         * Clients are allowed to rendered diagnostics with this tag strike through.
 		         */
 		        DiagnosticTag.Deprecated = 2;
-		    })(DiagnosticTag || (exports$1.DiagnosticTag = DiagnosticTag = {}));
+		    })(DiagnosticTag || (exports.DiagnosticTag = DiagnosticTag = {}));
 		    /**
 		     * The CodeDescription namespace provides functions to deal with descriptions for diagnostic codes.
 		     *
@@ -40352,7 +40360,7 @@ function requireMain$1 () {
 		            return Is.objectLiteral(candidate) && Is.string(candidate.href);
 		        }
 		        CodeDescription.is = is;
-		    })(CodeDescription || (exports$1.CodeDescription = CodeDescription = {}));
+		    })(CodeDescription || (exports.CodeDescription = CodeDescription = {}));
 		    /**
 		     * The Diagnostic namespace provides helper functions to work with
 		     * {@link Diagnostic} literals.
@@ -40395,7 +40403,7 @@ function requireMain$1 () {
 		                && (Is.undefined(candidate.relatedInformation) || Is.typedArray(candidate.relatedInformation, DiagnosticRelatedInformation.is));
 		        }
 		        Diagnostic.is = is;
-		    })(Diagnostic || (exports$1.Diagnostic = Diagnostic = {}));
+		    })(Diagnostic || (exports.Diagnostic = Diagnostic = {}));
 		    /**
 		     * The Command namespace provides helper functions to work with
 		     * {@link Command} literals.
@@ -40425,7 +40433,7 @@ function requireMain$1 () {
 		            return Is.defined(candidate) && Is.string(candidate.title) && Is.string(candidate.command);
 		        }
 		        Command.is = is;
-		    })(Command || (exports$1.Command = Command = {}));
+		    })(Command || (exports.Command = Command = {}));
 		    /**
 		     * The TextEdit namespace provides helper function to create replace,
 		     * insert and delete edits more easily.
@@ -40465,7 +40473,7 @@ function requireMain$1 () {
 		                && Range.is(candidate.range);
 		        }
 		        TextEdit.is = is;
-		    })(TextEdit || (exports$1.TextEdit = TextEdit = {}));
+		    })(TextEdit || (exports.TextEdit = TextEdit = {}));
 		    var ChangeAnnotation;
 		    (function (ChangeAnnotation) {
 		        function create(label, needsConfirmation, description) {
@@ -40486,7 +40494,7 @@ function requireMain$1 () {
 		                (Is.string(candidate.description) || candidate.description === undefined);
 		        }
 		        ChangeAnnotation.is = is;
-		    })(ChangeAnnotation || (exports$1.ChangeAnnotation = ChangeAnnotation = {}));
+		    })(ChangeAnnotation || (exports.ChangeAnnotation = ChangeAnnotation = {}));
 		    var ChangeAnnotationIdentifier;
 		    (function (ChangeAnnotationIdentifier) {
 		        function is(value) {
@@ -40494,7 +40502,7 @@ function requireMain$1 () {
 		            return Is.string(candidate);
 		        }
 		        ChangeAnnotationIdentifier.is = is;
-		    })(ChangeAnnotationIdentifier || (exports$1.ChangeAnnotationIdentifier = ChangeAnnotationIdentifier = {}));
+		    })(ChangeAnnotationIdentifier || (exports.ChangeAnnotationIdentifier = ChangeAnnotationIdentifier = {}));
 		    var AnnotatedTextEdit;
 		    (function (AnnotatedTextEdit) {
 		        /**
@@ -40534,7 +40542,7 @@ function requireMain$1 () {
 		            return TextEdit.is(candidate) && (ChangeAnnotation.is(candidate.annotationId) || ChangeAnnotationIdentifier.is(candidate.annotationId));
 		        }
 		        AnnotatedTextEdit.is = is;
-		    })(AnnotatedTextEdit || (exports$1.AnnotatedTextEdit = AnnotatedTextEdit = {}));
+		    })(AnnotatedTextEdit || (exports.AnnotatedTextEdit = AnnotatedTextEdit = {}));
 		    /**
 		     * The TextDocumentEdit namespace provides helper function to create
 		     * an edit that manipulates a text document.
@@ -40555,7 +40563,7 @@ function requireMain$1 () {
 		                && Array.isArray(candidate.edits);
 		        }
 		        TextDocumentEdit.is = is;
-		    })(TextDocumentEdit || (exports$1.TextDocumentEdit = TextDocumentEdit = {}));
+		    })(TextDocumentEdit || (exports.TextDocumentEdit = TextDocumentEdit = {}));
 		    var CreateFile;
 		    (function (CreateFile) {
 		        function create(uri, options, annotation) {
@@ -40578,7 +40586,7 @@ function requireMain$1 () {
 		                ((candidate.options.overwrite === undefined || Is.boolean(candidate.options.overwrite)) && (candidate.options.ignoreIfExists === undefined || Is.boolean(candidate.options.ignoreIfExists)))) && (candidate.annotationId === undefined || ChangeAnnotationIdentifier.is(candidate.annotationId));
 		        }
 		        CreateFile.is = is;
-		    })(CreateFile || (exports$1.CreateFile = CreateFile = {}));
+		    })(CreateFile || (exports.CreateFile = CreateFile = {}));
 		    var RenameFile;
 		    (function (RenameFile) {
 		        function create(oldUri, newUri, options, annotation) {
@@ -40602,7 +40610,7 @@ function requireMain$1 () {
 		                ((candidate.options.overwrite === undefined || Is.boolean(candidate.options.overwrite)) && (candidate.options.ignoreIfExists === undefined || Is.boolean(candidate.options.ignoreIfExists)))) && (candidate.annotationId === undefined || ChangeAnnotationIdentifier.is(candidate.annotationId));
 		        }
 		        RenameFile.is = is;
-		    })(RenameFile || (exports$1.RenameFile = RenameFile = {}));
+		    })(RenameFile || (exports.RenameFile = RenameFile = {}));
 		    var DeleteFile;
 		    (function (DeleteFile) {
 		        function create(uri, options, annotation) {
@@ -40625,7 +40633,7 @@ function requireMain$1 () {
 		                ((candidate.options.recursive === undefined || Is.boolean(candidate.options.recursive)) && (candidate.options.ignoreIfNotExists === undefined || Is.boolean(candidate.options.ignoreIfNotExists)))) && (candidate.annotationId === undefined || ChangeAnnotationIdentifier.is(candidate.annotationId));
 		        }
 		        DeleteFile.is = is;
-		    })(DeleteFile || (exports$1.DeleteFile = DeleteFile = {}));
+		    })(DeleteFile || (exports.DeleteFile = DeleteFile = {}));
 		    var WorkspaceEdit;
 		    (function (WorkspaceEdit) {
 		        function is(value) {
@@ -40642,7 +40650,7 @@ function requireMain$1 () {
 		                }));
 		        }
 		        WorkspaceEdit.is = is;
-		    })(WorkspaceEdit || (exports$1.WorkspaceEdit = WorkspaceEdit = {}));
+		    })(WorkspaceEdit || (exports.WorkspaceEdit = WorkspaceEdit = {}));
 		    var TextEditChangeImpl = /** @class */ (function () {
 		        function TextEditChangeImpl(edits, changeAnnotations) {
 		            this.edits = edits;
@@ -40945,7 +40953,7 @@ function requireMain$1 () {
 		        };
 		        return WorkspaceChange;
 		    }());
-		    exports$1.WorkspaceChange = WorkspaceChange;
+		    exports.WorkspaceChange = WorkspaceChange;
 		    /**
 		     * The TextDocumentIdentifier namespace provides helper functions to work with
 		     * {@link TextDocumentIdentifier} literals.
@@ -40968,7 +40976,7 @@ function requireMain$1 () {
 		            return Is.defined(candidate) && Is.string(candidate.uri);
 		        }
 		        TextDocumentIdentifier.is = is;
-		    })(TextDocumentIdentifier || (exports$1.TextDocumentIdentifier = TextDocumentIdentifier = {}));
+		    })(TextDocumentIdentifier || (exports.TextDocumentIdentifier = TextDocumentIdentifier = {}));
 		    /**
 		     * The VersionedTextDocumentIdentifier namespace provides helper functions to work with
 		     * {@link VersionedTextDocumentIdentifier} literals.
@@ -40992,7 +41000,7 @@ function requireMain$1 () {
 		            return Is.defined(candidate) && Is.string(candidate.uri) && Is.integer(candidate.version);
 		        }
 		        VersionedTextDocumentIdentifier.is = is;
-		    })(VersionedTextDocumentIdentifier || (exports$1.VersionedTextDocumentIdentifier = VersionedTextDocumentIdentifier = {}));
+		    })(VersionedTextDocumentIdentifier || (exports.VersionedTextDocumentIdentifier = VersionedTextDocumentIdentifier = {}));
 		    /**
 		     * The OptionalVersionedTextDocumentIdentifier namespace provides helper functions to work with
 		     * {@link OptionalVersionedTextDocumentIdentifier} literals.
@@ -41016,7 +41024,7 @@ function requireMain$1 () {
 		            return Is.defined(candidate) && Is.string(candidate.uri) && (candidate.version === null || Is.integer(candidate.version));
 		        }
 		        OptionalVersionedTextDocumentIdentifier.is = is;
-		    })(OptionalVersionedTextDocumentIdentifier || (exports$1.OptionalVersionedTextDocumentIdentifier = OptionalVersionedTextDocumentIdentifier = {}));
+		    })(OptionalVersionedTextDocumentIdentifier || (exports.OptionalVersionedTextDocumentIdentifier = OptionalVersionedTextDocumentIdentifier = {}));
 		    /**
 		     * The TextDocumentItem namespace provides helper functions to work with
 		     * {@link TextDocumentItem} literals.
@@ -41042,7 +41050,7 @@ function requireMain$1 () {
 		            return Is.defined(candidate) && Is.string(candidate.uri) && Is.string(candidate.languageId) && Is.integer(candidate.version) && Is.string(candidate.text);
 		        }
 		        TextDocumentItem.is = is;
-		    })(TextDocumentItem || (exports$1.TextDocumentItem = TextDocumentItem = {}));
+		    })(TextDocumentItem || (exports.TextDocumentItem = TextDocumentItem = {}));
 		    /**
 		     * Describes the content type that a client supports in various
 		     * result literals like `Hover`, `ParameterInfo` or `CompletionItem`.
@@ -41068,7 +41076,7 @@ function requireMain$1 () {
 		            return candidate === MarkupKind.PlainText || candidate === MarkupKind.Markdown;
 		        }
 		        MarkupKind.is = is;
-		    })(MarkupKind || (exports$1.MarkupKind = MarkupKind = {}));
+		    })(MarkupKind || (exports.MarkupKind = MarkupKind = {}));
 		    var MarkupContent;
 		    (function (MarkupContent) {
 		        /**
@@ -41079,7 +41087,7 @@ function requireMain$1 () {
 		            return Is.objectLiteral(value) && MarkupKind.is(candidate.kind) && Is.string(candidate.value);
 		        }
 		        MarkupContent.is = is;
-		    })(MarkupContent || (exports$1.MarkupContent = MarkupContent = {}));
+		    })(MarkupContent || (exports.MarkupContent = MarkupContent = {}));
 		    /**
 		     * The kind of a completion entry.
 		     */
@@ -41110,7 +41118,7 @@ function requireMain$1 () {
 		        CompletionItemKind.Event = 23;
 		        CompletionItemKind.Operator = 24;
 		        CompletionItemKind.TypeParameter = 25;
-		    })(CompletionItemKind || (exports$1.CompletionItemKind = CompletionItemKind = {}));
+		    })(CompletionItemKind || (exports.CompletionItemKind = CompletionItemKind = {}));
 		    /**
 		     * Defines whether the insert text in a completion item should be interpreted as
 		     * plain text or a snippet.
@@ -41132,7 +41140,7 @@ function requireMain$1 () {
 		         * See also: https://microsoft.github.io/language-server-protocol/specifications/specification-current/#snippet_syntax
 		         */
 		        InsertTextFormat.Snippet = 2;
-		    })(InsertTextFormat || (exports$1.InsertTextFormat = InsertTextFormat = {}));
+		    })(InsertTextFormat || (exports.InsertTextFormat = InsertTextFormat = {}));
 		    /**
 		     * Completion item tags are extra annotations that tweak the rendering of a completion
 		     * item.
@@ -41145,7 +41153,7 @@ function requireMain$1 () {
 		         * Render a completion as obsolete, usually using a strike-out.
 		         */
 		        CompletionItemTag.Deprecated = 1;
-		    })(CompletionItemTag || (exports$1.CompletionItemTag = CompletionItemTag = {}));
+		    })(CompletionItemTag || (exports.CompletionItemTag = CompletionItemTag = {}));
 		    /**
 		     * The InsertReplaceEdit namespace provides functions to deal with insert / replace edits.
 		     *
@@ -41168,7 +41176,7 @@ function requireMain$1 () {
 		            return candidate && Is.string(candidate.newText) && Range.is(candidate.insert) && Range.is(candidate.replace);
 		        }
 		        InsertReplaceEdit.is = is;
-		    })(InsertReplaceEdit || (exports$1.InsertReplaceEdit = InsertReplaceEdit = {}));
+		    })(InsertReplaceEdit || (exports.InsertReplaceEdit = InsertReplaceEdit = {}));
 		    /**
 		     * How whitespace and indentation is handled during completion
 		     * item insertion.
@@ -41195,7 +41203,7 @@ function requireMain$1 () {
 		         * following lines inserted will be indented using 2 tabs as well.
 		         */
 		        InsertTextMode.adjustIndentation = 2;
-		    })(InsertTextMode || (exports$1.InsertTextMode = InsertTextMode = {}));
+		    })(InsertTextMode || (exports.InsertTextMode = InsertTextMode = {}));
 		    var CompletionItemLabelDetails;
 		    (function (CompletionItemLabelDetails) {
 		        function is(value) {
@@ -41204,7 +41212,7 @@ function requireMain$1 () {
 		                (Is.string(candidate.description) || candidate.description === undefined);
 		        }
 		        CompletionItemLabelDetails.is = is;
-		    })(CompletionItemLabelDetails || (exports$1.CompletionItemLabelDetails = CompletionItemLabelDetails = {}));
+		    })(CompletionItemLabelDetails || (exports.CompletionItemLabelDetails = CompletionItemLabelDetails = {}));
 		    /**
 		     * The CompletionItem namespace provides functions to deal with
 		     * completion items.
@@ -41219,7 +41227,7 @@ function requireMain$1 () {
 		            return { label: label };
 		        }
 		        CompletionItem.create = create;
-		    })(CompletionItem || (exports$1.CompletionItem = CompletionItem = {}));
+		    })(CompletionItem || (exports.CompletionItem = CompletionItem = {}));
 		    /**
 		     * The CompletionList namespace provides functions to deal with
 		     * completion lists.
@@ -41236,7 +41244,7 @@ function requireMain$1 () {
 		            return { items: items ? items : [], isIncomplete: !!isIncomplete };
 		        }
 		        CompletionList.create = create;
-		    })(CompletionList || (exports$1.CompletionList = CompletionList = {}));
+		    })(CompletionList || (exports.CompletionList = CompletionList = {}));
 		    var MarkedString;
 		    (function (MarkedString) {
 		        /**
@@ -41256,7 +41264,7 @@ function requireMain$1 () {
 		            return Is.string(candidate) || (Is.objectLiteral(candidate) && Is.string(candidate.language) && Is.string(candidate.value));
 		        }
 		        MarkedString.is = is;
-		    })(MarkedString || (exports$1.MarkedString = MarkedString = {}));
+		    })(MarkedString || (exports.MarkedString = MarkedString = {}));
 		    var Hover;
 		    (function (Hover) {
 		        /**
@@ -41269,7 +41277,7 @@ function requireMain$1 () {
 		                Is.typedArray(candidate.contents, MarkedString.is)) && (value.range === undefined || Range.is(value.range));
 		        }
 		        Hover.is = is;
-		    })(Hover || (exports$1.Hover = Hover = {}));
+		    })(Hover || (exports.Hover = Hover = {}));
 		    /**
 		     * The ParameterInformation namespace provides helper functions to work with
 		     * {@link ParameterInformation} literals.
@@ -41286,7 +41294,7 @@ function requireMain$1 () {
 		            return documentation ? { label: label, documentation: documentation } : { label: label };
 		        }
 		        ParameterInformation.create = create;
-		    })(ParameterInformation || (exports$1.ParameterInformation = ParameterInformation = {}));
+		    })(ParameterInformation || (exports.ParameterInformation = ParameterInformation = {}));
 		    /**
 		     * The SignatureInformation namespace provides helper functions to work with
 		     * {@link SignatureInformation} literals.
@@ -41311,7 +41319,7 @@ function requireMain$1 () {
 		            return result;
 		        }
 		        SignatureInformation.create = create;
-		    })(SignatureInformation || (exports$1.SignatureInformation = SignatureInformation = {}));
+		    })(SignatureInformation || (exports.SignatureInformation = SignatureInformation = {}));
 		    /**
 		     * A document highlight kind.
 		     */
@@ -41329,7 +41337,7 @@ function requireMain$1 () {
 		         * Write-access of a symbol, like writing to a variable.
 		         */
 		        DocumentHighlightKind.Write = 3;
-		    })(DocumentHighlightKind || (exports$1.DocumentHighlightKind = DocumentHighlightKind = {}));
+		    })(DocumentHighlightKind || (exports.DocumentHighlightKind = DocumentHighlightKind = {}));
 		    /**
 		     * DocumentHighlight namespace to provide helper functions to work with
 		     * {@link DocumentHighlight} literals.
@@ -41349,7 +41357,7 @@ function requireMain$1 () {
 		            return result;
 		        }
 		        DocumentHighlight.create = create;
-		    })(DocumentHighlight || (exports$1.DocumentHighlight = DocumentHighlight = {}));
+		    })(DocumentHighlight || (exports.DocumentHighlight = DocumentHighlight = {}));
 		    /**
 		     * A symbol kind.
 		     */
@@ -41381,7 +41389,7 @@ function requireMain$1 () {
 		        SymbolKind.Event = 24;
 		        SymbolKind.Operator = 25;
 		        SymbolKind.TypeParameter = 26;
-		    })(SymbolKind || (exports$1.SymbolKind = SymbolKind = {}));
+		    })(SymbolKind || (exports.SymbolKind = SymbolKind = {}));
 		    /**
 		     * Symbol tags are extra annotations that tweak the rendering of a symbol.
 		     *
@@ -41393,7 +41401,7 @@ function requireMain$1 () {
 		         * Render a symbol as obsolete, usually using a strike-out.
 		         */
 		        SymbolTag.Deprecated = 1;
-		    })(SymbolTag || (exports$1.SymbolTag = SymbolTag = {}));
+		    })(SymbolTag || (exports.SymbolTag = SymbolTag = {}));
 		    var SymbolInformation;
 		    (function (SymbolInformation) {
 		        /**
@@ -41417,7 +41425,7 @@ function requireMain$1 () {
 		            return result;
 		        }
 		        SymbolInformation.create = create;
-		    })(SymbolInformation || (exports$1.SymbolInformation = SymbolInformation = {}));
+		    })(SymbolInformation || (exports.SymbolInformation = SymbolInformation = {}));
 		    var WorkspaceSymbol;
 		    (function (WorkspaceSymbol) {
 		        /**
@@ -41435,7 +41443,7 @@ function requireMain$1 () {
 		                : { name: name, kind: kind, location: { uri: uri } };
 		        }
 		        WorkspaceSymbol.create = create;
-		    })(WorkspaceSymbol || (exports$1.WorkspaceSymbol = WorkspaceSymbol = {}));
+		    })(WorkspaceSymbol || (exports.WorkspaceSymbol = WorkspaceSymbol = {}));
 		    var DocumentSymbol;
 		    (function (DocumentSymbol) {
 		        /**
@@ -41476,7 +41484,7 @@ function requireMain$1 () {
 		                (candidate.tags === undefined || Array.isArray(candidate.tags));
 		        }
 		        DocumentSymbol.is = is;
-		    })(DocumentSymbol || (exports$1.DocumentSymbol = DocumentSymbol = {}));
+		    })(DocumentSymbol || (exports.DocumentSymbol = DocumentSymbol = {}));
 		    /**
 		     * A set of predefined code action kinds
 		     */
@@ -41549,7 +41557,7 @@ function requireMain$1 () {
 		         * @since 3.15.0
 		         */
 		        CodeActionKind.SourceFixAll = 'source.fixAll';
-		    })(CodeActionKind || (exports$1.CodeActionKind = CodeActionKind = {}));
+		    })(CodeActionKind || (exports.CodeActionKind = CodeActionKind = {}));
 		    /**
 		     * The reason why code actions were requested.
 		     *
@@ -41568,7 +41576,7 @@ function requireMain$1 () {
 		         * also be triggered when file content changes.
 		         */
 		        CodeActionTriggerKind.Automatic = 2;
-		    })(CodeActionTriggerKind || (exports$1.CodeActionTriggerKind = CodeActionTriggerKind = {}));
+		    })(CodeActionTriggerKind || (exports.CodeActionTriggerKind = CodeActionTriggerKind = {}));
 		    /**
 		     * The CodeActionContext namespace provides helper functions to work with
 		     * {@link CodeActionContext} literals.
@@ -41599,7 +41607,7 @@ function requireMain$1 () {
 		                && (candidate.triggerKind === undefined || candidate.triggerKind === CodeActionTriggerKind.Invoked || candidate.triggerKind === CodeActionTriggerKind.Automatic);
 		        }
 		        CodeActionContext.is = is;
-		    })(CodeActionContext || (exports$1.CodeActionContext = CodeActionContext = {}));
+		    })(CodeActionContext || (exports.CodeActionContext = CodeActionContext = {}));
 		    var CodeAction;
 		    (function (CodeAction) {
 		        function create(title, kindOrCommandOrEdit, kind) {
@@ -41632,7 +41640,7 @@ function requireMain$1 () {
 		                (candidate.edit === undefined || WorkspaceEdit.is(candidate.edit));
 		        }
 		        CodeAction.is = is;
-		    })(CodeAction || (exports$1.CodeAction = CodeAction = {}));
+		    })(CodeAction || (exports.CodeAction = CodeAction = {}));
 		    /**
 		     * The CodeLens namespace provides helper functions to work with
 		     * {@link CodeLens} literals.
@@ -41658,7 +41666,7 @@ function requireMain$1 () {
 		            return Is.defined(candidate) && Range.is(candidate.range) && (Is.undefined(candidate.command) || Command.is(candidate.command));
 		        }
 		        CodeLens.is = is;
-		    })(CodeLens || (exports$1.CodeLens = CodeLens = {}));
+		    })(CodeLens || (exports.CodeLens = CodeLens = {}));
 		    /**
 		     * The FormattingOptions namespace provides helper functions to work with
 		     * {@link FormattingOptions} literals.
@@ -41680,7 +41688,7 @@ function requireMain$1 () {
 		            return Is.defined(candidate) && Is.uinteger(candidate.tabSize) && Is.boolean(candidate.insertSpaces);
 		        }
 		        FormattingOptions.is = is;
-		    })(FormattingOptions || (exports$1.FormattingOptions = FormattingOptions = {}));
+		    })(FormattingOptions || (exports.FormattingOptions = FormattingOptions = {}));
 		    /**
 		     * The DocumentLink namespace provides helper functions to work with
 		     * {@link DocumentLink} literals.
@@ -41702,7 +41710,7 @@ function requireMain$1 () {
 		            return Is.defined(candidate) && Range.is(candidate.range) && (Is.undefined(candidate.target) || Is.string(candidate.target));
 		        }
 		        DocumentLink.is = is;
-		    })(DocumentLink || (exports$1.DocumentLink = DocumentLink = {}));
+		    })(DocumentLink || (exports.DocumentLink = DocumentLink = {}));
 		    /**
 		     * The SelectionRange namespace provides helper function to work with
 		     * SelectionRange literals.
@@ -41723,7 +41731,7 @@ function requireMain$1 () {
 		            return Is.objectLiteral(candidate) && Range.is(candidate.range) && (candidate.parent === undefined || SelectionRange.is(candidate.parent));
 		        }
 		        SelectionRange.is = is;
-		    })(SelectionRange || (exports$1.SelectionRange = SelectionRange = {}));
+		    })(SelectionRange || (exports.SelectionRange = SelectionRange = {}));
 		    /**
 		     * A set of predefined token types. This set is not fixed
 		     * an clients can specify additional token types via the
@@ -41763,7 +41771,7 @@ function requireMain$1 () {
 		         * @since 3.17.0
 		         */
 		        SemanticTokenTypes["decorator"] = "decorator";
-		    })(SemanticTokenTypes || (exports$1.SemanticTokenTypes = SemanticTokenTypes = {}));
+		    })(SemanticTokenTypes || (exports.SemanticTokenTypes = SemanticTokenTypes = {}));
 		    /**
 		     * A set of predefined token modifiers. This set is not fixed
 		     * an clients can specify additional token types via the
@@ -41783,7 +41791,7 @@ function requireMain$1 () {
 		        SemanticTokenModifiers["modification"] = "modification";
 		        SemanticTokenModifiers["documentation"] = "documentation";
 		        SemanticTokenModifiers["defaultLibrary"] = "defaultLibrary";
-		    })(SemanticTokenModifiers || (exports$1.SemanticTokenModifiers = SemanticTokenModifiers = {}));
+		    })(SemanticTokenModifiers || (exports.SemanticTokenModifiers = SemanticTokenModifiers = {}));
 		    /**
 		     * @since 3.16.0
 		     */
@@ -41795,7 +41803,7 @@ function requireMain$1 () {
 		                Array.isArray(candidate.data) && (candidate.data.length === 0 || typeof candidate.data[0] === 'number');
 		        }
 		        SemanticTokens.is = is;
-		    })(SemanticTokens || (exports$1.SemanticTokens = SemanticTokens = {}));
+		    })(SemanticTokens || (exports.SemanticTokens = SemanticTokens = {}));
 		    /**
 		     * The InlineValueText namespace provides functions to deal with InlineValueTexts.
 		     *
@@ -41815,7 +41823,7 @@ function requireMain$1 () {
 		            return candidate !== undefined && candidate !== null && Range.is(candidate.range) && Is.string(candidate.text);
 		        }
 		        InlineValueText.is = is;
-		    })(InlineValueText || (exports$1.InlineValueText = InlineValueText = {}));
+		    })(InlineValueText || (exports.InlineValueText = InlineValueText = {}));
 		    /**
 		     * The InlineValueVariableLookup namespace provides functions to deal with InlineValueVariableLookups.
 		     *
@@ -41836,7 +41844,7 @@ function requireMain$1 () {
 		                && (Is.string(candidate.variableName) || candidate.variableName === undefined);
 		        }
 		        InlineValueVariableLookup.is = is;
-		    })(InlineValueVariableLookup || (exports$1.InlineValueVariableLookup = InlineValueVariableLookup = {}));
+		    })(InlineValueVariableLookup || (exports.InlineValueVariableLookup = InlineValueVariableLookup = {}));
 		    /**
 		     * The InlineValueEvaluatableExpression namespace provides functions to deal with InlineValueEvaluatableExpression.
 		     *
@@ -41857,7 +41865,7 @@ function requireMain$1 () {
 		                && (Is.string(candidate.expression) || candidate.expression === undefined);
 		        }
 		        InlineValueEvaluatableExpression.is = is;
-		    })(InlineValueEvaluatableExpression || (exports$1.InlineValueEvaluatableExpression = InlineValueEvaluatableExpression = {}));
+		    })(InlineValueEvaluatableExpression || (exports.InlineValueEvaluatableExpression = InlineValueEvaluatableExpression = {}));
 		    /**
 		     * The InlineValueContext namespace provides helper functions to work with
 		     * {@link InlineValueContext} literals.
@@ -41881,7 +41889,7 @@ function requireMain$1 () {
 		            return Is.defined(candidate) && Range.is(value.stoppedLocation);
 		        }
 		        InlineValueContext.is = is;
-		    })(InlineValueContext || (exports$1.InlineValueContext = InlineValueContext = {}));
+		    })(InlineValueContext || (exports.InlineValueContext = InlineValueContext = {}));
 		    /**
 		     * Inlay hint kinds.
 		     *
@@ -41901,7 +41909,7 @@ function requireMain$1 () {
 		            return value === 1 || value === 2;
 		        }
 		        InlayHintKind.is = is;
-		    })(InlayHintKind || (exports$1.InlayHintKind = InlayHintKind = {}));
+		    })(InlayHintKind || (exports.InlayHintKind = InlayHintKind = {}));
 		    var InlayHintLabelPart;
 		    (function (InlayHintLabelPart) {
 		        function create(value) {
@@ -41916,7 +41924,7 @@ function requireMain$1 () {
 		                && (candidate.command === undefined || Command.is(candidate.command));
 		        }
 		        InlayHintLabelPart.is = is;
-		    })(InlayHintLabelPart || (exports$1.InlayHintLabelPart = InlayHintLabelPart = {}));
+		    })(InlayHintLabelPart || (exports.InlayHintLabelPart = InlayHintLabelPart = {}));
 		    var InlayHint;
 		    (function (InlayHint) {
 		        function create(position, label, kind) {
@@ -41938,28 +41946,28 @@ function requireMain$1 () {
 		                && (candidate.paddingRight === undefined || Is.boolean(candidate.paddingRight));
 		        }
 		        InlayHint.is = is;
-		    })(InlayHint || (exports$1.InlayHint = InlayHint = {}));
+		    })(InlayHint || (exports.InlayHint = InlayHint = {}));
 		    var StringValue;
 		    (function (StringValue) {
 		        function createSnippet(value) {
 		            return { kind: 'snippet', value: value };
 		        }
 		        StringValue.createSnippet = createSnippet;
-		    })(StringValue || (exports$1.StringValue = StringValue = {}));
+		    })(StringValue || (exports.StringValue = StringValue = {}));
 		    var InlineCompletionItem;
 		    (function (InlineCompletionItem) {
 		        function create(insertText, filterText, range, command) {
 		            return { insertText: insertText, filterText: filterText, range: range, command: command };
 		        }
 		        InlineCompletionItem.create = create;
-		    })(InlineCompletionItem || (exports$1.InlineCompletionItem = InlineCompletionItem = {}));
+		    })(InlineCompletionItem || (exports.InlineCompletionItem = InlineCompletionItem = {}));
 		    var InlineCompletionList;
 		    (function (InlineCompletionList) {
 		        function create(items) {
 		            return { items: items };
 		        }
 		        InlineCompletionList.create = create;
-		    })(InlineCompletionList || (exports$1.InlineCompletionList = InlineCompletionList = {}));
+		    })(InlineCompletionList || (exports.InlineCompletionList = InlineCompletionList = {}));
 		    /**
 		     * Describes how an {@link InlineCompletionItemProvider inline completion provider} was triggered.
 		     *
@@ -41976,21 +41984,21 @@ function requireMain$1 () {
 		         * Completion was triggered automatically while editing.
 		         */
 		        InlineCompletionTriggerKind.Automatic = 1;
-		    })(InlineCompletionTriggerKind || (exports$1.InlineCompletionTriggerKind = InlineCompletionTriggerKind = {}));
+		    })(InlineCompletionTriggerKind || (exports.InlineCompletionTriggerKind = InlineCompletionTriggerKind = {}));
 		    var SelectedCompletionInfo;
 		    (function (SelectedCompletionInfo) {
 		        function create(range, text) {
 		            return { range: range, text: text };
 		        }
 		        SelectedCompletionInfo.create = create;
-		    })(SelectedCompletionInfo || (exports$1.SelectedCompletionInfo = SelectedCompletionInfo = {}));
+		    })(SelectedCompletionInfo || (exports.SelectedCompletionInfo = SelectedCompletionInfo = {}));
 		    var InlineCompletionContext;
 		    (function (InlineCompletionContext) {
 		        function create(triggerKind, selectedCompletionInfo) {
 		            return { triggerKind: triggerKind, selectedCompletionInfo: selectedCompletionInfo };
 		        }
 		        InlineCompletionContext.create = create;
-		    })(InlineCompletionContext || (exports$1.InlineCompletionContext = InlineCompletionContext = {}));
+		    })(InlineCompletionContext || (exports.InlineCompletionContext = InlineCompletionContext = {}));
 		    var WorkspaceFolder;
 		    (function (WorkspaceFolder) {
 		        function is(value) {
@@ -41998,8 +42006,8 @@ function requireMain$1 () {
 		            return Is.objectLiteral(candidate) && URI.is(candidate.uri) && Is.string(candidate.name);
 		        }
 		        WorkspaceFolder.is = is;
-		    })(WorkspaceFolder || (exports$1.WorkspaceFolder = WorkspaceFolder = {}));
-		    exports$1.EOL = ['\n', '\r\n', '\r'];
+		    })(WorkspaceFolder || (exports.WorkspaceFolder = WorkspaceFolder = {}));
+		    exports.EOL = ['\n', '\r\n', '\r'];
 		    /**
 		     * @deprecated Use the text document from the new vscode-languageserver-textdocument package.
 		     */
@@ -42082,7 +42090,7 @@ function requireMain$1 () {
 		            }
 		            return data;
 		        }
-		    })(TextDocument || (exports$1.TextDocument = TextDocument = {}));
+		    })(TextDocument || (exports.TextDocument = TextDocument = {}));
 		    /**
 		     * @deprecated Use the text document from the new vscode-languageserver-textdocument package.
 		     */
@@ -46610,68 +46618,68 @@ var hasRequiredMain;
 function requireMain () {
 	if (hasRequiredMain) return main$2;
 	hasRequiredMain = 1;
-	(function (exports$1) {
-		Object.defineProperty(exports$1, "__esModule", { value: true });
-		exports$1.DockerfileParser = exports$1.DefaultVariables = exports$1.Directive = exports$1.Keyword = exports$1.Workdir = exports$1.Volume = exports$1.User = exports$1.Stopsignal = exports$1.Shell = exports$1.Run = exports$1.PropertyInstruction = exports$1.Onbuild = exports$1.ModifiableInstruction = exports$1.Label = exports$1.JSONInstruction = exports$1.Heredoc = exports$1.Healthcheck = exports$1.From = exports$1.Env = exports$1.Entrypoint = exports$1.Copy = exports$1.Cmd = exports$1.Arg = exports$1.Add = exports$1.Variable = exports$1.Property = exports$1.ParserDirective = exports$1.Line = exports$1.Instruction = exports$1.Flag = exports$1.Comment = exports$1.JSONArgument = exports$1.Argument = void 0;
+	(function (exports) {
+		Object.defineProperty(exports, "__esModule", { value: true });
+		exports.DockerfileParser = exports.DefaultVariables = exports.Directive = exports.Keyword = exports.Workdir = exports.Volume = exports.User = exports.Stopsignal = exports.Shell = exports.Run = exports.PropertyInstruction = exports.Onbuild = exports.ModifiableInstruction = exports.Label = exports.JSONInstruction = exports.Heredoc = exports.Healthcheck = exports.From = exports.Env = exports.Entrypoint = exports.Copy = exports.Cmd = exports.Arg = exports.Add = exports.Variable = exports.Property = exports.ParserDirective = exports.Line = exports.Instruction = exports.Flag = exports.Comment = exports.JSONArgument = exports.Argument = void 0;
 		var argument_1 = requireArgument();
-		Object.defineProperty(exports$1, "Argument", { enumerable: true, get: function () { return argument_1.Argument; } });
+		Object.defineProperty(exports, "Argument", { enumerable: true, get: function () { return argument_1.Argument; } });
 		var jsonArgument_1 = requireJsonArgument();
-		Object.defineProperty(exports$1, "JSONArgument", { enumerable: true, get: function () { return jsonArgument_1.JSONArgument; } });
+		Object.defineProperty(exports, "JSONArgument", { enumerable: true, get: function () { return jsonArgument_1.JSONArgument; } });
 		const comment_1 = requireComment();
-		Object.defineProperty(exports$1, "Comment", { enumerable: true, get: function () { return comment_1.Comment; } });
+		Object.defineProperty(exports, "Comment", { enumerable: true, get: function () { return comment_1.Comment; } });
 		const parser_1 = requireParser();
 		var flag_1 = requireFlag();
-		Object.defineProperty(exports$1, "Flag", { enumerable: true, get: function () { return flag_1.Flag; } });
+		Object.defineProperty(exports, "Flag", { enumerable: true, get: function () { return flag_1.Flag; } });
 		const instruction_1 = requireInstruction();
-		Object.defineProperty(exports$1, "Instruction", { enumerable: true, get: function () { return instruction_1.Instruction; } });
+		Object.defineProperty(exports, "Instruction", { enumerable: true, get: function () { return instruction_1.Instruction; } });
 		var line_1 = requireLine();
-		Object.defineProperty(exports$1, "Line", { enumerable: true, get: function () { return line_1.Line; } });
+		Object.defineProperty(exports, "Line", { enumerable: true, get: function () { return line_1.Line; } });
 		const parserDirective_1 = requireParserDirective();
-		Object.defineProperty(exports$1, "ParserDirective", { enumerable: true, get: function () { return parserDirective_1.ParserDirective; } });
+		Object.defineProperty(exports, "ParserDirective", { enumerable: true, get: function () { return parserDirective_1.ParserDirective; } });
 		var property_1 = requireProperty();
-		Object.defineProperty(exports$1, "Property", { enumerable: true, get: function () { return property_1.Property; } });
+		Object.defineProperty(exports, "Property", { enumerable: true, get: function () { return property_1.Property; } });
 		var variable_1 = requireVariable();
-		Object.defineProperty(exports$1, "Variable", { enumerable: true, get: function () { return variable_1.Variable; } });
+		Object.defineProperty(exports, "Variable", { enumerable: true, get: function () { return variable_1.Variable; } });
 		var add_1 = requireAdd();
-		Object.defineProperty(exports$1, "Add", { enumerable: true, get: function () { return add_1.Add; } });
+		Object.defineProperty(exports, "Add", { enumerable: true, get: function () { return add_1.Add; } });
 		const arg_1 = requireArg();
-		Object.defineProperty(exports$1, "Arg", { enumerable: true, get: function () { return arg_1.Arg; } });
+		Object.defineProperty(exports, "Arg", { enumerable: true, get: function () { return arg_1.Arg; } });
 		const cmd_1 = requireCmd();
-		Object.defineProperty(exports$1, "Cmd", { enumerable: true, get: function () { return cmd_1.Cmd; } });
+		Object.defineProperty(exports, "Cmd", { enumerable: true, get: function () { return cmd_1.Cmd; } });
 		const copy_1 = requireCopy();
-		Object.defineProperty(exports$1, "Copy", { enumerable: true, get: function () { return copy_1.Copy; } });
+		Object.defineProperty(exports, "Copy", { enumerable: true, get: function () { return copy_1.Copy; } });
 		const entrypoint_1 = requireEntrypoint();
-		Object.defineProperty(exports$1, "Entrypoint", { enumerable: true, get: function () { return entrypoint_1.Entrypoint; } });
+		Object.defineProperty(exports, "Entrypoint", { enumerable: true, get: function () { return entrypoint_1.Entrypoint; } });
 		const env_1 = requireEnv();
-		Object.defineProperty(exports$1, "Env", { enumerable: true, get: function () { return env_1.Env; } });
+		Object.defineProperty(exports, "Env", { enumerable: true, get: function () { return env_1.Env; } });
 		const from_1 = requireFrom();
-		Object.defineProperty(exports$1, "From", { enumerable: true, get: function () { return from_1.From; } });
+		Object.defineProperty(exports, "From", { enumerable: true, get: function () { return from_1.From; } });
 		const healthcheck_1 = requireHealthcheck();
-		Object.defineProperty(exports$1, "Healthcheck", { enumerable: true, get: function () { return healthcheck_1.Healthcheck; } });
+		Object.defineProperty(exports, "Healthcheck", { enumerable: true, get: function () { return healthcheck_1.Healthcheck; } });
 		var heredoc_1 = requireHeredoc();
-		Object.defineProperty(exports$1, "Heredoc", { enumerable: true, get: function () { return heredoc_1.Heredoc; } });
+		Object.defineProperty(exports, "Heredoc", { enumerable: true, get: function () { return heredoc_1.Heredoc; } });
 		var jsonInstruction_1 = requireJsonInstruction();
-		Object.defineProperty(exports$1, "JSONInstruction", { enumerable: true, get: function () { return jsonInstruction_1.JSONInstruction; } });
+		Object.defineProperty(exports, "JSONInstruction", { enumerable: true, get: function () { return jsonInstruction_1.JSONInstruction; } });
 		var label_1 = requireLabel();
-		Object.defineProperty(exports$1, "Label", { enumerable: true, get: function () { return label_1.Label; } });
+		Object.defineProperty(exports, "Label", { enumerable: true, get: function () { return label_1.Label; } });
 		var modifiableInstruction_1 = requireModifiableInstruction();
-		Object.defineProperty(exports$1, "ModifiableInstruction", { enumerable: true, get: function () { return modifiableInstruction_1.ModifiableInstruction; } });
+		Object.defineProperty(exports, "ModifiableInstruction", { enumerable: true, get: function () { return modifiableInstruction_1.ModifiableInstruction; } });
 		var onbuild_1 = requireOnbuild();
-		Object.defineProperty(exports$1, "Onbuild", { enumerable: true, get: function () { return onbuild_1.Onbuild; } });
+		Object.defineProperty(exports, "Onbuild", { enumerable: true, get: function () { return onbuild_1.Onbuild; } });
 		var propertyInstruction_1 = requirePropertyInstruction();
-		Object.defineProperty(exports$1, "PropertyInstruction", { enumerable: true, get: function () { return propertyInstruction_1.PropertyInstruction; } });
+		Object.defineProperty(exports, "PropertyInstruction", { enumerable: true, get: function () { return propertyInstruction_1.PropertyInstruction; } });
 		var run_1 = requireRun();
-		Object.defineProperty(exports$1, "Run", { enumerable: true, get: function () { return run_1.Run; } });
+		Object.defineProperty(exports, "Run", { enumerable: true, get: function () { return run_1.Run; } });
 		var shell_1 = requireShell();
-		Object.defineProperty(exports$1, "Shell", { enumerable: true, get: function () { return shell_1.Shell; } });
+		Object.defineProperty(exports, "Shell", { enumerable: true, get: function () { return shell_1.Shell; } });
 		var stopsignal_1 = requireStopsignal();
-		Object.defineProperty(exports$1, "Stopsignal", { enumerable: true, get: function () { return stopsignal_1.Stopsignal; } });
+		Object.defineProperty(exports, "Stopsignal", { enumerable: true, get: function () { return stopsignal_1.Stopsignal; } });
 		var user_1 = requireUser();
-		Object.defineProperty(exports$1, "User", { enumerable: true, get: function () { return user_1.User; } });
+		Object.defineProperty(exports, "User", { enumerable: true, get: function () { return user_1.User; } });
 		var volume_1 = requireVolume();
-		Object.defineProperty(exports$1, "Volume", { enumerable: true, get: function () { return volume_1.Volume; } });
+		Object.defineProperty(exports, "Volume", { enumerable: true, get: function () { return volume_1.Volume; } });
 		const workdir_1 = requireWorkdir();
-		Object.defineProperty(exports$1, "Workdir", { enumerable: true, get: function () { return workdir_1.Workdir; } });
+		Object.defineProperty(exports, "Workdir", { enumerable: true, get: function () { return workdir_1.Workdir; } });
 		var Keyword;
 		(function (Keyword) {
 		    Keyword["ADD"] = "ADD";
@@ -46692,13 +46700,13 @@ function requireMain () {
 		    Keyword["USER"] = "USER";
 		    Keyword["VOLUME"] = "VOLUME";
 		    Keyword["WORKDIR"] = "WORKDIR";
-		})(Keyword || (exports$1.Keyword = Keyword = {}));
+		})(Keyword || (exports.Keyword = Keyword = {}));
 		var Directive;
 		(function (Directive) {
 		    Directive["escape"] = "escape";
 		    Directive["syntax"] = "syntax";
-		})(Directive || (exports$1.Directive = Directive = {}));
-		exports$1.DefaultVariables = [
+		})(Directive || (exports.Directive = Directive = {}));
+		exports.DefaultVariables = [
 		    "ALL_PROXY", "all_proxy",
 		    "FTP_PROXY", "ftp_proxy",
 		    "HTTP_PROXY", "http_proxy",
@@ -46712,7 +46720,7 @@ function requireMain () {
 		        return parser.parse(content);
 		    }
 		    DockerfileParser.parse = parse;
-		})(DockerfileParser || (exports$1.DockerfileParser = DockerfileParser = {})); 
+		})(DockerfileParser || (exports.DockerfileParser = DockerfileParser = {})); 
 	} (main$2));
 	return main$2;
 }
