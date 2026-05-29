@@ -2229,5 +2229,142 @@ jobs:
         })
       )
     })
+
+    it('Routes by YAML structure, not filename, for .yml paths that are composite actions', async () => {
+      // A .yml path that returns a composite action, not a callable workflow
+      const mockGetContent = jest.fn().mockResolvedValue({
+        data: {
+          content: Buffer.from(
+            `
+name: Composite Action with yml extension
+description: A composite action referenced with .yml path
+runs:
+  using: composite
+  steps:
+    - uses: actions/setup-node@v4
+`
+          ).toString('base64')
+        }
+      })
+
+      const mockOctokit = {
+        rest: {
+          repos: {
+            getContent: mockGetContent
+          }
+        }
+      }
+
+      const parserWithToken = new WorkflowParser('fake-token')
+      // @ts-expect-error - Replacing private property for testing
+      parserWithToken.octokitProvider = {
+        getOctokitForRepo: jest.fn().mockResolvedValue(mockOctokit),
+        getOctokit: jest.fn().mockReturnValue(mockOctokit),
+        getPublicOctokit: jest.fn().mockReturnValue(undefined),
+        getRepoInfo: jest.fn().mockResolvedValue(undefined),
+        repoExists: jest.fn().mockResolvedValue(true)
+      }
+
+      const workflowContent = `
+name: Test Workflow
+on: push
+jobs:
+  call-action:
+    uses: remote-org/my-repo/.github/actions/my-action.yml@v1
+`
+      const workflowFile = path.join(tempDir, 'test.yml')
+      fs.writeFileSync(workflowFile, workflowContent)
+
+      const result = await parserWithToken.parseWorkflowDirectory(
+        tempDir,
+        [],
+        tempDir
+      )
+
+      // Should still detect transitive deps from composite action steps
+      const transitiveDeps = result.actionDependencies.filter(
+        (d) => d.isTransitive === true
+      )
+      expect(transitiveDeps.length).toBeGreaterThanOrEqual(1)
+
+      const setupNodeDep = transitiveDeps.find(
+        (d) => d.owner === 'actions' && d.repo === 'setup-node'
+      )
+      expect(setupNodeDep).toBeDefined()
+      expect(setupNodeDep?.isTransitive).toBe(true)
+      expect(setupNodeDep?.ref).toBe('v4')
+    })
+
+    it('Routes by YAML structure for .yml paths that are workflows with jobs', async () => {
+      // A .yml path that returns a workflow with jobs (but no workflow_call trigger)
+      const mockGetContent = jest.fn().mockResolvedValue({
+        data: {
+          content: Buffer.from(
+            `
+name: Regular Workflow
+on: push
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+`
+          ).toString('base64')
+        }
+      })
+
+      const mockOctokit = {
+        rest: {
+          repos: {
+            getContent: mockGetContent
+          }
+        }
+      }
+
+      const parserWithToken = new WorkflowParser('fake-token')
+      // @ts-expect-error - Replacing private property for testing
+      parserWithToken.octokitProvider = {
+        getOctokitForRepo: jest.fn().mockResolvedValue(mockOctokit),
+        getOctokit: jest.fn().mockReturnValue(mockOctokit),
+        getPublicOctokit: jest.fn().mockReturnValue(undefined),
+        getRepoInfo: jest.fn().mockResolvedValue(undefined),
+        repoExists: jest.fn().mockResolvedValue(true)
+      }
+
+      const workflowContent = `
+name: Test Workflow
+on: push
+jobs:
+  call-workflow:
+    uses: remote-org/my-repo/.github/workflows/build.yml@v1
+`
+      const workflowFile = path.join(tempDir, 'test.yml')
+      fs.writeFileSync(workflowFile, workflowContent)
+
+      const result = await parserWithToken.parseWorkflowDirectory(
+        tempDir,
+        [],
+        tempDir
+      )
+
+      // Should detect transitive deps from the workflow's jobs/steps
+      const transitiveDeps = result.actionDependencies.filter(
+        (d) => d.isTransitive === true
+      )
+      expect(transitiveDeps.length).toBeGreaterThanOrEqual(2)
+
+      const checkoutDep = transitiveDeps.find(
+        (d) => d.owner === 'actions' && d.repo === 'checkout'
+      )
+      expect(checkoutDep).toBeDefined()
+      expect(checkoutDep?.isTransitive).toBe(true)
+
+      const setupPythonDep = transitiveDeps.find(
+        (d) => d.owner === 'actions' && d.repo === 'setup-python'
+      )
+      expect(setupPythonDep).toBeDefined()
+      expect(setupPythonDep?.isTransitive).toBe(true)
+    })
   })
 })

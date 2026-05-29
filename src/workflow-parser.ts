@@ -831,116 +831,177 @@ export class WorkflowParser {
     actionDependencies: ActionDependency[]
     dockerDependencies: DockerDependency[]
   }> {
-    // Check if it's a callable workflow first (uses pattern like owner/repo/path/to/workflow.yml@ref)
-    // Callable workflows have a path component with a .yml or .yaml extension
+    if (!this.octokitProvider) {
+      return { actionDependencies: [], dockerDependencies: [] }
+    }
+
+    // Determine fetch strategy based on uses string format.
+    // A .yml/.yaml path component indicates the file should be fetched directly,
+    // otherwise we look for action.yml/action.yaml in the directory.
     const callableWorkflowPattern = /^[^/]+\/[^/]+\/.+\.ya?ml@.+$/
-    if (callableWorkflowPattern.test(dependency.uses)) {
-      return await this.processRemoteCallableWorkflow(
+    const isWorkflowPath = callableWorkflowPattern.test(dependency.uses)
+
+    let content: string | null = null
+
+    if (isWorkflowPath) {
+      const workflowPathMatch = dependency.uses.match(
+        /^[^/]+\/[^/]+\/(?<path>.+\.ya?ml)@.+$/
+      )
+      if (workflowPathMatch?.groups?.path) {
+        content = await this.fetchRemoteFile(
+          dependency.owner,
+          dependency.repo,
+          workflowPathMatch.groups.path,
+          dependency.ref
+        )
+      }
+    } else {
+      content = await this.fetchRemoteActionFile(
+        dependency.owner,
+        dependency.repo,
+        dependency.ref,
+        dependency.actionPath
+      )
+    }
+
+    if (!content) {
+      return { actionDependencies: [], dockerDependencies: [] }
+    }
+
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    let parsed: any
+    try {
+      parsed = yaml.parse(content, { merge: true })
+    } catch (error) {
+      core.debug(
+        `Failed to parse YAML for ${dependency.uses}: ${error instanceof Error ? error.message : String(error)}`
+      )
+      return { actionDependencies: [], dockerDependencies: [] }
+    }
+
+    if (!parsed) {
+      return { actionDependencies: [], dockerDependencies: [] }
+    }
+
+    // Route based on YAML structure rather than filename
+    if (parsed.runs?.using === 'composite') {
+      return this.processRemoteCompositeAction(
+        parsed,
+        dependency,
+        callingWorkflowPath
+      )
+    } else if (parsed.runs?.using === 'docker') {
+      return this.processRemoteDockerAction(
+        parsed,
+        dependency,
+        callingWorkflowPath
+      )
+    } else if (parsed.jobs) {
+      return this.processRemoteCallableWorkflow(
+        parsed,
         dependency,
         callingWorkflowPath
       )
     }
 
-    // Otherwise, process as a composite action
-    return await this.processRemoteCompositeAction(
-      dependency,
-      callingWorkflowPath
-    )
+    return { actionDependencies: [], dockerDependencies: [] }
   }
 
   /**
-   * Process remote composite action to extract transitive dependencies
+   * Process remote composite action content to extract transitive dependencies
    *
+   * @param actionYaml Parsed YAML content of the action file
    * @param dependency Remote action dependency
    * @param callingWorkflowPath Path of the workflow that references this action
    * @returns Object with action dependencies and docker dependencies
    */
   private async processRemoteCompositeAction(
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    actionYaml: any,
     dependency: ActionDependency,
     callingWorkflowPath: string
   ): Promise<{
     actionDependencies: ActionDependency[]
     dockerDependencies: DockerDependency[]
   }> {
-    if (!this.octokitProvider) {
-      return { actionDependencies: [], dockerDependencies: [] }
-    }
-
     try {
-      // Try to fetch action.yml or action.yaml from the remote repository
-      const actionContent = await this.fetchRemoteActionFile(
-        dependency.owner,
-        dependency.repo,
-        dependency.ref,
-        dependency.actionPath
+      core.info(
+        `Processing remote composite action: ${dependency.owner}/${dependency.repo}@${dependency.ref}`
       )
 
-      if (!actionContent) {
-        return { actionDependencies: [], dockerDependencies: [] }
-      }
+      const transitiveDeps: ActionDependency[] = []
+      const transitiveDockerDeps: DockerDependency[] = []
 
-      // Parse the action file
-      const actionYaml = yaml.parse(actionContent, { merge: true })
-
-      if (!actionYaml) {
-        return { actionDependencies: [], dockerDependencies: [] }
-      }
-
-      // Check if it's a composite action
-      if (actionYaml.runs?.using === 'composite') {
-        core.info(
-          `Processing remote composite action: ${dependency.owner}/${dependency.repo}@${dependency.ref}`
-        )
-
-        const transitiveDeps: ActionDependency[] = []
-        const transitiveDockerDeps: DockerDependency[] = []
-
-        // Extract dependencies from composite action steps
-        if (actionYaml.runs.steps && Array.isArray(actionYaml.runs.steps)) {
-          for (const step of actionYaml.runs.steps) {
-            if (step.uses) {
-              const result = this.parseUsesString(step.uses)
-              if (result.dependency) {
-                // Mark as transitive and reference the calling workflow as manifest
-                const transitiveDep = {
-                  ...result.dependency,
-                  sourcePath: callingWorkflowPath,
-                  isTransitive: true
-                }
-                transitiveDeps.push(transitiveDep)
-
-                // Recursively process this transitive dependency if it hasn't been processed yet
-                const transitiveKey = this.getActionKey(transitiveDep)
-                if (!this.processedRemoteActions.has(transitiveKey)) {
-                  this.processedRemoteActions.add(transitiveKey)
-                  const nestedDeps = await this.processRemoteActionOrWorkflow(
-                    transitiveDep,
-                    callingWorkflowPath
-                  )
-                  transitiveDeps.push(...nestedDeps.actionDependencies)
-                  transitiveDockerDeps.push(...nestedDeps.dockerDependencies)
-                }
-              } else if (result.dockerDependency) {
-                // Docker dependency from remote composite action - mark as transitive
-                const dockerDep = {
-                  ...result.dockerDependency,
-                  sourcePath: callingWorkflowPath,
-                  isTransitive: true
-                }
-                transitiveDockerDeps.push(dockerDep)
+      // Extract dependencies from composite action steps
+      if (actionYaml.runs.steps && Array.isArray(actionYaml.runs.steps)) {
+        for (const step of actionYaml.runs.steps) {
+          if (step.uses) {
+            const result = this.parseUsesString(step.uses)
+            if (result.dependency) {
+              // Mark as transitive and reference the calling workflow as manifest
+              const transitiveDep = {
+                ...result.dependency,
+                sourcePath: callingWorkflowPath,
+                isTransitive: true
               }
+              transitiveDeps.push(transitiveDep)
+
+              // Recursively process this transitive dependency if it hasn't been processed yet
+              const transitiveKey = this.getActionKey(transitiveDep)
+              if (!this.processedRemoteActions.has(transitiveKey)) {
+                this.processedRemoteActions.add(transitiveKey)
+                const nestedDeps = await this.processRemoteActionOrWorkflow(
+                  transitiveDep,
+                  callingWorkflowPath
+                )
+                transitiveDeps.push(...nestedDeps.actionDependencies)
+                transitiveDockerDeps.push(...nestedDeps.dockerDependencies)
+              }
+            } else if (result.dockerDependency) {
+              // Docker dependency from remote composite action - mark as transitive
+              const dockerDep = {
+                ...result.dockerDependency,
+                sourcePath: callingWorkflowPath,
+                isTransitive: true
+              }
+              transitiveDockerDeps.push(dockerDep)
             }
           }
         }
-
-        return {
-          actionDependencies: transitiveDeps,
-          dockerDependencies: transitiveDockerDeps
-        }
       }
 
-      // Check if it's a Docker action
-      if (actionYaml.runs?.using === 'docker' && actionYaml.runs?.image) {
+      return {
+        actionDependencies: transitiveDeps,
+        dockerDependencies: transitiveDockerDeps
+      }
+    } catch (error) {
+      core.debug(
+        `Failed to process remote action ${dependency.owner}/${dependency.repo}@${dependency.ref}: ${error}`
+      )
+    }
+
+    return { actionDependencies: [], dockerDependencies: [] }
+  }
+
+  /**
+   * Process remote Docker action content to extract docker dependencies
+   *
+   * @param actionYaml Parsed YAML content of the action file
+   * @param dependency Remote action dependency
+   * @param callingWorkflowPath Path of the workflow that references this action
+   * @returns Object with action dependencies and docker dependencies
+   */
+  private async processRemoteDockerAction(
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    actionYaml: any,
+    dependency: ActionDependency,
+    callingWorkflowPath: string
+  ): Promise<{
+    actionDependencies: ActionDependency[]
+    dockerDependencies: DockerDependency[]
+  }> {
+    try {
+      if (actionYaml.runs?.image) {
         const imageRef = actionYaml.runs.image
         if (typeof imageRef === 'string' && imageRef.startsWith('docker://')) {
           const dockerDep = this.parseDockerImage(imageRef)
@@ -957,7 +1018,7 @@ export class WorkflowParser {
       }
     } catch (error) {
       core.debug(
-        `Failed to process remote action ${dependency.owner}/${dependency.repo}@${dependency.ref}: ${error}`
+        `Failed to process remote Docker action ${dependency.owner}/${dependency.repo}@${dependency.ref}: ${error}`
       )
     }
 
@@ -965,187 +1026,134 @@ export class WorkflowParser {
   }
 
   /**
-   * Process remote callable workflow to extract transitive dependencies
+   * Process remote callable workflow content to extract transitive dependencies
    *
+   * @param workflowYaml Parsed YAML content of the workflow file
    * @param dependency Remote workflow dependency
    * @param callingWorkflowPath Path of the workflow that references this callable workflow
    * @returns Object with action dependencies and docker dependencies
    */
   private async processRemoteCallableWorkflow(
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    workflowYaml: any,
     dependency: ActionDependency,
     callingWorkflowPath: string
   ): Promise<{
     actionDependencies: ActionDependency[]
     dockerDependencies: DockerDependency[]
   }> {
-    if (!this.octokitProvider) {
-      return { actionDependencies: [], dockerDependencies: [] }
-    }
-
     try {
-      // Extract workflow path from uses string (e.g., owner/repo/.github/workflows/file.yml@ref)
-      // Pattern: owner/repo/path/to/workflow.yml@ref
-      const workflowPathMatch = dependency.uses.match(
-        /^[^/]+\/[^/]+\/(?<path>.+\.ya?ml)@.+$/
-      )
-      if (!workflowPathMatch || !workflowPathMatch.groups?.path) {
-        return { actionDependencies: [], dockerDependencies: [] }
-      }
-
-      const workflowPath = workflowPathMatch.groups.path
-
-      // Fetch the remote workflow file
-      const workflowContent = await this.fetchRemoteFile(
-        dependency.owner,
-        dependency.repo,
-        workflowPath,
-        dependency.ref
+      core.info(
+        `Processing remote callable workflow: ${dependency.owner}/${dependency.repo}@${dependency.ref}`
       )
 
-      if (!workflowContent) {
-        core.debug(
-          `No workflow content fetched for ${dependency.owner}/${dependency.repo}/${workflowPath}@${dependency.ref}`
-        )
-        return { actionDependencies: [], dockerDependencies: [] }
-      }
+      const transitiveDeps: ActionDependency[] = []
+      const transitiveDockerDeps: DockerDependency[] = []
 
-      // Parse the workflow file
-      const workflowYaml = yaml.parse(workflowContent, { merge: true })
+      // Extract dependencies from workflow jobs
+      for (const jobName in workflowYaml.jobs) {
+        const job = workflowYaml.jobs[jobName]
 
-      if (!workflowYaml) {
-        return { actionDependencies: [], dockerDependencies: [] }
-      }
-
-      // Check if it's a callable workflow
-      // Note: workflow_call can be null/undefined if specified without inputs/secrets.
-      // We use the `in` operator instead of optional chaining here so we can detect
-      // the presence of the `workflow_call` key even when its value is null/undefined.
-      if (workflowYaml.on && 'workflow_call' in workflowYaml.on) {
-        core.info(
-          `Processing remote callable workflow: ${dependency.owner}/${dependency.repo}/${workflowPath}@${dependency.ref}`
-        )
-
-        const transitiveDeps: ActionDependency[] = []
-        const transitiveDockerDeps: DockerDependency[] = []
-
-        // Extract dependencies from workflow jobs
-        if (workflowYaml.jobs) {
-          for (const jobName in workflowYaml.jobs) {
-            const job = workflowYaml.jobs[jobName]
-
-            // Extract from job.container.image
-            if (job.container && job.container.image) {
-              const imageRef = job.container.image
-              if (typeof imageRef === 'string') {
-                const dockerDep = this.parseDockerImage(imageRef)
-                if (dockerDep) {
-                  dockerDep.sourcePath = callingWorkflowPath
-                  dockerDep.context = 'container'
-                  dockerDep.isTransitive = true
-                  transitiveDockerDeps.push(dockerDep)
-                }
-              }
+        // Extract from job.container.image
+        if (job.container && job.container.image) {
+          const imageRef = job.container.image
+          if (typeof imageRef === 'string') {
+            const dockerDep = this.parseDockerImage(imageRef)
+            if (dockerDep) {
+              dockerDep.sourcePath = callingWorkflowPath
+              dockerDep.context = 'container'
+              dockerDep.isTransitive = true
+              transitiveDockerDeps.push(dockerDep)
             }
+          }
+        }
 
-            // Extract from job.services.<service>.image
-            if (job.services && typeof job.services === 'object') {
-              for (const serviceName in job.services) {
-                const service = job.services[serviceName]
-                if (
-                  service &&
-                  service.image &&
-                  typeof service.image === 'string'
-                ) {
-                  const dockerDep = this.parseDockerImage(service.image)
-                  if (dockerDep) {
-                    dockerDep.sourcePath = callingWorkflowPath
-                    dockerDep.context = 'service'
-                    dockerDep.isTransitive = true
-                    transitiveDockerDeps.push(dockerDep)
-                  }
-                }
-              }
-            }
-
-            // Check for callable workflows at job level
-            if (job.uses) {
-              const result = this.parseUsesString(job.uses)
-              if (result.dependency) {
-                const transitiveDep = {
-                  ...result.dependency,
-                  sourcePath: callingWorkflowPath,
-                  isTransitive: true
-                }
-                transitiveDeps.push(transitiveDep)
-
-                // Recursively process this transitive dependency if it hasn't been processed yet
-                const transitiveKey = this.getActionKey(transitiveDep)
-                if (!this.processedRemoteActions.has(transitiveKey)) {
-                  this.processedRemoteActions.add(transitiveKey)
-                  const nestedDeps = await this.processRemoteActionOrWorkflow(
-                    transitiveDep,
-                    callingWorkflowPath
-                  )
-                  transitiveDeps.push(...nestedDeps.actionDependencies)
-                  transitiveDockerDeps.push(...nestedDeps.dockerDependencies)
-                }
-              }
-            }
-
-            // Check steps for action dependencies and docker references
-            if (typeof job === 'object' && job !== null && 'steps' in job) {
-              const steps = (job as { steps?: unknown[] }).steps
-              if (Array.isArray(steps)) {
-                for (const step of steps) {
-                  if (
-                    typeof step === 'object' &&
-                    step !== null &&
-                    'uses' in step
-                  ) {
-                    const uses = (step as { uses: string }).uses
-                    const result = this.parseUsesString(uses)
-                    if (result.dependency) {
-                      const transitiveDep = {
-                        ...result.dependency,
-                        sourcePath: callingWorkflowPath,
-                        isTransitive: true
-                      }
-                      transitiveDeps.push(transitiveDep)
-
-                      // Recursively process this transitive dependency if it hasn't been processed yet
-                      const transitiveKey = this.getActionKey(transitiveDep)
-                      if (!this.processedRemoteActions.has(transitiveKey)) {
-                        this.processedRemoteActions.add(transitiveKey)
-                        const nestedDeps =
-                          await this.processRemoteActionOrWorkflow(
-                            transitiveDep,
-                            callingWorkflowPath
-                          )
-                        transitiveDeps.push(...nestedDeps.actionDependencies)
-                        transitiveDockerDeps.push(
-                          ...nestedDeps.dockerDependencies
-                        )
-                      }
-                    } else if (result.dockerDependency) {
-                      // Docker dependency from remote workflow step - mark as transitive
-                      const dockerDep = {
-                        ...result.dockerDependency,
-                        sourcePath: callingWorkflowPath,
-                        isTransitive: true
-                      }
-                      transitiveDockerDeps.push(dockerDep)
-                    }
-                  }
-                }
+        // Extract from job.services.<service>.image
+        if (job.services && typeof job.services === 'object') {
+          for (const serviceName in job.services) {
+            const service = job.services[serviceName]
+            if (service && service.image && typeof service.image === 'string') {
+              const dockerDep = this.parseDockerImage(service.image)
+              if (dockerDep) {
+                dockerDep.sourcePath = callingWorkflowPath
+                dockerDep.context = 'service'
+                dockerDep.isTransitive = true
+                transitiveDockerDeps.push(dockerDep)
               }
             }
           }
         }
 
-        return {
-          actionDependencies: transitiveDeps,
-          dockerDependencies: transitiveDockerDeps
+        // Check for callable workflows at job level
+        if (job.uses) {
+          const result = this.parseUsesString(job.uses)
+          if (result.dependency) {
+            const transitiveDep = {
+              ...result.dependency,
+              sourcePath: callingWorkflowPath,
+              isTransitive: true
+            }
+            transitiveDeps.push(transitiveDep)
+
+            // Recursively process this transitive dependency if it hasn't been processed yet
+            const transitiveKey = this.getActionKey(transitiveDep)
+            if (!this.processedRemoteActions.has(transitiveKey)) {
+              this.processedRemoteActions.add(transitiveKey)
+              const nestedDeps = await this.processRemoteActionOrWorkflow(
+                transitiveDep,
+                callingWorkflowPath
+              )
+              transitiveDeps.push(...nestedDeps.actionDependencies)
+              transitiveDockerDeps.push(...nestedDeps.dockerDependencies)
+            }
+          }
         }
+
+        // Check steps for action dependencies and docker references
+        if (typeof job === 'object' && job !== null && 'steps' in job) {
+          const steps = (job as { steps?: unknown[] }).steps
+          if (Array.isArray(steps)) {
+            for (const step of steps) {
+              if (typeof step === 'object' && step !== null && 'uses' in step) {
+                const uses = (step as { uses: string }).uses
+                const result = this.parseUsesString(uses)
+                if (result.dependency) {
+                  const transitiveDep = {
+                    ...result.dependency,
+                    sourcePath: callingWorkflowPath,
+                    isTransitive: true
+                  }
+                  transitiveDeps.push(transitiveDep)
+
+                  // Recursively process this transitive dependency if it hasn't been processed yet
+                  const transitiveKey = this.getActionKey(transitiveDep)
+                  if (!this.processedRemoteActions.has(transitiveKey)) {
+                    this.processedRemoteActions.add(transitiveKey)
+                    const nestedDeps = await this.processRemoteActionOrWorkflow(
+                      transitiveDep,
+                      callingWorkflowPath
+                    )
+                    transitiveDeps.push(...nestedDeps.actionDependencies)
+                    transitiveDockerDeps.push(...nestedDeps.dockerDependencies)
+                  }
+                } else if (result.dockerDependency) {
+                  // Docker dependency from remote workflow step - mark as transitive
+                  const dockerDep = {
+                    ...result.dockerDependency,
+                    sourcePath: callingWorkflowPath,
+                    isTransitive: true
+                  }
+                  transitiveDockerDeps.push(dockerDep)
+                }
+              }
+            }
+          }
+        }
+      }
+
+      return {
+        actionDependencies: transitiveDeps,
+        dockerDependencies: transitiveDockerDeps
       }
     } catch (error) {
       core.debug(
