@@ -4,6 +4,6 @@ description: Another test composite action
 runs:
   using: composite
   steps:
-    - uses: github/codeql-action/init@v2
+    - uses: github/codeql-action/init@b8d3b6e8af63cde30bdc382c0bc28114f4346c88 # v2.28.1
     - shell: bash
       run: echo "Another action"
