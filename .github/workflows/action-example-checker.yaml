@@ -19,5 +19,5 @@ jobs:
         with:
           egress-policy: audit
 
-      - uses: actions/checkout@v6.0.3
+      - uses: actions/checkout@v7.0.0
       - uses: jessehouwing/actions-example-checker@v0.0.11

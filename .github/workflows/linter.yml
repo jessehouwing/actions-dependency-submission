@@ -32,7 +32,7 @@ jobs:
 
       - name: Checkout
         id: checkout
-        uses: actions/checkout@v6.0.3
+        uses: actions/checkout@v7.0.0
 
       - name: Setup Node.js
         id: setup-node
@@ -61,7 +61,7 @@ jobs:
 
       - name: Checkout
         id: checkout
-        uses: actions/checkout@v6.0.3
+        uses: actions/checkout@v7.0.0
 
       - name: Run actionlint
         id: actionlint
@@ -97,7 +97,7 @@ jobs:
 
       - name: Checkout
         id: checkout
-        uses: actions/checkout@v6.0.3
+        uses: actions/checkout@v7.0.0
 
       - name: Run yamllint
         id: yamllint
