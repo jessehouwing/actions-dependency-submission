@@ -1,3 +1,5 @@
+# This workflow is managed by gh actions-lock.
+
 name: Validate Documentation
 
 on:
@@ -13,9 +15,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Harden the runner (Audit all outbound calls)
-        uses: step-security/harden-runner@9af89fc71515a100421586dfdb3dc9c984fbf411 # v2.19.4
+        uses: step-security/harden-runner@v2.19.4
         with:
           egress-policy: audit
 
-      - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
-      - uses: jessehouwing/actions-example-checker@eb2c287585cd48847abc0d3012e861918793561f # v0.0.11
+      - uses: actions/checkout@v6.0.3
+      - uses: jessehouwing/actions-example-checker@v0.0.11
