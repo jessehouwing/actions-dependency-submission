@@ -20,11 +20,11 @@ jobs:
 
     steps:
       - name: Harden the runner (Audit all outbound calls)
-        uses: step-security/harden-runner@v2.19.4
+        uses: step-security/harden-runner@v2.20.0
         with:
           egress-policy: audit
 
-      - uses: actions/checkout@v7.0.0
+      - uses: actions/checkout@v7.0.1
       - uses: jessehouwing/actions-dependency-submission@v1.0.15
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
