@@ -26,13 +26,13 @@ jobs:
 
     steps:
       - name: Harden the runner (Audit all outbound calls)
-        uses: step-security/harden-runner@v2.19.4
+        uses: step-security/harden-runner@v2.20.0
         with:
           egress-policy: audit
 
       - name: Checkout
         id: checkout
-        uses: actions/checkout@v7.0.0
+        uses: actions/checkout@v7.0.1
 
       - name: Setup Node.js
         id: setup-node
@@ -55,17 +55,17 @@ jobs:
 
     steps:
       - name: Harden the runner (Audit all outbound calls)
-        uses: step-security/harden-runner@v2.19.4
+        uses: step-security/harden-runner@v2.20.0
         with:
           egress-policy: audit
 
       - name: Checkout
         id: checkout
-        uses: actions/checkout@v7.0.0
+        uses: actions/checkout@v7.0.1
 
       - name: Run actionlint
         id: actionlint
-        uses: raven-actions/actionlint@v2.1.2
+        uses: raven-actions/actionlint@v2.2.0
         with:
           matcher: true
 
@@ -91,13 +91,13 @@ jobs:
 
     steps:
       - name: Harden the runner (Audit all outbound calls)
-        uses: step-security/harden-runner@v2.19.4
+        uses: step-security/harden-runner@v2.20.0
         with:
           egress-policy: audit
 
       - name: Checkout
         id: checkout
-        uses: actions/checkout@v7.0.0
+        uses: actions/checkout@v7.0.1
 
       - name: Run yamllint
         id: yamllint
