@@ -96,6 +96,6 @@ jobs:
 
       - name: Test Local Action
         id: test-action
-        uses: ./
+        uses: $/
         with:
           fork-organizations: jessehouwing-actions
