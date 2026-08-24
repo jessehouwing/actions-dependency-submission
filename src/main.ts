@@ -130,8 +130,7 @@ export async function run(): Promise<void> {
       github.context.eventName === 'pull_request_target'
 
     const pullRequest = github.context.payload.pull_request as
-      | { head?: { sha?: string; ref?: string } }
-      | undefined
+      { head?: { sha?: string; ref?: string } } | undefined
 
     const sha =
       isPullRequest && pullRequest?.head?.sha
