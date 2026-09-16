@@ -40,9 +40,9 @@
   "dependencies": {
     "@actions/core": "^3.0.1",
     "@actions/github": "^9.1.1",
-    "@octokit/core": "^7.0.7",
+    "@octokit/core": "^7.0.8",
     "dockerfile-ast": "^0.7.1",
-    "yaml": "^2.9.0"
+    "yaml": "^2.9.1"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",
