@@ -20,4 +20,6 @@ jobs:
           egress-policy: audit
 
       - uses: actions/checkout@v7.0.1
+        with:
+          persist-credentials: false
       - uses: jessehouwing/actions-example-checker@v0.0.11
