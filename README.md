@@ -273,19 +273,24 @@ or unexpected behavior.
    `uses: ./workflow.yml` at job level):
    - Processes the callable workflow
    - Extracts all action dependencies from it
-1. **Actions Lock File**: If `.github/workflows/actions.lock` exists, the action
-   runs `gh actions-lock --verify` (requires the `gh` CLI with the
-   `actions-lock` extension). When verification succeeds, remote actions and
-   callable workflows are fetched at the exact commit pinned in the lock file,
-   even if the ref (e.g. `main`) has since moved. Callable workflows may ship
-   their own optional lock file, which is used for their dependencies. If the
-   lock file is missing it is ignored. If gh or the extension is unavailable, or
-   verification cannot complete, a warning is logged and the lock file is used
-   unverified. If verification runs and rejects the lock file, or the lock file
-   is malformed, the run fails. Workflows and actions the lock file does not
-   cover (other folders, a root ction.yml) are resolved without it and logged.
-1. **Additional Paths Scanning**: If specified, scans additional directories for
-   composite actions:
+1. **Actions Lock File**: If `.github/workflows/actions.lock` exists, remote
+   actions and callable workflows are fetched at the exact commit pinned in the
+   lock file, even if the ref (e.g. `main`) has since moved.
+   - No lock file: refs are resolved as before.
+   - Malformed lock file (including a missing `version`): the run fails.
+   - `gh` or the `actions-lock` extension unavailable: a warning is logged and
+     the lock file is used unverified.
+   - `gh actions-lock --verify` fails for any reason (rejected, timeout,
+     authentication): the run fails.
+   - Only workflows listed in the lock's `workflows` map are governed by it.
+     Everything else (workflows in other folders, a root `action.yml`,
+     `additional-paths`) is resolved by ref and logged. When the same file is
+     reached from both locked and unlocked workflows, both usages are reported.
+   - Callable workflows from other repositories are governed only by their own
+     lock file; without one covering the workflow they are resolved by ref.
+   - Every submitted dependency carries `metadata.resolved_by`: `actions-lock`
+     or `ref`.1. **Additional Paths Scanning**: If specified, scans additional
+     directories for composite actions:
    - Finds all YAML files in the specified paths
    - Processes composite actions found there
    - Recursively extracts their dependencies
