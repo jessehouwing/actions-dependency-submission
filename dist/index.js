@@ -47941,6 +47941,9 @@ const LOCKFILE_RELATIVE_PATH = '.github/workflows/actions.lock';
  * string first and then the canonical form. Entries carry the immutable commit
  * the ref was pinned to, even when the ref (e.g. `main`) has since moved.
  */
+/** A lock file that cannot be parsed; always fails the run */
+class MalformedLockFileError extends Error {
+}
 class LockFile {
     dependencies;
     workflows;
@@ -47949,8 +47952,9 @@ class LockFile {
         if (parsed === null ||
             typeof parsed !== 'object' ||
             Array.isArray(parsed) ||
-            typeof parsed.version !== 'string' ||
-            parsed.version === '' ||
+            parsed.version === undefined ||
+            parsed.version === null ||
+            String(parsed.version) === '' ||
             (parsed.dependencies !== undefined &&
                 (parsed.dependencies === null ||
                     typeof parsed.dependencies !== 'object' ||
@@ -48103,22 +48107,18 @@ function verifyLockFile(repoRoot, token) {
  */
 async function loadVerifiedLockFile(repoRoot, token, extensionVersion) {
     const lockPath = path.join(repoRoot, LOCKFILE_RELATIVE_PATH);
-    let lock;
-    if (fs.existsSync(lockPath)) {
-        try {
-            lock = new LockFile(fs.readFileSync(lockPath, 'utf8'));
-        }
-        catch (error) {
-            throw new Error(`Malformed ${LOCKFILE_RELATIVE_PATH}: ${error instanceof Error ? error.message : String(error)}`, { cause: error });
-        }
-    }
-    else if (!extensionVersion) {
+    // Without a lock file there is nothing to verify, so gh is never required
+    if (!fs.existsSync(lockPath)) {
         return undefined;
+    }
+    let lock;
+    try {
+        lock = new LockFile(fs.readFileSync(lockPath, 'utf8'));
+    }
+    catch (error) {
+        throw new MalformedLockFileError(`Malformed ${LOCKFILE_RELATIVE_PATH}: ${error instanceof Error ? error.message : String(error)}`, { cause: error });
     }
     const extensionReady = await ensureActionsLockExtension(token, extensionVersion || undefined);
-    if (!lock) {
-        return undefined;
-    }
     if (!extensionReady) {
         warning(`${LOCKFILE_RELATIVE_PATH} could not be verified; using its contents unverified`);
         return lock;
@@ -48861,8 +48861,17 @@ class WorkflowParser {
                 fetchRef = sha;
                 content = pinnedContent;
             }
+            else {
+                // Unlocked refs resolve to whatever they point to at scan time
+                warning(`Could not pin ${dependency.uses} to a commit; resolving its $/ references through ${fetchRef}`);
+            }
         }
         if (!content) {
+            // Callable workflows only use their own context, so the caller's lock
+            // must not be used to reconstruct their graph
+            if (isWorkflowPath) {
+                return { actionDependencies: [], dockerDependencies: [] };
+            }
             // Not fetchable: recover the dependency graph from the lock file alone
             const lockedDeps = [];
             const lockedDockerDeps = [];
@@ -48912,9 +48921,9 @@ class WorkflowParser {
         }
         else if (parsed.jobs) {
             // Callable workflows may ship their own lock file, pinned at the same commit
-            // Only consulted when a repository lock is active, so users without a
-            // lock file keep the previous behaviour
-            const ownLock = lock
+            // Only consulted when the repository has a lock file (regardless of the
+            // caller's scope), so users without a lock file keep the previous behaviour
+            const ownLock = this.lockFile
                 ? await this.fetchRemoteLockFile(dependency.owner, dependency.repo, fetchRef)
                 : undefined;
             const workflowPath = dependency.uses.match(/^[^/]+\/[^/]+\/(.+\.ya?ml)@/)?.[1];
@@ -48982,6 +48991,8 @@ class WorkflowParser {
             };
         }
         catch (error) {
+            if (error instanceof MalformedLockFileError)
+                throw error;
             debug(`Failed to process remote action ${dependency.owner}/${dependency.repo}@${dependency.ref}: ${error}`);
         }
         return { actionDependencies: [], dockerDependencies: [] };
@@ -49015,6 +49026,8 @@ class WorkflowParser {
             }
         }
         catch (error) {
+            if (error instanceof MalformedLockFileError)
+                throw error;
             debug(`Failed to process remote Docker action ${dependency.owner}/${dependency.repo}@${dependency.ref}: ${error}`);
         }
         return { actionDependencies: [], dockerDependencies: [] };
@@ -49129,6 +49142,8 @@ class WorkflowParser {
             };
         }
         catch (error) {
+            if (error instanceof MalformedLockFileError)
+                throw error;
             debug(`Failed to process remote callable workflow ${dependency.owner}/${dependency.repo}: ${error}`);
         }
         return { actionDependencies: [], dockerDependencies: [] };
@@ -49182,7 +49197,7 @@ class WorkflowParser {
             return new LockFile(content);
         }
         catch (error) {
-            throw new Error(`Malformed ${LOCKFILE_RELATIVE_PATH} in ${owner}/${repo}@${ref}: ${error instanceof Error ? error.message : String(error)}`, { cause: error });
+            throw new MalformedLockFileError(`Malformed ${LOCKFILE_RELATIVE_PATH} in ${owner}/${repo}@${ref}: ${error instanceof Error ? error.message : String(error)}`, { cause: error });
         }
     }
     /**

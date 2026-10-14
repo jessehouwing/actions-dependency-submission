@@ -4,7 +4,11 @@ import * as yaml from 'yaml'
 import * as core from '@actions/core'
 import { OctokitProvider } from './octokit-provider.js'
 import { DockerfileParser } from 'dockerfile-ast'
-import { LockFile, LOCKFILE_RELATIVE_PATH } from './lockfile.js'
+import {
+  LockFile,
+  LOCKFILE_RELATIVE_PATH,
+  MalformedLockFileError
+} from './lockfile.js'
 
 /**
  * Represents a GitHub Action dependency
@@ -955,9 +959,19 @@ export class WorkflowParser {
       if (sha && pinnedContent) {
         fetchRef = sha
         content = pinnedContent
+      } else {
+        // Unlocked refs resolve to whatever they point to at scan time
+        core.warning(
+          `Could not pin ${dependency.uses} to a commit; resolving its $/ references through ${fetchRef}`
+        )
       }
     }
     if (!content) {
+      // Callable workflows only use their own context, so the caller's lock
+      // must not be used to reconstruct their graph
+      if (isWorkflowPath) {
+        return { actionDependencies: [], dockerDependencies: [] }
+      }
       // Not fetchable: recover the dependency graph from the lock file alone
       const lockedDeps: ActionDependency[] = []
       const lockedDockerDeps: DockerDependency[] = []
@@ -1023,9 +1037,9 @@ export class WorkflowParser {
       )
     } else if (parsed.jobs) {
       // Callable workflows may ship their own lock file, pinned at the same commit
-      // Only consulted when a repository lock is active, so users without a
-      // lock file keep the previous behaviour
-      const ownLock = lock
+      // Only consulted when the repository has a lock file (regardless of the
+      // caller's scope), so users without a lock file keep the previous behaviour
+      const ownLock = this.lockFile
         ? await this.fetchRemoteLockFile(
             dependency.owner,
             dependency.repo,
@@ -1120,6 +1134,7 @@ export class WorkflowParser {
         dockerDependencies: transitiveDockerDeps
       }
     } catch (error) {
+      if (error instanceof MalformedLockFileError) throw error
       core.debug(
         `Failed to process remote action ${dependency.owner}/${dependency.repo}@${dependency.ref}: ${error}`
       )
@@ -1162,6 +1177,7 @@ export class WorkflowParser {
         }
       }
     } catch (error) {
+      if (error instanceof MalformedLockFileError) throw error
       core.debug(
         `Failed to process remote Docker action ${dependency.owner}/${dependency.repo}@${dependency.ref}: ${error}`
       )
@@ -1304,6 +1320,7 @@ export class WorkflowParser {
         dockerDependencies: transitiveDockerDeps
       }
     } catch (error) {
+      if (error instanceof MalformedLockFileError) throw error
       core.debug(
         `Failed to process remote callable workflow ${dependency.owner}/${dependency.repo}: ${error}`
       )
@@ -1390,7 +1407,7 @@ export class WorkflowParser {
     try {
       return new LockFile(content)
     } catch (error) {
-      throw new Error(
+      throw new MalformedLockFileError(
         `Malformed ${LOCKFILE_RELATIVE_PATH} in ${owner}/${repo}@${ref}: ${error instanceof Error ? error.message : String(error)}`,
         { cause: error }
       )
