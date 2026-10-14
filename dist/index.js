@@ -30,7 +30,7 @@ import require$$5$2 from 'node:async_hooks';
 import require$$1$4 from 'node:console';
 import require$$1$5 from 'node:dns';
 import require$$5$3 from 'string_decoder';
-import 'child_process';
+import { execFile } from 'child_process';
 import 'timers';
 
 // We use any as a valid input type
@@ -47931,12 +47931,95 @@ function requireMain () {
 
 var mainExports = requireMain();
 
+const LOCKFILE_RELATIVE_PATH = '.github/workflows/actions.lock';
+/**
+ * Parsed `actions.lock` file as written by `gh actions-lock`.
+ *
+ * Entries in `dependencies` are keyed by the exact `uses` string (without
+ * the `docker://` or local forms) and carry the immutable commit the ref was
+ * pinned to, even when the ref (e.g. `main`) has since moved.
+ */
+class LockFile {
+    dependencies;
+    constructor(content) {
+        const parsed = parse(content);
+        this.dependencies = new Map(Object.entries((parsed?.dependencies ?? {})));
+    }
+    /**
+     * Returns the pinned commit SHA for a `uses` string, if locked.
+     */
+    getCommit(uses) {
+        const commit = this.dependencies.get(uses)?.commit;
+        const match = typeof commit === 'string' && commit.match(/^sha1-([0-9a-f]{40})$/);
+        return match ? match[1] : undefined;
+    }
+    /**
+     * Returns the `uses` keys of the locked transitive dependencies of an entry.
+     */
+    getTransitiveUses(uses) {
+        const entries = this.dependencies.get(uses)?.uses;
+        return Array.isArray(entries)
+            ? entries.filter((e) => typeof e === 'string')
+            : [];
+    }
+}
+/**
+ * Runs `gh actions-lock --verify` against the repository.
+ *
+ * @returns true only if the lock file is complete and every pin is accepted
+ */
+function verifyLockFile(repoRoot, token) {
+    return new Promise((resolve) => {
+        execFile('gh', ['actions-lock', '--verify', '--no-interactive'], {
+            cwd: repoRoot,
+            env: {
+                ...process.env,
+                GH_TOKEN: token || process.env.GH_TOKEN,
+                GH_ACTIONS_LOCK_REPO_ROOT: repoRoot
+            },
+            timeout: 120_000
+        }, (error, _stdout, stderr) => {
+            if (error) {
+                info(`actions.lock verification failed, ignoring lock file: ${stderr?.trim() || error.message}`);
+                resolve(false);
+                return;
+            }
+            resolve(true);
+        });
+    });
+}
+/**
+ * Loads the repository's lock file, trusting it only when `gh actions-lock
+ * --verify` succeeds.
+ *
+ * @returns The lock file, or undefined if missing, unverifiable or invalid
+ */
+async function loadVerifiedLockFile(repoRoot, token) {
+    const lockPath = path.join(repoRoot, LOCKFILE_RELATIVE_PATH);
+    if (!fs.existsSync(lockPath)) {
+        return undefined;
+    }
+    if (!(await verifyLockFile(repoRoot, token))) {
+        return undefined;
+    }
+    try {
+        const lock = new LockFile(fs.readFileSync(lockPath, 'utf8'));
+        info(`Using verified ${LOCKFILE_RELATIVE_PATH} to resolve dependencies`);
+        return lock;
+    }
+    catch (error) {
+        warning(`Failed to parse ${LOCKFILE_RELATIVE_PATH}: ${error instanceof Error ? error.message : String(error)}`);
+        return undefined;
+    }
+}
+
 /**
  * Parses workflow files to extract action dependencies
  */
 class WorkflowParser {
     octokitProvider;
     processedRemoteActions = new Set();
+    lockFile;
     constructor(token, publicGitHubToken) {
         if (token) {
             this.octokitProvider = new OctokitProvider({
@@ -47944,6 +48027,13 @@ class WorkflowParser {
                 publicGitHubToken
             });
         }
+    }
+    /**
+     * Sets a verified lock file used to pin remote action fetches to the exact
+     * locked commit, even if the ref has since moved.
+     */
+    setLockFile(lockFile) {
+        this.lockFile = lockFile;
     }
     /**
      * Generates a unique key for an action dependency for tracking processed actions
@@ -48438,6 +48528,7 @@ class WorkflowParser {
         }
         // Local action reference (starts with ./ or ../ or .\ or ..\)
         if (uses.startsWith('./') ||
+            uses.startsWith('$/') ||
             uses.startsWith('../') ||
             uses.startsWith('.\\') ||
             uses.startsWith('..\\')) {
@@ -48459,6 +48550,29 @@ class WorkflowParser {
                 ref,
                 uses,
                 actionPath
+            }
+        };
+    }
+    /**
+     * Parses a 'uses' string found inside a remote action or workflow. A `$/`
+     * reference points at the same repository and commit that contains the file.
+     */
+    parseRemoteUsesString(uses, parent, lock) {
+        if (!uses.startsWith('$/')) {
+            return this.parseUsesString(uses);
+        }
+        const commit = lock?.getCommit(parent.uses) ?? parent.ref;
+        const actionPath = uses.slice(2).replace(/\/+$/, '');
+        const prefix = `${parent.owner}/${parent.repo}`;
+        return {
+            dependency: {
+                owner: parent.owner,
+                repo: parent.repo,
+                ref: commit,
+                uses: actionPath
+                    ? `${prefix}/${actionPath}@${commit}`
+                    : `${prefix}@${commit}`,
+                actionPath: actionPath || undefined
             }
         };
     }
@@ -48493,8 +48607,10 @@ class WorkflowParser {
      */
     resolveLocalPath(workflowFile, localPath, repoRoot) {
         try {
-            const workflowDir = path.dirname(workflowFile);
-            const resolved = path.resolve(workflowDir, localPath);
+            // '$/' references are relative to the repository root, not the file
+            const resolved = localPath.startsWith('$/')
+                ? path.resolve(repoRoot, localPath.slice(2))
+                : path.resolve(path.dirname(workflowFile), localPath);
             // Ensure the path is within the repository
             if (!resolved.startsWith(repoRoot)) {
                 return null;
@@ -48565,7 +48681,7 @@ class WorkflowParser {
      * @param callingWorkflowPath Path of the workflow that references this action/workflow
      * @returns Object with action dependencies and docker dependencies
      */
-    async processRemoteActionOrWorkflow(dependency, callingWorkflowPath) {
+    async processRemoteActionOrWorkflow(dependency, callingWorkflowPath, lock = this.lockFile) {
         if (!this.octokitProvider) {
             return { actionDependencies: [], dockerDependencies: [] };
         }
@@ -48574,18 +48690,33 @@ class WorkflowParser {
         // otherwise we look for action.yml/action.yaml in the directory.
         const callableWorkflowPattern = /^[^/]+\/[^/]+\/.+\.ya?ml@.+$/;
         const isWorkflowPath = callableWorkflowPattern.test(dependency.uses);
+        // The locked commit is authoritative: the ref may have moved since locking
+        const fetchRef = lock?.getCommit(dependency.uses) ?? dependency.ref;
         let content = null;
         if (isWorkflowPath) {
             const workflowPathMatch = dependency.uses.match(/^[^/]+\/[^/]+\/(?<path>.+\.ya?ml)@.+$/);
             if (workflowPathMatch?.groups?.path) {
-                content = await this.fetchRemoteFile(dependency.owner, dependency.repo, workflowPathMatch.groups.path, dependency.ref);
+                content = await this.fetchRemoteFile(dependency.owner, dependency.repo, workflowPathMatch.groups.path, fetchRef);
             }
         }
         else {
-            content = await this.fetchRemoteActionFile(dependency.owner, dependency.repo, dependency.ref, dependency.actionPath);
+            content = await this.fetchRemoteActionFile(dependency.owner, dependency.repo, fetchRef, dependency.actionPath);
         }
         if (!content) {
-            return { actionDependencies: [], dockerDependencies: [] };
+            const lockedUses = lock?.getTransitiveUses(dependency.uses) ?? [];
+            const lockedDeps = lockedUses.flatMap((uses) => {
+                const parsedUses = this.parseUsesString(uses).dependency;
+                return parsedUses
+                    ? [
+                        {
+                            ...parsedUses,
+                            sourcePath: callingWorkflowPath,
+                            isTransitive: true
+                        }
+                    ]
+                    : [];
+            });
+            return { actionDependencies: lockedDeps, dockerDependencies: [] };
         }
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         let parsed;
@@ -48601,13 +48732,15 @@ class WorkflowParser {
         }
         // Route based on YAML structure rather than filename
         if (parsed.runs?.using === 'composite') {
-            return this.processRemoteCompositeAction(parsed, dependency, callingWorkflowPath);
+            return this.processRemoteCompositeAction(parsed, dependency, callingWorkflowPath, lock);
         }
         else if (parsed.runs?.using === 'docker') {
             return this.processRemoteDockerAction(parsed, dependency, callingWorkflowPath);
         }
         else if (parsed.jobs) {
-            return this.processRemoteCallableWorkflow(parsed, dependency, callingWorkflowPath);
+            // Callable workflows may ship their own lock file, pinned at the same commit
+            const ownLock = await this.fetchRemoteLockFile(dependency.owner, dependency.repo, fetchRef);
+            return this.processRemoteCallableWorkflow(parsed, dependency, callingWorkflowPath, ownLock ?? lock);
         }
         return { actionDependencies: [], dockerDependencies: [] };
     }
@@ -48621,7 +48754,7 @@ class WorkflowParser {
      */
     async processRemoteCompositeAction(
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    actionYaml, dependency, callingWorkflowPath) {
+    actionYaml, dependency, callingWorkflowPath, lock) {
         try {
             info(`Processing remote composite action: ${dependency.owner}/${dependency.repo}@${dependency.ref}`);
             const transitiveDeps = [];
@@ -48630,7 +48763,7 @@ class WorkflowParser {
             if (actionYaml.runs.steps && Array.isArray(actionYaml.runs.steps)) {
                 for (const step of actionYaml.runs.steps) {
                     if (step.uses) {
-                        const result = this.parseUsesString(step.uses);
+                        const result = this.parseRemoteUsesString(step.uses, dependency, lock);
                         if (result.dependency) {
                             // Mark as transitive and reference the calling workflow as manifest
                             const transitiveDep = {
@@ -48643,7 +48776,7 @@ class WorkflowParser {
                             const transitiveKey = this.getActionKey(transitiveDep);
                             if (!this.processedRemoteActions.has(transitiveKey)) {
                                 this.processedRemoteActions.add(transitiveKey);
-                                const nestedDeps = await this.processRemoteActionOrWorkflow(transitiveDep, callingWorkflowPath);
+                                const nestedDeps = await this.processRemoteActionOrWorkflow(transitiveDep, callingWorkflowPath, lock);
                                 transitiveDeps.push(...nestedDeps.actionDependencies);
                                 transitiveDockerDeps.push(...nestedDeps.dockerDependencies);
                             }
@@ -48713,7 +48846,7 @@ class WorkflowParser {
      */
     async processRemoteCallableWorkflow(
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    workflowYaml, dependency, callingWorkflowPath) {
+    workflowYaml, dependency, callingWorkflowPath, lock) {
         try {
             info(`Processing remote callable workflow: ${dependency.owner}/${dependency.repo}@${dependency.ref}`);
             const transitiveDeps = [];
@@ -48751,7 +48884,7 @@ class WorkflowParser {
                 }
                 // Check for callable workflows at job level
                 if (job.uses) {
-                    const result = this.parseUsesString(job.uses);
+                    const result = this.parseRemoteUsesString(job.uses, dependency, lock);
                     if (result.dependency) {
                         const transitiveDep = {
                             ...result.dependency,
@@ -48763,7 +48896,7 @@ class WorkflowParser {
                         const transitiveKey = this.getActionKey(transitiveDep);
                         if (!this.processedRemoteActions.has(transitiveKey)) {
                             this.processedRemoteActions.add(transitiveKey);
-                            const nestedDeps = await this.processRemoteActionOrWorkflow(transitiveDep, callingWorkflowPath);
+                            const nestedDeps = await this.processRemoteActionOrWorkflow(transitiveDep, callingWorkflowPath, lock);
                             transitiveDeps.push(...nestedDeps.actionDependencies);
                             transitiveDockerDeps.push(...nestedDeps.dockerDependencies);
                         }
@@ -48776,7 +48909,7 @@ class WorkflowParser {
                         for (const step of steps) {
                             if (typeof step === 'object' && step !== null && 'uses' in step) {
                                 const uses = step.uses;
-                                const result = this.parseUsesString(uses);
+                                const result = this.parseRemoteUsesString(uses, dependency, lock);
                                 if (result.dependency) {
                                     const transitiveDep = {
                                         ...result.dependency,
@@ -48788,7 +48921,7 @@ class WorkflowParser {
                                     const transitiveKey = this.getActionKey(transitiveDep);
                                     if (!this.processedRemoteActions.has(transitiveKey)) {
                                         this.processedRemoteActions.add(transitiveKey);
-                                        const nestedDeps = await this.processRemoteActionOrWorkflow(transitiveDep, callingWorkflowPath);
+                                        const nestedDeps = await this.processRemoteActionOrWorkflow(transitiveDep, callingWorkflowPath, lock);
                                         transitiveDeps.push(...nestedDeps.actionDependencies);
                                         transitiveDockerDeps.push(...nestedDeps.dockerDependencies);
                                     }
@@ -48837,6 +48970,22 @@ class WorkflowParser {
         // Try action.yaml
         content = await this.fetchRemoteFile(owner, repo, `${basePath}action.yaml`, ref);
         return content;
+    }
+    /**
+     * Fetch the optional lock file of a remote repository at a given commit
+     */
+    async fetchRemoteLockFile(owner, repo, ref) {
+        const content = await this.fetchRemoteFile(owner, repo, LOCKFILE_RELATIVE_PATH, ref);
+        if (!content) {
+            return undefined;
+        }
+        try {
+            return new LockFile(content);
+        }
+        catch (error) {
+            debug(`Failed to parse lock file of ${owner}/${repo}@${ref}: ${error}`);
+            return undefined;
+        }
     }
     /**
      * Fetch a file from a remote repository
@@ -49558,6 +49707,7 @@ async function run() {
         const repoRoot = process.env.GITHUB_WORKSPACE || process.cwd();
         // Parse workflow files (with composite actions and callable workflows support)
         const parser = new WorkflowParser(token, publicGitHubToken || undefined);
+        parser.setLockFile(await loadVerifiedLockFile(repoRoot, token));
         const result = await parser.parseWorkflowDirectory(workflowDirectory, additionalPaths, repoRoot);
         const { actionDependencies, dockerDependencies } = result;
         info(`Found ${actionDependencies.length} action dependencies`);

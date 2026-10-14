@@ -1,7 +1,7 @@
 {
   "name": "jessehouwing.actions-dependency-submission",
   "description": "GitHub Action to submit dependency information to GitHub's dependency graph",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "author": "",
   "type": "module",
   "private": true,
