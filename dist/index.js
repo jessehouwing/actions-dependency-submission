@@ -47993,10 +47993,17 @@ function runGhAsync(args, env) {
  */
 async function ensureActionsLockExtension(token, extensionVersion) {
     const env = { ...process.env, GH_TOKEN: token || process.env.GH_TOKEN };
+    // An explicitly requested version is a hard requirement
+    const fail = (message) => {
+        if (extensionVersion) {
+            throw new Error(message);
+        }
+        warning(message);
+        return false;
+    };
     const version = await runGhAsync(['--version'], env);
     if (version.error) {
-        warning('The GitHub CLI (gh) was not found on PATH; ignoring actions.lock. Install gh to enable lock file support.');
-        return false;
+        return fail('The GitHub CLI (gh) was not found on PATH; ignoring actions.lock. Install gh to enable lock file support.');
     }
     // `gh extension list` has no --json output; lines are tab separated:
     // name, repository, version
@@ -48016,8 +48023,7 @@ async function ensureActionsLockExtension(token, extensionVersion) {
         info(`Replacing ${EXTENSION_REPO} ${installedVersion ?? 'unknown'} with ${extensionVersion}`);
         const remove = await runGhAsync(['extension', 'remove', 'actions-lock'], env);
         if (remove.error) {
-            warning(`Failed to remove ${EXTENSION_REPO}, ignoring actions.lock: ${remove.stderr.trim() || remove.error.message}`);
-            return false;
+            return fail(`Failed to remove ${EXTENSION_REPO}, ignoring actions.lock: ${remove.stderr.trim() || remove.error.message}`);
         }
     }
     info(`Installing the ${EXTENSION_REPO} gh extension${extensionVersion ? ` ${extensionVersion}` : ' (latest)'}`);
@@ -48028,8 +48034,7 @@ async function ensureActionsLockExtension(token, extensionVersion) {
         ...(extensionVersion ? ['--pin', extensionVersion] : [])
     ], env);
     if (install.error) {
-        warning(`Failed to install ${EXTENSION_REPO}, ignoring actions.lock: ${install.stderr.trim() || install.error.message}`);
-        return false;
+        return fail(`Failed to install ${EXTENSION_REPO}, ignoring actions.lock: ${install.stderr.trim() || install.error.message}`);
     }
     return true;
 }
@@ -48066,10 +48071,11 @@ function verifyLockFile(repoRoot, token) {
  */
 async function loadVerifiedLockFile(repoRoot, token, extensionVersion) {
     const lockPath = path.join(repoRoot, LOCKFILE_RELATIVE_PATH);
-    if (!fs.existsSync(lockPath)) {
+    if (!fs.existsSync(lockPath) && !extensionVersion) {
         return undefined;
     }
     if (!(await ensureActionsLockExtension(token, extensionVersion || undefined)) ||
+        !fs.existsSync(lockPath) ||
         !(await verifyLockFile(repoRoot, token))) {
         return undefined;
     }

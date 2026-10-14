@@ -112,4 +112,26 @@ describe('loadVerifiedLockFile verification', () => {
     expect(calls.some((c) => c.startsWith('extension remove'))).toBe(false)
     expect(calls.some((c) => c.startsWith('extension install'))).toBe(false)
   })
+
+  it('Fails when gh is missing and a version is requested', async () => {
+    setup(null)
+    execFile.mockImplementation((_cmd, _args, _opts, cb) =>
+      cb(new Error('ENOENT'), '', '')
+    )
+    await expect(loadVerifiedLockFile(dir, 't', 'v0.2.0')).rejects.toThrow(
+      'GitHub CLI (gh) was not found'
+    )
+  })
+
+  it('Fails when pinned installation fails', async () => {
+    setup(null, validLock, '')
+    execFile.mockImplementation((_cmd, args, _opts, cb) =>
+      args[0] === 'extension' && args[1] === 'install'
+        ? cb(new Error('boom'), '', 'boom')
+        : cb(null, '', '')
+    )
+    await expect(loadVerifiedLockFile(dir, 't', 'v0.2.0')).rejects.toThrow(
+      'Failed to install'
+    )
+  })
 })
