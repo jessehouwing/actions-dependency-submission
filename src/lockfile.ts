@@ -15,9 +15,11 @@ interface LockEntry {
 /**
  * Parsed `actions.lock` file as written by `gh actions-lock`.
  *
- * Entries in `dependencies` are keyed by the exact `uses` string (without
- * the `docker://` or local forms) and carry the immutable commit the ref was
- * pinned to, even when the ref (e.g. `main`) has since moved.
+ * Entries in `dependencies` are keyed by the canonical `owner/repo@ref`;
+ * action and workflow subpaths are NOT part of the key (`github/codeql-action@v4`,
+ * not `github/codeql-action/analyze@v4`). Lookups therefore try the exact
+ * string first and then the canonical form. Entries carry the immutable commit
+ * the ref was pinned to, even when the ref (e.g. `main`) has since moved.
  */
 export class LockFile {
   private dependencies: Map<string, LockEntry>
