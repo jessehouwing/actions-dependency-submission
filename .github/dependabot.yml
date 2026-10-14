@@ -33,6 +33,11 @@ updates:
         update-types:
           - version-update:semver-major
 
+  - package-ecosystem: pip
+    directory: /
+    schedule:
+      interval: weekly
+
   - package-ecosystem: bundler
     directory: /
     schedule:

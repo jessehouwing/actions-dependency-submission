@@ -1,0 +1,12 @@
+# zizmor configuration for this repo.
+#
+# Actions are pinned to immutable commit SHAs via the `gh actions-lock`
+# extension (.github/workflows/actions.lock), not via inline
+# `owner/repo@<sha>` refs, which zizmor's `unpinned-uses` audit doesn't
+# recognise. Disabled so no findings are produced (or uploaded as SARIF).
+rules:
+  unpinned-uses:
+    disable: true
+  # Dependabot cooldown is intentionally not configured for this repo.
+  dependabot-cooldown:
+    disable: true

@@ -1,6 +1,5 @@
 # This workflow is managed by gh actions-lock.
 # This workflow lints specific file types using dedicated linters:
-# - actionlint for GitHub Actions workflows
 # - ESLint for JavaScript/TypeScript files
 # - markdownlint for Markdown files
 # - yamllint for YAML files
@@ -48,26 +47,6 @@ jobs:
       - name: Lint
         id: npm-lint
         run: npm run lint
-
-  actionlint:
-    name: Lint GitHub Actions
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Harden the runner (Audit all outbound calls)
-        uses: step-security/harden-runner@v2.22.1
-        with:
-          egress-policy: audit
-
-      - name: Checkout
-        id: checkout
-        uses: actions/checkout@v7.0.1
-
-      - name: Run actionlint
-        id: actionlint
-        uses: raven-actions/actionlint@v2.2.0
-        with:
-          matcher: true
 
   #  markdownlint:
   #    name: Lint Markdown

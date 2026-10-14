@@ -149,7 +149,7 @@ reported issues are resolved when completing a change.
 - YamlLint
 - MarkdownLint
 - EsLint
-- ActionLint
+- zizmor
 - Prettier
 
 When linters conflict, ask the user how to resolve and optionally suppress the
