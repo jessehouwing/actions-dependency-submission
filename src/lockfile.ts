@@ -9,6 +9,7 @@ export const LOCKFILE_RELATIVE_PATH = '.github/workflows/actions.lock'
 interface LockEntry {
   ref?: string
   commit?: string
+  hostname?: string
   uses?: string[]
 }
 
@@ -88,6 +89,20 @@ export class LockFile {
     const match =
       typeof commit === 'string' && commit.match(/^sha1-([0-9a-f]{40})$/)
     return match ? match[1] : undefined
+  }
+
+  /**
+   * Whether a `uses` string is locked, and if so on which host it resolves.
+   * An omitted hostname means the workflow's home host.
+   *
+   * @returns `undefined` when not locked, `''` for the home host, else the hostname
+   */
+  getHostname(uses: string): string | undefined {
+    const entry = this.lookup(uses)
+    if (!entry) return undefined
+    return typeof entry.hostname === 'string'
+      ? entry.hostname.trim().toLowerCase()
+      : ''
   }
 
   /**

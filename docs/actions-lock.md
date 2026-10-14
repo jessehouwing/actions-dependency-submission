@@ -24,6 +24,7 @@ dependencies:
     commit: 'sha1-<40 hex characters>'
     owner_id: 1
     repo_id: 2
+    hostname: 'github.com' # optional: see below
     uses: [] # optional: lock keys of transitive dependencies
 ```
 
@@ -33,6 +34,12 @@ dependencies:
   workflow subpath. Lookups for `owner/repo/path@ref` fall back to this key.
 - `commit` may pin a commit that differs from the current target of `ref` (e.g.
   `@main` may have moved since locking). The locked commit is authoritative.
+- `hostname` (v0.0.3) states where the dependency is resolved. When omitted, the
+  dependency lives on the workflow's home host and is only looked up there (no
+  fallback to github.com). `github.com` on a workflow homed elsewhere (e.g.
+  ghe.com) forces the lookup on github.com, never on the home host. Entries that
+  are not in the lock keep the heuristic: home host first, then github.com when
+  a `public-github-token` is available.
 
 ## Loading and verification
 

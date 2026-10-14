@@ -41030,6 +41030,16 @@ class OctokitProvider {
         return this.publicOctokit;
     }
     /**
+     * Forces the host used for a repository, overriding the probing heuristic.
+     * Used when a lock file states where the dependency resolves.
+     *
+     * @param host `github.com` for public GitHub, `''` for the home host
+     */
+    setRepoHost(owner, repo, host) {
+        const usePublic = host === 'github.com' && !!this.publicOctokit;
+        this.publicRepoCache.set(`${owner}/${repo}`, usePublic);
+    }
+    /**
      * Determines which Octokit instance to use for a repository
      * Caches the decision to avoid redundant checks
      *
@@ -47998,6 +48008,20 @@ class LockFile {
         return match ? match[1] : undefined;
     }
     /**
+     * Whether a `uses` string is locked, and if so on which host it resolves.
+     * An omitted hostname means the workflow's home host.
+     *
+     * @returns `undefined` when not locked, `''` for the home host, else the hostname
+     */
+    getHostname(uses) {
+        const entry = this.lookup(uses);
+        if (!entry)
+            return undefined;
+        return typeof entry.hostname === 'string'
+            ? entry.hostname.trim().toLowerCase()
+            : '';
+    }
+    /**
      * Returns the `uses` keys of the locked transitive dependencies of an entry.
      */
     getTransitiveUses(uses) {
@@ -48831,6 +48855,10 @@ class WorkflowParser {
     async processRemoteActionOrWorkflow(dependency, callingWorkflowPath, lock) {
         if (!this.octokitProvider) {
             return { actionDependencies: [], dockerDependencies: [] };
+        }
+        const lockedHost = lock?.getHostname(dependency.uses);
+        if (lockedHost !== undefined) {
+            this.octokitProvider.setRepoHost(dependency.owner, dependency.repo, lockedHost);
         }
         // Determine fetch strategy based on uses string format.
         // A .yml/.yaml path component indicates the file should be fetched directly,

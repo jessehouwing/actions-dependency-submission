@@ -914,6 +914,15 @@ export class WorkflowParser {
       return { actionDependencies: [], dockerDependencies: [] }
     }
 
+    const lockedHost = lock?.getHostname(dependency.uses)
+    if (lockedHost !== undefined) {
+      this.octokitProvider.setRepoHost(
+        dependency.owner,
+        dependency.repo,
+        lockedHost
+      )
+    }
+
     // Determine fetch strategy based on uses string format.
     // A .yml/.yaml path component indicates the file should be fetched directly,
     // otherwise we look for action.yml/action.yaml in the directory.

@@ -39,11 +39,13 @@ function createParser(files: Record<string, string>) {
   )
   const octokit = { rest: { repos: { getContent } } }
   const parser = new WorkflowParser('fake-token')
+  const setRepoHost = jest.fn()
   // @ts-expect-error - Replacing private property for testing
   parser.octokitProvider = {
-    getOctokitForRepo: jest.fn().mockResolvedValue(octokit)
+    getOctokitForRepo: jest.fn().mockResolvedValue(octokit),
+    setRepoHost
   }
-  return { parser, getContent }
+  return { parser, getContent, setRepoHost }
 }
 
 const covered = (content: string) =>
@@ -59,6 +61,41 @@ describe('LockFile', () => {
     expect(lock.getTransitiveUses('remote-org/my-action@main')).toEqual([
       `actions/cache@${'b'.repeat(40)}`
     ])
+  })
+
+  it('Reports the host a locked dependency resolves on', () => {
+    const lock = new LockFile(
+      `version: v0.0.3\ndependencies:\n  'a/home@v1':\n    commit: 'sha1-${SHA}'\n  'b/public@v1':\n    hostname: 'GitHub.com'\n    commit: 'sha1-${SHA}'\n`
+    )
+    expect(lock.getHostname('a/home@v1')).toBe('')
+    expect(lock.getHostname('b/public/sub@v1')).toBe('github.com')
+    expect(lock.getHostname('c/unlocked@v1')).toBeUndefined()
+  })
+
+  it('Forces the lock host for remote fetches', async () => {
+    const lock = new LockFile(
+      `version: v0.0.3\ndependencies:\n  'b/public@v1':\n    hostname: 'github.com'\n    commit: 'sha1-${SHA}'\n  'a/home@v1':\n    commit: 'sha1-${SHA}'\n`
+    )
+    const { parser, setRepoHost } = createParser({})
+    const dep = (owner: string, repo: string) => ({
+      owner,
+      repo,
+      ref: 'v1',
+      uses: `${owner}/${repo}@v1`
+    })
+    // @ts-expect-error - Accessing private method for testing
+    await parser.processRemoteActionOrWorkflow(
+      dep('b', 'public'),
+      'ci.yml',
+      lock
+    )
+    // @ts-expect-error - Accessing private method for testing
+    await parser.processRemoteActionOrWorkflow(dep('a', 'home'), 'ci.yml', lock)
+    // @ts-expect-error - Accessing private method for testing
+    await parser.processRemoteActionOrWorkflow(dep('c', 'none'), 'ci.yml', lock)
+    expect(setRepoHost).toHaveBeenCalledTimes(2)
+    expect(setRepoHost).toHaveBeenCalledWith('b', 'public', 'github.com')
+    expect(setRepoHost).toHaveBeenCalledWith('a', 'home', '')
   })
 
   it('Rejects entries with a malformed commit', () => {
