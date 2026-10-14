@@ -31,12 +31,16 @@ export class LockFile {
       parsed === null ||
       typeof parsed !== 'object' ||
       Array.isArray(parsed) ||
+      typeof parsed.version !== 'string' ||
+      parsed.version === '' ||
       (parsed.dependencies !== undefined &&
         (parsed.dependencies === null ||
           typeof parsed.dependencies !== 'object' ||
           Array.isArray(parsed.dependencies)))
     ) {
-      throw new Error('lock file must be a mapping with a dependencies mapping')
+      throw new Error(
+        'lock file must be a mapping with a version and a dependencies mapping'
+      )
     }
     this.workflows = new Set(Object.keys(parsed.workflows ?? {}))
     this.dependencies = new Map(
@@ -192,14 +196,10 @@ async function ensureActionsLockExtension(
 /**
  * Runs `gh actions-lock --verify` against the repository.
  *
- * @returns 'valid' if every pin is accepted, 'invalid' if verification ran and
- * rejected the lock file, 'unavailable' if verification could not complete
- * (e.g. timeout)
+ * @returns true only if verification completed and accepted the lock file;
+ * a rejection, timeout or any other failure to verify returns false
  */
-function verifyLockFile(
-  repoRoot: string,
-  token: string
-): Promise<'valid' | 'invalid' | 'unavailable'> {
+function verifyLockFile(repoRoot: string, token: string): Promise<boolean> {
   return new Promise((resolve) => {
     runGh(
       ['actions-lock', '--verify', '--no-interactive'],
@@ -217,11 +217,10 @@ function verifyLockFile(
           core.error(
             `actions.lock verification failed: ${stderr?.trim() || error.message}`
           )
-          const noExit = typeof (error as { code?: unknown }).code !== 'number'
-          resolve(noExit ? 'unavailable' : 'invalid')
+          resolve(false)
           return
         }
-        resolve('valid')
+        resolve(true)
       }
     )
   })
@@ -232,9 +231,8 @@ function verifyLockFile(
  *
  * - no lock file: returns undefined (legacy lookup)
  * - malformed lock file, or an unmet `extensionVersion` requirement: throws
- * - `gh`/extension unavailable, or verification could not complete: warns and
- *   uses the lock file unverified
- * - verification ran and rejected the lock file: throws
+ * - `gh`/extension unavailable: warns and uses the lock file unverified
+ * - verification fails for any reason (rejected, timeout, auth): throws
  *
  * @returns The lock file, or undefined if the repository has none
  */
@@ -267,22 +265,18 @@ export async function loadVerifiedLockFile(
     return undefined
   }
 
-  const result = extensionReady
-    ? await verifyLockFile(repoRoot, token)
-    : 'unavailable'
-  if (result === 'invalid') {
+  if (!extensionReady) {
+    core.warning(
+      `${LOCKFILE_RELATIVE_PATH} could not be verified; using its contents unverified`
+    )
+    return lock
+  }
+
+  if (!(await verifyLockFile(repoRoot, token))) {
     throw new Error(
       `${LOCKFILE_RELATIVE_PATH} failed verification (gh actions-lock --verify); regenerate it with gh actions-lock`
     )
   }
-  if (result === 'valid') {
-    core.info(
-      `Using verified ${LOCKFILE_RELATIVE_PATH} to resolve dependencies`
-    )
-  } else {
-    core.warning(
-      `${LOCKFILE_RELATIVE_PATH} could not be verified; using its contents unverified`
-    )
-  }
+  core.info(`Using verified ${LOCKFILE_RELATIVE_PATH} to resolve dependencies`)
   return lock
 }

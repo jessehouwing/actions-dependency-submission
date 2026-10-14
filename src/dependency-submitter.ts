@@ -18,6 +18,18 @@ const DEPENDENCY_SCOPE = {
   RUNTIME: undefined
 } as const
 
+interface ManifestEntry {
+  package_url?: string
+  relationship?: 'direct' | 'indirect'
+  scope?: 'runtime' | 'development'
+  metadata?: Record<string, string>
+}
+
+/** Marks how a dependency's version was determined */
+const resolvedBy = (locked?: boolean) => ({
+  resolved_by: locked ? 'actions-lock' : 'ref'
+})
+
 /**
  * Configuration for dependency submission
  */
@@ -58,13 +70,10 @@ export class DependencySubmitter {
     repo: string,
     ref: string,
     originalSha: string | undefined,
-    manifests: {
-      package_url?: string
-      relationship?: 'direct' | 'indirect'
-      scope?: 'runtime' | 'development'
-    }[],
+    manifests: ManifestEntry[],
     isTransitive: boolean = false,
-    actionPath?: string
+    actionPath?: string,
+    locked?: boolean
   ): number {
     let count = 0
 
@@ -90,7 +99,8 @@ export class DependencySubmitter {
       manifests.push({
         package_url: shaPurl,
         relationship: effectiveRelationship,
-        scope: DEPENDENCY_SCOPE.RUNTIME
+        scope: DEPENDENCY_SCOPE.RUNTIME,
+        metadata: resolvedBy(locked)
       })
       count++
 
@@ -101,7 +111,8 @@ export class DependencySubmitter {
         relationship: reportTransitiveAsDirect
           ? effectiveRelationship
           : DEPENDENCY_RELATIONSHIP.INDIRECT,
-        scope: DEPENDENCY_SCOPE.RUNTIME
+        scope: DEPENDENCY_SCOPE.RUNTIME,
+        metadata: resolvedBy(locked)
       })
       count++
     } else {
@@ -110,7 +121,8 @@ export class DependencySubmitter {
       manifests.push({
         package_url: purl,
         relationship: effectiveRelationship,
-        scope: DEPENDENCY_SCOPE.RUNTIME
+        scope: DEPENDENCY_SCOPE.RUNTIME,
+        metadata: resolvedBy(locked)
       })
       count++
     }
@@ -132,14 +144,7 @@ export class DependencySubmitter {
     const [owner, repo] = this.config.repository.split('/')
 
     // Group dependencies by source path
-    const dependenciesBySource = new Map<
-      string,
-      {
-        package_url?: string
-        relationship?: 'direct' | 'indirect'
-        scope?: 'runtime' | 'development'
-      }[]
-    >()
+    const dependenciesBySource = new Map<string, ManifestEntry[]>()
 
     let dependencyCount = 0
 
@@ -162,7 +167,8 @@ export class DependencySubmitter {
         dep.originalSha,
         sourceManifests,
         dep.isTransitive || false,
-        dep.actionPath
+        dep.actionPath,
+        dep.locked
       )
 
       if (dep.originalSha) {
@@ -180,7 +186,8 @@ export class DependencySubmitter {
           dep.originalSha,
           sourceManifests,
           true, // Mark original repo dependencies as transitive/indirect
-          dep.actionPath
+          dep.actionPath,
+          dep.locked
         )
 
         core.info(
@@ -215,7 +222,8 @@ export class DependencySubmitter {
       sourceManifests.push({
         package_url: purl,
         relationship: effectiveRelationship,
-        scope: DEPENDENCY_SCOPE.RUNTIME
+        scope: DEPENDENCY_SCOPE.RUNTIME,
+        metadata: resolvedBy()
       })
       dependencyCount++
 
@@ -230,31 +238,21 @@ export class DependencySubmitter {
         file?: {
           source_location?: string
         }
-        resolved: Record<
-          string,
-          {
-            package_url?: string
-            relationship?: 'direct' | 'indirect'
-            scope?: 'runtime' | 'development'
-          }
-        >
+        resolved: Record<string, ManifestEntry>
       }
     > = {}
 
     for (const [sourcePath, deps] of dependenciesBySource.entries()) {
       // Convert array to record keyed by package_url
-      const resolved: Record<
-        string,
-        {
-          package_url?: string
-          relationship?: 'direct' | 'indirect'
-          scope?: 'runtime' | 'development'
-        }
-      > = {}
+      const resolved: Record<string, ManifestEntry> = {}
 
       for (const dep of deps) {
         if (dep.package_url) {
-          resolved[dep.package_url] = dep
+          // A locked usage wins over an unlocked one of the same package
+          const existing = resolved[dep.package_url]
+          if (existing?.metadata?.resolved_by !== 'actions-lock') {
+            resolved[dep.package_url] = dep
+          }
         }
       }
 

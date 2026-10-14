@@ -55,6 +55,31 @@ describe('DependencySubmitter', () => {
       )
     })
 
+    it('Marks how each dependency was resolved', async () => {
+      github.mockOctokit.rest.dependencyGraph.createRepositorySnapshot.mockResolvedValueOnce(
+        {}
+      )
+      const submitter = new DependencySubmitter({
+        token: 'test-token',
+        repository: 'test-owner/test-repo',
+        sha: 'abc123',
+        ref: 'refs/heads/main'
+      })
+      await submitter.submitDependencies([
+        { owner: 'actions', repo: 'checkout', ref: 'v4', locked: true },
+        { owner: 'actions', repo: 'cache', ref: 'v4' },
+        { owner: 'actions', repo: 'cache', ref: 'v4', locked: true }
+      ])
+      const resolved =
+        github.mockOctokit.rest.dependencyGraph.createRepositorySnapshot.mock
+          .calls[0][0].manifests['github-actions.yml'].resolved
+      expect(
+        resolved['pkg:githubactions/actions/checkout@4.*.*'].metadata
+      ).toEqual({ resolved_by: 'actions-lock' })
+      expect(
+        resolved['pkg:githubactions/actions/cache@4.*.*'].metadata
+      ).toEqual({ resolved_by: 'actions-lock' })
+    })
     it('Submits both fork and original repository', async () => {
       github.mockOctokit.rest.dependencyGraph.createRepositorySnapshot.mockResolvedValueOnce(
         {}

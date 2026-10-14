@@ -47949,11 +47949,13 @@ class LockFile {
         if (parsed === null ||
             typeof parsed !== 'object' ||
             Array.isArray(parsed) ||
+            typeof parsed.version !== 'string' ||
+            parsed.version === '' ||
             (parsed.dependencies !== undefined &&
                 (parsed.dependencies === null ||
                     typeof parsed.dependencies !== 'object' ||
                     Array.isArray(parsed.dependencies)))) {
-            throw new Error('lock file must be a mapping with a dependencies mapping');
+            throw new Error('lock file must be a mapping with a version and a dependencies mapping');
         }
         this.workflows = new Set(Object.keys(parsed.workflows ?? {}));
         this.dependencies = new Map(Object.entries((parsed?.dependencies ?? {})));
@@ -48060,9 +48062,8 @@ async function ensureActionsLockExtension(token, extensionVersion) {
 /**
  * Runs `gh actions-lock --verify` against the repository.
  *
- * @returns 'valid' if every pin is accepted, 'invalid' if verification ran and
- * rejected the lock file, 'unavailable' if verification could not complete
- * (e.g. timeout)
+ * @returns true only if verification completed and accepted the lock file;
+ * a rejection, timeout or any other failure to verify returns false
  */
 function verifyLockFile(repoRoot, token) {
     return new Promise((resolve) => {
@@ -48077,11 +48078,10 @@ function verifyLockFile(repoRoot, token) {
         }, (error$1, _stdout, stderr) => {
             if (error$1) {
                 error(`actions.lock verification failed: ${stderr?.trim() || error$1.message}`);
-                const noExit = typeof error$1.code !== 'number';
-                resolve(noExit ? 'unavailable' : 'invalid');
+                resolve(false);
                 return;
             }
-            resolve('valid');
+            resolve(true);
         });
     });
 }
@@ -48090,9 +48090,8 @@ function verifyLockFile(repoRoot, token) {
  *
  * - no lock file: returns undefined (legacy lookup)
  * - malformed lock file, or an unmet `extensionVersion` requirement: throws
- * - `gh`/extension unavailable, or verification could not complete: warns and
- *   uses the lock file unverified
- * - verification ran and rejected the lock file: throws
+ * - `gh`/extension unavailable: warns and uses the lock file unverified
+ * - verification fails for any reason (rejected, timeout, auth): throws
  *
  * @returns The lock file, or undefined if the repository has none
  */
@@ -48114,18 +48113,14 @@ async function loadVerifiedLockFile(repoRoot, token, extensionVersion) {
     if (!lock) {
         return undefined;
     }
-    const result = extensionReady
-        ? await verifyLockFile(repoRoot, token)
-        : 'unavailable';
-    if (result === 'invalid') {
+    if (!extensionReady) {
+        warning(`${LOCKFILE_RELATIVE_PATH} could not be verified; using its contents unverified`);
+        return lock;
+    }
+    if (!(await verifyLockFile(repoRoot, token))) {
         throw new Error(`${LOCKFILE_RELATIVE_PATH} failed verification (gh actions-lock --verify); regenerate it with gh actions-lock`);
     }
-    if (result === 'valid') {
-        info(`Using verified ${LOCKFILE_RELATIVE_PATH} to resolve dependencies`);
-    }
-    else {
-        warning(`${LOCKFILE_RELATIVE_PATH} could not be verified; using its contents unverified`);
-    }
+    info(`Using verified ${LOCKFILE_RELATIVE_PATH} to resolve dependencies`);
     return lock;
 }
 
@@ -48159,11 +48154,13 @@ class WorkflowParser {
      * file, so the submitted snapshot reports what actually runs. `uses` is kept
      * as the lock lookup key.
      */
-    pin(dependency, lock = this.lockOverride
-        ? this.lockOverride.lock
-        : this.lockFile) {
+    pin(dependency, lock) {
         const commit = lock?.getCommit(dependency.uses);
-        return commit ? { ...dependency, ref: commit } : dependency;
+        return commit ? { ...dependency, ref: commit, locked: true } : dependency;
+    }
+    /** Pins using the lock of the local file currently being parsed */
+    pinLocal(dependency) {
+        return this.pin(dependency, this.lockOverride ? this.lockOverride.lock : this.lockFile);
     }
     /**
      * Generates a unique key for an action dependency for tracking processed actions
@@ -48171,9 +48168,9 @@ class WorkflowParser {
      * @param dependency Action dependency to generate key for
      * @returns Unique key in format "owner/repo@ref"
      */
-    getActionKey(dependency) {
+    getActionKey(dependency, lock) {
         const actionPath = dependency.actionPath ? `/${dependency.actionPath}` : '';
-        return `${dependency.owner}/${dependency.repo}${actionPath}@${dependency.ref}`;
+        return `${dependency.owner}/${dependency.repo}${actionPath}@${dependency.ref}${lock ? '#locked' : ''}`;
     }
     /**
      * Returns the lock governing a workflow file: the repository lock, but only
@@ -48199,14 +48196,20 @@ class WorkflowParser {
     async parseWorkflowDirectory(workflowDir, additionalPaths = [], repoRoot) {
         const dependencies = [];
         const dockerDependencies = [];
-        const processedFiles = new Set();
-        const filesToProcess = [];
-        const scopes = new Map();
+        const processed = new Set();
+        const queue = [];
+        // The same file can be reached from workflows with and without a lock
+        // (resolving to different graphs), so each usage is tracked separately
+        const enqueue = (filePath, lock) => {
+            if (!processed.has(`${filePath}|${lock ? 'locked' : 'unlocked'}`)) {
+                queue.push({ filePath, lock });
+            }
+        };
         // Process root action.yml or action.yaml if it exists (for repositories authoring GitHub Actions)
         if (repoRoot) {
             const rootActionYml = this.findActionYml(repoRoot);
             if (rootActionYml && this.shouldProcessActionFile(rootActionYml)) {
-                filesToProcess.push(rootActionYml);
+                enqueue(rootActionYml, undefined);
             }
         }
         // Process main workflow directory
@@ -48215,106 +48218,84 @@ class WorkflowParser {
             const workflowFiles = files.filter((file) => file.endsWith('.yml') || file.endsWith('.yaml'));
             for (const file of workflowFiles) {
                 const filePath = path.join(workflowDir, file);
-                scopes.set(filePath, this.lockScopeFor(filePath, repoRoot));
-                filesToProcess.push(filePath);
+                enqueue(filePath, this.lockScopeFor(filePath, repoRoot));
+            }
+        }
+        // Additional paths are never covered by the lock file
+        const additionalFiles = [];
+        if (repoRoot) {
+            for (const additionalPath of additionalPaths) {
+                for (const file of this.findWorkflowFiles(path.join(repoRoot, additionalPath))) {
+                    if (this.isCompositeAction(file)) {
+                        additionalFiles.push(file);
+                    }
+                }
             }
         }
         // Process all files in queue (including discovered local actions and callable workflows)
-        while (filesToProcess.length > 0) {
-            const filePath = filesToProcess.shift();
-            if (!filePath || processedFiles.has(filePath)) {
-                continue;
-            }
-            processedFiles.add(filePath);
-            const scope = scopes.get(filePath);
-            this.lockOverride = { lock: scope };
-            let result;
-            try {
-                result = await this.parseWorkflowFile(filePath, repoRoot);
-            }
-            finally {
-                this.lockOverride = undefined;
-            }
-            dependencies.push(...result.dependencies);
-            dockerDependencies.push(...result.dockerDependencies);
-            // Add local actions to processing queue if repoRoot is provided
-            if (repoRoot) {
-                for (const localAction of result.localActions) {
-                    const resolvedPath = this.resolveLocalPath(filePath, localAction, repoRoot);
-                    if (resolvedPath) {
-                        const actionYml = this.findActionYml(resolvedPath);
-                        if (actionYml &&
-                            !processedFiles.has(actionYml) &&
-                            this.isCompositeAction(actionYml)) {
-                            scopes.set(actionYml, scope);
-                            filesToProcess.push(actionYml);
-                        }
-                    }
-                }
-                // Add callable workflows to processing queue
-                for (const callableWorkflow of result.callableWorkflows) {
-                    const resolvedPath = this.resolveLocalPath(filePath, callableWorkflow, repoRoot);
-                    if (resolvedPath && !processedFiles.has(resolvedPath)) {
-                        scopes.set(resolvedPath, this.lockScopeFor(resolvedPath, repoRoot));
-                        filesToProcess.push(resolvedPath);
-                    }
+        for (let pass = 0; pass < 2; pass++) {
+            if (pass === 1) {
+                for (const file of additionalFiles) {
+                    enqueue(file, undefined);
                 }
             }
-            // Process remote composite actions and callable workflows if octokit is available
-            if (this.octokitProvider) {
-                // Get relative path for source tracking
-                const relativePath = repoRoot
-                    ? path.relative(repoRoot, filePath)
-                    : filePath;
-                // Process remote composite actions and callable workflows
-                for (const dep of result.dependencies) {
-                    const remoteActionKey = this.getActionKey(dep);
-                    if (!this.processedRemoteActions.has(remoteActionKey)) {
-                        this.processedRemoteActions.add(remoteActionKey);
-                        const remoteDeps = await this.processRemoteActionOrWorkflow(dep, relativePath, scope);
-                        dependencies.push(...remoteDeps.actionDependencies);
-                        dockerDependencies.push(...remoteDeps.dockerDependencies);
-                    }
+            while (queue.length > 0) {
+                const item = queue.shift();
+                if (!item) {
+                    continue;
                 }
-            }
-        }
-        // Scan additional paths for composite actions
-        if (repoRoot && additionalPaths.length > 0) {
-            for (const additionalPath of additionalPaths) {
-                const fullPath = path.join(repoRoot, additionalPath);
-                const files = this.findWorkflowFiles(fullPath);
-                for (const file of files) {
-                    if (processedFiles.has(file) || !this.isCompositeAction(file)) {
-                        continue;
-                    }
-                    processedFiles.add(file);
-                    const result = await this.parseWorkflowFile(file, repoRoot);
-                    dependencies.push(...result.dependencies);
-                    dockerDependencies.push(...result.dockerDependencies);
-                    // Process nested local actions
+                const { filePath, lock: scope } = item;
+                const processedKey = `${filePath}|${scope ? 'locked' : 'unlocked'}`;
+                if (processed.has(processedKey)) {
+                    continue;
+                }
+                processed.add(processedKey);
+                this.lockOverride = { lock: scope };
+                let result;
+                try {
+                    result = await this.parseWorkflowFile(filePath, repoRoot);
+                }
+                finally {
+                    this.lockOverride = undefined;
+                }
+                dependencies.push(...result.dependencies);
+                dockerDependencies.push(...result.dockerDependencies);
+                // Add local actions to processing queue if repoRoot is provided
+                if (repoRoot) {
                     for (const localAction of result.localActions) {
-                        const resolvedPath = this.resolveLocalPath(file, localAction, repoRoot);
+                        const resolvedPath = this.resolveLocalPath(filePath, localAction, repoRoot);
                         if (resolvedPath) {
                             const actionYml = this.findActionYml(resolvedPath);
-                            if (actionYml &&
-                                !processedFiles.has(actionYml) &&
-                                this.isCompositeAction(actionYml)) {
-                                filesToProcess.push(actionYml);
+                            if (actionYml && this.isCompositeAction(actionYml)) {
+                                enqueue(actionYml, scope);
                             }
                         }
                     }
+                    // Add callable workflows to processing queue
+                    for (const callableWorkflow of result.callableWorkflows) {
+                        const resolvedPath = this.resolveLocalPath(filePath, callableWorkflow, repoRoot);
+                        if (resolvedPath) {
+                            enqueue(resolvedPath, this.lockScopeFor(resolvedPath, repoRoot));
+                        }
+                    }
                 }
-            }
-            // Continue processing any newly discovered files
-            while (filesToProcess.length > 0) {
-                const filePath = filesToProcess.shift();
-                if (!filePath || processedFiles.has(filePath)) {
-                    continue;
+                // Process remote composite actions and callable workflows if octokit is available
+                if (this.octokitProvider) {
+                    // Get relative path for source tracking
+                    const relativePath = repoRoot
+                        ? path.relative(repoRoot, filePath)
+                        : filePath;
+                    // Process remote composite actions and callable workflows
+                    for (const dep of result.dependencies) {
+                        const remoteActionKey = this.getActionKey(dep, scope);
+                        if (!this.processedRemoteActions.has(remoteActionKey)) {
+                            this.processedRemoteActions.add(remoteActionKey);
+                            const remoteDeps = await this.processRemoteActionOrWorkflow(dep, relativePath, scope);
+                            dependencies.push(...remoteDeps.actionDependencies);
+                            dockerDependencies.push(...remoteDeps.dockerDependencies);
+                        }
+                    }
                 }
-                processedFiles.add(filePath);
-                const result = await this.parseWorkflowFile(filePath, repoRoot);
-                dependencies.push(...result.dependencies);
-                dockerDependencies.push(...result.dockerDependencies);
             }
         }
         return { actionDependencies: dependencies, dockerDependencies };
@@ -48401,7 +48382,7 @@ class WorkflowParser {
                 }
                 else if (result.dependency) {
                     dependencies.push({
-                        ...this.pin(result.dependency),
+                        ...this.pinLocal(result.dependency),
                         sourcePath
                     });
                 }
@@ -48522,7 +48503,7 @@ class WorkflowParser {
                 }
                 else if (result.dependency) {
                     dependencies.push({
-                        ...this.pin(result.dependency),
+                        ...this.pinLocal(result.dependency),
                         sourcePath
                     });
                 }
@@ -48540,7 +48521,7 @@ class WorkflowParser {
                             }
                             else if (result.dependency) {
                                 dependencies.push({
-                                    ...this.pin(result.dependency),
+                                    ...this.pinLocal(result.dependency),
                                     sourcePath
                                 });
                             }
@@ -48889,7 +48870,7 @@ class WorkflowParser {
                     isTransitive: true
                 };
                 lockedDeps.push(transitiveDep);
-                const key = this.getActionKey(transitiveDep);
+                const key = this.getActionKey(transitiveDep, lock);
                 if (!this.processedRemoteActions.has(key)) {
                     this.processedRemoteActions.add(key);
                     const nested = await this.processRemoteActionOrWorkflow(transitiveDep, callingWorkflowPath, lock);
@@ -48932,10 +48913,11 @@ class WorkflowParser {
                 : undefined;
             const workflowPath = dependency.uses.match(/^[^/]+\/[^/]+\/(.+\.ya?ml)@/)?.[1];
             return this.processRemoteCallableWorkflow(parsed, resolvedDependency, callingWorkflowPath, 
-            // Only trust the workflow's own lock if it actually covers this workflow
+            // Callable workflows are locked by their own lock file only; without
+            // one covering the workflow its dependencies resolve by ref
             ownLock && workflowPath && ownLock.coversWorkflow(workflowPath)
                 ? ownLock
-                : lock);
+                : undefined);
         }
         return { actionDependencies: [], dockerDependencies: [] };
     }
@@ -48968,7 +48950,7 @@ class WorkflowParser {
                             };
                             transitiveDeps.push(transitiveDep);
                             // Recursively process this transitive dependency if it hasn't been processed yet
-                            const transitiveKey = this.getActionKey(transitiveDep);
+                            const transitiveKey = this.getActionKey(transitiveDep, lock);
                             if (!this.processedRemoteActions.has(transitiveKey)) {
                                 this.processedRemoteActions.add(transitiveKey);
                                 const nestedDeps = await this.processRemoteActionOrWorkflow(transitiveDep, callingWorkflowPath, lock);
@@ -49088,7 +49070,7 @@ class WorkflowParser {
                         };
                         transitiveDeps.push(transitiveDep);
                         // Recursively process this transitive dependency if it hasn't been processed yet
-                        const transitiveKey = this.getActionKey(transitiveDep);
+                        const transitiveKey = this.getActionKey(transitiveDep, lock);
                         if (!this.processedRemoteActions.has(transitiveKey)) {
                             this.processedRemoteActions.add(transitiveKey);
                             const nestedDeps = await this.processRemoteActionOrWorkflow(transitiveDep, callingWorkflowPath, lock);
@@ -49113,7 +49095,7 @@ class WorkflowParser {
                                     };
                                     transitiveDeps.push(transitiveDep);
                                     // Recursively process this transitive dependency if it hasn't been processed yet
-                                    const transitiveKey = this.getActionKey(transitiveDep);
+                                    const transitiveKey = this.getActionKey(transitiveDep, lock);
                                     if (!this.processedRemoteActions.has(transitiveKey)) {
                                         this.processedRemoteActions.add(transitiveKey);
                                         const nestedDeps = await this.processRemoteActionOrWorkflow(transitiveDep, callingWorkflowPath, lock);
@@ -49287,7 +49269,8 @@ class ForkResolver {
             sourcePath: dependency.sourcePath,
             originalSha,
             isTransitive: dependency.isTransitive,
-            actionPath: dependency.actionPath
+            actionPath: dependency.actionPath,
+            locked: dependency.locked
         };
         // Check if this dependency is from a fork organization
         if (!this.forkOrganizations.has(dependency.owner)) {
@@ -49604,6 +49587,10 @@ const DEPENDENCY_RELATIONSHIP = {
 const DEPENDENCY_SCOPE = {
     RUNTIME: undefined
 };
+/** Marks how a dependency's version was determined */
+const resolvedBy = (locked) => ({
+    resolved_by: locked ? 'actions-lock' : 'ref'
+});
 /**
  * Submits dependencies to GitHub's Dependency Graph
  */
@@ -49626,7 +49613,7 @@ class DependencySubmitter {
      * @param actionPath Optional path within the repository (for actions in subfolders)
      * @returns Number of dependencies added
      */
-    addDependencyEntries(owner, repo, ref, originalSha, manifests, isTransitive = false, actionPath) {
+    addDependencyEntries(owner, repo, ref, originalSha, manifests, isTransitive = false, actionPath, locked) {
         let count = 0;
         // Determine the effective relationship based on configuration
         const reportTransitiveAsDirect = this.config.reportTransitiveAsDirect !== false;
@@ -49642,7 +49629,8 @@ class DependencySubmitter {
             manifests.push({
                 package_url: shaPurl,
                 relationship: effectiveRelationship,
-                scope: DEPENDENCY_SCOPE.RUNTIME
+                scope: DEPENDENCY_SCOPE.RUNTIME,
+                metadata: resolvedBy(locked)
             });
             count++;
             // Add version - use same relationship as SHA when reporting transitive as direct
@@ -49652,7 +49640,8 @@ class DependencySubmitter {
                 relationship: reportTransitiveAsDirect
                     ? effectiveRelationship
                     : DEPENDENCY_RELATIONSHIP.INDIRECT,
-                scope: DEPENDENCY_SCOPE.RUNTIME
+                scope: DEPENDENCY_SCOPE.RUNTIME,
+                metadata: resolvedBy(locked)
             });
             count++;
         }
@@ -49662,7 +49651,8 @@ class DependencySubmitter {
             manifests.push({
                 package_url: purl,
                 relationship: effectiveRelationship,
-                scope: DEPENDENCY_SCOPE.RUNTIME
+                scope: DEPENDENCY_SCOPE.RUNTIME,
+                metadata: resolvedBy(locked)
             });
             count++;
         }
@@ -49689,14 +49679,14 @@ class DependencySubmitter {
             const sourceManifests = dependenciesBySource.get(sourcePath);
             // Add dependency entries for the forked repository
             // Use isTransitive flag if set, otherwise default to false (direct)
-            dependencyCount += this.addDependencyEntries(dep.owner, dep.repo, dep.ref, dep.originalSha, sourceManifests, dep.isTransitive || false, dep.actionPath);
+            dependencyCount += this.addDependencyEntries(dep.owner, dep.repo, dep.ref, dep.originalSha, sourceManifests, dep.isTransitive || false, dep.actionPath, dep.locked);
             if (dep.originalSha) {
                 info(`Resolved SHA ${dep.originalSha} to version ${dep.ref} for ${dep.owner}/${dep.repo} - reporting both`);
             }
             // Also add the original repository if it exists
             if (dep.original) {
                 dependencyCount += this.addDependencyEntries(dep.original.owner, dep.original.repo, dep.ref, dep.originalSha, sourceManifests, true, // Mark original repo dependencies as transitive/indirect
-                dep.actionPath);
+                dep.actionPath, dep.locked);
                 info(`Submitting both ${dep.owner}/${dep.repo} and original ${dep.original.owner}/${dep.original.repo}`);
             }
         }
@@ -49719,7 +49709,8 @@ class DependencySubmitter {
             sourceManifests.push({
                 package_url: purl,
                 relationship: effectiveRelationship,
-                scope: DEPENDENCY_SCOPE.RUNTIME
+                scope: DEPENDENCY_SCOPE.RUNTIME,
+                metadata: resolvedBy()
             });
             dependencyCount++;
             debug(`Added Docker dependency: ${purl} (${effectiveRelationship})`);
@@ -49731,7 +49722,11 @@ class DependencySubmitter {
             const resolved = {};
             for (const dep of deps) {
                 if (dep.package_url) {
-                    resolved[dep.package_url] = dep;
+                    // A locked usage wins over an unlocked one of the same package
+                    const existing = resolved[dep.package_url];
+                    if (existing?.metadata?.resolved_by !== 'actions-lock') {
+                        resolved[dep.package_url] = dep;
+                    }
                 }
             }
             manifests[sourcePath] = {

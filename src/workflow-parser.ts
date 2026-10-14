@@ -17,6 +17,7 @@ export interface ActionDependency {
   sourcePath?: string // Path to the workflow/action file where this dependency was found
   isTransitive?: boolean // Whether this is a transitive/indirect dependency
   actionPath?: string // Path within the repository for actions in subfolders (e.g., 'subfolder' for owner/repo/subfolder@ref)
+  locked?: boolean // Whether the ref was pinned to a commit by actions.lock
 }
 
 /**
@@ -69,23 +70,28 @@ export class WorkflowParser {
    */
   private pin(
     dependency: ActionDependency,
-    lock: LockFile | undefined = this.lockOverride
-      ? this.lockOverride.lock
-      : this.lockFile
+    lock: LockFile | undefined
   ): ActionDependency {
     const commit = lock?.getCommit(dependency.uses)
-    return commit ? { ...dependency, ref: commit } : dependency
+    return commit ? { ...dependency, ref: commit, locked: true } : dependency
   }
 
+  /** Pins using the lock of the local file currently being parsed */
+  private pinLocal(dependency: ActionDependency): ActionDependency {
+    return this.pin(
+      dependency,
+      this.lockOverride ? this.lockOverride.lock : this.lockFile
+    )
+  }
   /**
    * Generates a unique key for an action dependency for tracking processed actions
    *
    * @param dependency Action dependency to generate key for
    * @returns Unique key in format "owner/repo@ref"
    */
-  private getActionKey(dependency: ActionDependency): string {
+  private getActionKey(dependency: ActionDependency, lock?: LockFile): string {
     const actionPath = dependency.actionPath ? `/${dependency.actionPath}` : ''
-    return `${dependency.owner}/${dependency.repo}${actionPath}@${dependency.ref}`
+    return `${dependency.owner}/${dependency.repo}${actionPath}@${dependency.ref}${lock ? '#locked' : ''}`
   }
 
   /**
@@ -123,15 +129,22 @@ export class WorkflowParser {
   }> {
     const dependencies: ActionDependency[] = []
     const dockerDependencies: DockerDependency[] = []
-    const processedFiles = new Set<string>()
-    const filesToProcess: string[] = []
-    const scopes = new Map<string, LockFile | undefined>()
+    const processed = new Set<string>()
+    const queue: { filePath: string; lock: LockFile | undefined }[] = []
+
+    // The same file can be reached from workflows with and without a lock
+    // (resolving to different graphs), so each usage is tracked separately
+    const enqueue = (filePath: string, lock: LockFile | undefined) => {
+      if (!processed.has(`${filePath}|${lock ? 'locked' : 'unlocked'}`)) {
+        queue.push({ filePath, lock })
+      }
+    }
 
     // Process root action.yml or action.yaml if it exists (for repositories authoring GitHub Actions)
     if (repoRoot) {
       const rootActionYml = this.findActionYml(repoRoot)
       if (rootActionYml && this.shouldProcessActionFile(rootActionYml)) {
-        filesToProcess.push(rootActionYml)
+        enqueue(rootActionYml, undefined)
       }
     }
 
@@ -144,140 +157,107 @@ export class WorkflowParser {
 
       for (const file of workflowFiles) {
         const filePath = path.join(workflowDir, file)
-        scopes.set(filePath, this.lockScopeFor(filePath, repoRoot))
-        filesToProcess.push(filePath)
+        enqueue(filePath, this.lockScopeFor(filePath, repoRoot))
+      }
+    }
+
+    // Additional paths are never covered by the lock file
+    const additionalFiles: string[] = []
+    if (repoRoot) {
+      for (const additionalPath of additionalPaths) {
+        for (const file of this.findWorkflowFiles(
+          path.join(repoRoot, additionalPath)
+        )) {
+          if (this.isCompositeAction(file)) {
+            additionalFiles.push(file)
+          }
+        }
       }
     }
 
     // Process all files in queue (including discovered local actions and callable workflows)
-    while (filesToProcess.length > 0) {
-      const filePath = filesToProcess.shift()
-      if (!filePath || processedFiles.has(filePath)) {
-        continue
-      }
-
-      processedFiles.add(filePath)
-      const scope = scopes.get(filePath)
-      this.lockOverride = { lock: scope }
-      let result: Awaited<ReturnType<WorkflowParser['parseWorkflowFile']>>
-      try {
-        result = await this.parseWorkflowFile(filePath, repoRoot)
-      } finally {
-        this.lockOverride = undefined
-      }
-      dependencies.push(...result.dependencies)
-      dockerDependencies.push(...result.dockerDependencies)
-
-      // Add local actions to processing queue if repoRoot is provided
-      if (repoRoot) {
-        for (const localAction of result.localActions) {
-          const resolvedPath = this.resolveLocalPath(
-            filePath,
-            localAction,
-            repoRoot
-          )
-          if (resolvedPath) {
-            const actionYml = this.findActionYml(resolvedPath)
-            if (
-              actionYml &&
-              !processedFiles.has(actionYml) &&
-              this.isCompositeAction(actionYml)
-            ) {
-              scopes.set(actionYml, scope)
-              filesToProcess.push(actionYml)
-            }
-          }
-        }
-
-        // Add callable workflows to processing queue
-        for (const callableWorkflow of result.callableWorkflows) {
-          const resolvedPath = this.resolveLocalPath(
-            filePath,
-            callableWorkflow,
-            repoRoot
-          )
-          if (resolvedPath && !processedFiles.has(resolvedPath)) {
-            scopes.set(resolvedPath, this.lockScopeFor(resolvedPath, repoRoot))
-            filesToProcess.push(resolvedPath)
-          }
+    for (let pass = 0; pass < 2; pass++) {
+      if (pass === 1) {
+        for (const file of additionalFiles) {
+          enqueue(file, undefined)
         }
       }
 
-      // Process remote composite actions and callable workflows if octokit is available
-      if (this.octokitProvider) {
-        // Get relative path for source tracking
-        const relativePath = repoRoot
-          ? path.relative(repoRoot, filePath)
-          : filePath
-
-        // Process remote composite actions and callable workflows
-        for (const dep of result.dependencies) {
-          const remoteActionKey = this.getActionKey(dep)
-          if (!this.processedRemoteActions.has(remoteActionKey)) {
-            this.processedRemoteActions.add(remoteActionKey)
-            const remoteDeps = await this.processRemoteActionOrWorkflow(
-              dep,
-              relativePath,
-              scope
-            )
-            dependencies.push(...remoteDeps.actionDependencies)
-            dockerDependencies.push(...remoteDeps.dockerDependencies)
-          }
+      while (queue.length > 0) {
+        const item = queue.shift()
+        if (!item) {
+          continue
         }
-      }
-    }
+        const { filePath, lock: scope } = item
+        const processedKey = `${filePath}|${scope ? 'locked' : 'unlocked'}`
+        if (processed.has(processedKey)) {
+          continue
+        }
 
-    // Scan additional paths for composite actions
-    if (repoRoot && additionalPaths.length > 0) {
-      for (const additionalPath of additionalPaths) {
-        const fullPath = path.join(repoRoot, additionalPath)
-        const files = this.findWorkflowFiles(fullPath)
+        processed.add(processedKey)
+        this.lockOverride = { lock: scope }
+        let result: Awaited<ReturnType<WorkflowParser['parseWorkflowFile']>>
+        try {
+          result = await this.parseWorkflowFile(filePath, repoRoot)
+        } finally {
+          this.lockOverride = undefined
+        }
+        dependencies.push(...result.dependencies)
+        dockerDependencies.push(...result.dockerDependencies)
 
-        for (const file of files) {
-          if (processedFiles.has(file) || !this.isCompositeAction(file)) {
-            continue
-          }
-
-          processedFiles.add(file)
-          const result = await this.parseWorkflowFile(file, repoRoot)
-          dependencies.push(...result.dependencies)
-          dockerDependencies.push(...result.dockerDependencies)
-
-          // Process nested local actions
+        // Add local actions to processing queue if repoRoot is provided
+        if (repoRoot) {
           for (const localAction of result.localActions) {
             const resolvedPath = this.resolveLocalPath(
-              file,
+              filePath,
               localAction,
               repoRoot
             )
             if (resolvedPath) {
               const actionYml = this.findActionYml(resolvedPath)
-              if (
-                actionYml &&
-                !processedFiles.has(actionYml) &&
-                this.isCompositeAction(actionYml)
-              ) {
-                filesToProcess.push(actionYml)
+              if (actionYml && this.isCompositeAction(actionYml)) {
+                enqueue(actionYml, scope)
               }
+            }
+          }
+
+          // Add callable workflows to processing queue
+          for (const callableWorkflow of result.callableWorkflows) {
+            const resolvedPath = this.resolveLocalPath(
+              filePath,
+              callableWorkflow,
+              repoRoot
+            )
+            if (resolvedPath) {
+              enqueue(resolvedPath, this.lockScopeFor(resolvedPath, repoRoot))
+            }
+          }
+        }
+
+        // Process remote composite actions and callable workflows if octokit is available
+        if (this.octokitProvider) {
+          // Get relative path for source tracking
+          const relativePath = repoRoot
+            ? path.relative(repoRoot, filePath)
+            : filePath
+
+          // Process remote composite actions and callable workflows
+          for (const dep of result.dependencies) {
+            const remoteActionKey = this.getActionKey(dep, scope)
+            if (!this.processedRemoteActions.has(remoteActionKey)) {
+              this.processedRemoteActions.add(remoteActionKey)
+              const remoteDeps = await this.processRemoteActionOrWorkflow(
+                dep,
+                relativePath,
+                scope
+              )
+              dependencies.push(...remoteDeps.actionDependencies)
+              dockerDependencies.push(...remoteDeps.dockerDependencies)
             }
           }
         }
       }
-
-      // Continue processing any newly discovered files
-      while (filesToProcess.length > 0) {
-        const filePath = filesToProcess.shift()
-        if (!filePath || processedFiles.has(filePath)) {
-          continue
-        }
-
-        processedFiles.add(filePath)
-        const result = await this.parseWorkflowFile(filePath, repoRoot)
-        dependencies.push(...result.dependencies)
-        dockerDependencies.push(...result.dockerDependencies)
-      }
     }
-
     return { actionDependencies: dependencies, dockerDependencies }
   }
 
@@ -404,7 +384,7 @@ export class WorkflowParser {
           localActions.push(result.path)
         } else if (result.dependency) {
           dependencies.push({
-            ...this.pin(result.dependency),
+            ...this.pinLocal(result.dependency),
             sourcePath
           })
         }
@@ -559,7 +539,7 @@ export class WorkflowParser {
           callableWorkflows.push(result.path)
         } else if (result.dependency) {
           dependencies.push({
-            ...this.pin(result.dependency),
+            ...this.pinLocal(result.dependency),
             sourcePath
           })
         }
@@ -577,7 +557,7 @@ export class WorkflowParser {
                 localActions.push(result.path)
               } else if (result.dependency) {
                 dependencies.push({
-                  ...this.pin(result.dependency),
+                  ...this.pinLocal(result.dependency),
                   sourcePath
                 })
               } else if (result.dockerDependency) {
@@ -991,7 +971,7 @@ export class WorkflowParser {
         }
         lockedDeps.push(transitiveDep)
 
-        const key = this.getActionKey(transitiveDep)
+        const key = this.getActionKey(transitiveDep, lock)
         if (!this.processedRemoteActions.has(key)) {
           this.processedRemoteActions.add(key)
           const nested = await this.processRemoteActionOrWorkflow(
@@ -1059,10 +1039,11 @@ export class WorkflowParser {
         parsed,
         resolvedDependency,
         callingWorkflowPath,
-        // Only trust the workflow's own lock if it actually covers this workflow
+        // Callable workflows are locked by their own lock file only; without
+        // one covering the workflow its dependencies resolve by ref
         ownLock && workflowPath && ownLock.coversWorkflow(workflowPath)
           ? ownLock
-          : lock
+          : undefined
       )
     }
 
@@ -1110,7 +1091,7 @@ export class WorkflowParser {
               transitiveDeps.push(transitiveDep)
 
               // Recursively process this transitive dependency if it hasn't been processed yet
-              const transitiveKey = this.getActionKey(transitiveDep)
+              const transitiveKey = this.getActionKey(transitiveDep, lock)
               if (!this.processedRemoteActions.has(transitiveKey)) {
                 this.processedRemoteActions.add(transitiveKey)
                 const nestedDeps = await this.processRemoteActionOrWorkflow(
@@ -1261,7 +1242,7 @@ export class WorkflowParser {
             transitiveDeps.push(transitiveDep)
 
             // Recursively process this transitive dependency if it hasn't been processed yet
-            const transitiveKey = this.getActionKey(transitiveDep)
+            const transitiveKey = this.getActionKey(transitiveDep, lock)
             if (!this.processedRemoteActions.has(transitiveKey)) {
               this.processedRemoteActions.add(transitiveKey)
               const nestedDeps = await this.processRemoteActionOrWorkflow(
@@ -1292,7 +1273,7 @@ export class WorkflowParser {
                   transitiveDeps.push(transitiveDep)
 
                   // Recursively process this transitive dependency if it hasn't been processed yet
-                  const transitiveKey = this.getActionKey(transitiveDep)
+                  const transitiveKey = this.getActionKey(transitiveDep, lock)
                   if (!this.processedRemoteActions.has(transitiveKey)) {
                     this.processedRemoteActions.add(transitiveKey)
                     const nestedDeps = await this.processRemoteActionOrWorkflow(

@@ -20,7 +20,7 @@ jest.unstable_mockModule('child_process', () => ({ execFile }))
 
 const { loadVerifiedLockFile } = await import('../src/lockfile.js')
 
-const validLock = `dependencies:\n  'a/b@v1':\n    commit: 'sha1-${'a'.repeat(40)}'\n`
+const validLock = `version: v0.0.3\ndependencies:\n  'a/b@v1':\n    commit: 'sha1-${'a'.repeat(40)}'\n`
 
 describe('loadVerifiedLockFile verification', () => {
   let dir: string
@@ -70,14 +70,18 @@ describe('loadVerifiedLockFile verification', () => {
     )
   })
 
-  it('Uses the lock with a warning when verification times out', async () => {
+  it('Throws when verification times out', async () => {
     setup(Object.assign(new Error('timed out'), { killed: true }))
-    expect((await loadVerifiedLockFile(dir, 't'))?.getCommit('a/b@v1')).toBe(
-      'a'.repeat(40)
+    await expect(loadVerifiedLockFile(dir, 't')).rejects.toThrow(
+      'failed verification'
     )
-    expect(core.warning).toHaveBeenCalledWith(
-      expect.stringContaining('could not be verified')
-    )
+  })
+
+  it('Treats a lock file without a version as malformed', async () => {
+    setup(null, 'dependencies: {}\n')
+    await expect(loadVerifiedLockFile(dir, 't')).rejects.toThrow('Malformed')
+    setup(null, '')
+    await expect(loadVerifiedLockFile(dir, 't')).rejects.toThrow('Malformed')
   })
   it('Fails on malformed lock content even if verification succeeds', async () => {
     setup(null, 'dependencies: [unclosed')
