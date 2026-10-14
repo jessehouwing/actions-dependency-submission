@@ -192,9 +192,14 @@ async function ensureActionsLockExtension(
 /**
  * Runs `gh actions-lock --verify` against the repository.
  *
- * @returns true only if the lock file is complete and every pin is accepted
+ * @returns 'valid' if every pin is accepted, 'invalid' if verification ran and
+ * rejected the lock file, 'unavailable' if verification could not complete
+ * (e.g. timeout)
  */
-function verifyLockFile(repoRoot: string, token: string): Promise<boolean> {
+function verifyLockFile(
+  repoRoot: string,
+  token: string
+): Promise<'valid' | 'invalid' | 'unavailable'> {
   return new Promise((resolve) => {
     runGh(
       ['actions-lock', '--verify', '--no-interactive'],
@@ -209,23 +214,27 @@ function verifyLockFile(repoRoot: string, token: string): Promise<boolean> {
       },
       (error, _stdout, stderr) => {
         if (error) {
-          core.warning(
+          core.error(
             `actions.lock verification failed: ${stderr?.trim() || error.message}`
           )
-          resolve(false)
+          const noExit = typeof (error as { code?: unknown }).code !== 'number'
+          resolve(noExit ? 'unavailable' : 'invalid')
           return
         }
-        resolve(true)
+        resolve('valid')
       }
     )
   })
 }
 
 /**
- * Loads the repository's lock file. A malformed lock file (or an unmet
- * `extensionVersion` requirement) throws. If the lock file cannot be verified
- * with `gh actions-lock --verify` a warning is logged and its contents are
- * used anyway.
+ * Loads the repository's lock file.
+ *
+ * - no lock file: returns undefined (legacy lookup)
+ * - malformed lock file, or an unmet `extensionVersion` requirement: throws
+ * - `gh`/extension unavailable, or verification could not complete: warns and
+ *   uses the lock file unverified
+ * - verification ran and rejected the lock file: throws
  *
  * @returns The lock file, or undefined if the repository has none
  */
@@ -235,10 +244,9 @@ export async function loadVerifiedLockFile(
   extensionVersion?: string
 ): Promise<LockFile | undefined> {
   const lockPath = path.join(repoRoot, LOCKFILE_RELATIVE_PATH)
-  const exists = fs.existsSync(lockPath)
 
   let lock: LockFile | undefined
-  if (exists) {
+  if (fs.existsSync(lockPath)) {
     try {
       lock = new LockFile(fs.readFileSync(lockPath, 'utf8'))
     } catch (error) {
@@ -259,7 +267,15 @@ export async function loadVerifiedLockFile(
     return undefined
   }
 
-  if (extensionReady && (await verifyLockFile(repoRoot, token))) {
+  const result = extensionReady
+    ? await verifyLockFile(repoRoot, token)
+    : 'unavailable'
+  if (result === 'invalid') {
+    throw new Error(
+      `${LOCKFILE_RELATIVE_PATH} failed verification (gh actions-lock --verify); regenerate it with gh actions-lock`
+    )
+  }
+  if (result === 'valid') {
     core.info(
       `Using verified ${LOCKFILE_RELATIVE_PATH} to resolve dependencies`
     )
