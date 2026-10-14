@@ -1,6 +1,6 @@
 ---
 name: "@octokit/request"
-version: 10.0.13
+version: 10.0.16
 type: npm
 summary: Send parameterized requests to GitHub's APIs with sensible defaults in browsers
   and Node

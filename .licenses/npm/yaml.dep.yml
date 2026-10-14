@@ -1,6 +1,6 @@
 ---
 name: yaml
-version: 2.9.0
+version: 2.9.1
 type: npm
 summary: JavaScript parser and stringifier for YAML
 homepage: https://eemeli.org/yaml/
