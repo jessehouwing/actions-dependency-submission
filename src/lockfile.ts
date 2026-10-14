@@ -99,13 +99,20 @@ async function ensureActionsLockExtension(
   extensionVersion?: string
 ): Promise<boolean> {
   const env = { ...process.env, GH_TOKEN: token || process.env.GH_TOKEN }
+  // An explicitly requested version is a hard requirement
+  const fail = (message: string): false => {
+    if (extensionVersion) {
+      throw new Error(message)
+    }
+    core.warning(message)
+    return false
+  }
 
   const version = await runGhAsync(['--version'], env)
   if (version.error) {
-    core.warning(
+    return fail(
       'The GitHub CLI (gh) was not found on PATH; ignoring actions.lock. Install gh to enable lock file support.'
     )
-    return false
   }
 
   // `gh extension list` has no --json output; lines are tab separated:
@@ -135,10 +142,9 @@ async function ensureActionsLockExtension(
       env
     )
     if (remove.error) {
-      core.warning(
+      return fail(
         `Failed to remove ${EXTENSION_REPO}, ignoring actions.lock: ${remove.stderr.trim() || remove.error.message}`
       )
-      return false
     }
   }
 
@@ -155,10 +161,9 @@ async function ensureActionsLockExtension(
     env
   )
   if (install.error) {
-    core.warning(
+    return fail(
       `Failed to install ${EXTENSION_REPO}, ignoring actions.lock: ${install.stderr.trim() || install.error.message}`
     )
-    return false
   }
   return true
 }
@@ -206,12 +211,13 @@ export async function loadVerifiedLockFile(
   extensionVersion?: string
 ): Promise<LockFile | undefined> {
   const lockPath = path.join(repoRoot, LOCKFILE_RELATIVE_PATH)
-  if (!fs.existsSync(lockPath)) {
+  if (!fs.existsSync(lockPath) && !extensionVersion) {
     return undefined
   }
 
   if (
     !(await ensureActionsLockExtension(token, extensionVersion || undefined)) ||
+    !fs.existsSync(lockPath) ||
     !(await verifyLockFile(repoRoot, token))
   ) {
     return undefined
