@@ -2,7 +2,7 @@ import * as fs from 'fs'
 import * as path from 'path'
 import * as yaml from 'yaml'
 import * as core from '@actions/core'
-import { OctokitProvider } from './octokit-provider.js'
+import { OctokitProvider, type HostRoute } from './octokit-provider.js'
 import { DockerfileParser } from 'dockerfile-ast'
 import {
   LockFile,
@@ -22,6 +22,7 @@ export interface ActionDependency {
   isTransitive?: boolean // Whether this is a transitive/indirect dependency
   actionPath?: string // Path within the repository for actions in subfolders (e.g., 'subfolder' for owner/repo/subfolder@ref)
   locked?: boolean // Whether the ref was pinned to a commit by actions.lock
+  hostRoute?: HostRoute // Where actions.lock says this dependency resolves
 }
 
 /**
@@ -77,7 +78,10 @@ export class WorkflowParser {
     lock: LockFile | undefined
   ): ActionDependency {
     const commit = lock?.getCommit(dependency.uses)
-    return commit ? { ...dependency, ref: commit, locked: true } : dependency
+    const hostRoute = lock?.getHostRoute(dependency.uses)
+    return commit
+      ? { ...dependency, ref: commit, locked: true, hostRoute }
+      : dependency
   }
 
   /** Pins using the lock of the local file currently being parsed */
@@ -95,7 +99,7 @@ export class WorkflowParser {
    */
   private getActionKey(dependency: ActionDependency, lock?: LockFile): string {
     const actionPath = dependency.actionPath ? `/${dependency.actionPath}` : ''
-    return `${dependency.owner}/${dependency.repo}${actionPath}@${dependency.ref}${lock ? '#locked' : ''}`
+    return `${dependency.owner}/${dependency.repo}${actionPath}@${dependency.ref}${lock ? '#locked' : ''}${dependency.hostRoute === 'public' ? '#public' : ''}`
   }
 
   /**
@@ -914,13 +918,13 @@ export class WorkflowParser {
       return { actionDependencies: [], dockerDependencies: [] }
     }
 
-    const lockedHost = lock?.getHostname(dependency.uses)
+    const route = dependency.hostRoute ?? lock?.getHostRoute(dependency.uses)
     const reachable =
-      lockedHost === undefined ||
-      this.octokitProvider.setRepoHost(
+      !route ||
+      this.octokitProvider.isRouteReachable(
         dependency.owner,
         dependency.repo,
-        lockedHost
+        route
       )
 
     // Determine fetch strategy based on uses string format.
@@ -941,7 +945,8 @@ export class WorkflowParser {
               dependency.owner,
               dependency.repo,
               workflowFilePath,
-              ref
+              ref,
+              route
             )
           : null
       }
@@ -949,7 +954,8 @@ export class WorkflowParser {
         dependency.owner,
         dependency.repo,
         ref,
-        dependency.actionPath
+        dependency.actionPath,
+        route
       )
     }
 
@@ -963,7 +969,8 @@ export class WorkflowParser {
       const sha = await this.resolveCommitSha(
         dependency.owner,
         dependency.repo,
-        fetchRef
+        fetchRef,
+        route
       )
       const pinnedContent = sha ? await fetchContent(sha) : null
       if (sha && pinnedContent) {
@@ -1049,13 +1056,16 @@ export class WorkflowParser {
       // Callable workflows may ship their own lock file, pinned at the same commit
       // Only consulted when the repository has a lock file (regardless of the
       // caller's scope), so users without a lock file keep the previous behaviour
-      const ownLock = this.lockFile
-        ? await this.fetchRemoteLockFile(
-            dependency.owner,
-            dependency.repo,
-            fetchRef
-          )
-        : undefined
+      const ownLock =
+        this.lockFile && reachable
+          ? await this.fetchRemoteLockFile(
+              dependency.owner,
+              dependency.repo,
+              fetchRef,
+              route
+            )
+          : undefined
+      if (ownLock) ownLock.contextRoute = route ?? 'home'
       const workflowPath = dependency.uses.match(
         /^[^/]+\/[^/]+\/(.+\.ya?ml)@/
       )?.[1]
@@ -1352,7 +1362,8 @@ export class WorkflowParser {
     owner: string,
     repo: string,
     ref: string,
-    actionPath?: string
+    actionPath?: string,
+    route?: HostRoute
   ): Promise<string | null> {
     // Build the base path (subfolder or root)
     const basePath = actionPath ? `${actionPath}/` : ''
@@ -1362,7 +1373,8 @@ export class WorkflowParser {
       owner,
       repo,
       `${basePath}action.yml`,
-      ref
+      ref,
+      route
     )
     if (content) {
       return content
@@ -1373,7 +1385,8 @@ export class WorkflowParser {
       owner,
       repo,
       `${basePath}action.yaml`,
-      ref
+      ref,
+      route
     )
     return content
   }
@@ -1384,11 +1397,16 @@ export class WorkflowParser {
   private async resolveCommitSha(
     owner: string,
     repo: string,
-    ref: string
+    ref: string,
+    route?: HostRoute
   ): Promise<string | null> {
     if (!this.octokitProvider) return null
     try {
-      const octokit = await this.octokitProvider.getOctokitForRepo(owner, repo)
+      const octokit = await this.octokitProvider.getOctokitForRepo(
+        owner,
+        repo,
+        route
+      )
       const { data } = await octokit.rest.repos.getCommit({ owner, repo, ref })
       return typeof data?.sha === 'string' ? data.sha : null
     } catch (error) {
@@ -1403,13 +1421,15 @@ export class WorkflowParser {
   private async fetchRemoteLockFile(
     owner: string,
     repo: string,
-    ref: string
+    ref: string,
+    route?: HostRoute
   ): Promise<LockFile | undefined> {
     const content = await this.fetchRemoteFile(
       owner,
       repo,
       LOCKFILE_RELATIVE_PATH,
-      ref
+      ref,
+      route
     )
     if (!content) {
       return undefined
@@ -1437,14 +1457,19 @@ export class WorkflowParser {
     owner: string,
     repo: string,
     filePath: string,
-    ref: string
+    ref: string,
+    route?: HostRoute
   ): Promise<string | null> {
     if (!this.octokitProvider) {
       return null
     }
 
     try {
-      const octokit = await this.octokitProvider.getOctokitForRepo(owner, repo)
+      const octokit = await this.octokitProvider.getOctokitForRepo(
+        owner,
+        repo,
+        route
+      )
       const { data } = await octokit.rest.repos.getContent({
         owner,
         repo,

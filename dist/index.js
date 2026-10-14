@@ -41030,21 +41030,27 @@ class OctokitProvider {
         return this.publicOctokit;
     }
     /**
-     * Forces the host used for a repository, overriding the probing heuristic.
-     * Used when a lock file states where the dependency resolves.
+     * Resolves the Octokit instance for a lock-mandated route. Unlike the
+     * heuristic, a route is never cached per repository, so it cannot leak to
+     * unlocked uses of the same repository.
      *
-     * @param host `github.com` for public GitHub, `''` for the home host
-     * @returns false when the repository is on public GitHub but cannot be
-     * reached because the home host is elsewhere and no public token was given
+     * @returns undefined when public GitHub is required but unreachable: the
+     * home host is elsewhere and no public token is configured
      */
-    setRepoHost(owner, repo, host) {
-        const repoKey = `${owner}/${repo}`;
-        const usePublic = host === 'github.com' && !!this.publicOctokit;
-        this.publicRepoCache.set(repoKey, usePublic);
-        if (host !== 'github.com' || usePublic || this.homeIsGitHubDotCom()) {
+    getOctokitForRoute(route) {
+        if (route === 'home')
+            return this.octokit;
+        if (this.publicOctokit)
+            return this.publicOctokit;
+        return this.homeIsGitHubDotCom() ? this.octokit : undefined;
+    }
+    /**
+     * Whether a lock-mandated route can be served; warns when it cannot.
+     */
+    isRouteReachable(owner, repo, route) {
+        if (this.getOctokitForRoute(route))
             return true;
-        }
-        warning(`${repoKey} is locked to github.com but no public-github-token is configured; its contents cannot be fetched`);
+        warning(`${owner}/${repo} is locked to github.com but no public-github-token is configured; its contents cannot be fetched`);
         return false;
     }
     homeIsGitHubDotCom() {
@@ -41062,9 +41068,18 @@ class OctokitProvider {
      *
      * @param owner Repository owner
      * @param repo Repository name
+     * @param route Optional lock-mandated route that bypasses probing
      * @returns The appropriate Octokit instance
+     * @throws If the route requires public GitHub and it is unreachable
      */
-    async getOctokitForRepo(owner, repo) {
+    async getOctokitForRepo(owner, repo, route) {
+        if (route) {
+            const routed = this.getOctokitForRoute(route);
+            if (!routed) {
+                throw new Error(`${owner}/${repo} requires public GitHub access`);
+            }
+            return routed;
+        }
         const repoKey = `${owner}/${repo}`;
         // Check cache first
         if (this.publicRepoCache.has(repoKey)) {
@@ -41106,9 +41121,9 @@ class OctokitProvider {
      * @param repo Repository name
      * @returns Repository data or undefined if not found
      */
-    async getRepoInfo(owner, repo) {
-        const octokit = await this.getOctokitForRepo(owner, repo);
+    async getRepoInfo(owner, repo, route) {
         try {
+            const octokit = await this.getOctokitForRepo(owner, repo, route);
             const { data } = await octokit.rest.repos.get({ owner, repo });
             return data;
         }
@@ -47959,6 +47974,14 @@ function requireMain () {
 var mainExports = requireMain();
 
 const LOCKFILE_RELATIVE_PATH = '.github/workflows/actions.lock';
+/** Schemas before v0.0.3 have no hostname; their pins are GitHub.com's */
+function isLegacyVersion(version) {
+    const match = version.match(/^v?(\d+)\.(\d+)\.(\d+)$/);
+    if (!match)
+        return false;
+    const [major, minor, patch] = match.slice(1).map(Number);
+    return major === 0 && minor === 0 && patch < 3;
+}
 /**
  * Parsed `actions.lock` file as written by `gh actions-lock`.
  *
@@ -47974,6 +47997,13 @@ class MalformedLockFileError extends Error {
 class LockFile {
     dependencies;
     workflows;
+    legacySchema;
+    /**
+     * Where entries without a hostname resolve: the home of the workflow that
+     * owns this lock, which for a remote workflow's own lock is the route it
+     * was fetched through.
+     */
+    contextRoute = 'home';
     constructor(content) {
         const parsed = parse(content);
         if (parsed === null ||
@@ -47988,6 +48018,7 @@ class LockFile {
                     Array.isArray(parsed.dependencies)))) {
             throw new Error('lock file must be a mapping with a version and a dependencies mapping');
         }
+        this.legacySchema = isLegacyVersion(String(parsed.version));
         this.workflows = new Set(Object.keys(parsed.workflows ?? {}));
         this.dependencies = new Map(Object.entries((parsed?.dependencies ?? {})));
         for (const [key, entry] of this.dependencies) {
@@ -48025,18 +48056,22 @@ class LockFile {
         return match ? match[1] : undefined;
     }
     /**
-     * Whether a `uses` string is locked, and if so on which host it resolves.
-     * An omitted hostname means the workflow's home host.
+     * Where a locked `uses` string resolves. `hostname: github.com` and legacy
+     * (pre-v0.0.3) entries are public GitHub; an omitted hostname follows the
+     * lock's own context.
      *
-     * @returns `undefined` when not locked, `''` for the home host, else the hostname
+     * @returns `undefined` when not locked
      */
-    getHostname(uses) {
+    getHostRoute(uses) {
         const entry = this.lookup(uses);
         if (!entry)
             return undefined;
-        return typeof entry.hostname === 'string'
-            ? entry.hostname.trim().toLowerCase()
-            : '';
+        if (this.legacySchema)
+            return 'public';
+        return typeof entry.hostname === 'string' &&
+            entry.hostname.trim().toLowerCase() === 'github.com'
+            ? 'public'
+            : this.contextRoute;
     }
     /**
      * Returns the `uses` keys of the locked transitive dependencies of an entry.
@@ -48203,7 +48238,10 @@ class WorkflowParser {
      */
     pin(dependency, lock) {
         const commit = lock?.getCommit(dependency.uses);
-        return commit ? { ...dependency, ref: commit, locked: true } : dependency;
+        const hostRoute = lock?.getHostRoute(dependency.uses);
+        return commit
+            ? { ...dependency, ref: commit, locked: true, hostRoute }
+            : dependency;
     }
     /** Pins using the lock of the local file currently being parsed */
     pinLocal(dependency) {
@@ -48217,7 +48255,7 @@ class WorkflowParser {
      */
     getActionKey(dependency, lock) {
         const actionPath = dependency.actionPath ? `/${dependency.actionPath}` : '';
-        return `${dependency.owner}/${dependency.repo}${actionPath}@${dependency.ref}${lock ? '#locked' : ''}`;
+        return `${dependency.owner}/${dependency.repo}${actionPath}@${dependency.ref}${lock ? '#locked' : ''}${dependency.hostRoute === 'public' ? '#public' : ''}`;
     }
     /**
      * Returns the lock governing a workflow file: the repository lock, but only
@@ -48873,9 +48911,9 @@ class WorkflowParser {
         if (!this.octokitProvider) {
             return { actionDependencies: [], dockerDependencies: [] };
         }
-        const lockedHost = lock?.getHostname(dependency.uses);
-        const reachable = lockedHost === undefined ||
-            this.octokitProvider.setRepoHost(dependency.owner, dependency.repo, lockedHost);
+        const route = dependency.hostRoute ?? lock?.getHostRoute(dependency.uses);
+        const reachable = !route ||
+            this.octokitProvider.isRouteReachable(dependency.owner, dependency.repo, route);
         // Determine fetch strategy based on uses string format.
         // A .yml/.yaml path component indicates the file should be fetched directly,
         // otherwise we look for action.yml/action.yaml in the directory.
@@ -48890,10 +48928,10 @@ class WorkflowParser {
                 return null;
             if (isWorkflowPath) {
                 return workflowFilePath
-                    ? this.fetchRemoteFile(dependency.owner, dependency.repo, workflowFilePath, ref)
+                    ? this.fetchRemoteFile(dependency.owner, dependency.repo, workflowFilePath, ref, route)
                     : null;
             }
-            return this.fetchRemoteActionFile(dependency.owner, dependency.repo, ref, dependency.actionPath);
+            return this.fetchRemoteActionFile(dependency.owner, dependency.repo, ref, dependency.actionPath, route);
         };
         // The locked commit is authoritative: the ref may have moved since locking
         let fetchRef = lock?.getCommit(dependency.uses) ?? dependency.ref;
@@ -48901,7 +48939,7 @@ class WorkflowParser {
         // `$/` children are defined to come from the parent's commit, so a movable
         // ref must be pinned to a commit first to avoid racing with ref updates
         if (content?.includes('$/') && !/^[0-9a-f]{40}$/i.test(fetchRef)) {
-            const sha = await this.resolveCommitSha(dependency.owner, dependency.repo, fetchRef);
+            const sha = await this.resolveCommitSha(dependency.owner, dependency.repo, fetchRef, route);
             const pinnedContent = sha ? await fetchContent(sha) : null;
             if (sha && pinnedContent) {
                 fetchRef = sha;
@@ -48969,9 +49007,11 @@ class WorkflowParser {
             // Callable workflows may ship their own lock file, pinned at the same commit
             // Only consulted when the repository has a lock file (regardless of the
             // caller's scope), so users without a lock file keep the previous behaviour
-            const ownLock = this.lockFile
-                ? await this.fetchRemoteLockFile(dependency.owner, dependency.repo, fetchRef)
+            const ownLock = this.lockFile && reachable
+                ? await this.fetchRemoteLockFile(dependency.owner, dependency.repo, fetchRef, route)
                 : undefined;
+            if (ownLock)
+                ownLock.contextRoute = route ?? 'home';
             const workflowPath = dependency.uses.match(/^[^/]+\/[^/]+\/(.+\.ya?ml)@/)?.[1];
             return this.processRemoteCallableWorkflow(parsed, resolvedDependency, callingWorkflowPath, 
             // Callable workflows are locked by their own lock file only; without
@@ -49203,26 +49243,26 @@ class WorkflowParser {
      * @param actionPath Optional path within the repository (for actions in subfolders)
      * @returns Action file content or null if not found
      */
-    async fetchRemoteActionFile(owner, repo, ref, actionPath) {
+    async fetchRemoteActionFile(owner, repo, ref, actionPath, route) {
         // Build the base path (subfolder or root)
         const basePath = actionPath ? `${actionPath}/` : '';
         // Try action.yml first
-        let content = await this.fetchRemoteFile(owner, repo, `${basePath}action.yml`, ref);
+        let content = await this.fetchRemoteFile(owner, repo, `${basePath}action.yml`, ref, route);
         if (content) {
             return content;
         }
         // Try action.yaml
-        content = await this.fetchRemoteFile(owner, repo, `${basePath}action.yaml`, ref);
+        content = await this.fetchRemoteFile(owner, repo, `${basePath}action.yaml`, ref, route);
         return content;
     }
     /**
      * Resolve a ref to its commit SHA, or null if it cannot be resolved
      */
-    async resolveCommitSha(owner, repo, ref) {
+    async resolveCommitSha(owner, repo, ref, route) {
         if (!this.octokitProvider)
             return null;
         try {
-            const octokit = await this.octokitProvider.getOctokitForRepo(owner, repo);
+            const octokit = await this.octokitProvider.getOctokitForRepo(owner, repo, route);
             const { data } = await octokit.rest.repos.getCommit({ owner, repo, ref });
             return typeof data?.sha === 'string' ? data.sha : null;
         }
@@ -49234,8 +49274,8 @@ class WorkflowParser {
     /**
      * Fetch the optional lock file of a remote repository at a given commit
      */
-    async fetchRemoteLockFile(owner, repo, ref) {
-        const content = await this.fetchRemoteFile(owner, repo, LOCKFILE_RELATIVE_PATH, ref);
+    async fetchRemoteLockFile(owner, repo, ref, route) {
+        const content = await this.fetchRemoteFile(owner, repo, LOCKFILE_RELATIVE_PATH, ref, route);
         if (!content) {
             return undefined;
         }
@@ -49255,12 +49295,12 @@ class WorkflowParser {
      * @param ref Git ref
      * @returns File content or null if not found
      */
-    async fetchRemoteFile(owner, repo, filePath, ref) {
+    async fetchRemoteFile(owner, repo, filePath, ref, route) {
         if (!this.octokitProvider) {
             return null;
         }
         try {
-            const octokit = await this.octokitProvider.getOctokitForRepo(owner, repo);
+            const octokit = await this.octokitProvider.getOctokitForRepo(owner, repo, route);
             const { data } = await octokit.rest.repos.getContent({
                 owner,
                 repo,
@@ -49321,7 +49361,7 @@ class ForkResolver {
         let resolvedRef = dependency.ref;
         let originalSha;
         if (this.isShaReference(dependency.ref)) {
-            const versionTag = await this.resolveShaToBestVersion(dependency.owner, dependency.repo, dependency.ref);
+            const versionTag = await this.resolveShaToBestVersion(dependency.owner, dependency.repo, dependency.ref, dependency.hostRoute);
             if (versionTag) {
                 originalSha = dependency.ref;
                 resolvedRef = versionTag;
@@ -49343,7 +49383,7 @@ class ForkResolver {
         }
         debug(`Checking fork status for ${dependency.owner}/${dependency.repo}`);
         // Try to find the original repository
-        const original = await this.findOriginalRepository(dependency.owner, dependency.repo);
+        const original = await this.findOriginalRepository(dependency.owner, dependency.repo, dependency.hostRoute);
         if (original) {
             base.original = original;
             info(`Found original for ${dependency.owner}/${dependency.repo}: ${original.owner}/${original.repo}`);
@@ -49357,7 +49397,7 @@ class ForkResolver {
      * @param repo Fork repository name
      * @returns Original repository information or undefined
      */
-    async findOriginalRepository(owner, repo) {
+    async findOriginalRepository(owner, repo, route) {
         // First, try using the fork regex pattern if provided
         if (this.forkRegex) {
             const regexResult = this.applyForkRegex(owner, repo);
@@ -49366,7 +49406,7 @@ class ForkResolver {
             }
         }
         // Try to get fork information using the appropriate instance
-        const repoInfo = await this.octokitProvider.getRepoInfo(owner, repo);
+        const repoInfo = await this.octokitProvider.getRepoInfo(owner, repo, route);
         if (repoInfo?.fork && repoInfo.parent) {
             return {
                 owner: repoInfo.parent.owner.login,
@@ -49413,13 +49453,13 @@ class ForkResolver {
      * @param sha SHA to resolve
      * @returns Most specific version tag/branch or undefined
      */
-    async resolveShaToBestVersion(owner, repo, sha) {
+    async resolveShaToBestVersion(owner, repo, sha, route) {
         try {
             debug(`Resolving SHA ${sha} for ${owner}/${repo}`);
             // Fetch both branches and tags from the repository
             const [branches, tags] = await Promise.all([
-                this.fetchRepositoryBranches(owner, repo),
-                this.fetchRepositoryTags(owner, repo)
+                this.fetchRepositoryBranches(owner, repo, route),
+                this.fetchRepositoryTags(owner, repo, route)
             ]);
             // Combine branches and tags
             const allRefs = [...branches, ...tags];
@@ -49429,12 +49469,12 @@ class ForkResolver {
                 debug(`No refs found matching SHA ${sha}`);
                 // If this is a fork organization, try the parent repository
                 if (this.forkOrganizations.has(owner)) {
-                    const original = await this.findOriginalRepository(owner, repo);
+                    const original = await this.findOriginalRepository(owner, repo, route);
                     if (original) {
                         debug(`Trying parent repository ${original.owner}/${original.repo}`);
                         const [parentBranches, parentTags] = await Promise.all([
-                            this.fetchRepositoryBranches(original.owner, original.repo),
-                            this.fetchRepositoryTags(original.owner, original.repo)
+                            this.fetchRepositoryBranches(original.owner, original.repo, route),
+                            this.fetchRepositoryTags(original.owner, original.repo, route)
                         ]);
                         const parentRefs = [...parentBranches, ...parentTags];
                         const parentMatches = parentRefs.filter((ref) => ref.sha === sha);
@@ -49470,10 +49510,10 @@ class ForkResolver {
      * @param repo Repository name
      * @returns Array of tags with name and SHA
      */
-    async fetchRepositoryTags(owner, repo) {
-        // Get the appropriate Octokit instance for this repository
-        const octokit = await this.octokitProvider.getOctokitForRepo(owner, repo);
+    async fetchRepositoryTags(owner, repo, route) {
         try {
+            // Get the appropriate Octokit instance for this repository
+            const octokit = await this.octokitProvider.getOctokitForRepo(owner, repo, route);
             const tags = [];
             let page = 1;
             const perPage = 100;
@@ -49513,10 +49553,10 @@ class ForkResolver {
      * @param repo Repository name
      * @returns Array of branches with name and SHA
      */
-    async fetchRepositoryBranches(owner, repo) {
-        // Get the appropriate Octokit instance for this repository
-        const octokit = await this.octokitProvider.getOctokitForRepo(owner, repo);
+    async fetchRepositoryBranches(owner, repo, route) {
         try {
+            // Get the appropriate Octokit instance for this repository
+            const octokit = await this.octokitProvider.getOctokitForRepo(owner, repo, route);
             const branches = [];
             let page = 1;
             const perPage = 100;

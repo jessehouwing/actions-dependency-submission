@@ -29,7 +29,10 @@ dependencies:
             - 'actions/cache@${'b'.repeat(40)}'
 `
 
-function createParser(files: Record<string, string>) {
+function createParser(
+  files: Record<string, string>,
+  options: { reachable?: boolean } = {}
+) {
   const getContent = jest.fn(
     async (args: { path: string; ref: string }): Promise<unknown> => {
       const content = files[`${args.path}@${args.ref}`]
@@ -39,13 +42,13 @@ function createParser(files: Record<string, string>) {
   )
   const octokit = { rest: { repos: { getContent } } }
   const parser = new WorkflowParser('fake-token')
-  const setRepoHost = jest.fn().mockReturnValue(true)
+  const getOctokitForRepo = jest.fn().mockResolvedValue(octokit)
   // @ts-expect-error - Replacing private property for testing
   parser.octokitProvider = {
-    getOctokitForRepo: jest.fn().mockResolvedValue(octokit),
-    setRepoHost
+    getOctokitForRepo,
+    isRouteReachable: jest.fn().mockReturnValue(options.reachable ?? true)
   }
-  return { parser, getContent, setRepoHost }
+  return { parser, getContent, getOctokitForRepo }
 }
 
 const covered = (content: string) =>
@@ -63,54 +66,57 @@ describe('LockFile', () => {
     ])
   })
 
-  it('Reports the host a locked dependency resolves on', () => {
-    const lock = new LockFile(
-      `version: v0.0.3\ndependencies:\n  'a/home@v1':\n    commit: 'sha1-${SHA}'\n  'b/public@v1':\n    hostname: 'GitHub.com'\n    commit: 'sha1-${SHA}'\n`
-    )
-    expect(lock.getHostname('a/home@v1')).toBe('')
-    expect(lock.getHostname('b/public/sub@v1')).toBe('github.com')
-    expect(lock.getHostname('c/unlocked@v1')).toBeUndefined()
+  it('Reports the route a locked dependency resolves on', () => {
+    const entries = `dependencies:\n  'a/home@v1':\n    commit: 'sha1-${SHA}'\n  'b/public@v1':\n    hostname: 'GitHub.com'\n    commit: 'sha1-${SHA}'\n`
+    const lock = new LockFile(`version: v0.0.3\n${entries}`)
+    expect(lock.getHostRoute('a/home@v1')).toBe('home')
+    expect(lock.getHostRoute('b/public/sub@v1')).toBe('public')
+    expect(lock.getHostRoute('c/unlocked@v1')).toBeUndefined()
+
+    // An omitted hostname follows the context of the lock's owning workflow
+    lock.contextRoute = 'public'
+    expect(lock.getHostRoute('a/home@v1')).toBe('public')
+
+    // Pre-v0.0.3 pins predate tenants and are always GitHub.com's
+    const legacy = new LockFile(`version: v0.0.2\n${entries}`)
+    expect(legacy.getHostRoute('a/home@v1')).toBe('public')
   })
 
-  it('Forces the lock host for remote fetches', async () => {
-    const lock = new LockFile(
-      `version: v0.0.3\ndependencies:\n  'b/public@v1':\n    hostname: 'github.com'\n    commit: 'sha1-${SHA}'\n  'a/home@v1':\n    commit: 'sha1-${SHA}'\n`
-    )
-    const { parser, setRepoHost } = createParser({})
-    const dep = (owner: string, repo: string) => ({
-      owner,
-      repo,
-      ref: 'v1',
-      uses: `${owner}/${repo}@v1`
+  it('Does not leak a locked route into the probing of unlocked uses', async () => {
+    const { OctokitProvider } = await import('../src/octokit-provider.js')
+    const provider = new OctokitProvider({
+      token: 't',
+      publicGitHubToken: 'p'
     })
-    // @ts-expect-error - Accessing private method for testing
-    await parser.processRemoteActionOrWorkflow(
-      dep('b', 'public'),
-      'ci.yml',
-      lock
-    )
-    // @ts-expect-error - Accessing private method for testing
-    await parser.processRemoteActionOrWorkflow(dep('a', 'home'), 'ci.yml', lock)
-    // @ts-expect-error - Accessing private method for testing
-    await parser.processRemoteActionOrWorkflow(dep('c', 'none'), 'ci.yml', lock)
-    expect(setRepoHost).toHaveBeenCalledTimes(2)
-    expect(setRepoHost).toHaveBeenCalledWith('b', 'public', 'github.com')
-    expect(setRepoHost).toHaveBeenCalledWith('a', 'home', '')
+    const publicClient = await provider.getOctokitForRepo('o', 'r', 'public')
+    const homeClient = await provider.getOctokitForRepo('o', 'r', 'home')
+    expect(publicClient).not.toBe(homeClient)
+
+    // Unlocked: probes the home host first, which has the repository
+    github.mockOctokit.rest.repos.get.mockResolvedValueOnce({
+      data: {}
+    } as never)
+    expect(await provider.getOctokitForRepo('o', 'r')).toBe(homeClient)
+    expect(github.mockOctokit.rest.repos.get).toHaveBeenCalled()
   })
 
-  it('Warns and skips fetching when github.com is locked but unreachable', async () => {
+  it('Cannot serve a public route from a tenant without a public token', async () => {
     const { OctokitProvider } = await import('../src/octokit-provider.js')
     const saved = process.env.GITHUB_SERVER_URL
     process.env.GITHUB_SERVER_URL = 'https://tenant.ghe.com'
     try {
       const provider = new OctokitProvider({ token: 't' })
-      expect(provider.setRepoHost('b', 'public', 'github.com')).toBe(false)
+      expect(provider.isRouteReachable('b', 'public', 'public')).toBe(false)
       expect(core.warning).toHaveBeenCalledWith(
         expect.stringContaining('b/public is locked to github.com')
       )
-      expect(provider.setRepoHost('a', 'home', '')).toBe(true)
+      await expect(
+        provider.getOctokitForRepo('b', 'public', 'public')
+      ).rejects.toThrow('requires public GitHub access')
+      expect(provider.isRouteReachable('a', 'home', 'home')).toBe(true)
+
       process.env.GITHUB_SERVER_URL = 'https://github.com'
-      expect(provider.setRepoHost('b', 'public', 'github.com')).toBe(true)
+      expect(provider.isRouteReachable('b', 'public', 'public')).toBe(true)
     } finally {
       if (saved === undefined) delete process.env.GITHUB_SERVER_URL
       else process.env.GITHUB_SERVER_URL = saved
@@ -217,6 +223,83 @@ describe('WorkflowParser with lock file and $/ references', () => {
         (d) => d.repo === 'action' && d.owner === 'deep'
       )
     ).toBe(true)
+  })
+
+  it('Fetches locked dependencies through their lock route', async () => {
+    fs.writeFileSync(
+      path.join(workflowDir(), 'ci.yml'),
+      `on: push\njobs:\n  a:\n    runs-on: ubuntu-latest\n    steps:\n      - uses: pub/action@v1\n      - uses: home/action@v1\n      - uses: free/action@v1\n`
+    )
+    const { parser, getOctokitForRepo } = createParser({})
+    parser.setLockFile(
+      covered(
+        `version: v0.0.3\ndependencies:\n  'pub/action@v1':\n    hostname: github.com\n    commit: 'sha1-${SHA}'\n  'home/action@v1':\n    commit: 'sha1-${SHA}'\n`
+      )
+    )
+
+    await parser.parseWorkflowDirectory(workflowDir(), [], tempDir)
+
+    expect(getOctokitForRepo).toHaveBeenCalledWith('pub', 'action', 'public')
+    expect(getOctokitForRepo).toHaveBeenCalledWith('home', 'action', 'home')
+    expect(getOctokitForRepo).toHaveBeenCalledWith('free', 'action', undefined)
+  })
+
+  it('Does not fetch and recovers the graph from the lock when public GitHub is unreachable', async () => {
+    fs.writeFileSync(
+      path.join(workflowDir(), 'ci.yml'),
+      `on: push\njobs:\n  a:\n    runs-on: ubuntu-latest\n    steps:\n      - uses: pub/action@v1\n`
+    )
+    const { parser, getOctokitForRepo } = createParser({}, { reachable: false })
+    parser.setLockFile(
+      covered(
+        `version: v0.0.3\ndependencies:\n  'pub/action@v1':\n    hostname: github.com\n    commit: 'sha1-${SHA}'\n    uses: ['deep/action@v2']\n`
+      )
+    )
+
+    const result = await parser.parseWorkflowDirectory(
+      workflowDir(),
+      [],
+      tempDir
+    )
+
+    expect(getOctokitForRepo).not.toHaveBeenCalledWith(
+      'pub',
+      'action',
+      expect.anything()
+    )
+    expect(
+      result.actionDependencies.some(
+        (d) => d.owner === 'deep' && d.isTransitive
+      )
+    ).toBe(true)
+  })
+
+  it('Resolves omitted hostnames of a remote workflow lock relative to where it was fetched', async () => {
+    const wfSha = 'c'.repeat(40)
+    fs.writeFileSync(
+      path.join(workflowDir(), 'ci.yml'),
+      `on: push\njobs:\n  a:\n    uses: remote-org/wf/.github/workflows/w.yml@main\n`
+    )
+    const { parser, getOctokitForRepo } = createParser({
+      [`.github/workflows/w.yml@${wfSha}`]: `on: workflow_call\njobs:\n  b:\n    runs-on: ubuntu-latest\n    steps:\n      - uses: inner/action@v1\n`,
+      [`.github/workflows/actions.lock@${wfSha}`]: `version: v0.0.3\nworkflows:\n  '.github/workflows/w.yml': []\ndependencies:\n  'inner/action@v1':\n    commit: 'sha1-${'d'.repeat(40)}'\n`
+    })
+    parser.setLockFile(
+      covered(
+        `version: v0.0.3\ndependencies:\n  'remote-org/wf/.github/workflows/w.yml@main':\n    hostname: github.com\n    commit: 'sha1-${wfSha}'\n`
+      )
+    )
+
+    const result = await parser.parseWorkflowDirectory(
+      workflowDir(),
+      [],
+      tempDir
+    )
+
+    expect(getOctokitForRepo).toHaveBeenCalledWith('inner', 'action', 'public')
+    expect(
+      result.actionDependencies.find((d) => d.owner === 'inner')?.hostRoute
+    ).toBe('public')
   })
 
   it('Resolves local $/ references relative to the repository root', async () => {

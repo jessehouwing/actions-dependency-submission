@@ -34,13 +34,21 @@ dependencies:
   workflow subpath. Lookups for `owner/repo/path@ref` fall back to this key.
 - `commit` may pin a commit that differs from the current target of `ref` (e.g.
   `@main` may have moved since locking). The locked commit is authoritative.
-- `hostname` (v0.0.3) states where the dependency is resolved. When omitted, the
-  dependency lives on the workflow's home host and is only looked up there (no
-  fallback to github.com). `github.com` on a workflow homed elsewhere (e.g.
-  ghe.com) forces the lookup on github.com, never on the home host; without a
-  `public-github-token` a warning is logged and the contents are treated as
-  unfetchable (see below). Entries that are not in the lock keep the heuristic:
-  home host first, then github.com when a `public-github-token` is available.
+- `hostname` (v0.0.3) states where the dependency is resolved. It is carried on
+  the dependency as its route, so fetching, `$/` pinning, remote lock lookups
+  and fork/tag resolution all use it, and it never alters the probing cache used
+  for unlocked entries.
+  - `github.com`: public GitHub only, never the home host. On a tenant without a
+    `public-github-token` a warning is logged and the contents are treated as
+    unfetchable (see below).
+  - Omitted: the home host of the workflow owning the lock only (no fallback to
+    github.com). For a callable workflow's own lock that is the host the
+    workflow was fetched from, so a workflow fetched from github.com keeps its
+    unqualified entries on github.com.
+  - Locks older than v0.0.3 carry no hostname; their pins are github.com's, so
+    every entry is treated as `github.com`.
+  - Entries that are not in the lock keep the heuristic: home host first, then
+    github.com when a `public-github-token` is available.
 
 ## Loading and verification
 

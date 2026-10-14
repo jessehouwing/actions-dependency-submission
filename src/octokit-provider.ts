@@ -7,6 +7,12 @@ import { getOctokit } from '@actions/github'
 const PUBLIC_GITHUB_API_URL = 'https://api.github.com'
 
 /**
+ * Where a lock file says a dependency resolves: the workflow's home host or
+ * public github.com. Dependencies not in a lock have no route and are probed.
+ */
+export type HostRoute = 'home' | 'public'
+
+/**
  * Configuration for OctokitProvider
  */
 export interface OctokitProviderConfig {
@@ -49,22 +55,28 @@ export class OctokitProvider {
   }
 
   /**
-   * Forces the host used for a repository, overriding the probing heuristic.
-   * Used when a lock file states where the dependency resolves.
+   * Resolves the Octokit instance for a lock-mandated route. Unlike the
+   * heuristic, a route is never cached per repository, so it cannot leak to
+   * unlocked uses of the same repository.
    *
-   * @param host `github.com` for public GitHub, `''` for the home host
-   * @returns false when the repository is on public GitHub but cannot be
-   * reached because the home host is elsewhere and no public token was given
+   * @returns undefined when public GitHub is required but unreachable: the
+   * home host is elsewhere and no public token is configured
    */
-  setRepoHost(owner: string, repo: string, host: string): boolean {
-    const repoKey = `${owner}/${repo}`
-    const usePublic = host === 'github.com' && !!this.publicOctokit
-    this.publicRepoCache.set(repoKey, usePublic)
-    if (host !== 'github.com' || usePublic || this.homeIsGitHubDotCom()) {
-      return true
-    }
+  getOctokitForRoute(
+    route: HostRoute
+  ): ReturnType<typeof getOctokit> | undefined {
+    if (route === 'home') return this.octokit
+    if (this.publicOctokit) return this.publicOctokit
+    return this.homeIsGitHubDotCom() ? this.octokit : undefined
+  }
+
+  /**
+   * Whether a lock-mandated route can be served; warns when it cannot.
+   */
+  isRouteReachable(owner: string, repo: string, route: HostRoute): boolean {
+    if (this.getOctokitForRoute(route)) return true
     core.warning(
-      `${repoKey} is locked to github.com but no public-github-token is configured; its contents cannot be fetched`
+      `${owner}/${repo} is locked to github.com but no public-github-token is configured; its contents cannot be fetched`
     )
     return false
   }
@@ -84,12 +96,22 @@ export class OctokitProvider {
    *
    * @param owner Repository owner
    * @param repo Repository name
+   * @param route Optional lock-mandated route that bypasses probing
    * @returns The appropriate Octokit instance
+   * @throws If the route requires public GitHub and it is unreachable
    */
   async getOctokitForRepo(
     owner: string,
-    repo: string
+    repo: string,
+    route?: HostRoute
   ): Promise<ReturnType<typeof getOctokit>> {
+    if (route) {
+      const routed = this.getOctokitForRoute(route)
+      if (!routed) {
+        throw new Error(`${owner}/${repo} requires public GitHub access`)
+      }
+      return routed
+    }
     const repoKey = `${owner}/${repo}`
 
     // Check cache first
@@ -138,7 +160,8 @@ export class OctokitProvider {
    */
   async getRepoInfo(
     owner: string,
-    repo: string
+    repo: string,
+    route?: HostRoute
   ): Promise<
     | {
         fork?: boolean
@@ -147,9 +170,8 @@ export class OctokitProvider {
       }
     | undefined
   > {
-    const octokit = await this.getOctokitForRepo(owner, repo)
-
     try {
+      const octokit = await this.getOctokitForRepo(owner, repo, route)
       const { data } = await octokit.rest.repos.get({ owner, repo })
       return data
     } catch (error) {
