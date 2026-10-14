@@ -367,6 +367,22 @@ describe('pinned refs and lock scoping', () => {
     expect(refs).toContain(sha2)
   })
 })
+describe('callable workflow locks without a repository lock', () => {
+  it('Does not fetch the remote workflow lock when no lock is active', async () => {
+    const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), 'lock-none-'))
+    fs.writeFileSync(
+      path.join(tempDir, 'ci.yml'),
+      `on: push\njobs:\n  a:\n    uses: remote-org/wf/.github/workflows/w.yml@main\n`
+    )
+    const { parser, getContent } = createParser({
+      '.github/workflows/w.yml@main': `on: workflow_call\njobs:\n  b:\n    runs-on: ubuntu-latest\n    steps:\n      - uses: inner/action@v1\n`
+    })
+    await parser.parseWorkflowDirectory(tempDir, [], tempDir)
+    const paths = getContent.mock.calls.map((c) => c[0].path)
+    expect(paths).not.toContain('.github/workflows/actions.lock')
+    fs.rmSync(tempDir, { recursive: true, force: true })
+  })
+})
 describe('loadVerifiedLockFile', () => {
   it('Returns undefined without a lock file', async () => {
     const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'nolock-'))

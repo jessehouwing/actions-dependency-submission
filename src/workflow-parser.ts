@@ -993,11 +993,15 @@ export class WorkflowParser {
       )
     } else if (parsed.jobs) {
       // Callable workflows may ship their own lock file, pinned at the same commit
-      const ownLock = await this.fetchRemoteLockFile(
-        dependency.owner,
-        dependency.repo,
-        fetchRef
-      )
+      // Only consulted when a repository lock is active, so users without a
+      // lock file keep the previous behaviour
+      const ownLock = lock
+        ? await this.fetchRemoteLockFile(
+            dependency.owner,
+            dependency.repo,
+            fetchRef
+          )
+        : undefined
       const workflowPath = dependency.uses.match(
         /^[^/]+\/[^/]+\/(.+\.ya?ml)@/
       )?.[1]
