@@ -1217,6 +1217,58 @@ describe('ForkResolver', () => {
     })
   })
 
+  describe('lock host routes', () => {
+    const sha = 'abc1234567890abcdef1234567890abcdef12345'
+    const parent = { owner: { login: 'actions' }, name: 'checkout' }
+    const setup = () => {
+      for (const client of [github.mockOctokit, github.mockPublicOctokit]) {
+        client.rest.repos.get.mockResolvedValue({
+          data: { fork: true, parent }
+        })
+        client.rest.repos.listTags.mockResolvedValue({
+          data: [{ name: 'v1.2.3', commit: { sha } }]
+        })
+        client.rest.repos.listBranches.mockResolvedValue({ data: [] })
+      }
+      return new ForkResolver({
+        forkOrganizations: ['enterprise'],
+        token: 'test-token',
+        publicGitHubToken: 'public-token'
+      })
+    }
+    const dependency = (hostRoute: 'home' | 'public') => ({
+      owner: 'enterprise',
+      repo: 'checkout',
+      ref: sha,
+      uses: 'enterprise/checkout@v4',
+      hostRoute
+    })
+
+    it.each([
+      ['public', github.mockPublicOctokit, github.mockOctokit],
+      ['home', github.mockOctokit, github.mockPublicOctokit]
+    ] as const)(
+      'Uses only the %s client for tags, branches and fork metadata',
+      async (route, used, unused) => {
+        const resolver = setup()
+
+        const result = await resolver.resolveDependencies([dependency(route)])
+
+        expect(result[0].ref).toBe('v1.2.3')
+        expect(result[0].original).toEqual({
+          owner: 'actions',
+          repo: 'checkout'
+        })
+        expect(used.rest.repos.listTags).toHaveBeenCalled()
+        expect(used.rest.repos.listBranches).toHaveBeenCalled()
+        expect(used.rest.repos.get).toHaveBeenCalledTimes(1)
+        expect(unused.rest.repos.get).not.toHaveBeenCalled()
+        expect(unused.rest.repos.listTags).not.toHaveBeenCalled()
+        expect(unused.rest.repos.listBranches).not.toHaveBeenCalled()
+      }
+    )
+  })
+
   describe('EMU/DR/GHES with public GitHub fallback', () => {
     it('Falls back to public GitHub when repository not found locally', async () => {
       // Local instance doesn't have the repo (for getOctokitForRepo)
