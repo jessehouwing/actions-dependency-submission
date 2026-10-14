@@ -36,6 +36,7 @@ jobs:
         uses: actions/checkout@v7.0.1
         with:
           fetch-depth: 1
+          persist-credentials: false
 
       - &setup-node
         name: Setup Node.js
@@ -91,6 +92,7 @@ jobs:
         uses: actions/checkout@v7.0.1
         with:
           fetch-depth: 0
+          persist-credentials: false
 
       - *setup-node
 
@@ -106,9 +108,13 @@ jobs:
 
       - name: Create Branch and Commit Licenses
         id: commit-licenses
+        env:
+          GH_TOKEN: ${{ github.token }}
         run: |
           git config --local user.email "licensed-ci@users.noreply.github.com"
           git config --local user.name "licensed-ci"
+          # Authenticate for this step only instead of persisting credentials
+          git config --local http.https://github.com/.extraheader "AUTHORIZATION: basic $(printf 'x-access-token:%s' "$GH_TOKEN" | base64 -w0)"
 
           # Create and switch to new branch
           git checkout -b licensed/update
