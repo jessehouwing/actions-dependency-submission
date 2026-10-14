@@ -53,10 +53,29 @@ export class OctokitProvider {
    * Used when a lock file states where the dependency resolves.
    *
    * @param host `github.com` for public GitHub, `''` for the home host
+   * @returns false when the repository is on public GitHub but cannot be
+   * reached because the home host is elsewhere and no public token was given
    */
-  setRepoHost(owner: string, repo: string, host: string): void {
+  setRepoHost(owner: string, repo: string, host: string): boolean {
+    const repoKey = `${owner}/${repo}`
     const usePublic = host === 'github.com' && !!this.publicOctokit
-    this.publicRepoCache.set(`${owner}/${repo}`, usePublic)
+    this.publicRepoCache.set(repoKey, usePublic)
+    if (host !== 'github.com' || usePublic || this.homeIsGitHubDotCom()) {
+      return true
+    }
+    core.warning(
+      `${repoKey} is locked to github.com but no public-github-token is configured; its contents cannot be fetched`
+    )
+    return false
+  }
+
+  private homeIsGitHubDotCom(): boolean {
+    try {
+      const server = process.env.GITHUB_SERVER_URL
+      return !server || new URL(server).hostname === 'github.com'
+    } catch {
+      return false
+    }
   }
 
   /**

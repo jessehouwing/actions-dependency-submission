@@ -39,7 +39,7 @@ function createParser(files: Record<string, string>) {
   )
   const octokit = { rest: { repos: { getContent } } }
   const parser = new WorkflowParser('fake-token')
-  const setRepoHost = jest.fn()
+  const setRepoHost = jest.fn().mockReturnValue(true)
   // @ts-expect-error - Replacing private property for testing
   parser.octokitProvider = {
     getOctokitForRepo: jest.fn().mockResolvedValue(octokit),
@@ -96,6 +96,25 @@ describe('LockFile', () => {
     expect(setRepoHost).toHaveBeenCalledTimes(2)
     expect(setRepoHost).toHaveBeenCalledWith('b', 'public', 'github.com')
     expect(setRepoHost).toHaveBeenCalledWith('a', 'home', '')
+  })
+
+  it('Warns and skips fetching when github.com is locked but unreachable', async () => {
+    const { OctokitProvider } = await import('../src/octokit-provider.js')
+    const saved = process.env.GITHUB_SERVER_URL
+    process.env.GITHUB_SERVER_URL = 'https://tenant.ghe.com'
+    try {
+      const provider = new OctokitProvider({ token: 't' })
+      expect(provider.setRepoHost('b', 'public', 'github.com')).toBe(false)
+      expect(core.warning).toHaveBeenCalledWith(
+        expect.stringContaining('b/public is locked to github.com')
+      )
+      expect(provider.setRepoHost('a', 'home', '')).toBe(true)
+      process.env.GITHUB_SERVER_URL = 'https://github.com'
+      expect(provider.setRepoHost('b', 'public', 'github.com')).toBe(true)
+    } finally {
+      if (saved === undefined) delete process.env.GITHUB_SERVER_URL
+      else process.env.GITHUB_SERVER_URL = saved
+    }
   })
 
   it('Rejects entries with a malformed commit', () => {
