@@ -49,6 +49,17 @@ export class OctokitProvider {
   }
 
   /**
+   * Forces the host used for a repository, overriding the probing heuristic.
+   * Used when a lock file states where the dependency resolves.
+   *
+   * @param host `github.com` for public GitHub, `''` for the home host
+   */
+  setRepoHost(owner: string, repo: string, host: string): void {
+    const usePublic = host === 'github.com' && !!this.publicOctokit
+    this.publicRepoCache.set(`${owner}/${repo}`, usePublic)
+  }
+
+  /**
    * Determines which Octokit instance to use for a repository
    * Caches the decision to avoid redundant checks
    *
