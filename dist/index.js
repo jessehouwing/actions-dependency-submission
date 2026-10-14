@@ -48948,7 +48948,7 @@ class WorkflowParser {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     actionYaml, dependency, callingWorkflowPath, lock) {
         try {
-            info(`Processing remote composite action: ${dependency.owner}/${dependency.repo}@${dependency.ref}`);
+            info(`Processing remote composite action: ${dependency.owner}/${dependency.repo}${dependency.actionPath ? `/${dependency.actionPath}` : ''}@${dependency.ref}`);
             const transitiveDeps = [];
             const transitiveDockerDeps = [];
             // Extract dependencies from composite action steps
