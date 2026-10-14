@@ -265,8 +265,9 @@ export async function loadVerifiedLockFile(
     )
   } else {
     core.warning(
-      `${LOCKFILE_RELATIVE_PATH} could not be verified; using its contents unverified`
+      `${LOCKFILE_RELATIVE_PATH} could not be verified; ignoring its contents`
     )
+    return undefined
   }
   return lock
 }
