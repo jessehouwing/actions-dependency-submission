@@ -87,12 +87,17 @@ function runGhAsync(
 }
 
 /**
- * Ensures the gh CLI and the gh-actions-lock extension are available,
- * installing the extension when it is missing.
+ * Ensures the gh CLI and the gh-actions-lock extension are available.
+ * A missing extension is installed (latest release unless a version is
+ * requested); a different installed version is replaced by the requested one.
  *
+ * @param extensionVersion Optional release tag to pin the extension to
  * @returns true if `gh actions-lock` can be run
  */
-async function ensureActionsLockExtension(token: string): Promise<boolean> {
+async function ensureActionsLockExtension(
+  token: string,
+  extensionVersion?: string
+): Promise<boolean> {
   const env = { ...process.env, GH_TOKEN: token || process.env.GH_TOKEN }
 
   const version = await runGhAsync(['--version'], env)
@@ -106,18 +111,47 @@ async function ensureActionsLockExtension(token: string): Promise<boolean> {
   // `gh extension list` has no --json output; lines are tab separated:
   // name, repository, version
   const list = await runGhAsync(['extension', 'list'], env)
-  const installed =
-    !list.error &&
-    list.stdout
-      .split(/\r?\n/)
-      .some((line) => line.split(/\s+/).includes(EXTENSION_REPO))
-  if (installed) {
+  const installedLine = list.error
+    ? undefined
+    : list.stdout
+        .split(/\r?\n/)
+        .map((line) => line.split(/\t/).map((part) => part.trim()))
+        .find((parts) => parts.includes(EXTENSION_REPO))
+  const installedVersion = installedLine?.[2]
+
+  if (
+    installedLine &&
+    (!extensionVersion || installedVersion === extensionVersion)
+  ) {
     return true
   }
 
-  core.info(`Installing the ${EXTENSION_REPO} gh extension`)
+  if (installedLine) {
+    core.info(
+      `Replacing ${EXTENSION_REPO} ${installedVersion ?? 'unknown'} with ${extensionVersion}`
+    )
+    const remove = await runGhAsync(
+      ['extension', 'remove', 'actions-lock'],
+      env
+    )
+    if (remove.error) {
+      core.warning(
+        `Failed to remove ${EXTENSION_REPO}, ignoring actions.lock: ${remove.stderr.trim() || remove.error.message}`
+      )
+      return false
+    }
+  }
+
+  core.info(
+    `Installing the ${EXTENSION_REPO} gh extension${extensionVersion ? ` ${extensionVersion}` : ' (latest)'}`
+  )
   const install = await runGhAsync(
-    ['extension', 'install', EXTENSION_REPO],
+    [
+      'extension',
+      'install',
+      EXTENSION_REPO,
+      ...(extensionVersion ? ['--pin', extensionVersion] : [])
+    ],
     env
   )
   if (install.error) {
@@ -168,7 +202,8 @@ function verifyLockFile(repoRoot: string, token: string): Promise<boolean> {
  */
 export async function loadVerifiedLockFile(
   repoRoot: string,
-  token: string
+  token: string,
+  extensionVersion?: string
 ): Promise<LockFile | undefined> {
   const lockPath = path.join(repoRoot, LOCKFILE_RELATIVE_PATH)
   if (!fs.existsSync(lockPath)) {
@@ -176,7 +211,7 @@ export async function loadVerifiedLockFile(
   }
 
   if (
-    !(await ensureActionsLockExtension(token)) ||
+    !(await ensureActionsLockExtension(token, extensionVersion || undefined)) ||
     !(await verifyLockFile(repoRoot, token))
   ) {
     return undefined

@@ -47984,12 +47984,14 @@ function runGhAsync(args, env) {
     return new Promise((resolve) => runGh(args, { env, timeout: 120_000 }, (error, stdout, stderr) => resolve({ error, stdout, stderr })));
 }
 /**
- * Ensures the gh CLI and the gh-actions-lock extension are available,
- * installing the extension when it is missing.
+ * Ensures the gh CLI and the gh-actions-lock extension are available.
+ * A missing extension is installed (latest release unless a version is
+ * requested); a different installed version is replaced by the requested one.
  *
+ * @param extensionVersion Optional release tag to pin the extension to
  * @returns true if `gh actions-lock` can be run
  */
-async function ensureActionsLockExtension(token) {
+async function ensureActionsLockExtension(token, extensionVersion) {
     const env = { ...process.env, GH_TOKEN: token || process.env.GH_TOKEN };
     const version = await runGhAsync(['--version'], env);
     if (version.error) {
@@ -47999,15 +48001,32 @@ async function ensureActionsLockExtension(token) {
     // `gh extension list` has no --json output; lines are tab separated:
     // name, repository, version
     const list = await runGhAsync(['extension', 'list'], env);
-    const installed = !list.error &&
-        list.stdout
+    const installedLine = list.error
+        ? undefined
+        : list.stdout
             .split(/\r?\n/)
-            .some((line) => line.split(/\s+/).includes(EXTENSION_REPO));
-    if (installed) {
+            .map((line) => line.split(/\t/).map((part) => part.trim()))
+            .find((parts) => parts.includes(EXTENSION_REPO));
+    const installedVersion = installedLine?.[2];
+    if (installedLine &&
+        (!extensionVersion || installedVersion === extensionVersion)) {
         return true;
     }
-    info(`Installing the ${EXTENSION_REPO} gh extension`);
-    const install = await runGhAsync(['extension', 'install', EXTENSION_REPO], env);
+    if (installedLine) {
+        info(`Replacing ${EXTENSION_REPO} ${installedVersion ?? 'unknown'} with ${extensionVersion}`);
+        const remove = await runGhAsync(['extension', 'remove', 'actions-lock'], env);
+        if (remove.error) {
+            warning(`Failed to remove ${EXTENSION_REPO}, ignoring actions.lock: ${remove.stderr.trim() || remove.error.message}`);
+            return false;
+        }
+    }
+    info(`Installing the ${EXTENSION_REPO} gh extension${extensionVersion ? ` ${extensionVersion}` : ' (latest)'}`);
+    const install = await runGhAsync([
+        'extension',
+        'install',
+        EXTENSION_REPO,
+        ...(extensionVersion ? ['--pin', extensionVersion] : [])
+    ], env);
     if (install.error) {
         warning(`Failed to install ${EXTENSION_REPO}, ignoring actions.lock: ${install.stderr.trim() || install.error.message}`);
         return false;
@@ -48045,12 +48064,12 @@ function verifyLockFile(repoRoot, token) {
  *
  * @returns The lock file, or undefined if missing, unverifiable or invalid
  */
-async function loadVerifiedLockFile(repoRoot, token) {
+async function loadVerifiedLockFile(repoRoot, token, extensionVersion) {
     const lockPath = path.join(repoRoot, LOCKFILE_RELATIVE_PATH);
     if (!fs.existsSync(lockPath)) {
         return undefined;
     }
-    if (!(await ensureActionsLockExtension(token)) ||
+    if (!(await ensureActionsLockExtension(token, extensionVersion || undefined)) ||
         !(await verifyLockFile(repoRoot, token))) {
         return undefined;
     }
@@ -48666,7 +48685,10 @@ class WorkflowParser {
                 ? path.resolve(repoRoot, localPath.slice(2))
                 : path.resolve(path.dirname(workflowFile), localPath);
             // Ensure the path is within the repository
-            if (!resolved.startsWith(repoRoot)) {
+            const relative = path.relative(repoRoot, resolved);
+            if (relative === '..' ||
+                relative.startsWith(`..${path.sep}`) ||
+                path.isAbsolute(relative)) {
                 return null;
             }
             return resolved;
@@ -49448,6 +49470,8 @@ class ForkResolver {
     }
 }
 
+/** Must match package.json (enforced by a unit test) */
+const DETECTOR_VERSION = '1.1.0';
 /**
  * Constants for dependency relationships and scopes
  */
@@ -49622,7 +49646,7 @@ class DependencySubmitter {
                 ref: this.config.ref,
                 detector: {
                     name: 'actions-dependency-submission',
-                    version: '1.0.0',
+                    version: DETECTOR_VERSION,
                     url: 'https://github.com/jessehouwing/actions-dependency-submission'
                 },
                 scanned: new Date().toISOString(),
@@ -49728,6 +49752,7 @@ async function run() {
         const forkRegexInput = getInput('fork-regex');
         const publicGitHubToken = getInput('public-github-token');
         const reportTransitiveAsDirect = getInput('report-transitive-as-direct') === 'true';
+        const actionsLockVersion = getInput('actions-lock-version');
         const detectDocker = getInput('detect-docker') === 'true';
         // Parse additional paths (comma or newline separated)
         const additionalPaths = additionalPathsInput
@@ -49774,7 +49799,7 @@ async function run() {
         const repoRoot = process.env.GITHUB_WORKSPACE || process.cwd();
         // Parse workflow files (with composite actions and callable workflows support)
         const parser = new WorkflowParser(token, publicGitHubToken || undefined);
-        parser.setLockFile(await loadVerifiedLockFile(repoRoot, token));
+        parser.setLockFile(await loadVerifiedLockFile(repoRoot, token, actionsLockVersion || undefined));
         const result = await parser.parseWorkflowDirectory(workflowDirectory, additionalPaths, repoRoot);
         const { actionDependencies, dockerDependencies } = result;
         info(`Found ${actionDependencies.length} action dependencies`);

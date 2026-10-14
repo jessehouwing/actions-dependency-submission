@@ -3,6 +3,9 @@ import { getOctokit } from '@actions/github'
 import type { ResolvedDependency } from './fork-resolver.js'
 import type { DockerDependency } from './workflow-parser.js'
 
+/** Must match package.json (enforced by a unit test) */
+export const DETECTOR_VERSION = '1.1.0'
+
 /**
  * Constants for dependency relationships and scopes
  */
@@ -294,7 +297,7 @@ export class DependencySubmitter {
         ref: this.config.ref,
         detector: {
           name: 'actions-dependency-submission',
-          version: '1.0.0',
+          version: DETECTOR_VERSION,
           url: 'https://github.com/jessehouwing/actions-dependency-submission'
         },
         scanned: new Date().toISOString(),
