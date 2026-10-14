@@ -262,14 +262,24 @@ or unexpected behavior.
 1. **Dependency Extraction**: Parses each workflow file to extract `uses:`
    statements that reference GitHub Actions
 1. **Local Action Processing**: Detects local action references (e.g.,
-   `uses: ./local-action`):
-   - Resolves the path relative to the workflow file
+   `uses: ./local-action` or `uses: $/local-action`):
+   - Resolves `./` paths relative to the workflow file and `$/` paths relative
+     to the repository root (inside remote actions and workflows, `$/` refers to
+     the same repository at the same commit)
    - Checks if it's a composite action
    - Recursively extracts dependencies from the composite action
 1. **Callable Workflow Processing**: Detects callable workflow references (e.g.,
    `uses: ./workflow.yml` at job level):
    - Processes the callable workflow
    - Extracts all action dependencies from it
+1. **Actions Lock File**: If `.github/workflows/actions.lock` exists, the action
+   runs `gh actions-lock --verify` (requires the `gh` CLI with the
+   `actions-lock` extension). When verification succeeds, remote actions and
+   callable workflows are fetched at the exact commit pinned in the lock file,
+   even if the ref (e.g. `main`) has since moved. Callable workflows may ship
+   their own optional lock file, which is used for their dependencies. If the
+   lock file is missing or fails verification it is ignored and refs are
+   resolved as before.
 1. **Additional Paths Scanning**: If specified, scans additional directories for
    composite actions:
    - Finds all YAML files in the specified paths

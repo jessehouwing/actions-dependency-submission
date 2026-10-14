@@ -1,6 +1,7 @@
 import * as core from '@actions/core'
 import * as github from '@actions/github'
 import { WorkflowParser } from './workflow-parser.js'
+import { loadVerifiedLockFile } from './lockfile.js'
 import { ForkResolver } from './fork-resolver.js'
 import { DependencySubmitter } from './dependency-submitter.js'
 
@@ -80,6 +81,7 @@ export async function run(): Promise<void> {
 
     // Parse workflow files (with composite actions and callable workflows support)
     const parser = new WorkflowParser(token, publicGitHubToken || undefined)
+    parser.setLockFile(await loadVerifiedLockFile(repoRoot, token))
     const result = await parser.parseWorkflowDirectory(
       workflowDirectory,
       additionalPaths,
