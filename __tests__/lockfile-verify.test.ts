@@ -63,13 +63,10 @@ describe('loadVerifiedLockFile verification', () => {
     )
   })
 
-  it('Uses the lock with a warning when verification exits non-zero', async () => {
-    setup(new Error('exit 1'))
-    expect((await loadVerifiedLockFile(dir, 't'))?.getCommit('a/b@v1')).toBe(
-      'a'.repeat(40)
-    )
-    expect(core.warning).toHaveBeenCalledWith(
-      expect.stringContaining('verification failed')
+  it('Throws when verification rejects the lock', async () => {
+    setup(Object.assign(new Error('exit 1'), { code: 1 }))
+    await expect(loadVerifiedLockFile(dir, 't')).rejects.toThrow(
+      'failed verification'
     )
   })
 
@@ -78,8 +75,10 @@ describe('loadVerifiedLockFile verification', () => {
     expect((await loadVerifiedLockFile(dir, 't'))?.getCommit('a/b@v1')).toBe(
       'a'.repeat(40)
     )
+    expect(core.warning).toHaveBeenCalledWith(
+      expect.stringContaining('could not be verified')
+    )
   })
-
   it('Fails on malformed lock content even if verification succeeds', async () => {
     setup(null, 'dependencies: [unclosed')
     await expect(loadVerifiedLockFile(dir, 't')).rejects.toThrow('Malformed')

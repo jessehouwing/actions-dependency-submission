@@ -98,7 +98,11 @@ export class WorkflowParser {
   ): LockFile | undefined {
     if (!this.lockFile || !repoRoot) return undefined
     const relative = path.relative(repoRoot, filePath).split(path.sep).join('/')
-    return this.lockFile.coversWorkflow(relative) ? this.lockFile : undefined
+    if (this.lockFile.coversWorkflow(relative)) return this.lockFile
+    core.info(
+      `${relative} is not covered by actions.lock; resolving its dependencies without the lock file`
+    )
+    return undefined
   }
 
   /**
