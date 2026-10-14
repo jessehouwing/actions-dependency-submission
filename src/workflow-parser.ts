@@ -1084,7 +1084,7 @@ export class WorkflowParser {
   }> {
     try {
       core.info(
-        `Processing remote composite action: ${dependency.owner}/${dependency.repo}@${dependency.ref}`
+        `Processing remote composite action: ${dependency.owner}/${dependency.repo}${dependency.actionPath ? `/${dependency.actionPath}` : ''}@${dependency.ref}`
       )
 
       const transitiveDeps: ActionDependency[] = []
