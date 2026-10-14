@@ -290,6 +290,8 @@ or unexpected behavior.
    - Callable workflows from other repositories are governed only by their own
      lock file; without one covering the workflow they are resolved by ref. A
      malformed lock file there fails the run.
+   - See the [Actions Lock File Specification](docs/actions-lock.md) for the
+     complete behavior.
 1. **Additional Paths Scanning**: If specified, scans additional directories for
    composite actions:
    - Finds all YAML files in the specified paths
@@ -450,6 +452,8 @@ specific to your environment, please refer to the appropriate guide:
   instances
 - **[Dependency Review Integration](docs/dependency-review.md)** - Enforce
   security policies on pull requests
+- **[Actions Lock File Specification](docs/actions-lock.md)** - How
+  `actions.lock` and `$/` references are resolved
 
 Each guide covers:
 

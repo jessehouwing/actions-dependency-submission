@@ -51,6 +51,15 @@ Dependency Graph.
 - Supports composite actions and callable workflows
 - Handles local action references
 
+### Actions Lock File
+
+- Uses `.github/workflows/actions.lock` (from `gh actions-lock`) to pin `uses:`
+  refs to exact commits, and resolves `$/` same-repository references
+- The authoritative behavior is specified in `docs/actions-lock.md`. Any change
+  to lock file or `$/` handling must keep the code, that specification and the
+  tests in `__tests__/lockfile*.test.ts` in sync. Review lock-related changes
+  against every rule in the specification before pushing
+
 ### Docker Image Dependencies (Experimental, opt-in)
 
 - Extracts Docker images from job containers (`jobs.<job_id>.container.image`)
