@@ -1390,10 +1390,10 @@ export class WorkflowParser {
     try {
       return new LockFile(content)
     } catch (error) {
-      core.debug(
-        `Failed to parse lock file of ${owner}/${repo}@${ref}: ${error}`
+      throw new Error(
+        `Malformed ${LOCKFILE_RELATIVE_PATH} in ${owner}/${repo}@${ref}: ${error instanceof Error ? error.message : String(error)}`,
+        { cause: error }
       )
-      return undefined
     }
   }
 

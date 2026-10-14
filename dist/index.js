@@ -47959,6 +47959,12 @@ class LockFile {
         }
         this.workflows = new Set(Object.keys(parsed.workflows ?? {}));
         this.dependencies = new Map(Object.entries((parsed?.dependencies ?? {})));
+        for (const [key, entry] of this.dependencies) {
+            if (entry?.commit !== undefined &&
+                !/^sha1-[0-9a-f]{40}$/.test(String(entry.commit))) {
+                throw new Error(`dependency "${key}" has an invalid commit`);
+            }
+        }
     }
     /**
      * Whether the lock file covers the given workflow path (relative to the repository root).
@@ -49176,8 +49182,7 @@ class WorkflowParser {
             return new LockFile(content);
         }
         catch (error) {
-            debug(`Failed to parse lock file of ${owner}/${repo}@${ref}: ${error}`);
-            return undefined;
+            throw new Error(`Malformed ${LOCKFILE_RELATIVE_PATH} in ${owner}/${repo}@${ref}: ${error instanceof Error ? error.message : String(error)}`, { cause: error });
         }
     }
     /**
@@ -49269,8 +49274,7 @@ class ForkResolver {
             sourcePath: dependency.sourcePath,
             originalSha,
             isTransitive: dependency.isTransitive,
-            actionPath: dependency.actionPath,
-            locked: dependency.locked
+            actionPath: dependency.actionPath
         };
         // Check if this dependency is from a fork organization
         if (!this.forkOrganizations.has(dependency.owner)) {
@@ -49587,10 +49591,6 @@ const DEPENDENCY_RELATIONSHIP = {
 const DEPENDENCY_SCOPE = {
     RUNTIME: undefined
 };
-/** Marks how a dependency's version was determined */
-const resolvedBy = (locked) => ({
-    resolved_by: locked ? 'actions-lock' : 'ref'
-});
 /**
  * Submits dependencies to GitHub's Dependency Graph
  */
@@ -49613,7 +49613,7 @@ class DependencySubmitter {
      * @param actionPath Optional path within the repository (for actions in subfolders)
      * @returns Number of dependencies added
      */
-    addDependencyEntries(owner, repo, ref, originalSha, manifests, isTransitive = false, actionPath, locked) {
+    addDependencyEntries(owner, repo, ref, originalSha, manifests, isTransitive = false, actionPath) {
         let count = 0;
         // Determine the effective relationship based on configuration
         const reportTransitiveAsDirect = this.config.reportTransitiveAsDirect !== false;
@@ -49629,8 +49629,7 @@ class DependencySubmitter {
             manifests.push({
                 package_url: shaPurl,
                 relationship: effectiveRelationship,
-                scope: DEPENDENCY_SCOPE.RUNTIME,
-                metadata: resolvedBy(locked)
+                scope: DEPENDENCY_SCOPE.RUNTIME
             });
             count++;
             // Add version - use same relationship as SHA when reporting transitive as direct
@@ -49640,8 +49639,7 @@ class DependencySubmitter {
                 relationship: reportTransitiveAsDirect
                     ? effectiveRelationship
                     : DEPENDENCY_RELATIONSHIP.INDIRECT,
-                scope: DEPENDENCY_SCOPE.RUNTIME,
-                metadata: resolvedBy(locked)
+                scope: DEPENDENCY_SCOPE.RUNTIME
             });
             count++;
         }
@@ -49651,8 +49649,7 @@ class DependencySubmitter {
             manifests.push({
                 package_url: purl,
                 relationship: effectiveRelationship,
-                scope: DEPENDENCY_SCOPE.RUNTIME,
-                metadata: resolvedBy(locked)
+                scope: DEPENDENCY_SCOPE.RUNTIME
             });
             count++;
         }
@@ -49679,14 +49676,14 @@ class DependencySubmitter {
             const sourceManifests = dependenciesBySource.get(sourcePath);
             // Add dependency entries for the forked repository
             // Use isTransitive flag if set, otherwise default to false (direct)
-            dependencyCount += this.addDependencyEntries(dep.owner, dep.repo, dep.ref, dep.originalSha, sourceManifests, dep.isTransitive || false, dep.actionPath, dep.locked);
+            dependencyCount += this.addDependencyEntries(dep.owner, dep.repo, dep.ref, dep.originalSha, sourceManifests, dep.isTransitive || false, dep.actionPath);
             if (dep.originalSha) {
                 info(`Resolved SHA ${dep.originalSha} to version ${dep.ref} for ${dep.owner}/${dep.repo} - reporting both`);
             }
             // Also add the original repository if it exists
             if (dep.original) {
                 dependencyCount += this.addDependencyEntries(dep.original.owner, dep.original.repo, dep.ref, dep.originalSha, sourceManifests, true, // Mark original repo dependencies as transitive/indirect
-                dep.actionPath, dep.locked);
+                dep.actionPath);
                 info(`Submitting both ${dep.owner}/${dep.repo} and original ${dep.original.owner}/${dep.original.repo}`);
             }
         }
@@ -49709,8 +49706,7 @@ class DependencySubmitter {
             sourceManifests.push({
                 package_url: purl,
                 relationship: effectiveRelationship,
-                scope: DEPENDENCY_SCOPE.RUNTIME,
-                metadata: resolvedBy()
+                scope: DEPENDENCY_SCOPE.RUNTIME
             });
             dependencyCount++;
             debug(`Added Docker dependency: ${purl} (${effectiveRelationship})`);
@@ -49722,11 +49718,7 @@ class DependencySubmitter {
             const resolved = {};
             for (const dep of deps) {
                 if (dep.package_url) {
-                    // A locked usage wins over an unlocked one of the same package
-                    const existing = resolved[dep.package_url];
-                    if (existing?.metadata?.resolved_by !== 'actions-lock') {
-                        resolved[dep.package_url] = dep;
-                    }
+                    resolved[dep.package_url] = dep;
                 }
             }
             manifests[sourcePath] = {
