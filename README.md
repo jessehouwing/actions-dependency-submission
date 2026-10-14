@@ -293,9 +293,10 @@ or unexpected behavior.
    - Lock entries bypass the home-then-public probing of `public-github-token`.
      An entry with `hostname: github.com` (and every entry of a pre-v0.0.3 lock)
      is fetched from public GitHub only, which on a tenant requires
-     `public-github-token` (otherwise a warning is logged and the graph is taken
-     from the lock). An entry without a `hostname` is fetched from the home host
-     of the workflow owning the lock only.
+     `public-github-token` (otherwise a warning is logged and, for remote
+     actions, the graph is taken from the lock; an unreachable callable workflow
+     yields no dependencies). An entry without a `hostname` is fetched from the
+     home host of the workflow owning the lock only.
    - See the [Actions Lock File Specification](docs/actions-lock.md) for the
      complete behavior.
 1. **Additional Paths Scanning**: If specified, scans additional directories for

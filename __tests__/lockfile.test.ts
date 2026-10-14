@@ -31,7 +31,7 @@ dependencies:
 
 function createParser(
   files: Record<string, string>,
-  options: { reachable?: boolean } = {}
+  options: { reachable?: boolean; resolvedRoute?: 'home' | 'public' } = {}
 ) {
   const getContent = jest.fn(
     async (args: { path: string; ref: string }): Promise<unknown> => {
@@ -46,7 +46,8 @@ function createParser(
   // @ts-expect-error - Replacing private property for testing
   parser.octokitProvider = {
     getOctokitForRepo,
-    isRouteReachable: jest.fn().mockReturnValue(options.reachable ?? true)
+    isRouteReachable: jest.fn().mockReturnValue(options.reachable ?? true),
+    getResolvedRoute: jest.fn().mockReturnValue(options.resolvedRoute ?? 'home')
   }
   return { parser, getContent, getOctokitForRepo }
 }
@@ -300,6 +301,45 @@ describe('WorkflowParser with lock file and $/ references', () => {
     expect(
       result.actionDependencies.find((d) => d.owner === 'inner')?.hostRoute
     ).toBe('public')
+  })
+
+  it('Follows the probed host for the lock of an unlocked callable workflow', async () => {
+    fs.writeFileSync(
+      path.join(workflowDir(), 'ci.yml'),
+      `on: push\njobs:\n  a:\n    uses: remote-org/wf/.github/workflows/w.yml@main\n`
+    )
+    const { parser, getOctokitForRepo } = createParser(
+      {
+        [`.github/workflows/w.yml@main`]: `on: workflow_call\njobs:\n  b:\n    runs-on: ubuntu-latest\n    steps:\n      - uses: inner/action@v1\n`,
+        [`.github/workflows/actions.lock@main`]: `version: v0.0.3\nworkflows:\n  '.github/workflows/w.yml': []\ndependencies:\n  'inner/action@v1':\n    commit: 'sha1-${'d'.repeat(40)}'\n`
+      },
+      { resolvedRoute: 'public' }
+    )
+    parser.setLockFile(covered(`version: v0.0.3\ndependencies: {}\n`))
+
+    const result = await parser.parseWorkflowDirectory(
+      workflowDir(),
+      [],
+      tempDir
+    )
+
+    expect(getOctokitForRepo).toHaveBeenCalledWith('inner', 'action', 'public')
+    expect(
+      result.actionDependencies.find((d) => d.owner === 'inner')?.hostRoute
+    ).toBe('public')
+  })
+
+  it('Propagates the parent route to $/ children of a remote action', async () => {
+    const parent = {
+      owner: 'o',
+      repo: 'r',
+      ref: SHA,
+      uses: 'o/r@v1',
+      hostRoute: 'public' as const
+    }
+    // @ts-expect-error - Accessing private method for testing
+    const child = new WorkflowParser().parseRemoteUsesString('$/sub', parent)
+    expect(child.dependency?.hostRoute).toBe('public')
   })
 
   it('Resolves local $/ references relative to the repository root', async () => {

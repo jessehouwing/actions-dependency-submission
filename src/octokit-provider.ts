@@ -71,6 +71,13 @@ export class OctokitProvider {
   }
 
   /**
+   * The route probing settled on for a repository (after it has been fetched)
+   */
+  getResolvedRoute(owner: string, repo: string): HostRoute {
+    return this.publicRepoCache.get(`${owner}/${repo}`) ? 'public' : 'home'
+  }
+
+  /**
    * Whether a lock-mandated route can be served; warns when it cannot.
    */
   isRouteReachable(owner: string, repo: string, route: HostRoute): boolean {
