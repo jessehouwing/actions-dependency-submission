@@ -24,6 +24,7 @@ export async function run(): Promise<void> {
     const publicGitHubToken = core.getInput('public-github-token')
     const reportTransitiveAsDirect =
       core.getInput('report-transitive-as-direct') === 'true'
+    const actionsLockVersion = core.getInput('actions-lock-version')
     const detectDocker = core.getInput('detect-docker') === 'true'
 
     // Parse additional paths (comma or newline separated)
@@ -81,7 +82,13 @@ export async function run(): Promise<void> {
 
     // Parse workflow files (with composite actions and callable workflows support)
     const parser = new WorkflowParser(token, publicGitHubToken || undefined)
-    parser.setLockFile(await loadVerifiedLockFile(repoRoot, token))
+    parser.setLockFile(
+      await loadVerifiedLockFile(
+        repoRoot,
+        token,
+        actionsLockVersion || undefined
+      )
+    )
     const result = await parser.parseWorkflowDirectory(
       workflowDirectory,
       additionalPaths,

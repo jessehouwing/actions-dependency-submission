@@ -94,4 +94,22 @@ describe('loadVerifiedLockFile verification', () => {
       expect.anything()
     )
   })
+
+  it('Replaces a mismatching extension version with the pinned one', async () => {
+    setup(null)
+    await loadVerifiedLockFile(dir, 't', 'v0.3.0')
+    const calls = execFile.mock.calls.map((c) => c[1].join(' '))
+    expect(calls).toContain('extension remove actions-lock')
+    expect(calls).toContain(
+      'extension install github/gh-actions-lock --pin v0.3.0'
+    )
+  })
+
+  it('Keeps the installed extension when it matches the pinned version', async () => {
+    setup(null)
+    await loadVerifiedLockFile(dir, 't', 'v0.2.0')
+    const calls = execFile.mock.calls.map((c) => c[1].join(' '))
+    expect(calls.some((c) => c.startsWith('extension remove'))).toBe(false)
+    expect(calls.some((c) => c.startsWith('extension install'))).toBe(false)
+  })
 })

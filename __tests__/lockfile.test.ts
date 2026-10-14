@@ -312,3 +312,33 @@ describe('loadVerifiedLockFile', () => {
     )
   })
 })
+
+describe('path containment and detector version', () => {
+  it('Rejects $/ paths escaping the repository, including sibling prefixes', async () => {
+    const base = fs.mkdtempSync(path.join(os.tmpdir(), 'esc-'))
+    const repo = path.join(base, 'repo')
+    fs.mkdirSync(path.join(base, 'repo-secrets'))
+    fs.mkdirSync(path.join(repo, 'wf'), { recursive: true })
+    fs.writeFileSync(
+      path.join(base, 'repo-secrets', 'action.yml'),
+      `runs:\n  using: composite\n  steps:\n    - uses: evil/x@v1\n`
+    )
+    fs.writeFileSync(
+      path.join(repo, 'wf', 'ci.yml'),
+      `on: push\njobs:\n  a:\n    runs-on: ubuntu-latest\n    steps:\n      - uses: $/../repo-secrets\n`
+    )
+    const result = await new WorkflowParser().parseWorkflowDirectory(
+      path.join(repo, 'wf'),
+      [],
+      repo
+    )
+    expect(result.actionDependencies).toHaveLength(0)
+    fs.rmSync(base, { recursive: true, force: true })
+  })
+
+  it('Keeps DETECTOR_VERSION in sync with package.json', async () => {
+    const { DETECTOR_VERSION } = await import('../src/dependency-submitter.js')
+    const pkg = JSON.parse(fs.readFileSync('package.json', 'utf8'))
+    expect(DETECTOR_VERSION).toBe(pkg.version)
+  })
+})

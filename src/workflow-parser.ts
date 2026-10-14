@@ -785,7 +785,12 @@ export class WorkflowParser {
         : path.resolve(path.dirname(workflowFile), localPath)
 
       // Ensure the path is within the repository
-      if (!resolved.startsWith(repoRoot)) {
+      const relative = path.relative(repoRoot, resolved)
+      if (
+        relative === '..' ||
+        relative.startsWith(`..${path.sep}`) ||
+        path.isAbsolute(relative)
+      ) {
         return null
       }
 
