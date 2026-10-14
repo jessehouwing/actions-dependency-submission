@@ -41,6 +41,9 @@ export class WorkflowParser {
   private octokitProvider?: OctokitProvider
   private processedRemoteActions: Set<string> = new Set()
   private lockFile?: LockFile
+  // Lock context of the workflow currently being parsed; the lock only governs
+  // workflows listed in its `workflows` map
+  private lockOverride?: { lock: LockFile | undefined }
 
   constructor(token?: string, publicGitHubToken?: string) {
     if (token) {
@@ -66,7 +69,9 @@ export class WorkflowParser {
    */
   private pin(
     dependency: ActionDependency,
-    lock: LockFile | undefined = this.lockFile
+    lock: LockFile | undefined = this.lockOverride
+      ? this.lockOverride.lock
+      : this.lockFile
   ): ActionDependency {
     const commit = lock?.getCommit(dependency.uses)
     return commit ? { ...dependency, ref: commit } : dependency
@@ -81,6 +86,19 @@ export class WorkflowParser {
   private getActionKey(dependency: ActionDependency): string {
     const actionPath = dependency.actionPath ? `/${dependency.actionPath}` : ''
     return `${dependency.owner}/${dependency.repo}${actionPath}@${dependency.ref}`
+  }
+
+  /**
+   * Returns the lock governing a workflow file: the repository lock, but only
+   * if it covers that workflow.
+   */
+  private lockScopeFor(
+    filePath: string,
+    repoRoot: string | undefined
+  ): LockFile | undefined {
+    if (!this.lockFile || !repoRoot) return undefined
+    const relative = path.relative(repoRoot, filePath).split(path.sep).join('/')
+    return this.lockFile.coversWorkflow(relative) ? this.lockFile : undefined
   }
 
   /**
@@ -103,6 +121,7 @@ export class WorkflowParser {
     const dockerDependencies: DockerDependency[] = []
     const processedFiles = new Set<string>()
     const filesToProcess: string[] = []
+    const scopes = new Map<string, LockFile | undefined>()
 
     // Process root action.yml or action.yaml if it exists (for repositories authoring GitHub Actions)
     if (repoRoot) {
@@ -121,6 +140,7 @@ export class WorkflowParser {
 
       for (const file of workflowFiles) {
         const filePath = path.join(workflowDir, file)
+        scopes.set(filePath, this.lockScopeFor(filePath, repoRoot))
         filesToProcess.push(filePath)
       }
     }
@@ -133,7 +153,14 @@ export class WorkflowParser {
       }
 
       processedFiles.add(filePath)
-      const result = await this.parseWorkflowFile(filePath, repoRoot)
+      const scope = scopes.get(filePath)
+      this.lockOverride = { lock: scope }
+      let result: Awaited<ReturnType<WorkflowParser['parseWorkflowFile']>>
+      try {
+        result = await this.parseWorkflowFile(filePath, repoRoot)
+      } finally {
+        this.lockOverride = undefined
+      }
       dependencies.push(...result.dependencies)
       dockerDependencies.push(...result.dockerDependencies)
 
@@ -152,6 +179,7 @@ export class WorkflowParser {
               !processedFiles.has(actionYml) &&
               this.isCompositeAction(actionYml)
             ) {
+              scopes.set(actionYml, scope)
               filesToProcess.push(actionYml)
             }
           }
@@ -165,6 +193,7 @@ export class WorkflowParser {
             repoRoot
           )
           if (resolvedPath && !processedFiles.has(resolvedPath)) {
+            scopes.set(resolvedPath, this.lockScopeFor(resolvedPath, repoRoot))
             filesToProcess.push(resolvedPath)
           }
         }
@@ -184,7 +213,8 @@ export class WorkflowParser {
             this.processedRemoteActions.add(remoteActionKey)
             const remoteDeps = await this.processRemoteActionOrWorkflow(
               dep,
-              relativePath
+              relativePath,
+              scope
             )
             dependencies.push(...remoteDeps.actionDependencies)
             dockerDependencies.push(...remoteDeps.dockerDependencies)
@@ -887,7 +917,7 @@ export class WorkflowParser {
   private async processRemoteActionOrWorkflow(
     dependency: ActionDependency,
     callingWorkflowPath: string,
-    lock: LockFile | undefined = this.lockFile
+    lock: LockFile | undefined
   ): Promise<{
     actionDependencies: ActionDependency[]
     dockerDependencies: DockerDependency[]
@@ -902,31 +932,47 @@ export class WorkflowParser {
     const callableWorkflowPattern = /^[^/]+\/[^/]+\/.+\.ya?ml@.+$/
     const isWorkflowPath = callableWorkflowPattern.test(dependency.uses)
 
-    // The locked commit is authoritative: the ref may have moved since locking
-    const fetchRef = lock?.getCommit(dependency.uses) ?? dependency.ref
-    let content: string | null = null
-
-    if (isWorkflowPath) {
-      const workflowPathMatch = dependency.uses.match(
-        /^[^/]+\/[^/]+\/(?<path>.+\.ya?ml)@.+$/
-      )
-      if (workflowPathMatch?.groups?.path) {
-        content = await this.fetchRemoteFile(
-          dependency.owner,
-          dependency.repo,
-          workflowPathMatch.groups.path,
-          fetchRef
-        )
+    const workflowFilePath = isWorkflowPath
+      ? dependency.uses.match(/^[^/]+\/[^/]+\/(?<path>.+\.ya?ml)@.+$/)?.groups
+          ?.path
+      : undefined
+    const fetchContent = async (ref: string): Promise<string | null> => {
+      if (isWorkflowPath) {
+        return workflowFilePath
+          ? this.fetchRemoteFile(
+              dependency.owner,
+              dependency.repo,
+              workflowFilePath,
+              ref
+            )
+          : null
       }
-    } else {
-      content = await this.fetchRemoteActionFile(
+      return this.fetchRemoteActionFile(
         dependency.owner,
         dependency.repo,
-        fetchRef,
+        ref,
         dependency.actionPath
       )
     }
 
+    // The locked commit is authoritative: the ref may have moved since locking
+    let fetchRef = lock?.getCommit(dependency.uses) ?? dependency.ref
+    let content = await fetchContent(fetchRef)
+
+    // `$/` children are defined to come from the parent's commit, so a movable
+    // ref must be pinned to a commit first to avoid racing with ref updates
+    if (content?.includes('$/') && !/^[0-9a-f]{40}$/i.test(fetchRef)) {
+      const sha = await this.resolveCommitSha(
+        dependency.owner,
+        dependency.repo,
+        fetchRef
+      )
+      const pinnedContent = sha ? await fetchContent(sha) : null
+      if (sha && pinnedContent) {
+        fetchRef = sha
+        content = pinnedContent
+      }
+    }
     if (!content) {
       // Not fetchable: recover the dependency graph from the lock file alone
       const lockedDeps: ActionDependency[] = []
@@ -1318,6 +1364,25 @@ export class WorkflowParser {
       ref
     )
     return content
+  }
+
+  /**
+   * Resolve a ref to its commit SHA, or null if it cannot be resolved
+   */
+  private async resolveCommitSha(
+    owner: string,
+    repo: string,
+    ref: string
+  ): Promise<string | null> {
+    if (!this.octokitProvider) return null
+    try {
+      const octokit = await this.octokitProvider.getOctokitForRepo(owner, repo)
+      const { data } = await octokit.rest.repos.getCommit({ owner, repo, ref })
+      return typeof data?.sha === 'string' ? data.sha : null
+    } catch (error) {
+      core.debug(`Failed to resolve ${owner}/${repo}@${ref}: ${error}`)
+      return null
+    }
   }
 
   /**
