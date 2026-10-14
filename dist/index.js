@@ -48125,6 +48125,9 @@ class WorkflowParser {
     octokitProvider;
     processedRemoteActions = new Set();
     lockFile;
+    // Lock context of the workflow currently being parsed; the lock only governs
+    // workflows listed in its `workflows` map
+    lockOverride;
     constructor(token, publicGitHubToken) {
         if (token) {
             this.octokitProvider = new OctokitProvider({
@@ -48145,7 +48148,9 @@ class WorkflowParser {
      * file, so the submitted snapshot reports what actually runs. `uses` is kept
      * as the lock lookup key.
      */
-    pin(dependency, lock = this.lockFile) {
+    pin(dependency, lock = this.lockOverride
+        ? this.lockOverride.lock
+        : this.lockFile) {
         const commit = lock?.getCommit(dependency.uses);
         return commit ? { ...dependency, ref: commit } : dependency;
     }
@@ -48160,6 +48165,16 @@ class WorkflowParser {
         return `${dependency.owner}/${dependency.repo}${actionPath}@${dependency.ref}`;
     }
     /**
+     * Returns the lock governing a workflow file: the repository lock, but only
+     * if it covers that workflow.
+     */
+    lockScopeFor(filePath, repoRoot) {
+        if (!this.lockFile || !repoRoot)
+            return undefined;
+        const relative = path.relative(repoRoot, filePath).split(path.sep).join('/');
+        return this.lockFile.coversWorkflow(relative) ? this.lockFile : undefined;
+    }
+    /**
      * Scans a directory for workflow files and extracts all action dependencies
      *
      * @param workflowDir Directory containing workflow files
@@ -48172,6 +48187,7 @@ class WorkflowParser {
         const dockerDependencies = [];
         const processedFiles = new Set();
         const filesToProcess = [];
+        const scopes = new Map();
         // Process root action.yml or action.yaml if it exists (for repositories authoring GitHub Actions)
         if (repoRoot) {
             const rootActionYml = this.findActionYml(repoRoot);
@@ -48185,6 +48201,7 @@ class WorkflowParser {
             const workflowFiles = files.filter((file) => file.endsWith('.yml') || file.endsWith('.yaml'));
             for (const file of workflowFiles) {
                 const filePath = path.join(workflowDir, file);
+                scopes.set(filePath, this.lockScopeFor(filePath, repoRoot));
                 filesToProcess.push(filePath);
             }
         }
@@ -48195,7 +48212,15 @@ class WorkflowParser {
                 continue;
             }
             processedFiles.add(filePath);
-            const result = await this.parseWorkflowFile(filePath, repoRoot);
+            const scope = scopes.get(filePath);
+            this.lockOverride = { lock: scope };
+            let result;
+            try {
+                result = await this.parseWorkflowFile(filePath, repoRoot);
+            }
+            finally {
+                this.lockOverride = undefined;
+            }
             dependencies.push(...result.dependencies);
             dockerDependencies.push(...result.dockerDependencies);
             // Add local actions to processing queue if repoRoot is provided
@@ -48207,6 +48232,7 @@ class WorkflowParser {
                         if (actionYml &&
                             !processedFiles.has(actionYml) &&
                             this.isCompositeAction(actionYml)) {
+                            scopes.set(actionYml, scope);
                             filesToProcess.push(actionYml);
                         }
                     }
@@ -48215,6 +48241,7 @@ class WorkflowParser {
                 for (const callableWorkflow of result.callableWorkflows) {
                     const resolvedPath = this.resolveLocalPath(filePath, callableWorkflow, repoRoot);
                     if (resolvedPath && !processedFiles.has(resolvedPath)) {
+                        scopes.set(resolvedPath, this.lockScopeFor(resolvedPath, repoRoot));
                         filesToProcess.push(resolvedPath);
                     }
                 }
@@ -48230,7 +48257,7 @@ class WorkflowParser {
                     const remoteActionKey = this.getActionKey(dep);
                     if (!this.processedRemoteActions.has(remoteActionKey)) {
                         this.processedRemoteActions.add(remoteActionKey);
-                        const remoteDeps = await this.processRemoteActionOrWorkflow(dep, relativePath);
+                        const remoteDeps = await this.processRemoteActionOrWorkflow(dep, relativePath, scope);
                         dependencies.push(...remoteDeps.actionDependencies);
                         dockerDependencies.push(...remoteDeps.dockerDependencies);
                     }
@@ -48800,7 +48827,7 @@ class WorkflowParser {
      * @param callingWorkflowPath Path of the workflow that references this action/workflow
      * @returns Object with action dependencies and docker dependencies
      */
-    async processRemoteActionOrWorkflow(dependency, callingWorkflowPath, lock = this.lockFile) {
+    async processRemoteActionOrWorkflow(dependency, callingWorkflowPath, lock) {
         if (!this.octokitProvider) {
             return { actionDependencies: [], dockerDependencies: [] };
         }
@@ -48809,17 +48836,30 @@ class WorkflowParser {
         // otherwise we look for action.yml/action.yaml in the directory.
         const callableWorkflowPattern = /^[^/]+\/[^/]+\/.+\.ya?ml@.+$/;
         const isWorkflowPath = callableWorkflowPattern.test(dependency.uses);
-        // The locked commit is authoritative: the ref may have moved since locking
-        const fetchRef = lock?.getCommit(dependency.uses) ?? dependency.ref;
-        let content = null;
-        if (isWorkflowPath) {
-            const workflowPathMatch = dependency.uses.match(/^[^/]+\/[^/]+\/(?<path>.+\.ya?ml)@.+$/);
-            if (workflowPathMatch?.groups?.path) {
-                content = await this.fetchRemoteFile(dependency.owner, dependency.repo, workflowPathMatch.groups.path, fetchRef);
+        const workflowFilePath = isWorkflowPath
+            ? dependency.uses.match(/^[^/]+\/[^/]+\/(?<path>.+\.ya?ml)@.+$/)?.groups
+                ?.path
+            : undefined;
+        const fetchContent = async (ref) => {
+            if (isWorkflowPath) {
+                return workflowFilePath
+                    ? this.fetchRemoteFile(dependency.owner, dependency.repo, workflowFilePath, ref)
+                    : null;
             }
-        }
-        else {
-            content = await this.fetchRemoteActionFile(dependency.owner, dependency.repo, fetchRef, dependency.actionPath);
+            return this.fetchRemoteActionFile(dependency.owner, dependency.repo, ref, dependency.actionPath);
+        };
+        // The locked commit is authoritative: the ref may have moved since locking
+        let fetchRef = lock?.getCommit(dependency.uses) ?? dependency.ref;
+        let content = await fetchContent(fetchRef);
+        // `$/` children are defined to come from the parent's commit, so a movable
+        // ref must be pinned to a commit first to avoid racing with ref updates
+        if (content?.includes('$/') && !/^[0-9a-f]{40}$/i.test(fetchRef)) {
+            const sha = await this.resolveCommitSha(dependency.owner, dependency.repo, fetchRef);
+            const pinnedContent = sha ? await fetchContent(sha) : null;
+            if (sha && pinnedContent) {
+                fetchRef = sha;
+                content = pinnedContent;
+            }
         }
         if (!content) {
             // Not fetchable: recover the dependency graph from the lock file alone
@@ -49111,6 +49151,22 @@ class WorkflowParser {
         // Try action.yaml
         content = await this.fetchRemoteFile(owner, repo, `${basePath}action.yaml`, ref);
         return content;
+    }
+    /**
+     * Resolve a ref to its commit SHA, or null if it cannot be resolved
+     */
+    async resolveCommitSha(owner, repo, ref) {
+        if (!this.octokitProvider)
+            return null;
+        try {
+            const octokit = await this.octokitProvider.getOctokitForRepo(owner, repo);
+            const { data } = await octokit.rest.repos.getCommit({ owner, repo, ref });
+            return typeof data?.sha === 'string' ? data.sha : null;
+        }
+        catch (error) {
+            debug(`Failed to resolve ${owner}/${repo}@${ref}: ${error}`);
+            return null;
+        }
     }
     /**
      * Fetch the optional lock file of a remote repository at a given commit
