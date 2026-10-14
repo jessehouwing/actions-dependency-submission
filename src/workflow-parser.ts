@@ -66,7 +66,8 @@ export class WorkflowParser {
    * @returns Unique key in format "owner/repo@ref"
    */
   private getActionKey(dependency: ActionDependency): string {
-    return `${dependency.owner}/${dependency.repo}@${dependency.ref}`
+    const actionPath = dependency.actionPath ? `/${dependency.actionPath}` : ''
+    return `${dependency.owner}/${dependency.repo}${actionPath}@${dependency.ref}`
   }
 
   /**
@@ -715,18 +716,18 @@ export class WorkflowParser {
 
   /**
    * Parses a 'uses' string found inside a remote action or workflow. A `$/`
-   * reference points at the same repository and commit that contains the file.
+   * reference points at the same repository and commit that contains the file;
+   * parent.ref must therefore already be the resolved (locked) commit.
    */
   private parseRemoteUsesString(
     uses: string,
-    parent: ActionDependency,
-    lock?: LockFile
+    parent: ActionDependency
   ): ReturnType<WorkflowParser['parseUsesString']> {
     if (!uses.startsWith('$/')) {
       return this.parseUsesString(uses)
     }
 
-    const commit = lock?.getCommit(parent.uses) ?? parent.ref
+    const commit = parent.ref
     const actionPath = uses.slice(2).replace(/\/+$/, '')
     const prefix = `${parent.owner}/${parent.repo}`
     return {
@@ -909,20 +910,35 @@ export class WorkflowParser {
     }
 
     if (!content) {
-      const lockedUses = lock?.getTransitiveUses(dependency.uses) ?? []
-      const lockedDeps = lockedUses.flatMap((uses) => {
-        const parsedUses = this.parseUsesString(uses).dependency
-        return parsedUses
-          ? [
-              {
-                ...parsedUses,
-                sourcePath: callingWorkflowPath,
-                isTransitive: true
-              }
-            ]
-          : []
-      })
-      return { actionDependencies: lockedDeps, dockerDependencies: [] }
+      // Not fetchable: recover the dependency graph from the lock file alone
+      const lockedDeps: ActionDependency[] = []
+      const lockedDockerDeps: DockerDependency[] = []
+      for (const uses of lock?.getTransitiveUses(dependency.uses) ?? []) {
+        const lockedDep = this.parseUsesString(uses).dependency
+        if (!lockedDep) continue
+        const transitiveDep = {
+          ...lockedDep,
+          sourcePath: callingWorkflowPath,
+          isTransitive: true
+        }
+        lockedDeps.push(transitiveDep)
+
+        const key = this.getActionKey(transitiveDep)
+        if (!this.processedRemoteActions.has(key)) {
+          this.processedRemoteActions.add(key)
+          const nested = await this.processRemoteActionOrWorkflow(
+            transitiveDep,
+            callingWorkflowPath,
+            lock
+          )
+          lockedDeps.push(...nested.actionDependencies)
+          lockedDockerDeps.push(...nested.dockerDependencies)
+        }
+      }
+      return {
+        actionDependencies: lockedDeps,
+        dockerDependencies: lockedDockerDeps
+      }
     }
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -940,11 +956,14 @@ export class WorkflowParser {
       return { actionDependencies: [], dockerDependencies: [] }
     }
 
+    // Children such as $/ references must resolve against the locked commit
+    const resolvedDependency = { ...dependency, ref: fetchRef }
+
     // Route based on YAML structure rather than filename
     if (parsed.runs?.using === 'composite') {
       return this.processRemoteCompositeAction(
         parsed,
-        dependency,
+        resolvedDependency,
         callingWorkflowPath,
         lock
       )
@@ -963,7 +982,7 @@ export class WorkflowParser {
       )
       return this.processRemoteCallableWorkflow(
         parsed,
-        dependency,
+        resolvedDependency,
         callingWorkflowPath,
         ownLock ?? lock
       )
@@ -1002,11 +1021,7 @@ export class WorkflowParser {
       if (actionYaml.runs.steps && Array.isArray(actionYaml.runs.steps)) {
         for (const step of actionYaml.runs.steps) {
           if (step.uses) {
-            const result = this.parseRemoteUsesString(
-              step.uses,
-              dependency,
-              lock
-            )
+            const result = this.parseRemoteUsesString(step.uses, dependency)
             if (result.dependency) {
               // Mark as transitive and reference the calling workflow as manifest
               const transitiveDep = {
@@ -1158,7 +1173,7 @@ export class WorkflowParser {
 
         // Check for callable workflows at job level
         if (job.uses) {
-          const result = this.parseRemoteUsesString(job.uses, dependency, lock)
+          const result = this.parseRemoteUsesString(job.uses, dependency)
           if (result.dependency) {
             const transitiveDep = {
               ...result.dependency,
@@ -1189,11 +1204,7 @@ export class WorkflowParser {
             for (const step of steps) {
               if (typeof step === 'object' && step !== null && 'uses' in step) {
                 const uses = (step as { uses: string }).uses
-                const result = this.parseRemoteUsesString(
-                  uses,
-                  dependency,
-                  lock
-                )
+                const result = this.parseRemoteUsesString(uses, dependency)
                 if (result.dependency) {
                   const transitiveDep = {
                     ...result.dependency,

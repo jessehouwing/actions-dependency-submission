@@ -30,10 +30,23 @@ export class LockFile {
   }
 
   /**
+   * Looks up an entry by exact key, falling back to the canonical
+   * `owner/repo@ref` key (lock keys carry no action or workflow subpath).
+   */
+  private lookup(uses: string): LockEntry | undefined {
+    const exact = this.dependencies.get(uses)
+    if (exact) return exact
+    const match = uses.match(/^([^/@]+)\/([^/@]+)(?:\/[^@]+)?@(.+)$/)
+    return match
+      ? this.dependencies.get(`${match[1]}/${match[2]}@${match[3]}`)
+      : undefined
+  }
+
+  /**
    * Returns the pinned commit SHA for a `uses` string, if locked.
    */
   getCommit(uses: string): string | undefined {
-    const commit = this.dependencies.get(uses)?.commit
+    const commit = this.lookup(uses)?.commit
     const match =
       typeof commit === 'string' && commit.match(/^sha1-([0-9a-f]{40})$/)
     return match ? match[1] : undefined
@@ -43,7 +56,7 @@ export class LockFile {
    * Returns the `uses` keys of the locked transitive dependencies of an entry.
    */
   getTransitiveUses(uses: string): string[] {
-    const entries = this.dependencies.get(uses)?.uses
+    const entries = this.lookup(uses)?.uses
     return Array.isArray(entries)
       ? entries.filter((e): e is string => typeof e === 'string')
       : []
