@@ -915,13 +915,13 @@ export class WorkflowParser {
     }
 
     const lockedHost = lock?.getHostname(dependency.uses)
-    if (lockedHost !== undefined) {
+    const reachable =
+      lockedHost === undefined ||
       this.octokitProvider.setRepoHost(
         dependency.owner,
         dependency.repo,
         lockedHost
       )
-    }
 
     // Determine fetch strategy based on uses string format.
     // A .yml/.yaml path component indicates the file should be fetched directly,
@@ -934,6 +934,7 @@ export class WorkflowParser {
           ?.path
       : undefined
     const fetchContent = async (ref: string): Promise<string | null> => {
+      if (!reachable) return null
       if (isWorkflowPath) {
         return workflowFilePath
           ? this.fetchRemoteFile(

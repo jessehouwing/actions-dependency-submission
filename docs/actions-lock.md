@@ -37,9 +37,10 @@ dependencies:
 - `hostname` (v0.0.3) states where the dependency is resolved. When omitted, the
   dependency lives on the workflow's home host and is only looked up there (no
   fallback to github.com). `github.com` on a workflow homed elsewhere (e.g.
-  ghe.com) forces the lookup on github.com, never on the home host. Entries that
-  are not in the lock keep the heuristic: home host first, then github.com when
-  a `public-github-token` is available.
+  ghe.com) forces the lookup on github.com, never on the home host; without a
+  `public-github-token` a warning is logged and the contents are treated as
+  unfetchable (see below). Entries that are not in the lock keep the heuristic:
+  home host first, then github.com when a `public-github-token` is available.
 
 ## Loading and verification
 
