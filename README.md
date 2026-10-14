@@ -287,10 +287,10 @@ or unexpected behavior.
      `additional-paths`) is resolved by ref and logged. When the same file is
      reached from both locked and unlocked workflows, both usages are reported.
    - Callable workflows from other repositories are governed only by their own
-     lock file; without one covering the workflow they are resolved by ref.
-   - Every submitted dependency carries `metadata.resolved_by`: `actions-lock`
-     or `ref`.1. **Additional Paths Scanning**: If specified, scans additional
-     directories for composite actions:
+     lock file; without one covering the workflow they are resolved by ref. A
+     malformed lock file there fails the run.
+1. **Additional Paths Scanning**: If specified, scans additional directories for
+   composite actions:
    - Finds all YAML files in the specified paths
    - Processes composite actions found there
    - Recursively extracts their dependencies

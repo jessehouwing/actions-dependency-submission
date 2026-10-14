@@ -61,11 +61,13 @@ describe('LockFile', () => {
     ])
   })
 
-  it('Ignores malformed commits', () => {
-    const lock = new LockFile(
-      `version: v0.0.3\ndependencies:\n  'a/b@v1':\n    commit: 'nonsense'\n`
-    )
-    expect(lock.getCommit('a/b@v1')).toBeUndefined()
+  it('Rejects entries with a malformed commit', () => {
+    expect(
+      () =>
+        new LockFile(
+          `version: v0.0.3\ndependencies:\n  'a/b@v1':\n    commit: 'nonsense'\n`
+        )
+    ).toThrow('invalid commit')
   })
 })
 
@@ -559,5 +561,29 @@ describe('locked and unlocked usages of the same file', () => {
       .map((d) => d.ref)
     expect(refs).toContain(SHA)
     expect(refs).toContain('main')
+  })
+})
+
+describe('remote lock file failures', () => {
+  it('Fails when a callable workflow ships a malformed lock file', async () => {
+    const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), 'lock-bad-'))
+    const wfSha = 'c'.repeat(40)
+    fs.writeFileSync(
+      path.join(tempDir, 'ci.yml'),
+      `on: push\njobs:\n  a:\n    uses: remote-org/wf/.github/workflows/w.yml@main\n`
+    )
+    const { parser } = createParser({
+      [`.github/workflows/w.yml@${wfSha}`]: `on: workflow_call\njobs:\n  b:\n    runs-on: ubuntu-latest\n    steps: []\n`,
+      [`.github/workflows/actions.lock@${wfSha}`]: `dependencies: {}\n`
+    })
+    parser.setLockFile(
+      covered(
+        `version: v0.0.3\ndependencies:\n  'remote-org/wf@main':\n    commit: 'sha1-${wfSha}'\n`
+      )
+    )
+    await expect(
+      parser.parseWorkflowDirectory(tempDir, [], tempDir)
+    ).rejects.toThrow('Malformed')
+    fs.rmSync(tempDir, { recursive: true, force: true })
   })
 })

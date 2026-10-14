@@ -46,6 +46,14 @@ export class LockFile {
     this.dependencies = new Map(
       Object.entries((parsed?.dependencies ?? {}) as Record<string, LockEntry>)
     )
+    for (const [key, entry] of this.dependencies) {
+      if (
+        entry?.commit !== undefined &&
+        !/^sha1-[0-9a-f]{40}$/.test(String(entry.commit))
+      ) {
+        throw new Error(`dependency "${key}" has an invalid commit`)
+      }
+    }
   }
 
   /**
