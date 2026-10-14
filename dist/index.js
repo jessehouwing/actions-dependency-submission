@@ -41045,6 +41045,12 @@ class OctokitProvider {
         return this.homeIsGitHubDotCom() ? this.octokit : undefined;
     }
     /**
+     * The route probing settled on for a repository (after it has been fetched)
+     */
+    getResolvedRoute(owner, repo) {
+        return this.publicRepoCache.get(`${owner}/${repo}`) ? 'public' : 'home';
+    }
+    /**
      * Whether a lock-mandated route can be served; warns when it cannot.
      */
     isRouteReachable(owner, repo, route) {
@@ -48795,7 +48801,9 @@ class WorkflowParser {
                 uses: actionPath
                     ? `${prefix}/${actionPath}@${commit}`
                     : `${prefix}@${commit}`,
-                actionPath: actionPath || undefined
+                actionPath: actionPath || undefined,
+                // Same repository, hence the same host as the parent
+                hostRoute: parent.hostRoute
             }
         };
     }
@@ -49010,8 +49018,13 @@ class WorkflowParser {
             const ownLock = this.lockFile && reachable
                 ? await this.fetchRemoteLockFile(dependency.owner, dependency.repo, fetchRef, route)
                 : undefined;
-            if (ownLock)
-                ownLock.contextRoute = route ?? 'home';
+            // Omitted hostnames follow the host the workflow was actually fetched
+            // from, including when probing (not a lock) selected public GitHub
+            if (ownLock) {
+                ownLock.contextRoute =
+                    route ??
+                        this.octokitProvider.getResolvedRoute(dependency.owner, dependency.repo);
+            }
             const workflowPath = dependency.uses.match(/^[^/]+\/[^/]+\/(.+\.ya?ml)@/)?.[1];
             return this.processRemoteCallableWorkflow(parsed, resolvedDependency, callingWorkflowPath, 
             // Callable workflows are locked by their own lock file only; without

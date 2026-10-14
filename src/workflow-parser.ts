@@ -773,7 +773,9 @@ export class WorkflowParser {
         uses: actionPath
           ? `${prefix}/${actionPath}@${commit}`
           : `${prefix}@${commit}`,
-        actionPath: actionPath || undefined
+        actionPath: actionPath || undefined,
+        // Same repository, hence the same host as the parent
+        hostRoute: parent.hostRoute
       }
     }
   }
@@ -1065,7 +1067,16 @@ export class WorkflowParser {
               route
             )
           : undefined
-      if (ownLock) ownLock.contextRoute = route ?? 'home'
+      // Omitted hostnames follow the host the workflow was actually fetched
+      // from, including when probing (not a lock) selected public GitHub
+      if (ownLock) {
+        ownLock.contextRoute =
+          route ??
+          this.octokitProvider.getResolvedRoute(
+            dependency.owner,
+            dependency.repo
+          )
+      }
       const workflowPath = dependency.uses.match(
         /^[^/]+\/[^/]+\/(.+\.ya?ml)@/
       )?.[1]
