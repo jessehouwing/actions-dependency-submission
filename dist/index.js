@@ -47941,6 +47941,7 @@ const LOCKFILE_RELATIVE_PATH = '.github/workflows/actions.lock';
  */
 class LockFile {
     dependencies;
+    workflows;
     constructor(content) {
         const parsed = parse(content);
         if (parsed === null ||
@@ -47952,7 +47953,14 @@ class LockFile {
                     Array.isArray(parsed.dependencies)))) {
             throw new Error('lock file must be a mapping with a dependencies mapping');
         }
+        this.workflows = new Set(Object.keys(parsed.workflows ?? {}));
         this.dependencies = new Map(Object.entries((parsed?.dependencies ?? {})));
+    }
+    /**
+     * Whether the lock file covers the given workflow path (relative to the repository root).
+     */
+    coversWorkflow(workflowPath) {
+        return this.workflows.has(workflowPath);
     }
     /**
      * Looks up an entry by exact key, falling back to the canonical
@@ -48129,6 +48137,15 @@ class WorkflowParser {
      */
     setLockFile(lockFile) {
         this.lockFile = lockFile;
+    }
+    /**
+     * Replaces a dependency's declared ref with the commit pinned in the lock
+     * file, so the submitted snapshot reports what actually runs. `uses` is kept
+     * as the lock lookup key.
+     */
+    pin(dependency, lock = this.lockFile) {
+        const commit = lock?.getCommit(dependency.uses);
+        return commit ? { ...dependency, ref: commit } : dependency;
     }
     /**
      * Generates a unique key for an action dependency for tracking processed actions
@@ -48341,7 +48358,7 @@ class WorkflowParser {
                 }
                 else if (result.dependency) {
                     dependencies.push({
-                        ...result.dependency,
+                        ...this.pin(result.dependency),
                         sourcePath
                     });
                 }
@@ -48462,7 +48479,7 @@ class WorkflowParser {
                 }
                 else if (result.dependency) {
                     dependencies.push({
-                        ...result.dependency,
+                        ...this.pin(result.dependency),
                         sourcePath
                     });
                 }
@@ -48480,7 +48497,7 @@ class WorkflowParser {
                             }
                             else if (result.dependency) {
                                 dependencies.push({
-                                    ...result.dependency,
+                                    ...this.pin(result.dependency),
                                     sourcePath
                                 });
                             }
@@ -48811,7 +48828,7 @@ class WorkflowParser {
                 if (!lockedDep)
                     continue;
                 const transitiveDep = {
-                    ...lockedDep,
+                    ...this.pin(lockedDep, lock),
                     sourcePath: callingWorkflowPath,
                     isTransitive: true
                 };
@@ -48853,7 +48870,12 @@ class WorkflowParser {
         else if (parsed.jobs) {
             // Callable workflows may ship their own lock file, pinned at the same commit
             const ownLock = await this.fetchRemoteLockFile(dependency.owner, dependency.repo, fetchRef);
-            return this.processRemoteCallableWorkflow(parsed, resolvedDependency, callingWorkflowPath, ownLock ?? lock);
+            const workflowPath = dependency.uses.match(/^[^/]+\/[^/]+\/(.+\.ya?ml)@/)?.[1];
+            return this.processRemoteCallableWorkflow(parsed, resolvedDependency, callingWorkflowPath, 
+            // Only trust the workflow's own lock if it actually covers this workflow
+            ownLock && workflowPath && ownLock.coversWorkflow(workflowPath)
+                ? ownLock
+                : lock);
         }
         return { actionDependencies: [], dockerDependencies: [] };
     }
@@ -48880,7 +48902,7 @@ class WorkflowParser {
                         if (result.dependency) {
                             // Mark as transitive and reference the calling workflow as manifest
                             const transitiveDep = {
-                                ...result.dependency,
+                                ...this.pin(result.dependency, lock),
                                 sourcePath: callingWorkflowPath,
                                 isTransitive: true
                             };
@@ -49000,7 +49022,7 @@ class WorkflowParser {
                     const result = this.parseRemoteUsesString(job.uses, dependency);
                     if (result.dependency) {
                         const transitiveDep = {
-                            ...result.dependency,
+                            ...this.pin(result.dependency, lock),
                             sourcePath: callingWorkflowPath,
                             isTransitive: true
                         };
@@ -49025,7 +49047,7 @@ class WorkflowParser {
                                 const result = this.parseRemoteUsesString(uses, dependency);
                                 if (result.dependency) {
                                     const transitiveDep = {
-                                        ...result.dependency,
+                                        ...this.pin(result.dependency, lock),
                                         sourcePath: callingWorkflowPath,
                                         isTransitive: true
                                     };
