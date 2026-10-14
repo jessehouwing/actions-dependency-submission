@@ -21,6 +21,7 @@ interface LockEntry {
  */
 export class LockFile {
   private dependencies: Map<string, LockEntry>
+  private workflows: Set<string>
 
   constructor(content: string) {
     const parsed = yaml.parse(content)
@@ -35,9 +36,17 @@ export class LockFile {
     ) {
       throw new Error('lock file must be a mapping with a dependencies mapping')
     }
+    this.workflows = new Set(Object.keys(parsed.workflows ?? {}))
     this.dependencies = new Map(
       Object.entries((parsed?.dependencies ?? {}) as Record<string, LockEntry>)
     )
+  }
+
+  /**
+   * Whether the lock file covers the given workflow path (relative to the repository root).
+   */
+  coversWorkflow(workflowPath: string): boolean {
+    return this.workflows.has(workflowPath)
   }
 
   /**

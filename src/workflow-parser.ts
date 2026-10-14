@@ -60,6 +60,19 @@ export class WorkflowParser {
   }
 
   /**
+   * Replaces a dependency's declared ref with the commit pinned in the lock
+   * file, so the submitted snapshot reports what actually runs. `uses` is kept
+   * as the lock lookup key.
+   */
+  private pin(
+    dependency: ActionDependency,
+    lock: LockFile | undefined = this.lockFile
+  ): ActionDependency {
+    const commit = lock?.getCommit(dependency.uses)
+    return commit ? { ...dependency, ref: commit } : dependency
+  }
+
+  /**
    * Generates a unique key for an action dependency for tracking processed actions
    *
    * @param dependency Action dependency to generate key for
@@ -357,7 +370,7 @@ export class WorkflowParser {
           localActions.push(result.path)
         } else if (result.dependency) {
           dependencies.push({
-            ...result.dependency,
+            ...this.pin(result.dependency),
             sourcePath
           })
         }
@@ -512,7 +525,7 @@ export class WorkflowParser {
           callableWorkflows.push(result.path)
         } else if (result.dependency) {
           dependencies.push({
-            ...result.dependency,
+            ...this.pin(result.dependency),
             sourcePath
           })
         }
@@ -530,7 +543,7 @@ export class WorkflowParser {
                 localActions.push(result.path)
               } else if (result.dependency) {
                 dependencies.push({
-                  ...result.dependency,
+                  ...this.pin(result.dependency),
                   sourcePath
                 })
               } else if (result.dockerDependency) {
@@ -922,7 +935,7 @@ export class WorkflowParser {
         const lockedDep = this.parseUsesString(uses).dependency
         if (!lockedDep) continue
         const transitiveDep = {
-          ...lockedDep,
+          ...this.pin(lockedDep, lock),
           sourcePath: callingWorkflowPath,
           isTransitive: true
         }
@@ -985,11 +998,17 @@ export class WorkflowParser {
         dependency.repo,
         fetchRef
       )
+      const workflowPath = dependency.uses.match(
+        /^[^/]+\/[^/]+\/(.+\.ya?ml)@/
+      )?.[1]
       return this.processRemoteCallableWorkflow(
         parsed,
         resolvedDependency,
         callingWorkflowPath,
-        ownLock ?? lock
+        // Only trust the workflow's own lock if it actually covers this workflow
+        ownLock && workflowPath && ownLock.coversWorkflow(workflowPath)
+          ? ownLock
+          : lock
       )
     }
 
@@ -1030,7 +1049,7 @@ export class WorkflowParser {
             if (result.dependency) {
               // Mark as transitive and reference the calling workflow as manifest
               const transitiveDep = {
-                ...result.dependency,
+                ...this.pin(result.dependency, lock),
                 sourcePath: callingWorkflowPath,
                 isTransitive: true
               }
@@ -1181,7 +1200,7 @@ export class WorkflowParser {
           const result = this.parseRemoteUsesString(job.uses, dependency)
           if (result.dependency) {
             const transitiveDep = {
-              ...result.dependency,
+              ...this.pin(result.dependency, lock),
               sourcePath: callingWorkflowPath,
               isTransitive: true
             }
@@ -1212,7 +1231,7 @@ export class WorkflowParser {
                 const result = this.parseRemoteUsesString(uses, dependency)
                 if (result.dependency) {
                   const transitiveDep = {
-                    ...result.dependency,
+                    ...this.pin(result.dependency, lock),
                     sourcePath: callingWorkflowPath,
                     isTransitive: true
                   }

@@ -131,7 +131,7 @@ describe('WorkflowParser with lock file and $/ references', () => {
     )
     const { parser, getContent } = createParser({
       [`.github/workflows/w.yml@${wfSha}`]: `on: workflow_call\njobs:\n  b:\n    runs-on: ubuntu-latest\n    steps:\n      - uses: inner/action@v1\n`,
-      [`.github/workflows/actions.lock@${wfSha}`]: `dependencies:\n  'inner/action@v1':\n    commit: 'sha1-${innerSha}'\n`,
+      [`.github/workflows/actions.lock@${wfSha}`]: `workflows:\n  '.github/workflows/w.yml': []\ndependencies:\n  'inner/action@v1':\n    commit: 'sha1-${innerSha}'\n`,
       [`action.yml@${innerSha}`]: `runs:\n  using: composite\n  steps:\n    - uses: deep/action@v2\n`
     })
     parser.setLockFile(
@@ -280,6 +280,91 @@ describe('lock resolution edge cases', () => {
       expect.objectContaining({ path: 'sub/action.yml', ref: wfSha })
     )
     expect(result.actionDependencies.some((d) => d.owner === 'deep')).toBe(true)
+  })
+})
+describe('pinned refs and lock scoping', () => {
+  let tempDir: string
+  beforeEach(() => {
+    tempDir = fs.mkdtempSync(path.join(os.tmpdir(), 'lock-pin-'))
+  })
+  afterEach(() => {
+    fs.rmSync(tempDir, { recursive: true, force: true })
+  })
+
+  it('Reports the locked commit as the ref of direct and transitive dependencies', async () => {
+    fs.writeFileSync(
+      path.join(tempDir, 'ci.yml'),
+      `on: push\njobs:\n  a:\n    runs-on: ubuntu-latest\n    steps:\n      - uses: remote-org/my-action@main\n`
+    )
+    const { parser } = createParser({
+      [`action.yml@${SHA}`]: `runs:\n  using: composite\n  steps:\n    - uses: actions/cache@v4\n`
+    })
+    parser.setLockFile(
+      new LockFile(
+        lockContent +
+          `    'actions/cache@v4':\n        commit: 'sha1-${'e'.repeat(40)}'\n`
+      )
+    )
+    const result = await parser.parseWorkflowDirectory(tempDir, [], tempDir)
+    const direct = result.actionDependencies.find((d) => d.repo === 'my-action')
+    const cache = result.actionDependencies.find((d) => d.repo === 'cache')
+    expect(direct).toMatchObject({
+      ref: SHA,
+      uses: 'remote-org/my-action@main'
+    })
+    expect(cache?.ref).toBe('e'.repeat(40))
+  })
+
+  it('Ignores a callable workflow lock that does not cover the workflow', async () => {
+    const wfSha = 'c'.repeat(40)
+    fs.writeFileSync(
+      path.join(tempDir, 'ci.yml'),
+      `on: push\njobs:\n  a:\n    uses: remote-org/wf/.github/workflows/w.yml@main\n`
+    )
+    const { parser, getContent } = createParser({
+      [`.github/workflows/w.yml@${wfSha}`]: `on: workflow_call\njobs:\n  b:\n    runs-on: ubuntu-latest\n    steps:\n      - uses: inner/action@v1\n`,
+      [`.github/workflows/actions.lock@${wfSha}`]: `workflows:\n  '.github/workflows/other.yml': []\ndependencies:\n  'inner/action@v1':\n    commit: 'sha1-${'d'.repeat(40)}'\n`,
+      [`action.yml@${'f'.repeat(40)}`]: `runs:\n  using: composite\n  steps: []\n`
+    })
+    parser.setLockFile(
+      new LockFile(
+        `dependencies:\n  'remote-org/wf@main':\n    commit: 'sha1-${wfSha}'\n  'inner/action@v1':\n    commit: 'sha1-${'f'.repeat(40)}'\n`
+      )
+    )
+    await parser.parseWorkflowDirectory(tempDir, [], tempDir)
+    expect(getContent).toHaveBeenCalledWith(
+      expect.objectContaining({ path: 'action.yml', ref: 'f'.repeat(40) })
+    )
+  })
+
+  it('Inspects the same symbolic ref separately when locks pin different commits', async () => {
+    const sha1 = '1'.repeat(40)
+    const sha2 = '2'.repeat(40)
+    const wf = () =>
+      `on: workflow_call\njobs:\n  b:\n    runs-on: ubuntu-latest\n    steps:\n      - uses: shared/action@main\n`
+    fs.writeFileSync(
+      path.join(tempDir, 'ci.yml'),
+      `on: push\njobs:\n  a:\n    uses: o/one/.github/workflows/w.yml@main\n  b:\n    uses: o/two/.github/workflows/w.yml@main\n`
+    )
+    const lockFor = (sha: string) =>
+      `workflows:\n  '.github/workflows/w.yml': []\ndependencies:\n  'shared/action@main':\n    commit: 'sha1-${sha}'\n`
+    const { parser, getContent } = createParser({
+      [`.github/workflows/w.yml@${'a'.repeat(40)}`]: wf(),
+      [`.github/workflows/w.yml@${'b'.repeat(40)}`]: wf(),
+      [`.github/workflows/actions.lock@${'a'.repeat(40)}`]: lockFor(sha1),
+      [`.github/workflows/actions.lock@${'b'.repeat(40)}`]: lockFor(sha2),
+      [`action.yml@${sha1}`]: `runs:\n  using: composite\n  steps: []\n`,
+      [`action.yml@${sha2}`]: `runs:\n  using: composite\n  steps: []\n`
+    })
+    parser.setLockFile(
+      new LockFile(
+        `dependencies:\n  'o/one@main':\n    commit: 'sha1-${'a'.repeat(40)}'\n  'o/two@main':\n    commit: 'sha1-${'b'.repeat(40)}'\n`
+      )
+    )
+    await parser.parseWorkflowDirectory(tempDir, [], tempDir)
+    const refs = getContent.mock.calls.map((c) => c[0].ref)
+    expect(refs).toContain(sha1)
+    expect(refs).toContain(sha2)
   })
 })
 describe('loadVerifiedLockFile', () => {
