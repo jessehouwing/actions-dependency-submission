@@ -63,25 +63,31 @@ describe('loadVerifiedLockFile verification', () => {
     )
   })
 
-  it('Ignores the lock when verification exits non-zero', async () => {
+  it('Uses the lock with a warning when verification exits non-zero', async () => {
     setup(new Error('exit 1'))
-    expect(await loadVerifiedLockFile(dir, 't')).toBeUndefined()
+    expect((await loadVerifiedLockFile(dir, 't'))?.getCommit('a/b@v1')).toBe(
+      'a'.repeat(40)
+    )
     expect(core.warning).toHaveBeenCalledWith(
       expect.stringContaining('verification failed')
     )
   })
 
-  it('Ignores the lock when verification times out', async () => {
+  it('Uses the lock with a warning when verification times out', async () => {
     setup(Object.assign(new Error('timed out'), { killed: true }))
-    expect(await loadVerifiedLockFile(dir, 't')).toBeUndefined()
+    expect((await loadVerifiedLockFile(dir, 't'))?.getCommit('a/b@v1')).toBe(
+      'a'.repeat(40)
+    )
   })
 
-  it('Ignores malformed lock content even if verification succeeds', async () => {
+  it('Fails on malformed lock content even if verification succeeds', async () => {
     setup(null, 'dependencies: [unclosed')
-    expect(await loadVerifiedLockFile(dir, 't')).toBeUndefined()
-    expect(core.warning).toHaveBeenCalledWith(
-      expect.stringContaining('Failed to parse')
-    )
+    await expect(loadVerifiedLockFile(dir, 't')).rejects.toThrow('Malformed')
+  })
+
+  it('Fails on structurally invalid lock content', async () => {
+    setup(null, '- just\n- a list\n')
+    await expect(loadVerifiedLockFile(dir, 't')).rejects.toThrow('Malformed')
   })
 
   it('Installs the extension when missing', async () => {

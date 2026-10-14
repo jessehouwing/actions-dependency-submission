@@ -279,8 +279,8 @@ or unexpected behavior.
    callable workflows are fetched at the exact commit pinned in the lock file,
    even if the ref (e.g. `main`) has since moved. Callable workflows may ship
    their own optional lock file, which is used for their dependencies. If the
-   lock file is missing or fails verification it is ignored and refs are
-   resolved as before.
+   lock file is missing it is ignored. If it cannot be verified a warning is
+   logged and its contents are used anyway; a malformed lock file fails the run.
 1. **Additional Paths Scanning**: If specified, scans additional directories for
    composite actions:
    - Finds all YAML files in the specified paths
