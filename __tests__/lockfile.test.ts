@@ -16,7 +16,7 @@ jest.unstable_mockModule('@actions/core', () => core)
 jest.unstable_mockModule('@actions/github', () => github)
 
 const { WorkflowParser } = await import('../src/workflow-parser.js')
-const { LockFile } = await import('../src/lockfile.js')
+const { LockFile, loadVerifiedLockFile } = await import('../src/lockfile.js')
 
 const SHA = 'a'.repeat(40)
 const lockContent = `
@@ -206,5 +206,36 @@ describe('WorkflowParser with lock file and $/ references', () => {
       expect.objectContaining({ path: 'sub/action.yml', ref: SHA })
     )
     expect(result.actionDependencies.some((d) => d.repo === 'cache')).toBe(true)
+  })
+})
+
+describe('loadVerifiedLockFile', () => {
+  it('Returns undefined without a lock file', async () => {
+    const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'nolock-'))
+    expect(await loadVerifiedLockFile(dir, 'token')).toBeUndefined()
+    fs.rmSync(dir, { recursive: true, force: true })
+  })
+
+  it('Warns and ignores the lock file when gh is not installed', async () => {
+    const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'nogh-'))
+    fs.mkdirSync(path.join(dir, '.github', 'workflows'), { recursive: true })
+    fs.writeFileSync(
+      path.join(dir, '.github', 'workflows', 'actions.lock'),
+      lockContent
+    )
+    const originalPath = process.env.PATH
+    const originalWinPath = process.env.Path
+    process.env.PATH = dir
+    process.env.Path = dir
+    try {
+      expect(await loadVerifiedLockFile(dir, 'token')).toBeUndefined()
+    } finally {
+      process.env.PATH = originalPath
+      if (originalWinPath !== undefined) process.env.Path = originalWinPath
+      fs.rmSync(dir, { recursive: true, force: true })
+    }
+    expect(core.warning).toHaveBeenCalledWith(
+      expect.stringContaining('GitHub CLI (gh) was not found')
+    )
   })
 })

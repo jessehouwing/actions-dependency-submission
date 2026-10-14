@@ -47963,6 +47963,44 @@ class LockFile {
             : [];
     }
 }
+const EXTENSION_REPO = 'github/gh-actions-lock';
+function runGh(args, options, callback) {
+    execFile('gh', args, options, (error, stdout, stderr) => callback(error, String(stdout), String(stderr)));
+}
+function runGhAsync(args, env) {
+    return new Promise((resolve) => runGh(args, { env, timeout: 120_000 }, (error, stdout, stderr) => resolve({ error, stdout, stderr })));
+}
+/**
+ * Ensures the gh CLI and the gh-actions-lock extension are available,
+ * installing the extension when it is missing.
+ *
+ * @returns true if `gh actions-lock` can be run
+ */
+async function ensureActionsLockExtension(token) {
+    const env = { ...process.env, GH_TOKEN: token || process.env.GH_TOKEN };
+    const version = await runGhAsync(['--version'], env);
+    if (version.error) {
+        warning('The GitHub CLI (gh) was not found on PATH; ignoring actions.lock. Install gh to enable lock file support.');
+        return false;
+    }
+    // `gh extension list` has no --json output; lines are tab separated:
+    // name, repository, version
+    const list = await runGhAsync(['extension', 'list'], env);
+    const installed = !list.error &&
+        list.stdout
+            .split(/\r?\n/)
+            .some((line) => line.split(/\s+/).includes(EXTENSION_REPO));
+    if (installed) {
+        return true;
+    }
+    info(`Installing the ${EXTENSION_REPO} gh extension`);
+    const install = await runGhAsync(['extension', 'install', EXTENSION_REPO], env);
+    if (install.error) {
+        warning(`Failed to install ${EXTENSION_REPO}, ignoring actions.lock: ${install.stderr.trim() || install.error.message}`);
+        return false;
+    }
+    return true;
+}
 /**
  * Runs `gh actions-lock --verify` against the repository.
  *
@@ -47970,7 +48008,7 @@ class LockFile {
  */
 function verifyLockFile(repoRoot, token) {
     return new Promise((resolve) => {
-        execFile('gh', ['actions-lock', '--verify', '--no-interactive'], {
+        runGh(['actions-lock', '--verify', '--no-interactive'], {
             cwd: repoRoot,
             env: {
                 ...process.env,
@@ -47980,7 +48018,7 @@ function verifyLockFile(repoRoot, token) {
             timeout: 120_000
         }, (error, _stdout, stderr) => {
             if (error) {
-                info(`actions.lock verification failed, ignoring lock file: ${stderr?.trim() || error.message}`);
+                warning(`actions.lock verification failed, ignoring lock file: ${stderr?.trim() || error.message}`);
                 resolve(false);
                 return;
             }
@@ -47999,7 +48037,8 @@ async function loadVerifiedLockFile(repoRoot, token) {
     if (!fs.existsSync(lockPath)) {
         return undefined;
     }
-    if (!(await verifyLockFile(repoRoot, token))) {
+    if (!(await ensureActionsLockExtension(token)) ||
+        !(await verifyLockFile(repoRoot, token))) {
         return undefined;
     }
     try {
