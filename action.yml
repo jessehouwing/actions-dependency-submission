@@ -73,7 +73,7 @@ inputs:
       Optional release tag of the github/gh-actions-lock gh extension to use
       (e.g. v0.2.0). When set, a different installed version is removed and the
       requested one installed; the action fails if this is not possible (e.g.
-      `gh` is\n      missing). When empty, an installed extension is used as-is
+      `gh` is missing). When empty, an installed extension is used as-is
       and a missing one is installed at its latest release.
     required: false
 
