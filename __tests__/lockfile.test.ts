@@ -209,6 +209,79 @@ describe('WorkflowParser with lock file and $/ references', () => {
   })
 })
 
+describe('lock resolution edge cases', () => {
+  let tempDir: string
+  beforeEach(() => {
+    tempDir = fs.mkdtempSync(path.join(os.tmpdir(), 'lock-edge-'))
+  })
+  afterEach(() => {
+    fs.rmSync(tempDir, { recursive: true, force: true })
+  })
+
+  const write = (content: string) =>
+    fs.writeFileSync(path.join(tempDir, 'ci.yml'), content)
+
+  it('Normalizes action and workflow subpaths for lock lookups', () => {
+    const lock = new LockFile(lockContent)
+    expect(lock.getCommit('remote-org/my-action/sub/dir@main')).toBe(SHA)
+    expect(
+      lock.getTransitiveUses('remote-org/my-action/x.yml@main')
+    ).toHaveLength(1)
+  })
+
+  it('Processes sibling $/ actions separately', async () => {
+    write(
+      `on: push\njobs:\n  a:\n    runs-on: ubuntu-latest\n    steps:\n      - uses: remote-org/my-action@main\n`
+    )
+    const { parser } = createParser({
+      [`action.yml@${SHA}`]: `runs:\n  using: composite\n  steps:\n    - uses: $/one\n    - uses: $/two\n`,
+      [`one/action.yml@${SHA}`]: `runs:\n  using: composite\n  steps:\n    - uses: dep/one@v1\n`,
+      [`two/action.yml@${SHA}`]: `runs:\n  using: composite\n  steps:\n    - uses: dep/two@v1\n`
+    })
+    parser.setLockFile(new LockFile(lockContent))
+    const result = await parser.parseWorkflowDirectory(tempDir, [], tempDir)
+    const repos = result.actionDependencies.map((d) => d.owner + '/' + d.repo)
+    expect(repos).toContain('dep/one')
+    expect(repos).toContain('dep/two')
+  })
+
+  it('Recovers the full locked graph when actions cannot be fetched', async () => {
+    write(
+      `on: push\njobs:\n  a:\n    runs-on: ubuntu-latest\n    steps:\n      - uses: a/a@v1\n`
+    )
+    const { parser } = createParser({})
+    parser.setLockFile(
+      new LockFile(
+        `dependencies:\n  'a/a@v1':\n    uses: ['b/b@v1']\n  'b/b@v1':\n    uses: ['c/c@v1']\n  'c/c@v1':\n    commit: 'sha1-${SHA}'\n`
+      )
+    )
+    const result = await parser.parseWorkflowDirectory(tempDir, [], tempDir)
+    const repos = result.actionDependencies.map((d) => d.repo)
+    expect(repos).toEqual(expect.arrayContaining(['b', 'c']))
+  })
+
+  it('Resolves $/ in a callable workflow to its locked commit, not the moved ref', async () => {
+    const wfSha = 'c'.repeat(40)
+    write(
+      `on: push\njobs:\n  a:\n    uses: remote-org/wf/.github/workflows/w.yml@main\n`
+    )
+    const { parser, getContent } = createParser({
+      [`.github/workflows/w.yml@${wfSha}`]: `on: workflow_call\njobs:\n  b:\n    runs-on: ubuntu-latest\n    steps:\n      - uses: $/sub\n`,
+      [`.github/workflows/actions.lock@${wfSha}`]: `dependencies: {}\n`,
+      [`sub/action.yml@${wfSha}`]: `runs:\n  using: composite\n  steps:\n    - uses: deep/x@v1\n`
+    })
+    parser.setLockFile(
+      new LockFile(
+        `dependencies:\n  'remote-org/wf@main':\n    commit: 'sha1-${wfSha}'\n`
+      )
+    )
+    const result = await parser.parseWorkflowDirectory(tempDir, [], tempDir)
+    expect(getContent).toHaveBeenCalledWith(
+      expect.objectContaining({ path: 'sub/action.yml', ref: wfSha })
+    )
+    expect(result.actionDependencies.some((d) => d.owner === 'deep')).toBe(true)
+  })
+})
 describe('loadVerifiedLockFile', () => {
   it('Returns undefined without a lock file', async () => {
     const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'nolock-'))
