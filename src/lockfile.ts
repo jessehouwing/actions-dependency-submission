@@ -24,6 +24,17 @@ export class LockFile {
 
   constructor(content: string) {
     const parsed = yaml.parse(content)
+    if (
+      parsed === null ||
+      typeof parsed !== 'object' ||
+      Array.isArray(parsed) ||
+      (parsed.dependencies !== undefined &&
+        (parsed.dependencies === null ||
+          typeof parsed.dependencies !== 'object' ||
+          Array.isArray(parsed.dependencies)))
+    ) {
+      throw new Error('lock file must be a mapping with a dependencies mapping')
+    }
     this.dependencies = new Map(
       Object.entries((parsed?.dependencies ?? {}) as Record<string, LockEntry>)
     )
@@ -111,7 +122,7 @@ async function ensureActionsLockExtension(
   const version = await runGhAsync(['--version'], env)
   if (version.error) {
     return fail(
-      'The GitHub CLI (gh) was not found on PATH; ignoring actions.lock. Install gh to enable lock file support.'
+      'The GitHub CLI (gh) was not found on PATH; lock file cannot be verified. Install gh to enable lock file support.'
     )
   }
 
@@ -143,7 +154,7 @@ async function ensureActionsLockExtension(
     )
     if (remove.error) {
       return fail(
-        `Failed to remove ${EXTENSION_REPO}, ignoring actions.lock: ${remove.stderr.trim() || remove.error.message}`
+        `Failed to remove ${EXTENSION_REPO}, lock file cannot be verified: ${remove.stderr.trim() || remove.error.message}`
       )
     }
   }
@@ -162,7 +173,7 @@ async function ensureActionsLockExtension(
   )
   if (install.error) {
     return fail(
-      `Failed to install ${EXTENSION_REPO}, ignoring actions.lock: ${install.stderr.trim() || install.error.message}`
+      `Failed to install ${EXTENSION_REPO}, lock file cannot be verified: ${install.stderr.trim() || install.error.message}`
     )
   }
   return true
@@ -188,7 +199,7 @@ function verifyLockFile(repoRoot: string, token: string): Promise<boolean> {
       (error, _stdout, stderr) => {
         if (error) {
           core.warning(
-            `actions.lock verification failed, ignoring lock file: ${stderr?.trim() || error.message}`
+            `actions.lock verification failed: ${stderr?.trim() || error.message}`
           )
           resolve(false)
           return
@@ -200,10 +211,12 @@ function verifyLockFile(repoRoot: string, token: string): Promise<boolean> {
 }
 
 /**
- * Loads the repository's lock file, trusting it only when `gh actions-lock
- * --verify` succeeds.
+ * Loads the repository's lock file. A malformed lock file (or an unmet
+ * `extensionVersion` requirement) throws. If the lock file cannot be verified
+ * with `gh actions-lock --verify` a warning is logged and its contents are
+ * used anyway.
  *
- * @returns The lock file, or undefined if missing, unverifiable or invalid
+ * @returns The lock file, or undefined if the repository has none
  */
 export async function loadVerifiedLockFile(
   repoRoot: string,
@@ -211,28 +224,38 @@ export async function loadVerifiedLockFile(
   extensionVersion?: string
 ): Promise<LockFile | undefined> {
   const lockPath = path.join(repoRoot, LOCKFILE_RELATIVE_PATH)
-  if (!fs.existsSync(lockPath) && !extensionVersion) {
+  const exists = fs.existsSync(lockPath)
+
+  let lock: LockFile | undefined
+  if (exists) {
+    try {
+      lock = new LockFile(fs.readFileSync(lockPath, 'utf8'))
+    } catch (error) {
+      throw new Error(
+        `Malformed ${LOCKFILE_RELATIVE_PATH}: ${error instanceof Error ? error.message : String(error)}`,
+        { cause: error }
+      )
+    }
+  } else if (!extensionVersion) {
     return undefined
   }
 
-  if (
-    !(await ensureActionsLockExtension(token, extensionVersion || undefined)) ||
-    !fs.existsSync(lockPath) ||
-    !(await verifyLockFile(repoRoot, token))
-  ) {
+  const extensionReady = await ensureActionsLockExtension(
+    token,
+    extensionVersion || undefined
+  )
+  if (!lock) {
     return undefined
   }
 
-  try {
-    const lock = new LockFile(fs.readFileSync(lockPath, 'utf8'))
+  if (extensionReady && (await verifyLockFile(repoRoot, token))) {
     core.info(
       `Using verified ${LOCKFILE_RELATIVE_PATH} to resolve dependencies`
     )
-    return lock
-  } catch (error) {
+  } else {
     core.warning(
-      `Failed to parse ${LOCKFILE_RELATIVE_PATH}: ${error instanceof Error ? error.message : String(error)}`
+      `${LOCKFILE_RELATIVE_PATH} could not be verified; using its contents unverified`
     )
-    return undefined
   }
+  return lock
 }

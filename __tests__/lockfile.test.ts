@@ -289,7 +289,7 @@ describe('loadVerifiedLockFile', () => {
     fs.rmSync(dir, { recursive: true, force: true })
   })
 
-  it('Warns and ignores the lock file when gh is not installed', async () => {
+  it('Warns and uses the unverified lock file when gh is not installed', async () => {
     const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'nogh-'))
     fs.mkdirSync(path.join(dir, '.github', 'workflows'), { recursive: true })
     fs.writeFileSync(
@@ -301,7 +301,7 @@ describe('loadVerifiedLockFile', () => {
     process.env.PATH = dir
     process.env.Path = dir
     try {
-      expect(await loadVerifiedLockFile(dir, 'token')).toBeUndefined()
+      expect(await loadVerifiedLockFile(dir, 'token')).toBeDefined()
     } finally {
       process.env.PATH = originalPath
       if (originalWinPath !== undefined) process.env.Path = originalWinPath
@@ -309,6 +309,9 @@ describe('loadVerifiedLockFile', () => {
     }
     expect(core.warning).toHaveBeenCalledWith(
       expect.stringContaining('GitHub CLI (gh) was not found')
+    )
+    expect(core.warning).toHaveBeenCalledWith(
+      expect.stringContaining('could not be verified')
     )
   })
 })
