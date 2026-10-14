@@ -21,6 +21,9 @@ interface LockEntry {
  * string first and then the canonical form. Entries carry the immutable commit
  * the ref was pinned to, even when the ref (e.g. `main`) has since moved.
  */
+/** A lock file that cannot be parsed; always fails the run */
+export class MalformedLockFileError extends Error {}
+
 export class LockFile {
   private dependencies: Map<string, LockEntry>
   private workflows: Set<string>
@@ -31,8 +34,9 @@ export class LockFile {
       parsed === null ||
       typeof parsed !== 'object' ||
       Array.isArray(parsed) ||
-      typeof parsed.version !== 'string' ||
-      parsed.version === '' ||
+      parsed.version === undefined ||
+      parsed.version === null ||
+      String(parsed.version) === '' ||
       (parsed.dependencies !== undefined &&
         (parsed.dependencies === null ||
           typeof parsed.dependencies !== 'object' ||
@@ -251,27 +255,25 @@ export async function loadVerifiedLockFile(
 ): Promise<LockFile | undefined> {
   const lockPath = path.join(repoRoot, LOCKFILE_RELATIVE_PATH)
 
-  let lock: LockFile | undefined
-  if (fs.existsSync(lockPath)) {
-    try {
-      lock = new LockFile(fs.readFileSync(lockPath, 'utf8'))
-    } catch (error) {
-      throw new Error(
-        `Malformed ${LOCKFILE_RELATIVE_PATH}: ${error instanceof Error ? error.message : String(error)}`,
-        { cause: error }
-      )
-    }
-  } else if (!extensionVersion) {
+  // Without a lock file there is nothing to verify, so gh is never required
+  if (!fs.existsSync(lockPath)) {
     return undefined
+  }
+
+  let lock: LockFile
+  try {
+    lock = new LockFile(fs.readFileSync(lockPath, 'utf8'))
+  } catch (error) {
+    throw new MalformedLockFileError(
+      `Malformed ${LOCKFILE_RELATIVE_PATH}: ${error instanceof Error ? error.message : String(error)}`,
+      { cause: error }
+    )
   }
 
   const extensionReady = await ensureActionsLockExtension(
     token,
     extensionVersion || undefined
   )
-  if (!lock) {
-    return undefined
-  }
 
   if (!extensionReady) {
     core.warning(

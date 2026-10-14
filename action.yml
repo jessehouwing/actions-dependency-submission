@@ -70,8 +70,9 @@ inputs:
     default: 'false'
   actions-lock-version:
     description: >
-      Optional release tag of the github/gh-actions-lock gh extension to use
-      (e.g. v0.2.0). When set, a different installed version is removed and the
+      Optional release tag of the github/gh-actions-lock gh extension used to
+      verify .github/workflows/actions.lock (e.g. v0.2.0). Only used when a lock
+      file exists. When set, a different installed version is removed and the
       requested one installed; the action fails if this is not possible (e.g.
       `gh` is missing). When empty, an installed extension is used as-is and a
       missing one is installed at its latest release.

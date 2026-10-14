@@ -132,6 +132,43 @@ describe('loadVerifiedLockFile verification', () => {
     )
   })
 
+  it('Ignores the requested version when there is no lock file', async () => {
+    execFile.mockImplementation((_cmd, _args, _opts, cb) =>
+      cb(new Error('ENOENT'), '', '')
+    )
+    expect(await loadVerifiedLockFile(dir, 't', 'v0.2.0')).toBeUndefined()
+    expect(execFile).not.toHaveBeenCalled()
+  })
+
+  it('Fails when removing a mismatching pinned version fails', async () => {
+    setup(null)
+    execFile.mockImplementation((_cmd, args, _opts, cb) => {
+      if (args[0] === 'extension' && args[1] === 'list')
+        cb(null, 'gh actions-lock\tgithub/gh-actions-lock\tv0.2.0', '')
+      else if (args[0] === 'extension' && args[1] === 'remove')
+        cb(new Error('boom'), '', 'boom')
+      else cb(null, '', '')
+    })
+    await expect(loadVerifiedLockFile(dir, 't', 'v0.3.0')).rejects.toThrow(
+      'Failed to remove'
+    )
+  })
+
+  it('Warns and uses the lock unverified when installation fails without a version', async () => {
+    setup(null, validLock, '')
+    execFile.mockImplementation((_cmd, args, _opts, cb) =>
+      args[0] === 'extension' && args[1] === 'install'
+        ? cb(new Error('boom'), '', 'boom')
+        : cb(null, '', '')
+    )
+    expect((await loadVerifiedLockFile(dir, 't'))?.getCommit('a/b@v1')).toBe(
+      'a'.repeat(40)
+    )
+    expect(core.warning).toHaveBeenCalledWith(
+      expect.stringContaining('using its contents unverified')
+    )
+  })
+
   it('Fails when pinned installation fails', async () => {
     setup(null, validLock, '')
     execFile.mockImplementation((_cmd, args, _opts, cb) =>

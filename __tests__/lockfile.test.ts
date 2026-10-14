@@ -587,3 +587,156 @@ describe('remote lock file failures', () => {
     fs.rmSync(tempDir, { recursive: true, force: true })
   })
 })
+
+describe('lock scope specification', () => {
+  let tempDir: string
+  beforeEach(() => {
+    tempDir = fs.mkdtempSync(path.join(os.tmpdir(), 'lock-spec-'))
+  })
+  afterEach(() => {
+    fs.rmSync(tempDir, { recursive: true, force: true })
+  })
+
+  const callWf = (uses: string) => `on: push\njobs:\n  a:\n    uses: ${uses}\n`
+  const stepWf = (uses: string) =>
+    `on: workflow_call\njobs:\n  b:\n    runs-on: ubuntu-latest\n    steps:\n      - uses: ${uses}\n`
+
+  it('Accepts a non-string lock version', () => {
+    expect(() => new LockFile(`version: 1\ndependencies: {}\n`)).not.toThrow()
+  })
+
+  it('Fails on a malformed lock of a nested callable workflow', async () => {
+    const wfSha = 'c'.repeat(40)
+    const ySha = 'd'.repeat(40)
+    fs.writeFileSync(
+      path.join(tempDir, 'ci.yml'),
+      callWf('remote-org/wf/.github/workflows/w.yml@main')
+    )
+    const { parser } = createParser({
+      [`.github/workflows/w.yml@${wfSha}`]: `on: workflow_call\njobs:\n  b:\n    uses: other-org/inner/.github/workflows/y.yml@v1\n`,
+      [`.github/workflows/actions.lock@${wfSha}`]: `version: v0.0.3\nworkflows:\n  '.github/workflows/w.yml': []\ndependencies:\n  'other-org/inner@v1':\n    commit: 'sha1-${ySha}'\n`,
+      [`.github/workflows/y.yml@${ySha}`]: stepWf('actions/cache@v4'),
+      [`.github/workflows/actions.lock@${ySha}`]: `dependencies: {}\n`
+    })
+    parser.setLockFile(
+      covered(
+        `version: v0.0.3\ndependencies:\n  'remote-org/wf@main':\n    commit: 'sha1-${wfSha}'\n`
+      )
+    )
+    await expect(
+      parser.parseWorkflowDirectory(tempDir, [], tempDir)
+    ).rejects.toThrow('Malformed')
+  })
+
+  it('Uses a nested callable workflow own lock even if its caller is unlocked', async () => {
+    const wfSha = 'c'.repeat(40)
+    const leafSha = 'e'.repeat(40)
+    fs.writeFileSync(
+      path.join(tempDir, 'ci.yml'),
+      callWf('remote-org/wf/.github/workflows/w.yml@main')
+    )
+    const { parser } = createParser({
+      [`.github/workflows/w.yml@${wfSha}`]: `on: workflow_call\njobs:\n  b:\n    uses: other-org/inner/.github/workflows/y.yml@v1\n`,
+      '.github/workflows/y.yml@v1': stepWf('leaf/action@v2'),
+      '.github/workflows/actions.lock@v1': `version: v0.0.3\nworkflows:\n  '.github/workflows/y.yml': []\ndependencies:\n  'leaf/action@v2':\n    commit: 'sha1-${leafSha}'\n`
+    })
+    parser.setLockFile(
+      covered(
+        `version: v0.0.3\ndependencies:\n  'remote-org/wf@main':\n    commit: 'sha1-${wfSha}'\n`
+      )
+    )
+    const result = await parser.parseWorkflowDirectory(tempDir, [], tempDir)
+    expect(
+      result.actionDependencies.find((d) => d.repo === 'action')?.ref
+    ).toBe(leafSha)
+  })
+
+  it('Gives a local callable workflow its own lock scope', async () => {
+    fs.writeFileSync(
+      path.join(tempDir, 'ci.yml'),
+      `on: push\njobs:\n  a:\n    uses: ./sub.yml\n  b:\n    runs-on: ubuntu-latest\n    steps:\n      - uses: remote-org/my-action@main\n`
+    )
+    fs.writeFileSync(
+      path.join(tempDir, 'sub.yml'),
+      stepWf('remote-org/my-action@main')
+    )
+    const { parser } = createParser({})
+    parser.setLockFile(covered(lockContent))
+    const result = await parser.parseWorkflowDirectory(tempDir, [], tempDir)
+    const bySource = (source: string) =>
+      result.actionDependencies.find(
+        (d) => d.repo === 'my-action' && d.sourcePath === source
+      )?.ref
+    expect(bySource('ci.yml')).toBe(SHA)
+    expect(bySource('sub.yml')).toBe('main')
+  })
+
+  it('Resolves remote dependencies of composite actions in additional paths', async () => {
+    fs.mkdirSync(path.join(tempDir, 'extra'))
+    fs.writeFileSync(
+      path.join(tempDir, 'extra', 'action.yml'),
+      `runs:\n  using: composite\n  steps:\n    - uses: remote-org/my-action@main\n      shell: bash\n`
+    )
+    const { parser } = createParser({
+      'action.yml@main': `runs:\n  using: composite\n  steps:\n    - uses: actions/setup-node@v4\n      shell: bash\n`
+    })
+    const result = await parser.parseWorkflowDirectory(
+      path.join(tempDir, 'none'),
+      ['extra'],
+      tempDir
+    )
+    expect(result.actionDependencies.some((d) => d.repo === 'setup-node')).toBe(
+      true
+    )
+  })
+
+  it('Warns and resolves $/ through the movable ref when it cannot be pinned', async () => {
+    fs.writeFileSync(
+      path.join(tempDir, 'ci.yml'),
+      stepWf('remote-org/my-action@main')
+    )
+    const files: Record<string, string> = {
+      'action.yml@main': `runs:\n  using: composite\n  steps:\n    - uses: $/sub\n`,
+      'sub/action.yml@main': `runs:\n  using: composite\n  steps:\n    - uses: actions/cache@v4\n`
+    }
+    const getContent = jest.fn(
+      async (args: { path: string; ref: string }): Promise<unknown> => {
+        const content = files[`${args.path}@${args.ref}`]
+        if (content === undefined) throw new Error('Not Found')
+        return { data: { content: Buffer.from(content).toString('base64') } }
+      }
+    )
+    const getCommit = jest.fn(async () => {
+      throw new Error('Not Found')
+    })
+    const parser = new WorkflowParser('fake-token')
+    // @ts-expect-error - Replacing private property for testing
+    parser.octokitProvider = {
+      getOctokitForRepo: jest
+        .fn()
+        .mockResolvedValue({ rest: { repos: { getContent, getCommit } } })
+    }
+    const result = await parser.parseWorkflowDirectory(tempDir, [], tempDir)
+    expect(core.warning).toHaveBeenCalledWith(
+      expect.stringContaining('Could not pin remote-org/my-action@main')
+    )
+    expect(result.actionDependencies.some((d) => d.repo === 'cache')).toBe(true)
+  })
+
+  it('Does not reconstruct an unfetchable callable workflow from the caller lock', async () => {
+    fs.writeFileSync(
+      path.join(tempDir, 'ci.yml'),
+      callWf('other/repo/.github/workflows/build.yml@v1')
+    )
+    const { parser } = createParser({})
+    parser.setLockFile(
+      covered(
+        `version: v0.0.3\ndependencies:\n  'other/repo@v1':\n    commit: 'sha1-${'c'.repeat(40)}'\n    uses:\n      - 'actions/setup-node@v4'\n  'actions/setup-node@v4':\n    commit: 'sha1-${SHA}'\n`
+      )
+    )
+    const result = await parser.parseWorkflowDirectory(tempDir, [], tempDir)
+    expect(result.actionDependencies.some((d) => d.repo === 'setup-node')).toBe(
+      false
+    )
+  })
+})
