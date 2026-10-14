@@ -1,6 +1,6 @@
 import * as core from '@actions/core'
 import type { ActionDependency } from './workflow-parser.js'
-import { OctokitProvider } from './octokit-provider.js'
+import { OctokitProvider, type HostRoute } from './octokit-provider.js'
 
 /**
  * Represents a resolved dependency with potential fork information
@@ -82,7 +82,8 @@ export class ForkResolver {
       const versionTag = await this.resolveShaToBestVersion(
         dependency.owner,
         dependency.repo,
-        dependency.ref
+        dependency.ref,
+        dependency.hostRoute
       )
       if (versionTag) {
         originalSha = dependency.ref
@@ -115,7 +116,8 @@ export class ForkResolver {
     // Try to find the original repository
     const original = await this.findOriginalRepository(
       dependency.owner,
-      dependency.repo
+      dependency.repo,
+      dependency.hostRoute
     )
 
     if (original) {
@@ -137,7 +139,8 @@ export class ForkResolver {
    */
   private async findOriginalRepository(
     owner: string,
-    repo: string
+    repo: string,
+    route?: HostRoute
   ): Promise<{ owner: string; repo: string } | undefined> {
     // First, try using the fork regex pattern if provided
     if (this.forkRegex) {
@@ -148,7 +151,7 @@ export class ForkResolver {
     }
 
     // Try to get fork information using the appropriate instance
-    const repoInfo = await this.octokitProvider.getRepoInfo(owner, repo)
+    const repoInfo = await this.octokitProvider.getRepoInfo(owner, repo, route)
 
     if (repoInfo?.fork && repoInfo.parent) {
       return {
@@ -209,15 +212,16 @@ export class ForkResolver {
   private async resolveShaToBestVersion(
     owner: string,
     repo: string,
-    sha: string
+    sha: string,
+    route?: HostRoute
   ): Promise<string | undefined> {
     try {
       core.debug(`Resolving SHA ${sha} for ${owner}/${repo}`)
 
       // Fetch both branches and tags from the repository
       const [branches, tags] = await Promise.all([
-        this.fetchRepositoryBranches(owner, repo),
-        this.fetchRepositoryTags(owner, repo)
+        this.fetchRepositoryBranches(owner, repo, route),
+        this.fetchRepositoryTags(owner, repo, route)
       ])
 
       // Combine branches and tags
@@ -231,14 +235,18 @@ export class ForkResolver {
 
         // If this is a fork organization, try the parent repository
         if (this.forkOrganizations.has(owner)) {
-          const original = await this.findOriginalRepository(owner, repo)
+          const original = await this.findOriginalRepository(owner, repo, route)
           if (original) {
             core.debug(
               `Trying parent repository ${original.owner}/${original.repo}`
             )
             const [parentBranches, parentTags] = await Promise.all([
-              this.fetchRepositoryBranches(original.owner, original.repo),
-              this.fetchRepositoryTags(original.owner, original.repo)
+              this.fetchRepositoryBranches(
+                original.owner,
+                original.repo,
+                route
+              ),
+              this.fetchRepositoryTags(original.owner, original.repo, route)
             ])
             const parentRefs = [...parentBranches, ...parentTags]
             const parentMatches = parentRefs.filter((ref) => ref.sha === sha)
@@ -280,12 +288,17 @@ export class ForkResolver {
    */
   private async fetchRepositoryTags(
     owner: string,
-    repo: string
+    repo: string,
+    route?: HostRoute
   ): Promise<Array<{ name: string; sha: string }>> {
-    // Get the appropriate Octokit instance for this repository
-    const octokit = await this.octokitProvider.getOctokitForRepo(owner, repo)
-
     try {
+      // Get the appropriate Octokit instance for this repository
+      const octokit = await this.octokitProvider.getOctokitForRepo(
+        owner,
+        repo,
+        route
+      )
+
       const tags: Array<{ name: string; sha: string }> = []
       let page = 1
       const perPage = 100
@@ -333,12 +346,17 @@ export class ForkResolver {
    */
   private async fetchRepositoryBranches(
     owner: string,
-    repo: string
+    repo: string,
+    route?: HostRoute
   ): Promise<Array<{ name: string; sha: string }>> {
-    // Get the appropriate Octokit instance for this repository
-    const octokit = await this.octokitProvider.getOctokitForRepo(owner, repo)
-
     try {
+      // Get the appropriate Octokit instance for this repository
+      const octokit = await this.octokitProvider.getOctokitForRepo(
+        owner,
+        repo,
+        route
+      )
+
       const branches: Array<{ name: string; sha: string }> = []
       let page = 1
       const perPage = 100

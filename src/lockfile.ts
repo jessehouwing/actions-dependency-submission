@@ -3,7 +3,7 @@ import * as path from 'path'
 import { execFile } from 'child_process'
 import * as yaml from 'yaml'
 import * as core from '@actions/core'
-
+import type { HostRoute } from './octokit-provider.js'
 export const LOCKFILE_RELATIVE_PATH = '.github/workflows/actions.lock'
 
 interface LockEntry {
@@ -11,6 +11,14 @@ interface LockEntry {
   commit?: string
   hostname?: string
   uses?: string[]
+}
+
+/** Schemas before v0.0.3 have no hostname; their pins are GitHub.com's */
+function isLegacyVersion(version: string): boolean {
+  const match = version.match(/^v?(\d+)\.(\d+)\.(\d+)$/)
+  if (!match) return false
+  const [major, minor, patch] = match.slice(1).map(Number)
+  return major === 0 && minor === 0 && patch < 3
 }
 
 /**
@@ -28,6 +36,13 @@ export class MalformedLockFileError extends Error {}
 export class LockFile {
   private dependencies: Map<string, LockEntry>
   private workflows: Set<string>
+  private legacySchema: boolean
+  /**
+   * Where entries without a hostname resolve: the home of the workflow that
+   * owns this lock, which for a remote workflow's own lock is the route it
+   * was fetched through.
+   */
+  contextRoute: HostRoute = 'home'
 
   constructor(content: string) {
     const parsed = yaml.parse(content)
@@ -47,6 +62,7 @@ export class LockFile {
         'lock file must be a mapping with a version and a dependencies mapping'
       )
     }
+    this.legacySchema = isLegacyVersion(String(parsed.version))
     this.workflows = new Set(Object.keys(parsed.workflows ?? {}))
     this.dependencies = new Map(
       Object.entries((parsed?.dependencies ?? {}) as Record<string, LockEntry>)
@@ -92,17 +108,20 @@ export class LockFile {
   }
 
   /**
-   * Whether a `uses` string is locked, and if so on which host it resolves.
-   * An omitted hostname means the workflow's home host.
+   * Where a locked `uses` string resolves. `hostname: github.com` and legacy
+   * (pre-v0.0.3) entries are public GitHub; an omitted hostname follows the
+   * lock's own context.
    *
-   * @returns `undefined` when not locked, `''` for the home host, else the hostname
+   * @returns `undefined` when not locked
    */
-  getHostname(uses: string): string | undefined {
+  getHostRoute(uses: string): HostRoute | undefined {
     const entry = this.lookup(uses)
     if (!entry) return undefined
-    return typeof entry.hostname === 'string'
-      ? entry.hostname.trim().toLowerCase()
-      : ''
+    if (this.legacySchema) return 'public'
+    return typeof entry.hostname === 'string' &&
+      entry.hostname.trim().toLowerCase() === 'github.com'
+      ? 'public'
+      : this.contextRoute
   }
 
   /**
