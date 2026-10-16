@@ -335,6 +335,36 @@ runs:
       expect(result.dockerDependencies).toEqual([])
     })
 
+    it('Extracts dependencies from parallel step groups in workflows', async () => {
+      const workflowFile = path.join(tempDir, 'parallel.yml')
+      fs.writeFileSync(
+        workflowFile,
+        `
+name: ci
+on: push
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - parallel:
+          - uses: actions/setup-java@v4
+          - parallel:
+              - uses: actions/setup-node@v4
+              - uses: docker://alpine:3.18
+`
+      )
+
+      const result = await parser.parseWorkflowFile(workflowFile)
+
+      expect(result.dependencies.map((d) => d.uses)).toEqual([
+        'actions/checkout@v4',
+        'actions/setup-java@v4',
+        'actions/setup-node@v4'
+      ])
+      expect(result.dockerDependencies).toHaveLength(1)
+    })
+
     it('Extracts Docker images from job container', async () => {
       const workflowContent = `
 name: Test Workflow
