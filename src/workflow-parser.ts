@@ -41,6 +41,24 @@ export interface DockerDependency {
 }
 
 /**
+ * Flattens workflow job steps, expanding `parallel:` step groups (which may nest)
+ * into their member steps. Not valid in composite actions.
+ */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+function flattenSteps(steps: any[]): any[] {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const result: any[] = []
+  for (const step of steps) {
+    if (step && typeof step === 'object' && Array.isArray(step.parallel)) {
+      result.push(...flattenSteps(step.parallel))
+    } else {
+      result.push(step)
+    }
+  }
+  return result
+}
+
+/**
  * Parses workflow files to extract action dependencies
  */
 export class WorkflowParser {
@@ -557,7 +575,7 @@ export class WorkflowParser {
       if (typeof job === 'object' && job !== null && 'steps' in job) {
         const steps = (job as { steps?: unknown[] }).steps
         if (Array.isArray(steps)) {
-          for (const step of steps) {
+          for (const step of flattenSteps(steps)) {
             if (typeof step === 'object' && step !== null && 'uses' in step) {
               const uses = (step as { uses: string }).uses
               const result = this.parseUsesString(uses)
@@ -1307,7 +1325,7 @@ export class WorkflowParser {
         if (typeof job === 'object' && job !== null && 'steps' in job) {
           const steps = (job as { steps?: unknown[] }).steps
           if (Array.isArray(steps)) {
-            for (const step of steps) {
+            for (const step of flattenSteps(steps)) {
               if (typeof step === 'object' && step !== null && 'uses' in step) {
                 const uses = (step as { uses: string }).uses
                 const result = this.parseRemoteUsesString(uses, dependency)
