@@ -28,7 +28,7 @@ jobs:
 
     steps:
       - name: Harden the runner (Audit all outbound calls)
-        uses: step-security/harden-runner@v2.22.1
+        uses: step-security/harden-runner@v2.22.2
         with:
           egress-policy: audit
 
@@ -51,7 +51,7 @@ jobs:
 
       - name: Setup Ruby
         id: setup-ruby
-        uses: ruby/setup-ruby@v1.329.0
+        uses: ruby/setup-ruby@v1.331.0
         with:
           ruby-version: ruby
 

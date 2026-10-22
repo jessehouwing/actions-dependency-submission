@@ -6,46 +6,46 @@ workflows:
     '.github/workflows/action-example-checker.yaml':
         - 'actions/checkout@v7.0.1'
         - 'jessehouwing/actions-example-checker@v0.0.12'
-        - 'step-security/harden-runner@v2.22.1'
+        - 'step-security/harden-runner@v2.22.2'
     '.github/workflows/actions-dependency-submission.yml':
         - 'actions/checkout@v7.0.1'
         - 'actions/dependency-review-action@v5.0.0'
         - 'jessehouwing/actions-dependency-submission@v2.0.2'
-        - 'step-security/harden-runner@v2.22.1'
+        - 'step-security/harden-runner@v2.22.2'
     '.github/workflows/actions-semver-checker.yml':
         - 'jessehouwing/actions-semver-checker@v2.1.1'
-        - 'step-security/harden-runner@v2.22.1'
+        - 'step-security/harden-runner@v2.22.2'
     '.github/workflows/check-dist.yml':
         - 'actions/checkout@v7.0.1'
         - 'actions/setup-node@v7.1.0'
         - 'actions/upload-artifact@v7.0.2'
         - 'licensee/setup-licensed@v1.3.2'
-        - 'ruby/setup-ruby@v1.329.0'
-        - 'step-security/harden-runner@v2.22.1'
+        - 'ruby/setup-ruby@v1.331.0'
+        - 'step-security/harden-runner@v2.22.2'
     '.github/workflows/ci.yml':
         - 'actions/checkout@v7.0.1'
         - 'actions/setup-node@v7.1.0'
-        - 'step-security/harden-runner@v2.22.1'
+        - 'step-security/harden-runner@v2.22.2'
     '.github/workflows/copilot-setup-steps.yml':
         - 'actions/checkout@v7.0.1'
         - 'actions/setup-node@v7.1.0'
-        - 'step-security/harden-runner@v2.22.1'
+        - 'step-security/harden-runner@v2.22.2'
     '.github/workflows/licensed.yml':
         - 'actions/checkout@v7.0.1'
         - 'actions/setup-node@v7.1.0'
         - 'licensee/setup-licensed@v1.3.2'
-        - 'ruby/setup-ruby@v1.329.0'
-        - 'step-security/harden-runner@v2.22.1'
+        - 'ruby/setup-ruby@v1.331.0'
+        - 'step-security/harden-runner@v2.22.2'
     '.github/workflows/linter.yml':
         - 'actions/checkout@v7.0.1'
         - 'actions/setup-node@v7.1.0'
         - 'ibiqlik/action-yamllint@v3.1.1'
-        - 'step-security/harden-runner@v2.22.1'
+        - 'step-security/harden-runner@v2.22.2'
     '.github/workflows/zizmor.yml':
         - 'actions/checkout@v7.0.1'
         - 'actions/setup-python@v7.0.0'
         - 'github/codeql-action@v4.39.0'
-        - 'step-security/harden-runner@v2.22.1'
+        - 'step-security/harden-runner@v2.22.2'
 dependencies:
     'actions/checkout@v7.0.1':
         ref: 'v7.0.1'
@@ -102,13 +102,13 @@ dependencies:
         commit: 'sha1-0d52e575b3258417672be0dff2f115d7db8771d8'
         owner_id: 47460333
         repo_id: 927966380
-    'ruby/setup-ruby@v1.329.0':
-        ref: 'v1.329.0'
-        commit: 'sha1-651ff0d62c5c79bed6d53ec518387aae20e72c1a'
+    'ruby/setup-ruby@v1.331.0':
+        ref: 'v1.331.0'
+        commit: 'sha1-824c0e29fdfc7d689c191c27acc969d2d04b7dd8'
         owner_id: 210414
         repo_id: 231208785
-    'step-security/harden-runner@v2.22.1':
-        ref: 'v2.22.1'
-        commit: 'sha1-ccd8616d44fd3846e67624a50d5aad6d37bf2d25'
+    'step-security/harden-runner@v2.22.2':
+        ref: 'v2.22.2'
+        commit: 'sha1-dc2769abcc0fcfbadfc1df54081c1608579ef6b2'
         owner_id: 88700172
         repo_id: 422287306
