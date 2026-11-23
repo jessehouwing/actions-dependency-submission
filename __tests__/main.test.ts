@@ -8,19 +8,46 @@ import * as fs from 'fs'
 import * as os from 'os'
 import * as path from 'path'
 
+type GhCallback = (error: Error | null, stdout: string, stderr: string) => void
+const execFile =
+  jest.fn<
+    (cmd: string, args: string[], opts: unknown, cb: GhCallback) => void
+  >()
+
 // Mocks should be declared before the module being tested is imported.
 jest.unstable_mockModule('@actions/core', () => core)
 jest.unstable_mockModule('@actions/github', () => github)
+jest.unstable_mockModule('child_process', () => ({ execFile }))
 
 // The module being tested should be imported dynamically.
 const { run } = await import('../src/main.js')
 
 describe('main.ts', () => {
   let tempDir: string
+  let originalWorkspace: string | undefined
+  let verificationError: Error | null
 
   beforeEach(() => {
     jest.clearAllMocks()
     tempDir = fs.mkdtempSync(path.join(os.tmpdir(), 'main-test-'))
+    originalWorkspace = process.env.GITHUB_WORKSPACE
+    process.env.GITHUB_WORKSPACE = tempDir
+    verificationError = null
+    fs.mkdirSync(path.join(tempDir, '.github', 'workflows'), {
+      recursive: true
+    })
+    fs.writeFileSync(
+      path.join(tempDir, '.github', 'workflows', 'actions.lock'),
+      'version: v0.0.3\ndependencies: {}\n'
+    )
+    execFile.mockImplementation((_cmd, args, _opts, cb) => {
+      if (args[0] === '--version') cb(null, 'gh version', '')
+      else if (args[0] === 'extension' && args[1] === 'list')
+        cb(null, 'gh actions-lock\tgithub/gh-actions-lock\tv0.2.0', '')
+      else if (args[0] === 'actions-lock' && args[1] === '--verify')
+        cb(verificationError, '', verificationError?.message ?? '')
+      else cb(new Error(`Unexpected gh command: ${args.join(' ')}`), '', '')
+    })
 
     // Set default inputs
     core.getInput.mockImplementation((name: string) => {
@@ -36,6 +63,8 @@ describe('main.ts', () => {
   })
 
   afterEach(() => {
+    if (originalWorkspace === undefined) delete process.env.GITHUB_WORKSPACE
+    else process.env.GITHUB_WORKSPACE = originalWorkspace
     if (fs.existsSync(tempDir)) {
       fs.rmSync(tempDir, { recursive: true, force: true })
     }
@@ -64,6 +93,15 @@ jobs:
 
     await run()
 
+    expect(execFile).toHaveBeenCalledWith(
+      'gh',
+      ['actions-lock', '--verify', '--no-interactive'],
+      expect.objectContaining({
+        cwd: tempDir,
+        env: expect.objectContaining({ GH_TOKEN: 'test-token' })
+      }),
+      expect.any(Function)
+    )
     expect(core.setOutput).toHaveBeenCalledWith('dependency-count', 1)
     expect(
       github.mockOctokit.rest.dependencyGraph.createRepositorySnapshot
@@ -257,6 +295,26 @@ jobs:
     await run()
 
     expect(core.setFailed).toHaveBeenCalledWith('Input error')
+  })
+
+  it('Fails without submitting dependencies when lock verification fails', async () => {
+    verificationError = new Error('verification rejected')
+
+    await run()
+
+    expect(execFile).toHaveBeenCalledWith(
+      'gh',
+      ['actions-lock', '--verify', '--no-interactive'],
+      expect.anything(),
+      expect.any(Function)
+    )
+    expect(core.setFailed).toHaveBeenCalledWith(
+      expect.stringContaining('failed verification')
+    )
+    expect(
+      github.mockOctokit.rest.dependencyGraph.createRepositorySnapshot
+    ).not.toHaveBeenCalled()
+    expect(core.setOutput).not.toHaveBeenCalled()
   })
 
   it('Submits same action dependency for each workflow file that uses it', async () => {
