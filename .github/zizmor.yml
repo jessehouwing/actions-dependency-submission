@@ -7,6 +7,6 @@
 rules:
   unpinned-uses:
     disable: true
-  # Dependabot cooldown is intentionally not configured for this repo.
+  # Dependabot uses a 3-day cooldown, shorter than zizmor's recommendation.
   dependabot-cooldown:
     disable: true

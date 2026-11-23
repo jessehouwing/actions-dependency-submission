@@ -1,9 +1,13 @@
 version: 2
 updates:
   - package-ecosystem: github-actions
-    directory: /
+    directories:
+      - /
+      - /*/
     schedule:
-      interval: daily
+      interval: weekly
+    cooldown:
+      default-days: 3
     groups:
       actions-minor:
         update-types:
@@ -37,6 +41,13 @@ updates:
     directory: /
     schedule:
       interval: weekly
+    cooldown:
+      default-days: 3
+    groups:
+      pip-minor:
+        update-types:
+          - minor
+          - patch
 
   - package-ecosystem: bundler
     directory: /
