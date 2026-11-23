@@ -6,46 +6,46 @@ workflows:
     '.github/workflows/action-example-checker.yaml':
         - 'actions/checkout@v7.0.1'
         - 'jessehouwing/actions-example-checker@v0.0.12'
-        - 'step-security/harden-runner@v2.22.1'
+        - 'step-security/harden-runner@v2.22.2'
     '.github/workflows/actions-dependency-submission.yml':
         - 'actions/checkout@v7.0.1'
         - 'actions/dependency-review-action@v5.0.0'
         - 'jessehouwing/actions-dependency-submission@v2.0.2'
-        - 'step-security/harden-runner@v2.22.1'
+        - 'step-security/harden-runner@v2.22.2'
     '.github/workflows/actions-semver-checker.yml':
         - 'jessehouwing/actions-semver-checker@v2.1.1'
-        - 'step-security/harden-runner@v2.22.1'
+        - 'step-security/harden-runner@v2.22.2'
     '.github/workflows/check-dist.yml':
         - 'actions/checkout@v7.0.1'
         - 'actions/setup-node@v7.1.0'
         - 'actions/upload-artifact@v7.0.2'
         - 'licensee/setup-licensed@v1.3.2'
-        - 'ruby/setup-ruby@v1.329.0'
-        - 'step-security/harden-runner@v2.22.1'
+        - 'ruby/setup-ruby@v1.334.0'
+        - 'step-security/harden-runner@v2.22.2'
     '.github/workflows/ci.yml':
         - 'actions/checkout@v7.0.1'
         - 'actions/setup-node@v7.1.0'
-        - 'step-security/harden-runner@v2.22.1'
+        - 'step-security/harden-runner@v2.22.2'
     '.github/workflows/copilot-setup-steps.yml':
         - 'actions/checkout@v7.0.1'
         - 'actions/setup-node@v7.1.0'
-        - 'step-security/harden-runner@v2.22.1'
+        - 'step-security/harden-runner@v2.22.2'
     '.github/workflows/licensed.yml':
         - 'actions/checkout@v7.0.1'
         - 'actions/setup-node@v7.1.0'
         - 'licensee/setup-licensed@v1.3.2'
-        - 'ruby/setup-ruby@v1.329.0'
-        - 'step-security/harden-runner@v2.22.1'
+        - 'ruby/setup-ruby@v1.334.0'
+        - 'step-security/harden-runner@v2.22.2'
     '.github/workflows/linter.yml':
         - 'actions/checkout@v7.0.1'
         - 'actions/setup-node@v7.1.0'
         - 'ibiqlik/action-yamllint@v3.1.1'
-        - 'step-security/harden-runner@v2.22.1'
+        - 'step-security/harden-runner@v2.22.2'
     '.github/workflows/zizmor.yml':
         - 'actions/checkout@v7.0.1'
-        - 'actions/setup-python@v7.0.0'
-        - 'github/codeql-action@v4.39.0'
-        - 'step-security/harden-runner@v2.22.1'
+        - 'actions/setup-python@v7.1.0'
+        - 'github/codeql-action@v4.39.1'
+        - 'step-security/harden-runner@v2.22.2'
 dependencies:
     'actions/checkout@v7.0.1':
         ref: 'v7.0.1'
@@ -62,9 +62,9 @@ dependencies:
         commit: 'sha1-949feb2413d6458794dcd2491c4babbbce0c15c1'
         owner_id: 44036562
         repo_id: 189476904
-    'actions/setup-python@v7.0.0':
-        ref: 'v7.0.0'
-        commit: 'sha1-5fda3b95a4ea91299a34e894583c3862153e4b97'
+    'actions/setup-python@v7.1.0':
+        ref: 'v7.1.0'
+        commit: 'sha1-6d4fd22b20465ccc0f7354476588e8df7c9ca0e0'
         owner_id: 44036562
         repo_id: 192625525
     'actions/upload-artifact@v7.0.2':
@@ -72,9 +72,9 @@ dependencies:
         commit: 'sha1-cf430e030ddbb5b0abf93d22962f4752f3646cd9'
         owner_id: 44036562
         repo_id: 192625955
-    'github/codeql-action@v4.39.0':
-        ref: 'v4.39.0'
-        commit: 'sha1-6f2ac81f5cd81fe351a197ba0b00d91d03cd2aee'
+    'github/codeql-action@v4.39.1':
+        ref: 'v4.39.1'
+        commit: 'sha1-9b3254085494b55a0f7c4c2b3d2d52cc712ce370'
         owner_id: 9919
         repo_id: 259445878
     'ibiqlik/action-yamllint@v3.1.1':
@@ -102,13 +102,13 @@ dependencies:
         commit: 'sha1-0d52e575b3258417672be0dff2f115d7db8771d8'
         owner_id: 47460333
         repo_id: 927966380
-    'ruby/setup-ruby@v1.329.0':
-        ref: 'v1.329.0'
-        commit: 'sha1-651ff0d62c5c79bed6d53ec518387aae20e72c1a'
+    'ruby/setup-ruby@v1.334.0':
+        ref: 'v1.334.0'
+        commit: 'sha1-26e5b7d197ebf60545ee9667bcbace0be11ccaec'
         owner_id: 210414
         repo_id: 231208785
-    'step-security/harden-runner@v2.22.1':
-        ref: 'v2.22.1'
-        commit: 'sha1-ccd8616d44fd3846e67624a50d5aad6d37bf2d25'
+    'step-security/harden-runner@v2.22.2':
+        ref: 'v2.22.2'
+        commit: 'sha1-dc2769abcc0fcfbadfc1df54081c1608579ef6b2'
         owner_id: 88700172
         repo_id: 422287306
