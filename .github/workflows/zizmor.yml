@@ -37,10 +37,12 @@ jobs:
         with:
           python-version-file: '.python-version'
 
+      # Single source of truth for the zizmor version (Dependabot-managed).
       - name: Install zizmor
         run: python3 -m pip install -r requirements-dev.txt
 
       - name: Run zizmor
+        # Test fixtures contain intentionally invalid action definitions.
         run: zizmor --format=sarif .github action.yml > results.sarif
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
